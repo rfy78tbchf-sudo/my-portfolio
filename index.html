@@ -6,10 +6,9 @@
 <meta name="theme-color" content="#0b0d12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEB0lEQVR4nO3cwW3bQBCF4XGQBgLklCJSTrrJKd2knFSUgwBDkPVoiuTMvtn9v1tiwBKwv5bkkNbbt+8/Anjmy+g3AF/EAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAPS19FvAHv9/vf3/p9/fv7KfsU3vqTW30MW91IT4bDibqOMT396EnFY27P2eX0Qh6/9q57UB3FAIg5Tr24GGZsHcUAiDkep1yD7EYcdkzKCOLCBOLwc3jYyRqXEYcTngHJDHC7OlJF0h4U4LBiWEcThwLOM4HmO4azOQB8Qx0jHyijI4obDyjDmZQRxjOJ21foUcQzgfJ5xjzjaKC4jiKOe/6nGO+Io1aiMII5KvcoI4ijTrowgjhodywjiKNC0jCCObH3LCOJI1bqMII48LQbk24gjRZcB+TbiMGJVRhBHhu6nGu+I42LTlBHEca2ZyohpHhOs/76sT9/DTrZlxBw7x8dVuf1P5cXkfGVE9y+M27MkBQswZRnReufYuSTZ+8esZUTfOF5akrw+Ji4jmh5WTOaPc5cRHXeOM9vAhVvIBLdOPtUsjvNLcsmimmxd2TrFcdWHddSHvlcZ0SiOa1e0/tjUrozoEkfGZ/3Y71ynjGgRh8+F6FJlhH8cPiOs1coI8zlH5Znj9iouWEY47xzF1xQbL7dmGWEbx5CrzacvumwZ4RnHmRHTyVV5eOmVywjDOM4PH6/qY4UB+TavE9ILx9KMQc8z2jmuvWExZJFmKiOs4jhmYz2Kl2qyMsInjqRTv7IFm6+MMDnnKLgoSD0FmbKMcNg5ai4X89Zv1jJieByVg4SMVZy4jBgbR/2I6dq1nLuMGBjHqOHjVSs6fRkxKo6xY2mfwswNiMPhhsUiq3tSdRw+NywO97FOWKVzDs8n+l96V+uUEZU7h2cZL/3+pcqIsjhsy9j/KquVETVxmJex57UWLCMKzjlalHHP4UuCTOTG0a4M3Es8rFBGd1lxUMYEsuLwuXGKwxIPKz6PXOCY3EtZ5kutpc85mC/1VTEEY77UVNH4XBVAGc7qbrx97IAyzJU+z3FfA2X4q37Y59YEZbRg8UdN8DT+j5pgizggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSP8BClBOVGZLxR0AAAAASUVORK5CYII=">
 <title>My Portfolio</title>
-<!-- build: 2026-09-22-ios-debug-1 -->
+<!-- build: 2026-09-22-ios-debug-2 -->
 <style>
 :root{--bg:#f5f6f8;--surface:#fff;--surface2:#f0f2f5;--text:#11141a;--muted:#757b85;--line:#e7e9ee;--up:#e23c4b;--down:#2f64d6;--accent:#11a878;--shadow:0 8px 28px rgba(18,23,38,.06);--radius:22px;--safe:env(safe-area-inset-bottom)}
 [data-theme="dark"]{--bg:#090b0f;--surface:#11141a;--surface2:#171b22;--text:#f3f5f7;--muted:#949aa5;--line:#222833;--shadow:0 8px 34px rgba(0,0,0,.22)}
@@ -22,501 +21,792 @@
 </head>
 <body>
 <div id="app"></div>
-<div id="boot-status" style="padding:32px 20px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#11141a">My Portfolio 불러오는 중…</div>
+<div id="boot-status" style="padding:32px 20px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#11141a">1단계 · HTML 정상</div>
 <script>
-window.addEventListener('error',function(e){var x=document.getElementById('boot-status');if(x){x.innerHTML='<b>앱 실행 오류</b><br><small>'+String(e.message||'알 수 없는 오류')+'</small>';x.style.color='#b42318';}});
-window.addEventListener('unhandledrejection',function(e){var x=document.getElementById('boot-status');if(x){x.innerHTML='<b>앱 실행 오류</b><br><small>'+String((e.reason&&e.reason.message)||e.reason||'알 수 없는 오류')+'</small>';x.style.color='#b42318';}});
-globalThis.__MY_PORTFOLIO_EDGE__={
-  configUrl:'./__inline_config_not_needed__.json',
-  kbStatusUrl:'https://buimrsjowlmfkxxaithj.supabase.co/functions/v1/my-portfolio-web/?asset=kb-status',
-  authRedirectUrl:location.href.split('#')[0],
-  serviceWorkerUrl:'./sw.js',
-  serviceWorkerScope:'./'
+(function(){
+  var x=document.getElementById('boot-status');
+  if(x)x.textContent='2단계 · JavaScript 시작';
+  window.__APP_BOOT_OK=false;
+  window.onerror=function(msg,src,line,col,err){
+    var y=document.getElementById('boot-status');
+    if(y){y.innerHTML='<b>앱 실행 오류</b><br><small>'+String(msg||'알 수 없는 오류')+' · line '+String(line||'?')+'</small>';y.style.color='#b42318';}
+  };
+  window.onunhandledrejection=function(e){
+    var y=document.getElementById('boot-status');var r=e&&e.reason;
+    if(y){y.innerHTML='<b>앱 실행 오류</b><br><small>'+String((r&&r.message)||r||'Promise 오류')+'</small>';y.style.color='#b42318';}
+  };
+  setTimeout(function(){
+    if(!window.__APP_BOOT_OK){var y=document.getElementById('boot-status');if(y){y.innerHTML='<b>3단계에서 멈춤</b><br><small>메인 앱 코드가 완료되지 않았습니다.</small>';y.style.color='#9a6700';}}
+  },5000);
+})();
+</script>
+<script>
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
 };
-
+(function () {
+    if (!window.globalThis)
+        window.globalThis = window;
+    if (!Array.prototype.at)
+        Array.prototype.at = function (i) { i = Number(i) || 0; if (i < 0)
+            i = this.length + i; return this[i]; };
+    if (!String.prototype.replaceAll)
+        String.prototype.replaceAll = function (a, b) { return this.split(a).join(b); };
+})();
+globalThis.__MY_PORTFOLIO_EDGE__ = {
+    configUrl: './__inline_config_not_needed__.json',
+    kbStatusUrl: 'https://buimrsjowlmfkxxaithj.supabase.co/functions/v1/my-portfolio-web/?asset=kb-status',
+    authRedirectUrl: location.href.split('#')[0],
+    serviceWorkerUrl: './sw.js',
+    serviceWorkerScope: './'
+};
 const SESSION_KEY = 'my_portfolio_session_v1';
 const EDGE_RUNTIME = globalThis.__MY_PORTFOLIO_EDGE__ || {};
-
 function currentAppRoot() {
-  return `${location.origin}${location.pathname}`;
+    return `${location.origin}${location.pathname}`;
 }
-
 function readStoredSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+    try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+    }
+    catch (_a) {
+        return null;
+    }
 }
-
 function writeSession(session) {
-  if (!session) localStorage.removeItem(SESSION_KEY);
-  else localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    if (!session)
+        localStorage.removeItem(SESSION_KEY);
+    else
+        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
-
 async function getRuntimeConfig() {
-  try {
-    const response = await fetch(EDGE_RUNTIME.configUrl || '/api/config', { headers: { accept: 'application/json' } });
-    if (!response.ok) throw new Error('config unavailable');
-    return await response.json();
-  } catch {
-    return { appName:'My Portfolio', requireAuth:true, supabaseUrl:'https://buimrsjowlmfkxxaithj.supabase.co', supabasePublishableKey:'sb_publishable_PtqyNbOvFTVbPwtwZB6-rQ_bbzKHZfv', demoEnabled:true, timezone:'Asia/Seoul', kbStatusUrl:EDGE_RUNTIME.kbStatusUrl || '/api/kb/status', authRedirectUrl:currentAppRoot() };
-  }
+    return { appName: 'My Portfolio', requireAuth: true, supabaseUrl: 'https://buimrsjowlmfkxxaithj.supabase.co', supabasePublishableKey: 'sb_publishable_PtqyNbOvFTVbPwtwZB6-rQ_bbzKHZfv', demoEnabled: true, timezone: 'Asia/Seoul', kbStatusUrl: EDGE_RUNTIME.kbStatusUrl || '/api/kb/status', authRedirectUrl: currentAppRoot() };
 }
-
 function consumeMagicLinkHash() {
-  const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-  const accessToken = hash.get('access_token');
-  const refreshToken = hash.get('refresh_token');
-  if (!accessToken) return null;
-  const expiresIn = Number(hash.get('expires_in') || 3600);
-  const session = { accessToken, refreshToken, expiresAt: Date.now() + expiresIn * 1000 };
-  writeSession(session);
-  history.replaceState(null, '', location.pathname + location.search);
-  return session;
+    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const accessToken = hash.get('access_token');
+    const refreshToken = hash.get('refresh_token');
+    if (!accessToken)
+        return null;
+    const expiresIn = Number(hash.get('expires_in') || 3600);
+    const session = { accessToken, refreshToken, expiresAt: Date.now() + expiresIn * 1000 };
+    writeSession(session);
+    history.replaceState(null, '', location.pathname + location.search);
+    return session;
 }
-
 async function refreshSession(config, session) {
-  if (!session?.refreshToken || !config.supabaseUrl || !config.supabasePublishableKey) return null;
-  const response = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
-    method:'POST',
-    headers:{ 'content-type':'application/json', apikey:config.supabasePublishableKey },
-    body:JSON.stringify({ refresh_token:session.refreshToken }),
-  });
-  if (!response.ok) { writeSession(null); return null; }
-  const body = await response.json();
-  const next = {
-    accessToken:body.access_token,
-    refreshToken:body.refresh_token || session.refreshToken,
-    expiresAt:Date.now() + Number(body.expires_in || 3600) * 1000,
-  };
-  writeSession(next);
-  return next;
+    if (!(session === null || session === void 0 ? void 0 : session.refreshToken) || !config.supabaseUrl || !config.supabasePublishableKey)
+        return null;
+    const response = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: config.supabasePublishableKey },
+        body: JSON.stringify({ refresh_token: session.refreshToken }),
+    });
+    if (!response.ok) {
+        writeSession(null);
+        return null;
+    }
+    const body = await response.json();
+    const next = {
+        accessToken: body.access_token,
+        refreshToken: body.refresh_token || session.refreshToken,
+        expiresAt: Date.now() + Number(body.expires_in || 3600) * 1000,
+    };
+    writeSession(next);
+    return next;
 }
-
 async function currentSession(config) {
-  const fromHash = consumeMagicLinkHash();
-  let session = fromHash || readStoredSession();
-  if (!session) return null;
-  if (Date.now() > Number(session.expiresAt || 0) - 60_000) session = await refreshSession(config, session);
-  return session;
+    const fromHash = consumeMagicLinkHash();
+    let session = fromHash || readStoredSession();
+    if (!session)
+        return null;
+    if (Date.now() > Number(session.expiresAt || 0) - 60000)
+        session = await refreshSession(config, session);
+    return session;
 }
-
 async function requestMagicLink(config, email) {
-  if (!config.supabaseUrl || !config.supabasePublishableKey) throw new Error('로그인 서버가 아직 연결되지 않았습니다.');
-  const endpoint = new URL(`${config.supabaseUrl}/auth/v1/otp`);
-  endpoint.searchParams.set('redirect_to', config.authRedirectUrl || currentAppRoot());
-  const response = await fetch(endpoint, {
-    method:'POST',
-    headers:{ 'content-type':'application/json', apikey:config.supabasePublishableKey },
-    body:JSON.stringify({ email, create_user:true }),
-  });
-  if (!response.ok) {
-    const body = await response.json().catch(()=>({}));
-    throw new Error(body?.msg || body?.message || '로그인 링크 전송에 실패했습니다.');
-  }
-  return true;
+    if (!config.supabaseUrl || !config.supabasePublishableKey)
+        throw new Error('로그인 서버가 아직 연결되지 않았습니다.');
+    const endpoint = new URL(`${config.supabaseUrl}/auth/v1/otp`);
+    endpoint.searchParams.set('redirect_to', config.authRedirectUrl || currentAppRoot());
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: config.supabasePublishableKey },
+        body: JSON.stringify({ email, create_user: true }),
+    });
+    if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error((body === null || body === void 0 ? void 0 : body.msg) || (body === null || body === void 0 ? void 0 : body.message) || '로그인 링크 전송에 실패했습니다.');
+    }
+    return true;
 }
-
 function signOut() { writeSession(null); location.reload(); }
-
 function renderLogin(config, { onDemo } = {}) {
-  document.getElementById('boot-status')?.remove();
-  const root = document.querySelector('#app');
-  root.innerHTML = `<div class="login-shell"><div class="login-card"><div class="appmark">↗</div><h1>${config.appName || 'My Portfolio'}</h1><p>개인 자산정보 보호를 위해 이메일 인증 후 접속합니다.</p><form id="loginForm"><input class="search" id="loginEmail" type="email" inputmode="email" autocomplete="email" placeholder="이메일 주소" required><button class="btn login-btn" type="submit">로그인 링크 받기</button></form><div class="sub" id="loginMsg"></div>${config.demoEnabled?'<button class="chip demo-login" id="demoLogin">Demo Mode 보기</button>':''}</div></div>`;
-  document.querySelector('#loginForm').onsubmit = async (event) => {
-    event.preventDefault();
-    const msg = document.querySelector('#loginMsg');
-    msg.textContent='전송 중…';
-    try { await requestMagicLink(config, document.querySelector('#loginEmail').value.trim()); msg.textContent='메일함에서 My Portfolio 로그인 링크를 눌러주세요.'; }
-    catch (error) { msg.textContent=error.message; }
-  };
-  const demo=document.querySelector('#demoLogin'); if(demo && onDemo) demo.onclick=onDemo;
+    var _a;
+    window.__APP_BOOT_OK = true;
+    (_a = document.getElementById('boot-status')) === null || _a === void 0 ? void 0 : _a.remove();
+    const root = document.querySelector('#app');
+    root.innerHTML = `<div class="login-shell"><div class="login-card"><div class="appmark">↗</div><h1>${config.appName || 'My Portfolio'}</h1><p>개인 자산정보 보호를 위해 이메일 인증 후 접속합니다.</p><form id="loginForm"><input class="search" id="loginEmail" type="email" inputmode="email" autocomplete="email" placeholder="이메일 주소" required><button class="btn login-btn" type="submit">로그인 링크 받기</button></form><div class="sub" id="loginMsg"></div>${config.demoEnabled ? '<button class="chip demo-login" id="demoLogin">Demo Mode 보기</button>' : ''}</div></div>`;
+    document.querySelector('#loginForm').onsubmit = async (event) => {
+        event.preventDefault();
+        const msg = document.querySelector('#loginMsg');
+        msg.textContent = '전송 중…';
+        try {
+            await requestMagicLink(config, document.querySelector('#loginEmail').value.trim());
+            msg.textContent = '메일함에서 My Portfolio 로그인 링크를 눌러주세요.';
+        }
+        catch (error) {
+            msg.textContent = error.message;
+        }
+    };
+    const demo = document.querySelector('#demoLogin');
+    if (demo && onDemo)
+        demo.onclick = onDemo;
 }
-
-async function supabaseRest(config, session, path, { method='GET', body, headers={} }={}) {
-  if (!session?.accessToken) throw new Error('auth_required');
-  const response = await fetch(`${config.supabaseUrl}/rest/v1/${path}`, {
-    method,
-    headers:{ apikey:config.supabasePublishableKey, Authorization:`Bearer ${session.accessToken}`, 'content-type':'application/json', ...headers },
-    body:body == null ? undefined : JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error(`data_api_${response.status}`);
-  if (response.status===204) return null;
-  return response.json();
+async function supabaseRest(config, session, path, { method = 'GET', body, headers = {} } = {}) {
+    if (!(session === null || session === void 0 ? void 0 : session.accessToken))
+        throw new Error('auth_required');
+    const response = await fetch(`${config.supabaseUrl}/rest/v1/${path}`, {
+        method,
+        headers: Object.assign({ apikey: config.supabasePublishableKey, Authorization: `Bearer ${session.accessToken}`, 'content-type': 'application/json' }, headers),
+        body: body == null ? undefined : JSON.stringify(body),
+    });
+    if (!response.ok)
+        throw new Error(`data_api_${response.status}`);
+    if (response.status === 204)
+        return null;
+    return response.json();
 }
-
 function sma(values, period) {
-  if (!Array.isArray(values) || values.length < period || period <= 0) return null;
-  return values.slice(-period).reduce((a,b)=>a+Number(b||0),0)/period;
+    if (!Array.isArray(values) || values.length < period || period <= 0)
+        return null;
+    return values.slice(-period).reduce((a, b) => a + Number(b || 0), 0) / period;
 }
 function emaSeries(values, period) {
-  if (!values.length) return [];
-  const k=2/(period+1); const out=[Number(values[0])];
-  for(let i=1;i<values.length;i++) out.push(Number(values[i])*k+out[i-1]*(1-k));
-  return out;
+    if (!values.length)
+        return [];
+    const k = 2 / (period + 1);
+    const out = [Number(values[0])];
+    for (let i = 1; i < values.length; i++)
+        out.push(Number(values[i]) * k + out[i - 1] * (1 - k));
+    return out;
 }
-function rsi(values, period=14) {
-  if(values.length<=period) return null;
-  let gain=0, loss=0;
-  for(let i=values.length-period;i<values.length;i++){
-    const d=Number(values[i])-Number(values[i-1]); if(d>0) gain+=d; else loss-=d;
-  }
-  if(loss===0) return 100;
-  const rs=(gain/period)/(loss/period); return 100-100/(1+rs);
+function rsi(values, period = 14) {
+    if (values.length <= period)
+        return null;
+    let gain = 0, loss = 0;
+    for (let i = values.length - period; i < values.length; i++) {
+        const d = Number(values[i]) - Number(values[i - 1]);
+        if (d > 0)
+            gain += d;
+        else
+            loss -= d;
+    }
+    if (loss === 0)
+        return 100;
+    const rs = (gain / period) / (loss / period);
+    return 100 - 100 / (1 + rs);
 }
-function macd(values, fast=12, slow=26, signal=9) {
-  if(values.length<slow+signal) return null;
-  const f=emaSeries(values,fast), s=emaSeries(values,slow);
-  const line=values.map((_,i)=>f[i]-s[i]);
-  const sig=emaSeries(line,signal); const i=line.length-1;
-  return { value:line[i], signal:sig[i], histogram:line[i]-sig[i] };
+function macd(values, fast = 12, slow = 26, signal = 9) {
+    if (values.length < slow + signal)
+        return null;
+    const f = emaSeries(values, fast), s = emaSeries(values, slow);
+    const line = values.map((_, i) => f[i] - s[i]);
+    const sig = emaSeries(line, signal);
+    const i = line.length - 1;
+    return { value: line[i], signal: sig[i], histogram: line[i] - sig[i] };
 }
-function annualizedVolatility(values, tradingDays=252) {
-  if(values.length<3) return null;
-  const returns=[];
-  for(let i=1;i<values.length;i++) if(values[i-1]) returns.push(values[i]/values[i-1]-1);
-  const mean=returns.reduce((a,b)=>a+b,0)/returns.length;
-  const variance=returns.reduce((a,b)=>a+(b-mean)**2,0)/(returns.length-1);
-  return Math.sqrt(variance)*Math.sqrt(tradingDays);
+function annualizedVolatility(values, tradingDays = 252) {
+    if (values.length < 3)
+        return null;
+    const returns = [];
+    for (let i = 1; i < values.length; i++)
+        if (values[i - 1])
+            returns.push(values[i] / values[i - 1] - 1);
+    const mean = returns.reduce((a, b) => a + b, 0) / returns.length;
+    const variance = returns.reduce((a, b) => a + (b - mean) ** 2, 0) / (returns.length - 1);
+    return Math.sqrt(variance) * Math.sqrt(tradingDays);
 }
 function technicalSnapshot(history) {
-  const closes=history.map(x=>Number(x.close));
-  const vols=history.map(x=>Number(x.volume||0));
-  const price=closes.at(-1) || 0;
-  const high52=Math.max(...closes.slice(-252));
-  const low52=Math.min(...closes.slice(-252));
-  const m={20:sma(closes,20),60:sma(closes,60),120:sma(closes,120),200:sma(closes,200)};
-  const rsi14=rsi(closes,14); const mcd=macd(closes);
-  const avgVol20=sma(vols,20); const prevVol20=vols.length>=40 ? vols.slice(-40,-20).reduce((a,b)=>a+b,0)/20 : null;
-  const volumeChange=prevVol20 ? (avgVol20/prevVol20-1) : 0;
-  const position52=high52===low52?50:(price-low52)/(high52-low52)*100;
-  const drawdown=high52?price/high52-1:0;
-  const volatility=annualizedVolatility(closes.slice(-60));
-  let score=0;
-  for(const p of [20,60,120,200]) if(m[p]!=null) score += price>m[p]?1:-1;
-  if(m[20]!=null&&m[60]!=null) score += m[20]>m[60]?1:-1;
-  if(mcd) score += mcd.histogram>0?1:-1;
-  if(rsi14!=null&&rsi14>75) score-=.5;
-  if(rsi14!=null&&rsi14<25) score+=.5;
-  const trend=score>=5?'강한 상승':score>=2?'상승':score>-2?'중립':score>-5?'하락':'강한 하락';
-  return {price,ma20:m[20],ma60:m[60],ma120:m[120],ma200:m[200],rsi14,macd:mcd,high52,low52,position52,drawdown,volatility,volumeChange,trend};
+    const closes = history.map(x => Number(x.close));
+    const vols = history.map(x => Number(x.volume || 0));
+    const price = closes.at(-1) || 0;
+    const high52 = Math.max(...closes.slice(-252));
+    const low52 = Math.min(...closes.slice(-252));
+    const m = { 20: sma(closes, 20), 60: sma(closes, 60), 120: sma(closes, 120), 200: sma(closes, 200) };
+    const rsi14 = rsi(closes, 14);
+    const mcd = macd(closes);
+    const avgVol20 = sma(vols, 20);
+    const prevVol20 = vols.length >= 40 ? vols.slice(-40, -20).reduce((a, b) => a + b, 0) / 20 : null;
+    const volumeChange = prevVol20 ? (avgVol20 / prevVol20 - 1) : 0;
+    const position52 = high52 === low52 ? 50 : (price - low52) / (high52 - low52) * 100;
+    const drawdown = high52 ? price / high52 - 1 : 0;
+    const volatility = annualizedVolatility(closes.slice(-60));
+    let score = 0;
+    for (const p of [20, 60, 120, 200])
+        if (m[p] != null)
+            score += price > m[p] ? 1 : -1;
+    if (m[20] != null && m[60] != null)
+        score += m[20] > m[60] ? 1 : -1;
+    if (mcd)
+        score += mcd.histogram > 0 ? 1 : -1;
+    if (rsi14 != null && rsi14 > 75)
+        score -= .5;
+    if (rsi14 != null && rsi14 < 25)
+        score += .5;
+    const trend = score >= 5 ? '강한 상승' : score >= 2 ? '상승' : score > -2 ? '중립' : score > -5 ? '하락' : '강한 하락';
+    return { price, ma20: m[20], ma60: m[60], ma120: m[120], ma200: m[200], rsi14, macd: mcd, high52, low52, position52, drawdown, volatility, volumeChange, trend };
 }
-function trendSummary(t){
-  const over20=t.ma20!=null&&t.price>t.ma20, over60=t.ma60!=null&&t.price>t.ma60;
-  if(t.trend==='강한 상승') return t.rsi14>70?'중기 상승 흐름이 강하지만 RSI는 높은 구간입니다.':'단·중기 이동평균 위에서 강한 상승 흐름을 유지 중입니다.';
-  if(t.trend==='상승') return over20&&over60?'중기 상승 추세 유지, 단기 과열 수준은 제한적입니다.':'중기 상승 우위지만 일부 단기 지표는 혼재합니다.';
-  if(t.trend==='중립') return '이동평균과 모멘텀 지표가 엇갈려 방향성이 뚜렷하지 않습니다.';
-  if(t.trend==='하락') return '중기 가격 흐름이 약하며 주요 이동평균 회복 여부를 확인할 구간입니다.';
-  return '주요 이동평균 아래의 약한 가격 흐름이 이어지고 있습니다.';
+function trendSummary(t) {
+    const over20 = t.ma20 != null && t.price > t.ma20, over60 = t.ma60 != null && t.price > t.ma60;
+    if (t.trend === '강한 상승')
+        return t.rsi14 > 70 ? '중기 상승 흐름이 강하지만 RSI는 높은 구간입니다.' : '단·중기 이동평균 위에서 강한 상승 흐름을 유지 중입니다.';
+    if (t.trend === '상승')
+        return over20 && over60 ? '중기 상승 추세 유지, 단기 과열 수준은 제한적입니다.' : '중기 상승 우위지만 일부 단기 지표는 혼재합니다.';
+    if (t.trend === '중립')
+        return '이동평균과 모멘텀 지표가 엇갈려 방향성이 뚜렷하지 않습니다.';
+    if (t.trend === '하락')
+        return '중기 가격 흐름이 약하며 주요 이동평균 회복 여부를 확인할 구간입니다.';
+    return '주요 이동평균 아래의 약한 가격 흐름이 이어지고 있습니다.';
 }
-function moneyWeightedDayReturn(startValue,endValue,externalFlow=0){ return startValue? (endValue-startValue-externalFlow)/startValue : 0; }
-function chainedTwr(rows){ return rows.reduce((acc,r)=>acc*(1+moneyWeightedDayReturn(r.start,r.end,r.flow||0)),1)-1; }
-
-
-const $=(q)=>document.querySelector(q);
-const fmt=n=>new Intl.NumberFormat('ko-KR',{maximumFractionDigits:0}).format(Math.round(Number(n)||0));
-const pct=n=>`${Number(n)>0?'+':''}${Number(n||0).toFixed(2)}%`;
-const cls=n=>Number(n)>=0?'up':'down';
-const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const TODAY='2026-09-22';
-
-const state={
-  tab:'home', detail:null, period:'1M', perfPeriod:'1M',
-  theme:localStorage.theme||'light', colors:localStorage.colors||'kr',
-  currency:localStorage.currency||'KRW', compact:localStorage.compact==='true',
-  portfolioFilter:'전체', sort:'평가금액', autoSync:localStorage.autoSync!=='false',
-  config:null, session:null, demo:true, liveError:null, manual:readJson('my_portfolio_manual',[]),
+function moneyWeightedDayReturn(startValue, endValue, externalFlow = 0) { return startValue ? (endValue - startValue - externalFlow) / startValue : 0; }
+function chainedTwr(rows) { return rows.reduce((acc, r) => acc * (1 + moneyWeightedDayReturn(r.start, r.end, r.flow || 0)), 1) - 1; }
+const $ = (q) => document.querySelector(q);
+const fmt = n => new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 0 }).format(Math.round(Number(n) || 0));
+const pct = n => `${Number(n) > 0 ? '+' : ''}${Number(n || 0).toFixed(2)}%`;
+const cls = n => Number(n) >= 0 ? 'up' : 'down';
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+const esc = s => String(s !== null && s !== void 0 ? s : '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+const TODAY = '2026-09-22';
+const state = {
+    tab: 'home', detail: null, period: '1M', perfPeriod: '1M',
+    theme: localStorage.theme || 'light', colors: localStorage.colors || 'kr',
+    currency: localStorage.currency || 'KRW', compact: localStorage.compact === 'true',
+    portfolioFilter: '전체', sort: '평가금액', autoSync: localStorage.autoSync !== 'false',
+    config: null, session: null, demo: true, liveError: null, manual: readJson('my_portfolio_manual', []),
 };
-
-function readJson(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')??fallback}catch{return fallback}}
-function saveManual(){localStorage.setItem('my_portfolio_manual',JSON.stringify(state.manual))}
-function pseudo(seed){let x=seed%2147483647;if(x<=0)x+=2147483646;return()=>((x=x*16807%2147483647)-1)/2147483646}
-function seedFrom(s){return [...s].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,2166136261)}
-function genHistory(symbol,end,vol=.018,drift=.00045,len=300){
-  const r=pseudo(seedFrom(symbol)); const vals=[end];
-  for(let i=1;i<len;i++) vals.unshift(vals[0]/(1+drift+(r()-.48)*vol));
-  return vals.map((close,i)=>({date:addDays(TODAY,i-len+1),close,volume:Math.round((700000+r()*3500000)*(1+(i%17===0?.45:0)))}));
+function readJson(key, fallback) { var _a; try {
+    return (_a = JSON.parse(localStorage.getItem(key) || 'null')) !== null && _a !== void 0 ? _a : fallback;
 }
-function addDays(iso,days){const d=new Date(`${iso}T12:00:00+09:00`);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
-function fxWon(currency){return currency==='USD'?1324.7:1}
-
-const baseHoldings=[
- {name:'NVIDIA',symbol:'NVDA',market:'NASDAQ',region:'미국',assetType:'주식',currency:'USD',qty:120,avg:124.18,price:196.22,day:2.59,weight:15.1,contrib:830000,sector:'반도체',exchange:'NAS',vol:.024,drift:.0008},
- {name:'KODEX 미국AI전력핵심인프라',symbol:'487230',market:'KRX',region:'한국',assetType:'ETF',currency:'KRW',qty:2100,avg:11930,price:14510,day:1.12,weight:13.9,contrib:338000,sector:'ETF',exchange:'KRX',vol:.012,drift:.00055},
- {name:'삼성전자',symbol:'005930',market:'KRX',region:'한국',assetType:'주식',currency:'KRW',qty:310,avg:83700,price:80400,day:-.84,weight:11.4,contrib:-210000,sector:'반도체',exchange:'KRX',vol:.015,drift:.00005},
- {name:'TIGER 미국나스닥100',symbol:'133690',market:'KRX',region:'한국',assetType:'ETF',currency:'KRW',qty:730,avg:18420,price:20110,day:.65,weight:6.7,contrib:95100,sector:'ETF',exchange:'KRX',vol:.011,drift:.00048},
- {name:'Apple',symbol:'AAPL',market:'NASDAQ',region:'미국',assetType:'주식',currency:'USD',qty:45,avg:202.4,price:229.7,day:-.22,weight:6.3,contrib:-30200,sector:'IT',exchange:'NAS',vol:.017,drift:.0004},
- {name:'Meta Platforms',symbol:'META',market:'NASDAQ',region:'미국',assetType:'주식',currency:'USD',qty:18,avg:498.2,price:542.8,day:1.04,weight:5.9,contrib:104000,sector:'커뮤니케이션',exchange:'NAS',vol:.02,drift:.0005},
+catch (_b) {
+    return fallback;
+} }
+function saveManual() { localStorage.setItem('my_portfolio_manual', JSON.stringify(state.manual)); }
+function pseudo(seed) { let x = seed % 2147483647; if (x <= 0)
+    x += 2147483646; return () => ((x = x * 16807 % 2147483647) - 1) / 2147483646; }
+function seedFrom(s) { return [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 2166136261); }
+function genHistory(symbol, end, vol = .018, drift = .00045, len = 300) {
+    const r = pseudo(seedFrom(symbol));
+    const vals = [end];
+    for (let i = 1; i < len; i++)
+        vals.unshift(vals[0] / (1 + drift + (r() - .48) * vol));
+    return vals.map((close, i) => ({ date: addDays(TODAY, i - len + 1), close, volume: Math.round((700000 + r() * 3500000) * (1 + (i % 17 === 0 ? .45 : 0))) }));
+}
+function addDays(iso, days) { const d = new Date(`${iso}T12:00:00+09:00`); d.setDate(d.getDate() + days); return d.toISOString().slice(0, 10); }
+function fxWon(currency) { return currency === 'USD' ? 1324.7 : 1; }
+const baseHoldings = [
+    { name: 'NVIDIA', symbol: 'NVDA', market: 'NASDAQ', region: '미국', assetType: '주식', currency: 'USD', qty: 120, avg: 124.18, price: 196.22, day: 2.59, weight: 15.1, contrib: 830000, sector: '반도체', exchange: 'NAS', vol: .024, drift: .0008 },
+    { name: 'KODEX 미국AI전력핵심인프라', symbol: '487230', market: 'KRX', region: '한국', assetType: 'ETF', currency: 'KRW', qty: 2100, avg: 11930, price: 14510, day: 1.12, weight: 13.9, contrib: 338000, sector: 'ETF', exchange: 'KRX', vol: .012, drift: .00055 },
+    { name: '삼성전자', symbol: '005930', market: 'KRX', region: '한국', assetType: '주식', currency: 'KRW', qty: 310, avg: 83700, price: 80400, day: -.84, weight: 11.4, contrib: -210000, sector: '반도체', exchange: 'KRX', vol: .015, drift: .00005 },
+    { name: 'TIGER 미국나스닥100', symbol: '133690', market: 'KRX', region: '한국', assetType: 'ETF', currency: 'KRW', qty: 730, avg: 18420, price: 20110, day: .65, weight: 6.7, contrib: 95100, sector: 'ETF', exchange: 'KRX', vol: .011, drift: .00048 },
+    { name: 'Apple', symbol: 'AAPL', market: 'NASDAQ', region: '미국', assetType: '주식', currency: 'USD', qty: 45, avg: 202.4, price: 229.7, day: -.22, weight: 6.3, contrib: -30200, sector: 'IT', exchange: 'NAS', vol: .017, drift: .0004 },
+    { name: 'Meta Platforms', symbol: 'META', market: 'NASDAQ', region: '미국', assetType: '주식', currency: 'USD', qty: 18, avg: 498.2, price: 542.8, day: 1.04, weight: 5.9, contrib: 104000, sector: '커뮤니케이션', exchange: 'NAS', vol: .02, drift: .0005 },
 ];
-const holdings=baseHoldings.map(h=>{
-  const fx=fxWon(h.currency), value=h.qty*h.price*fx, cost=h.qty*h.avg*fx, pnl=value-cost;
-  const history=genHistory(h.symbol,h.price,h.vol,h.drift);
-  const tech=technicalSnapshot(history);
-  return {...h,fx,value,cost,pnl,ret:cost?pnl/cost*100:0,history,tech,fxPnl:h.currency==='USD'?pnl*.12:0,localPnl:(h.price-h.avg)*h.qty};
+const holdings = baseHoldings.map(h => {
+    const fx = fxWon(h.currency), value = h.qty * h.price * fx, cost = h.qty * h.avg * fx, pnl = value - cost;
+    const history = genHistory(h.symbol, h.price, h.vol, h.drift);
+    const tech = technicalSnapshot(history);
+    return Object.assign(Object.assign({}, h), { fx, value, cost, pnl, ret: cost ? pnl / cost * 100 : 0, history, tech, fxPnl: h.currency === 'USD' ? pnl * .12 : 0, localPnl: (h.price - h.avg) * h.qty });
 });
-
-function makeAssetHistory(){
-  const r=pseudo(9285);let invested=162_000_000, value=171_000_000;const rows=[];
-  for(let i=0;i<390;i++){
-    let flow=0;if(i===92){flow=18_000_000;invested+=flow;value+=flow}if(i===251){flow=-4_500_000;invested+=flow;value+=flow}
-    const daily=(-.004+r()*.008)+(i%47===0?.011:0); const start=value; value=Math.max(1,value*(1+daily));
-    rows.push({date:addDays(TODAY,i-389),start,end:value,flow,invested});
-  }
-  const scale=218_450_000/rows.at(-1).end;
-  rows.forEach(x=>{x.start*=scale;x.end*=scale;x.flow*=scale;x.invested*=scale});
-  return rows;
+function makeAssetHistory() {
+    const r = pseudo(9285);
+    let invested = 162000000, value = 171000000;
+    const rows = [];
+    for (let i = 0; i < 390; i++) {
+        let flow = 0;
+        if (i === 92) {
+            flow = 18000000;
+            invested += flow;
+            value += flow;
+        }
+        if (i === 251) {
+            flow = -4500000;
+            invested += flow;
+            value += flow;
+        }
+        const daily = (-.004 + r() * .008) + (i % 47 === 0 ? .011 : 0);
+        const start = value;
+        value = Math.max(1, value * (1 + daily));
+        rows.push({ date: addDays(TODAY, i - 389), start, end: value, flow, invested });
+    }
+    const scale = 218450000 / rows.at(-1).end;
+    rows.forEach(x => { x.start *= scale; x.end *= scale; x.flow *= scale; x.invested *= scale; });
+    return rows;
 }
-const assetHistory=makeAssetHistory();
-const totalAsset=218_450_000;
-const todayPnl=1_840_000,todayPct=.85;
-const pnlBreakdown={unrealized:21_830_000,realized:5_320_000,dividends:1_840_000,interest:120_000,fees:430_000,taxes:710_000};
-pnlBreakdown.total=pnlBreakdown.unrealized+pnlBreakdown.realized+pnlBreakdown.dividends+pnlBreakdown.interest-pnlBreakdown.fees-pnlBreakdown.taxes;
-const dailyReturns=Array.from({length:31},(_,i)=>[.4,-.3,.7,.2,-.6,.9,.1,.3,.8,-.2,.5,1.1,-.4,.2,.6,-.1,.3,.9,.5,-.7,.2,.4,-.3,.8,.1,.6,-.2,.5,.85,.2,.1][i]);
-const dividends=[
- {date:'2026-09-22',symbol:'NVDA',name:'NVIDIA',gross:117000,tax:17000,net:100000,currency:'KRW'},
- {date:'2026-09-08',symbol:'AAPL',name:'Apple',gross:69000,tax:10000,net:59000,currency:'KRW'},
- {date:'2026-08-25',symbol:'005930',name:'삼성전자',gross:112000,tax:17200,net:94800,currency:'KRW'},
- {date:'2026-07-11',symbol:'133690',name:'TIGER 미국나스닥100',gross:153000,tax:23500,net:129500,currency:'KRW'},
+const assetHistory = makeAssetHistory();
+const totalAsset = 218450000;
+const todayPnl = 1840000, todayPct = .85;
+const pnlBreakdown = { unrealized: 21830000, realized: 5320000, dividends: 1840000, interest: 120000, fees: 430000, taxes: 710000 };
+pnlBreakdown.total = pnlBreakdown.unrealized + pnlBreakdown.realized + pnlBreakdown.dividends + pnlBreakdown.interest - pnlBreakdown.fees - pnlBreakdown.taxes;
+const dailyReturns = Array.from({ length: 31 }, (_, i) => [.4, -.3, .7, .2, -.6, .9, .1, .3, .8, -.2, .5, 1.1, -.4, .2, .6, -.1, .3, .9, .5, -.7, .2, .4, -.3, .8, .1, .6, -.2, .5, .85, .2, .1][i]);
+const dividends = [
+    { date: '2026-09-22', symbol: 'NVDA', name: 'NVIDIA', gross: 117000, tax: 17000, net: 100000, currency: 'KRW' },
+    { date: '2026-09-08', symbol: 'AAPL', name: 'Apple', gross: 69000, tax: 10000, net: 59000, currency: 'KRW' },
+    { date: '2026-08-25', symbol: '005930', name: '삼성전자', gross: 112000, tax: 17200, net: 94800, currency: 'KRW' },
+    { date: '2026-07-11', symbol: '133690', name: 'TIGER 미국나스닥100', gross: 153000, tax: 23500, net: 129500, currency: 'KRW' },
 ];
-const baseTransactions=[
- {id:'t1',date:'2026-09-22',symbol:'NVDA',name:'NVIDIA',type:'배당',price:null,qty:null,amount:100000,fee:0,tax:17000,currency:'KRW',source:'api'},
- {id:'t2',date:'2026-09-21',symbol:'005930',name:'삼성전자',type:'매수',price:80600,qty:100,amount:-8060000,fee:1200,tax:0,currency:'KRW',source:'api'},
- {id:'t3',date:'2026-09-18',symbol:'AAPL',name:'Apple',type:'매도',price:231.7,qty:14,amount:4230000,fee:3300,tax:1200,currency:'KRW',source:'api'},
- {id:'t4',date:'2026-09-15',symbol:'CASH',name:'현금',type:'입금',price:null,qty:null,amount:10000000,fee:0,tax:0,currency:'KRW',source:'api'},
- {id:'t5',date:'2026-08-25',symbol:'005930',name:'삼성전자',type:'배당',price:null,qty:null,amount:94800,fee:0,tax:17200,currency:'KRW',source:'api'},
+const baseTransactions = [
+    { id: 't1', date: '2026-09-22', symbol: 'NVDA', name: 'NVIDIA', type: '배당', price: null, qty: null, amount: 100000, fee: 0, tax: 17000, currency: 'KRW', source: 'api' },
+    { id: 't2', date: '2026-09-21', symbol: '005930', name: '삼성전자', type: '매수', price: 80600, qty: 100, amount: -8060000, fee: 1200, tax: 0, currency: 'KRW', source: 'api' },
+    { id: 't3', date: '2026-09-18', symbol: 'AAPL', name: 'Apple', type: '매도', price: 231.7, qty: 14, amount: 4230000, fee: 3300, tax: 1200, currency: 'KRW', source: 'api' },
+    { id: 't4', date: '2026-09-15', symbol: 'CASH', name: '현금', type: '입금', price: null, qty: null, amount: 10000000, fee: 0, tax: 0, currency: 'KRW', source: 'api' },
+    { id: 't5', date: '2026-08-25', symbol: '005930', name: '삼성전자', type: '배당', price: null, qty: null, amount: 94800, fee: 0, tax: 17200, currency: 'KRW', source: 'api' },
 ];
-function transactions(){
-  if(!state.demo){
-    const rows=state.liveData?.transactions||[];
-    const securities=state.liveData?.securityMap||new Map();
-    const typeMap={buy:'매수',sell:'매도',dividend:'배당',interest:'이자',deposit:'입금',withdrawal:'출금',fee:'수수료',tax:'세금',fx:'환전',other:'기타'};
-    return rows.map(t=>{const sec=securities.get(t.security_id)||{};return {
-      id:t.id,date:String(t.trade_at||'').slice(0,10),symbol:sec.symbol||'CASH',name:sec.name||typeMap[t.type]||'현금',
-      type:typeMap[t.type]||t.type,price:t.price==null?null:Number(t.price),qty:t.quantity==null?null:Number(t.quantity),
-      amount:Number(t.net_amount??t.gross_amount??0),fee:Number(t.fee||0),tax:Number(t.tax||0),currency:t.currency,source:t.source||'api'
-    }});
-  }
-  return [...state.manual,...baseTransactions].sort((a,b)=>b.date.localeCompare(a.date));
+function transactions() {
+    var _a, _b;
+    if (!state.demo) {
+        const rows = ((_a = state.liveData) === null || _a === void 0 ? void 0 : _a.transactions) || [];
+        const securities = ((_b = state.liveData) === null || _b === void 0 ? void 0 : _b.securityMap) || new Map();
+        const typeMap = { buy: '매수', sell: '매도', dividend: '배당', interest: '이자', deposit: '입금', withdrawal: '출금', fee: '수수료', tax: '세금', fx: '환전', other: '기타' };
+        return rows.map(t => {
+            var _a, _b;
+            const sec = securities.get(t.security_id) || {};
+            return {
+                id: t.id, date: String(t.trade_at || '').slice(0, 10), symbol: sec.symbol || 'CASH', name: sec.name || typeMap[t.type] || '현금',
+                type: typeMap[t.type] || t.type, price: t.price == null ? null : Number(t.price), qty: t.quantity == null ? null : Number(t.quantity),
+                amount: Number((_b = (_a = t.net_amount) !== null && _a !== void 0 ? _a : t.gross_amount) !== null && _b !== void 0 ? _b : 0), fee: Number(t.fee || 0), tax: Number(t.tax || 0), currency: t.currency, source: t.source || 'api'
+            };
+        });
+    }
+    return [...state.manual, ...baseTransactions].sort((a, b) => b.date.localeCompare(a.date));
 }
-
-function money(n,{compact=state.compact,currency=state.currency}={}){
-  let v=Number(n)||0, sign=v<0?'-':'';v=Math.abs(v);
-  if(currency==='USD') v/=1324.7;
-  const sym=currency==='USD'?'$':'₩';
-  if(compact&&currency==='KRW'&&v>=100_000_000)return `${sign}${(v/100_000_000).toFixed(2)}억`;
-  if(compact&&v>=10_000)return `${sign}${sym}${(v/10_000).toFixed(1)}만`;
-  return `${sign}${sym}${fmt(v)}`;
+function money(n, { compact = state.compact, currency = state.currency } = {}) {
+    let v = Number(n) || 0, sign = v < 0 ? '-' : '';
+    v = Math.abs(v);
+    if (currency === 'USD')
+        v /= 1324.7;
+    const sym = currency === 'USD' ? '$' : '₩';
+    if (compact && currency === 'KRW' && v >= 100000000)
+        return `${sign}${(v / 100000000).toFixed(2)}억`;
+    if (compact && v >= 10000)
+        return `${sign}${sym}${(v / 10000).toFixed(1)}만`;
+    return `${sign}${sym}${fmt(v)}`;
 }
-function rangeRows(period){
-  const map={'오늘':2,'1D':2,'1W':7,'1M':30,'3M':90,'6M':180,'YTD':266,'1Y':365,'ALL':assetHistory.length};
-  return assetHistory.slice(-Math.min(map[period]||30,assetHistory.length));
+function rangeRows(period) {
+    const map = { '오늘': 2, '1D': 2, '1W': 7, '1M': 30, '3M': 90, '6M': 180, 'YTD': 266, '1Y': 365, 'ALL': assetHistory.length };
+    return assetHistory.slice(-Math.min(map[period] || 30, assetHistory.length));
 }
-function periodStats(period){
-  if(period==='오늘'||period==='1D') return {pnl:todayPnl,ret:todayPct/100,start:totalAsset-todayPnl,end:totalAsset,flow:0,twr:todayPct/100};
-  const rows=rangeRows(period); const start=rows[0].start,end=rows.at(-1).end,flow=rows.reduce((s,r)=>s+r.flow,0);const pnl=end-start-flow;
-  return {pnl,ret:start?pnl/start:0,start,end,flow,twr:chainedTwr(rows)};
+function periodStats(period) {
+    if (period === '오늘' || period === '1D')
+        return { pnl: todayPnl, ret: todayPct / 100, start: totalAsset - todayPnl, end: totalAsset, flow: 0, twr: todayPct / 100 };
+    const rows = rangeRows(period);
+    const start = rows[0].start, end = rows.at(-1).end, flow = rows.reduce((s, r) => s + r.flow, 0);
+    const pnl = end - start - flow;
+    return { pnl, ret: start ? pnl / start : 0, start, end, flow, twr: chainedTwr(rows) };
 }
-function sparkSvg(values,{avgLine=null,height=190}={}){
-  const w=600,h=height; let all=[...values];if(avgLine!=null)all.push(avgLine);let min=Math.min(...all),max=Math.max(...all);if(max===min){max+=1;min-=1}const pad=(max-min)*.08;min-=pad;max+=pad;
-  const pts=values.map((v,i)=>`${i/(values.length-1||1)*w},${h-(v-min)/(max-min)*(h-26)-13}`).join(' ');
-  let avg='';if(avgLine!=null){const y=h-(avgLine-min)/(max-min)*(h-26)-13;avg=`<line x1="0" x2="${w}" y1="${y}" y2="${y}" class="avgline"/><text x="6" y="${Math.max(12,y-5)}" class="avgtext">평균매수가 ${fmt(avgLine)}</text>`}
-  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs><polygon class="chartfill" points="0,${h} ${pts} ${w},${h}"/><polyline class="chartline" points="${pts}"/>${avg}</svg>`
+function sparkSvg(values, { avgLine = null, height = 190 } = {}) {
+    const w = 600, h = height;
+    let all = [...values];
+    if (avgLine != null)
+        all.push(avgLine);
+    let min = Math.min(...all), max = Math.max(...all);
+    if (max === min) {
+        max += 1;
+        min -= 1;
+    }
+    const pad = (max - min) * .08;
+    min -= pad;
+    max += pad;
+    const pts = values.map((v, i) => `${i / (values.length - 1 || 1) * w},${h - (v - min) / (max - min) * (h - 26) - 13}`).join(' ');
+    let avg = '';
+    if (avgLine != null) {
+        const y = h - (avgLine - min) / (max - min) * (h - 26) - 13;
+        avg = `<line x1="0" x2="${w}" y1="${y}" y2="${y}" class="avgline"/><text x="6" y="${Math.max(12, y - 5)}" class="avgtext">평균매수가 ${fmt(avgLine)}</text>`;
+    }
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs><polygon class="chartfill" points="0,${h} ${pts} ${w},${h}"/><polyline class="chartline" points="${pts}"/>${avg}</svg>`;
 }
-function top(){return `<header class="topbar"><div class="row"><button class="iconbtn ${state.detail?'':'hidden'}" id="back">‹</button><div class="brand">${esc(state.config?.appName||localStorage.appName||'My Portfolio')}</div></div><div class="badges"><span class="badge">${state.demo?'Demo':'Live'}</span><span class="badge live"><i class="syncdot"></i>${state.liveError?'일부 실패':'정상'}</span></div></header>`}
-function modeBanner(){return `<div class="mode-banner">${state.demo?'Demo Mode · 샘플 데이터는 실제 계좌와 완전히 분리됩니다.':'Live Mode · 인증된 본인 계좌 데이터만 표시합니다.'}</div>`}
-function periods(items,selected,key='period'){return `<div class="periods">${items.map(x=>`<button class="chip ${selected===x?'active':''}" data-${key}="${x}">${x}</button>`).join('')}</div>`}
-function metric(label,value,extra=''){return `<div class="metric"><div class="label">${label}</div><div class="value ${typeof value==='number'?cls(value):''}">${typeof value==='number'?money(value):value}</div>${extra?`<div class="sub">${extra}</div>`:''}</div>`}
-function empty(title,desc){return `<section class="card empty"><div class="emptyico">○</div><h3>${title}</h3><p>${desc}</p></section>`}
-
-function home(){
-  if(!state.demo) return liveHome();
-  if(!state.demo&&!state.liveData) return `<div class="section-title">홈</div>${empty('연결된 계좌 데이터가 없습니다','KB 계좌 연결과 첫 동기화가 완료되면 이 화면에 실제 자산이 표시됩니다.')}`;
-  const s=periodStats(state.period), rows=rangeRows(state.period), chartVals=rows.map(r=>r.end);
-  const upCount=holdings.filter(h=>h.day>0).length,downCount=holdings.filter(h=>h.day<0).length;
-  return `<section class="hero"><div class="eyebrow">총 자산</div><div class="asset">${money(totalAsset)}</div><div class="pnl ${cls(s.pnl)}"><span>${money(s.pnl)}</span><span>${pct(s.twr*100)}</span><span class="muted" style="font-size:12px">${state.period}</span></div>${periods(['오늘','1W','1M','3M','YTD','1Y','ALL'],state.period)}</section>
-  <div class="grid desktop-2"><div class="grid"><section class="card"><div class="chartrow"><div><div class="eyebrow">총자산 추이</div><strong>투자성과 ${pct(s.twr*100)}</strong></div><button class="softbtn" id="principalToggle">자산 · 원금</button></div><div class="chart">${sparkSvg(chartVals)}</div><div class="chart-foot"><span>${rows[0].date.slice(5).replace('-','.')}</span><span>외부 현금흐름 ${money(s.flow)}</span><span>${rows.at(-1).date.slice(5).replace('-','.')}</span></div></section>
-  <section class="card"><h3>오늘의 요약</h3>${[['오늘 총손익',todayPnl],['주식 가격 효과',1_520_000],['환율 효과',220_000],['배당',100_000]].map(([a,b])=>`<div class="summary-row"><span>${a}</span><span class="${cls(b)}">${money(b)}</span></div>`).join('')}<div class="summary-row"><span>상승 / 하락 종목</span><strong>${upCount} / ${downCount}</strong></div><div class="summary-row"><span>최고 기여 · NVDA</span><span class="up">${money(830000)}</span></div><div class="summary-row"><span>최저 기여 · 삼성전자</span><span class="down">${money(-210000)}</span></div></section></div>
-  <div class="grid"><section class="card"><h3>누적 총 손익</h3><div class="metric-grid">${metric('평가손익',pnlBreakdown.unrealized)}${metric('실현손익',pnlBreakdown.realized)}${metric('배당',pnlBreakdown.dividends)}${metric('이자',pnlBreakdown.interest)}${metric('수수료',-pnlBreakdown.fees)}${metric('세금',-pnlBreakdown.taxes)}</div><div class="summary-row totalrow"><strong>총 손익</strong><strong class="up">${money(pnlBreakdown.total)}</strong></div></section>
-  <section class="card"><div class="row between"><h3 style="margin:0">보유종목 추세</h3><button class="softbtn" data-goto="analysis">전체 보기</button></div>${holdings.slice(0,5).map(h=>holdingTrendRow(h)).join('')}</section></div></div>`
+function top() { var _a; return `<header class="topbar"><div class="row"><button class="iconbtn ${state.detail ? '' : 'hidden'}" id="back">‹</button><div class="brand">${esc(((_a = state.config) === null || _a === void 0 ? void 0 : _a.appName) || localStorage.appName || 'My Portfolio')}</div></div><div class="badges"><span class="badge">${state.demo ? 'Demo' : 'Live'}</span><span class="badge live"><i class="syncdot"></i>${state.liveError ? '일부 실패' : '정상'}</span></div></header>`; }
+function modeBanner() { return `<div class="mode-banner">${state.demo ? 'Demo Mode · 샘플 데이터는 실제 계좌와 완전히 분리됩니다.' : 'Live Mode · 인증된 본인 계좌 데이터만 표시합니다.'}</div>`; }
+function periods(items, selected, key = 'period') { return `<div class="periods">${items.map(x => `<button class="chip ${selected === x ? 'active' : ''}" data-${key}="${x}">${x}</button>`).join('')}</div>`; }
+function metric(label, value, extra = '') { return `<div class="metric"><div class="label">${label}</div><div class="value ${typeof value === 'number' ? cls(value) : ''}">${typeof value === 'number' ? money(value) : value}</div>${extra ? `<div class="sub">${extra}</div>` : ''}</div>`; }
+function empty(title, desc) { return `<section class="card empty"><div class="emptyico">○</div><h3>${title}</h3><p>${desc}</p></section>`; }
+function home() {
+    if (!state.demo)
+        return liveHome();
+    if (!state.demo && !state.liveData)
+        return `<div class="section-title">홈</div>${empty('연결된 계좌 데이터가 없습니다', 'KB 계좌 연결과 첫 동기화가 완료되면 이 화면에 실제 자산이 표시됩니다.')}`;
+    const s = periodStats(state.period), rows = rangeRows(state.period), chartVals = rows.map(r => r.end);
+    const upCount = holdings.filter(h => h.day > 0).length, downCount = holdings.filter(h => h.day < 0).length;
+    return `<section class="hero"><div class="eyebrow">총 자산</div><div class="asset">${money(totalAsset)}</div><div class="pnl ${cls(s.pnl)}"><span>${money(s.pnl)}</span><span>${pct(s.twr * 100)}</span><span class="muted" style="font-size:12px">${state.period}</span></div>${periods(['오늘', '1W', '1M', '3M', 'YTD', '1Y', 'ALL'], state.period)}</section>
+  <div class="grid desktop-2"><div class="grid"><section class="card"><div class="chartrow"><div><div class="eyebrow">총자산 추이</div><strong>투자성과 ${pct(s.twr * 100)}</strong></div><button class="softbtn" id="principalToggle">자산 · 원금</button></div><div class="chart">${sparkSvg(chartVals)}</div><div class="chart-foot"><span>${rows[0].date.slice(5).replace('-', '.')}</span><span>외부 현금흐름 ${money(s.flow)}</span><span>${rows.at(-1).date.slice(5).replace('-', '.')}</span></div></section>
+  <section class="card"><h3>오늘의 요약</h3>${[['오늘 총손익', todayPnl], ['주식 가격 효과', 1520000], ['환율 효과', 220000], ['배당', 100000]].map(([a, b]) => `<div class="summary-row"><span>${a}</span><span class="${cls(b)}">${money(b)}</span></div>`).join('')}<div class="summary-row"><span>상승 / 하락 종목</span><strong>${upCount} / ${downCount}</strong></div><div class="summary-row"><span>최고 기여 · NVDA</span><span class="up">${money(830000)}</span></div><div class="summary-row"><span>최저 기여 · 삼성전자</span><span class="down">${money(-210000)}</span></div></section></div>
+  <div class="grid"><section class="card"><h3>누적 총 손익</h3><div class="metric-grid">${metric('평가손익', pnlBreakdown.unrealized)}${metric('실현손익', pnlBreakdown.realized)}${metric('배당', pnlBreakdown.dividends)}${metric('이자', pnlBreakdown.interest)}${metric('수수료', -pnlBreakdown.fees)}${metric('세금', -pnlBreakdown.taxes)}</div><div class="summary-row totalrow"><strong>총 손익</strong><strong class="up">${money(pnlBreakdown.total)}</strong></div></section>
+  <section class="card"><div class="row between"><h3 style="margin:0">보유종목 추세</h3><button class="softbtn" data-goto="analysis">전체 보기</button></div>${holdings.slice(0, 5).map(h => holdingTrendRow(h)).join('')}</section></div></div>`;
 }
-function holdingTrendRow(h){return `<button class="holding holding-btn" data-detail="${h.symbol}"><div><div class="symbol">${esc(h.name)}</div><div class="sub">${h.symbol} · RSI ${h.tech.rsi14?.toFixed(0)} · 52주 고점 대비 ${pct(h.tech.drawdown*100)}</div></div><div class="amount"><span class="trend-pill ${h.tech.trend.includes('상승')?'uptrend':h.tech.trend.includes('하락')?'downtrend':''}">${h.tech.trend}</span><div class="sub ${cls(h.day)}">${pct(h.day)}</div></div></button>`}
-
-function portfolio(){
-  if(!state.demo) return livePortfolio();
-  const filtered=holdings.filter(h=>state.portfolioFilter==='전체'||(state.portfolioFilter==='한국'&&h.region==='한국')||(state.portfolioFilter==='미국'&&h.region==='미국')||(state.portfolioFilter==='ETF'&&h.assetType==='ETF'));
-  const sorts={'평가금액':(a,b)=>b.value-a.value,'비중':(a,b)=>b.weight-a.weight,'수익률':(a,b)=>b.ret-a.ret,'평가손익':(a,b)=>b.pnl-a.pnl,'오늘 등락률':(a,b)=>b.day-a.day,'종목명':(a,b)=>a.name.localeCompare(b.name,'ko')};filtered.sort(sorts[state.sort]);
-  return `<div class="row between"><div class="section-title">포트폴리오</div><select class="select" id="sort"><option>${state.sort}</option>${Object.keys(sorts).filter(x=>x!==state.sort).map(x=>`<option>${x}</option>`).join('')}</select></div><input class="search" id="search" placeholder="보유·과거 종목 검색">${periods(['전체','한국','미국','ETF'],state.portfolioFilter,'filter')}<section class="card" id="holdingList">${holdingsHtml(filtered)}</section>`
+function holdingTrendRow(h) { var _a; return `<button class="holding holding-btn" data-detail="${h.symbol}"><div><div class="symbol">${esc(h.name)}</div><div class="sub">${h.symbol} · RSI ${(_a = h.tech.rsi14) === null || _a === void 0 ? void 0 : _a.toFixed(0)} · 52주 고점 대비 ${pct(h.tech.drawdown * 100)}</div></div><div class="amount"><span class="trend-pill ${h.tech.trend.includes('상승') ? 'uptrend' : h.tech.trend.includes('하락') ? 'downtrend' : ''}">${h.tech.trend}</span><div class="sub ${cls(h.day)}">${pct(h.day)}</div></div></button>`; }
+function portfolio() {
+    if (!state.demo)
+        return livePortfolio();
+    const filtered = holdings.filter(h => state.portfolioFilter === '전체' || (state.portfolioFilter === '한국' && h.region === '한국') || (state.portfolioFilter === '미국' && h.region === '미국') || (state.portfolioFilter === 'ETF' && h.assetType === 'ETF'));
+    const sorts = { '평가금액': (a, b) => b.value - a.value, '비중': (a, b) => b.weight - a.weight, '수익률': (a, b) => b.ret - a.ret, '평가손익': (a, b) => b.pnl - a.pnl, '오늘 등락률': (a, b) => b.day - a.day, '종목명': (a, b) => a.name.localeCompare(b.name, 'ko') };
+    filtered.sort(sorts[state.sort]);
+    return `<div class="row between"><div class="section-title">포트폴리오</div><select class="select" id="sort"><option>${state.sort}</option>${Object.keys(sorts).filter(x => x !== state.sort).map(x => `<option>${x}</option>`).join('')}</select></div><input class="search" id="search" placeholder="보유·과거 종목 검색">${periods(['전체', '한국', '미국', 'ETF'], state.portfolioFilter, 'filter')}<section class="card" id="holdingList">${holdingsHtml(filtered)}</section>`;
 }
-function holdingsHtml(list){return list.map(h=>`<button class="holding holding-btn" data-detail="${h.symbol}" data-search="${esc((h.name+h.symbol+h.market).toLowerCase())}"><div><div class="symbol">${esc(h.name)}</div><div class="sub">${h.symbol} · ${h.market} · ${h.currency}</div><div class="sub">${fmt(h.qty)}주 · 평균 ${h.currency==='USD'?'$':''}${fmt(h.avg)}</div><div class="tinybar"><i style="width:${clamp(h.weight*3.3,2,100)}%"></i></div></div><div class="amount"><div>${money(h.value)}</div><div class="${cls(h.pnl)}">${money(h.pnl)} · ${pct(h.ret)}</div><div class="sub">비중 ${h.weight}% · 오늘 ${pct(h.day)}</div></div></button>`).join('')||'<div class="empty-inline">검색 결과가 없습니다.</div>'}
-
-function detailPage(symbol){
-  if(!state.demo) return liveDetailPage(symbol);
-  const h=holdings.find(x=>x.symbol===symbol);if(!h)return portfolio();const t=h.tech;const range=state.detailRange||'1Y';const count={'1D':2,'1W':7,'1M':22,'3M':66,'6M':126,'1Y':252,'5Y':300}[range]||252;const hist=h.history.slice(-count);const vals=hist.map(x=>x.close);
-  const local=h.currency==='USD'?`${h.currency} ${fmt(h.localPnl)}`:'';
-  return `<div class="detail-head"><div><div class="eyebrow">${h.market} · ${h.symbol}</div><div class="section-title detail-title">${esc(h.name)}</div></div><span class="trend-pill ${t.trend.includes('상승')?'uptrend':t.trend.includes('하락')?'downtrend':''}">${t.trend}</span></div><section class="card price-card"><div class="row between"><div><div class="price">${h.currency==='USD'?'$':''}${h.price.toLocaleString('ko-KR',{maximumFractionDigits:2})}</div><div class="${cls(h.day)} strong">${pct(h.day)} 오늘</div></div><div class="amount"><div class="eyebrow">내 수익률</div><div class="${cls(h.ret)} strong">${pct(h.ret)}</div><div>${money(h.pnl)}</div></div></div>${periods(['1D','1W','1M','3M','6M','1Y','5Y'],range,'detailrange')}<div class="chart detail-chart">${sparkSvg(vals,{avgLine:h.avg,height:220})}</div><div class="chart-foot"><span>${hist[0].date}</span><span>평균매수가 표시</span><span>${hist.at(-1).date}</span></div></section>
-  <div class="grid desktop-2"><section class="card"><h3>내 보유정보</h3><div class="metric-grid">${metric('보유수량',`${fmt(h.qty)}주`)}${metric('평균매수가',`${h.currency==='USD'?'$':''}${fmt(h.avg)}`)}${metric('매수원금',h.cost)}${metric('평가금액',h.value)}${metric('평가손익',h.pnl,local)}${metric('현재 비중',`${h.weight}%`)}</div>${h.currency==='USD'?`<div class="summary-row"><span>원화 손익 중 환율 추정효과</span><strong>${money(h.fxPnl)}</strong></div>`:''}</section>
-  <section class="card"><h3>기술적 추세</h3><div class="techhero"><span class="trend-pill ${t.trend.includes('상승')?'uptrend':t.trend.includes('하락')?'downtrend':''}">${t.trend}</span><p>${trendSummary(t)}</p></div><div class="metric-grid">${metric('20일선',fmt(t.ma20))}${metric('60일선',fmt(t.ma60))}${metric('120일선',fmt(t.ma120))}${metric('200일선',fmt(t.ma200))}${metric('RSI 14',t.rsi14?.toFixed(1)||'-')}${metric('MACD Hist',t.macd?.histogram.toFixed(2)||'-')}${metric('52주 위치',`${t.position52.toFixed(1)}%`)}${metric('최근 고점 대비',pct(t.drawdown*100))}${metric('60일 연환산 변동성',`${(t.volatility*100).toFixed(1)}%`)}${metric('20일 거래량 변화',pct(t.volumeChange*100))}</div><div class="notice" style="margin-top:14px">추세 표시는 가격·이동평균·RSI·MACD에 따른 기계적 설명이며 매수·매도 추천이 아닙니다.</div></section></div>`
+function holdingsHtml(list) { return list.map(h => `<button class="holding holding-btn" data-detail="${h.symbol}" data-search="${esc((h.name + h.symbol + h.market).toLowerCase())}"><div><div class="symbol">${esc(h.name)}</div><div class="sub">${h.symbol} · ${h.market} · ${h.currency}</div><div class="sub">${fmt(h.qty)}주 · 평균 ${h.currency === 'USD' ? '$' : ''}${fmt(h.avg)}</div><div class="tinybar"><i style="width:${clamp(h.weight * 3.3, 2, 100)}%"></i></div></div><div class="amount"><div>${money(h.value)}</div><div class="${cls(h.pnl)}">${money(h.pnl)} · ${pct(h.ret)}</div><div class="sub">비중 ${h.weight}% · 오늘 ${pct(h.day)}</div></div></button>`).join('') || '<div class="empty-inline">검색 결과가 없습니다.</div>'; }
+function detailPage(symbol) {
+    var _a, _b;
+    if (!state.demo)
+        return liveDetailPage(symbol);
+    const h = holdings.find(x => x.symbol === symbol);
+    if (!h)
+        return portfolio();
+    const t = h.tech;
+    const range = state.detailRange || '1Y';
+    const count = { '1D': 2, '1W': 7, '1M': 22, '3M': 66, '6M': 126, '1Y': 252, '5Y': 300 }[range] || 252;
+    const hist = h.history.slice(-count);
+    const vals = hist.map(x => x.close);
+    const local = h.currency === 'USD' ? `${h.currency} ${fmt(h.localPnl)}` : '';
+    return `<div class="detail-head"><div><div class="eyebrow">${h.market} · ${h.symbol}</div><div class="section-title detail-title">${esc(h.name)}</div></div><span class="trend-pill ${t.trend.includes('상승') ? 'uptrend' : t.trend.includes('하락') ? 'downtrend' : ''}">${t.trend}</span></div><section class="card price-card"><div class="row between"><div><div class="price">${h.currency === 'USD' ? '$' : ''}${h.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}</div><div class="${cls(h.day)} strong">${pct(h.day)} 오늘</div></div><div class="amount"><div class="eyebrow">내 수익률</div><div class="${cls(h.ret)} strong">${pct(h.ret)}</div><div>${money(h.pnl)}</div></div></div>${periods(['1D', '1W', '1M', '3M', '6M', '1Y', '5Y'], range, 'detailrange')}<div class="chart detail-chart">${sparkSvg(vals, { avgLine: h.avg, height: 220 })}</div><div class="chart-foot"><span>${hist[0].date}</span><span>평균매수가 표시</span><span>${hist.at(-1).date}</span></div></section>
+  <div class="grid desktop-2"><section class="card"><h3>내 보유정보</h3><div class="metric-grid">${metric('보유수량', `${fmt(h.qty)}주`)}${metric('평균매수가', `${h.currency === 'USD' ? '$' : ''}${fmt(h.avg)}`)}${metric('매수원금', h.cost)}${metric('평가금액', h.value)}${metric('평가손익', h.pnl, local)}${metric('현재 비중', `${h.weight}%`)}</div>${h.currency === 'USD' ? `<div class="summary-row"><span>원화 손익 중 환율 추정효과</span><strong>${money(h.fxPnl)}</strong></div>` : ''}</section>
+  <section class="card"><h3>기술적 추세</h3><div class="techhero"><span class="trend-pill ${t.trend.includes('상승') ? 'uptrend' : t.trend.includes('하락') ? 'downtrend' : ''}">${t.trend}</span><p>${trendSummary(t)}</p></div><div class="metric-grid">${metric('20일선', fmt(t.ma20))}${metric('60일선', fmt(t.ma60))}${metric('120일선', fmt(t.ma120))}${metric('200일선', fmt(t.ma200))}${metric('RSI 14', ((_a = t.rsi14) === null || _a === void 0 ? void 0 : _a.toFixed(1)) || '-')}${metric('MACD Hist', ((_b = t.macd) === null || _b === void 0 ? void 0 : _b.histogram.toFixed(2)) || '-')}${metric('52주 위치', `${t.position52.toFixed(1)}%`)}${metric('최근 고점 대비', pct(t.drawdown * 100))}${metric('60일 연환산 변동성', `${(t.volatility * 100).toFixed(1)}%`)}${metric('20일 거래량 변화', pct(t.volumeChange * 100))}</div><div class="notice" style="margin-top:14px">추세 표시는 가격·이동평균·RSI·MACD에 따른 기계적 설명이며 매수·매도 추천이 아닙니다.</div></section></div>`;
 }
-
-function performance(){
-  if(!state.demo) return livePerformance();
-  const s=periodStats(state.perfPeriod), multiplier=Math.max(.2,Math.min(2,Math.abs(s.twr)*5+.5));const realized=1_120_000*multiplier,div=340_000*multiplier,cost=90_000*multiplier,unreal=s.pnl-realized-div+cost;
-  const monthly=[['4월',1.82],['5월',-1.14],['6월',3.44],['7월',2.09],['8월',.61],['9월',3.11]];
-  return `<div class="section-title">성과</div>${periods(['오늘','1W','1M','3M','6M','YTD','1Y','ALL'],state.perfPeriod,'perf')}<div class="grid desktop-2"><section class="card"><h3>${state.perfPeriod} 투자성과</h3><div class="asset smallasset ${cls(s.pnl)}">${money(s.pnl)}</div><div class="${cls(s.twr)} strong">${pct(s.twr*100)}</div><div class="metric-grid topgap">${metric('실현손익',realized)}${metric('평가손익 변화',unreal)}${metric('배당',div)}${metric('수수료·세금',-cost)}${metric('외부 현금흐름',s.flow)}${metric('계좌 자산 변화',s.end-s.start)}</div><div class="notice" style="margin-top:14px">기본 수익률은 입출금 효과를 제거한 일별 성과를 연결합니다. 상세 계산은 TWR 방식입니다.</div></section>
-  <section class="card"><h3>Daily P&L · 9월</h3><div class="heatmap">${dailyReturns.map((v,i)=>`<div class="day ${v>.6?'p2':v>0?'p1':v<-.5?'n2':v<0?'n1':''}" title="9월 ${i+1}일 ${pct(v)}"><span>${i+1}</span><b>${v?`${v>0?'+':''}${v.toFixed(1)}`:''}</b></div>`).join('')}</div></section></div>
-  <div class="grid desktop-2 topgap"><section class="card"><h3>월별 수익률</h3>${monthly.map(([m,v])=>`<div class="summary-row"><span>${m}</span><strong class="${cls(v)}">${pct(v)}</strong></div>`).join('')}</section><section class="card"><div class="row between"><h3 style="margin:0">배당</h3><span class="badge">2026년</span></div><div class="summary-row"><span>올해 받은 배당</span><strong class="up">${money(1_840_000)}</strong></div><div class="summary-row"><span>누적 배당</span><strong>${money(4_920_000)}</strong></div>${dividends.map(d=>`<div class="summary-row compactrow"><span>${d.date.slice(5)} · ${esc(d.name)}<small>세후</small></span><strong>${money(d.net)}</strong></div>`).join('')}</section></div>`
+function performance() {
+    if (!state.demo)
+        return livePerformance();
+    const s = periodStats(state.perfPeriod), multiplier = Math.max(.2, Math.min(2, Math.abs(s.twr) * 5 + .5));
+    const realized = 1120000 * multiplier, div = 340000 * multiplier, cost = 90000 * multiplier, unreal = s.pnl - realized - div + cost;
+    const monthly = [['4월', 1.82], ['5월', -1.14], ['6월', 3.44], ['7월', 2.09], ['8월', .61], ['9월', 3.11]];
+    return `<div class="section-title">성과</div>${periods(['오늘', '1W', '1M', '3M', '6M', 'YTD', '1Y', 'ALL'], state.perfPeriod, 'perf')}<div class="grid desktop-2"><section class="card"><h3>${state.perfPeriod} 투자성과</h3><div class="asset smallasset ${cls(s.pnl)}">${money(s.pnl)}</div><div class="${cls(s.twr)} strong">${pct(s.twr * 100)}</div><div class="metric-grid topgap">${metric('실현손익', realized)}${metric('평가손익 변화', unreal)}${metric('배당', div)}${metric('수수료·세금', -cost)}${metric('외부 현금흐름', s.flow)}${metric('계좌 자산 변화', s.end - s.start)}</div><div class="notice" style="margin-top:14px">기본 수익률은 입출금 효과를 제거한 일별 성과를 연결합니다. 상세 계산은 TWR 방식입니다.</div></section>
+  <section class="card"><h3>Daily P&L · 9월</h3><div class="heatmap">${dailyReturns.map((v, i) => `<div class="day ${v > .6 ? 'p2' : v > 0 ? 'p1' : v < -.5 ? 'n2' : v < 0 ? 'n1' : ''}" title="9월 ${i + 1}일 ${pct(v)}"><span>${i + 1}</span><b>${v ? `${v > 0 ? '+' : ''}${v.toFixed(1)}` : ''}</b></div>`).join('')}</div></section></div>
+  <div class="grid desktop-2 topgap"><section class="card"><h3>월별 수익률</h3>${monthly.map(([m, v]) => `<div class="summary-row"><span>${m}</span><strong class="${cls(v)}">${pct(v)}</strong></div>`).join('')}</section><section class="card"><div class="row between"><h3 style="margin:0">배당</h3><span class="badge">2026년</span></div><div class="summary-row"><span>올해 받은 배당</span><strong class="up">${money(1840000)}</strong></div><div class="summary-row"><span>누적 배당</span><strong>${money(4920000)}</strong></div>${dividends.map(d => `<div class="summary-row compactrow"><span>${d.date.slice(5)} · ${esc(d.name)}<small>세후</small></span><strong>${money(d.net)}</strong></div>`).join('')}</section></div>`;
 }
-
-function analysis(){
-  if(!state.demo) return liveAnalysis();
-  const groups={};for(const h of holdings){groups[h.sector]=(groups[h.sector]||0)+h.weight}const concentration=holdings.slice().sort((a,b)=>b.weight-a.weight).slice(0,5).reduce((s,h)=>s+h.weight,0);
-  return `<div class="section-title">분석</div><div class="grid desktop-2"><section class="card"><h3>자산군·국가</h3>${[['미국주식',38],['한국주식',24],['ETF',26],['현금',12]].map(([a,b])=>barRow(a,b)).join('')}<div class="summary-row"><span>Top 5 집중도</span><strong>${concentration.toFixed(1)}%</strong></div><div class="summary-row"><span>최대 종목</span><strong>${holdings[0].name} ${holdings[0].weight}%</strong></div><div class="notice">집중도는 위험 정보이며 특정 종목의 매도를 권고하지 않습니다.</div></section><section class="card"><h3>업종 비중</h3>${Object.entries(groups).sort((a,b)=>b[1]-a[1]).map(([a,b])=>barRow(a,b)).join('')}</section></div>
-  <section class="card topgap"><div class="row between"><h3 style="margin:0">보유종목 기술적 추세</h3><span class="badge">객관 지표</span></div>${holdings.map(h=>holdingTrendRow(h)).join('')}</section><section class="card topgap"><h3>인사이트</h3>${[['오늘 가장 큰 수익 기여','NVDA · '+money(830000)],['오늘 가장 큰 손실 기여','삼성전자 · '+money(-210000)],['이번 달 배당',money(340000)],['최근 최고 자산',money(totalAsset)],['52주 고점 10% 이내',holdings.filter(h=>h.tech.drawdown>-.1).map(h=>h.symbol).join(', ')||'없음'],['추세 상태 변화 관찰',holdings.filter(h=>['중립','하락'].includes(h.tech.trend)).map(h=>h.symbol).join(', ')||'없음']].map(([a,b])=>`<div class="summary-row"><span>${a}</span><strong>${b}</strong></div>`).join('')}</section>`
+function analysis() {
+    if (!state.demo)
+        return liveAnalysis();
+    const groups = {};
+    for (const h of holdings) {
+        groups[h.sector] = (groups[h.sector] || 0) + h.weight;
+    }
+    const concentration = holdings.slice().sort((a, b) => b.weight - a.weight).slice(0, 5).reduce((s, h) => s + h.weight, 0);
+    return `<div class="section-title">분석</div><div class="grid desktop-2"><section class="card"><h3>자산군·국가</h3>${[['미국주식', 38], ['한국주식', 24], ['ETF', 26], ['현금', 12]].map(([a, b]) => barRow(a, b)).join('')}<div class="summary-row"><span>Top 5 집중도</span><strong>${concentration.toFixed(1)}%</strong></div><div class="summary-row"><span>최대 종목</span><strong>${holdings[0].name} ${holdings[0].weight}%</strong></div><div class="notice">집중도는 위험 정보이며 특정 종목의 매도를 권고하지 않습니다.</div></section><section class="card"><h3>업종 비중</h3>${Object.entries(groups).sort((a, b) => b[1] - a[1]).map(([a, b]) => barRow(a, b)).join('')}</section></div>
+  <section class="card topgap"><div class="row between"><h3 style="margin:0">보유종목 기술적 추세</h3><span class="badge">객관 지표</span></div>${holdings.map(h => holdingTrendRow(h)).join('')}</section><section class="card topgap"><h3>인사이트</h3>${[['오늘 가장 큰 수익 기여', 'NVDA · ' + money(830000)], ['오늘 가장 큰 손실 기여', '삼성전자 · ' + money(-210000)], ['이번 달 배당', money(340000)], ['최근 최고 자산', money(totalAsset)], ['52주 고점 10% 이내', holdings.filter(h => h.tech.drawdown > -.1).map(h => h.symbol).join(', ') || '없음'], ['추세 상태 변화 관찰', holdings.filter(h => ['중립', '하락'].includes(h.tech.trend)).map(h => h.symbol).join(', ') || '없음']].map(([a, b]) => `<div class="summary-row"><span>${a}</span><strong>${b}</strong></div>`).join('')}</section>`;
 }
-function barRow(name,value){return `<div class="barlabel"><span>${name}</span><strong>${Number(value).toFixed(1)}%</strong></div><div class="tinybar wide"><i style="width:${clamp(value,1,100)}%"></i></div>`}
-
-function liveLatestSnapshots(){
-  const by=new Map();for(const r of state.liveData?.snapshots||[]){const prev=by.get(r.account_id);if(!prev||r.snapshot_date>prev.snapshot_date)by.set(r.account_id,r)}return [...by.values()]
+function barRow(name, value) { return `<div class="barlabel"><span>${name}</span><strong>${Number(value).toFixed(1)}%</strong></div><div class="tinybar wide"><i style="width:${clamp(value, 1, 100)}%"></i></div>`; }
+function liveLatestSnapshots() {
+    var _a;
+    const by = new Map();
+    for (const r of ((_a = state.liveData) === null || _a === void 0 ? void 0 : _a.snapshots) || []) {
+        const prev = by.get(r.account_id);
+        if (!prev || r.snapshot_date > prev.snapshot_date)
+            by.set(r.account_id, r);
+    }
+    return [...by.values()];
 }
-function liveAggregateSnapshots(){
-  const by=new Map();for(const r of state.liveData?.snapshots||[]){const d=r.snapshot_date;if(!by.has(d))by.set(d,{date:d,total:0,invested:0,flow:0,cash:0,securities:0});const x=by.get(d);x.total+=Number(r.total_assets||0);x.invested+=Number(r.invested_capital||0);x.flow+=Number(r.external_flow||0);x.cash+=Number(r.cash||0);x.securities+=Number(r.securities_value||0)}return [...by.values()].sort((a,b)=>a.date.localeCompare(b.date))
+function liveAggregateSnapshots() {
+    var _a;
+    const by = new Map();
+    for (const r of ((_a = state.liveData) === null || _a === void 0 ? void 0 : _a.snapshots) || []) {
+        const d = r.snapshot_date;
+        if (!by.has(d))
+            by.set(d, { date: d, total: 0, invested: 0, flow: 0, cash: 0, securities: 0 });
+        const x = by.get(d);
+        x.total += Number(r.total_assets || 0);
+        x.invested += Number(r.invested_capital || 0);
+        x.flow += Number(r.external_flow || 0);
+        x.cash += Number(r.cash || 0);
+        x.securities += Number(r.securities_value || 0);
+    }
+    return [...by.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
-function liveAggregatePerformance(){
-  const by=new Map();for(const r of state.liveData?.performance||[]){const d=r.performance_date;if(!by.has(d))by.set(d,{date:d,start:0,end:0,flow:0,pnl:0});const x=by.get(d);x.start+=Number(r.start_value||0);x.end+=Number(r.end_value||0);x.flow+=Number(r.external_flow||0);x.pnl+=Number(r.daily_pnl||0)}return [...by.values()].sort((a,b)=>a.date.localeCompare(b.date)).map(x=>({...x,ret:x.start?(x.end-x.start-x.flow)/x.start:0}))
+function liveAggregatePerformance() {
+    var _a;
+    const by = new Map();
+    for (const r of ((_a = state.liveData) === null || _a === void 0 ? void 0 : _a.performance) || []) {
+        const d = r.performance_date;
+        if (!by.has(d))
+            by.set(d, { date: d, start: 0, end: 0, flow: 0, pnl: 0 });
+        const x = by.get(d);
+        x.start += Number(r.start_value || 0);
+        x.end += Number(r.end_value || 0);
+        x.flow += Number(r.external_flow || 0);
+        x.pnl += Number(r.daily_pnl || 0);
+    }
+    return [...by.values()].sort((a, b) => a.date.localeCompare(b.date)).map(x => (Object.assign(Object.assign({}, x), { ret: x.start ? (x.end - x.start - x.flow) / x.start : 0 })));
 }
-function liveHoldingModels(){
-  const total=(state.liveData?.holdings||[]).reduce((s,h)=>s+Number(h.market_value||0),0);const sm=state.liveData?.securityMap||new Map();const pb=state.liveData?.pricesBySecurity||new Map();
-  return (state.liveData?.holdings||[]).map(h=>{const sec=sm.get(h.security_id)||{};const hist=pb.get(h.security_id)||[];const price=Number(h.market_price||hist.at(-1)?.close||0);const prev=hist.length>1?hist.at(-2)?.close:null;const day=prev?((price-prev)/prev*100):0;const tech=hist.length>=26?technicalSnapshot(hist):null;return {
-    ...h,name:sec.name||sec.symbol||'종목',symbol:sec.symbol||'',market:sec.market||'',region:sec.country==='US'?'미국':sec.country==='KR'?'한국':sec.country||'기타',assetType:sec.asset_type||'stock',sector:sec.sector||'기타',currency:h.currency||sec.currency||'KRW',qty:Number(h.quantity||0),avg:Number(h.avg_cost||0),price,value:Number(h.market_value||0),pnl:Number(h.official_unrealized_pnl??h.unrealized_pnl??0),ret:Number(h.unrealized_pnl_rate||0)*100,weight:total?Number(h.market_value||0)/total*100:0,day,history:hist,tech,fx:Number(h.fx_rate_to_base||1)
-  }})
+function liveHoldingModels() {
+    var _a, _b, _c, _d;
+    const total = (((_a = state.liveData) === null || _a === void 0 ? void 0 : _a.holdings) || []).reduce((s, h) => s + Number(h.market_value || 0), 0);
+    const sm = ((_b = state.liveData) === null || _b === void 0 ? void 0 : _b.securityMap) || new Map();
+    const pb = ((_c = state.liveData) === null || _c === void 0 ? void 0 : _c.pricesBySecurity) || new Map();
+    return (((_d = state.liveData) === null || _d === void 0 ? void 0 : _d.holdings) || []).map(h => {
+        var _a, _b, _c, _d;
+        const sec = sm.get(h.security_id) || {};
+        const hist = pb.get(h.security_id) || [];
+        const price = Number(h.market_price || ((_a = hist.at(-1)) === null || _a === void 0 ? void 0 : _a.close) || 0);
+        const prev = hist.length > 1 ? (_b = hist.at(-2)) === null || _b === void 0 ? void 0 : _b.close : null;
+        const day = prev ? ((price - prev) / prev * 100) : 0;
+        const tech = hist.length >= 26 ? technicalSnapshot(hist) : null;
+        return Object.assign(Object.assign({}, h), { name: sec.name || sec.symbol || '종목', symbol: sec.symbol || '', market: sec.market || '', region: sec.country === 'US' ? '미국' : sec.country === 'KR' ? '한국' : sec.country || '기타', assetType: sec.asset_type || 'stock', sector: sec.sector || '기타', currency: h.currency || sec.currency || 'KRW', qty: Number(h.quantity || 0), avg: Number(h.avg_cost || 0), price, value: Number(h.market_value || 0), pnl: Number((_d = (_c = h.official_unrealized_pnl) !== null && _c !== void 0 ? _c : h.unrealized_pnl) !== null && _d !== void 0 ? _d : 0), ret: Number(h.unrealized_pnl_rate || 0) * 100, weight: total ? Number(h.market_value || 0) / total * 100 : 0, day, history: hist, tech, fx: Number(h.fx_rate_to_base || 1) });
+    });
 }
-function livePeriodStats(period){
-  const rows=liveAggregatePerformance();if(!rows.length)return {pnl:0,twr:0,start:0,end:0,flow:0};const map={'오늘':1,'1D':1,'1W':7,'1M':30,'3M':90,'6M':180,'YTD':366,'1Y':365,'ALL':rows.length};const cut=rows.slice(-Math.min(map[period]||30,rows.length));const start=cut[0]?.start||0,end=cut.at(-1)?.end||0,flow=cut.reduce((s,r)=>s+r.flow,0),pnl=cut.reduce((s,r)=>s+r.pnl,0);return {pnl,twr:chainedTwr(cut.map(r=>({start:r.start,end:r.end,flow:r.flow}))),start,end,flow}
+function livePeriodStats(period) {
+    var _a, _b;
+    const rows = liveAggregatePerformance();
+    if (!rows.length)
+        return { pnl: 0, twr: 0, start: 0, end: 0, flow: 0 };
+    const map = { '오늘': 1, '1D': 1, '1W': 7, '1M': 30, '3M': 90, '6M': 180, 'YTD': 366, '1Y': 365, 'ALL': rows.length };
+    const cut = rows.slice(-Math.min(map[period] || 30, rows.length));
+    const start = ((_a = cut[0]) === null || _a === void 0 ? void 0 : _a.start) || 0, end = ((_b = cut.at(-1)) === null || _b === void 0 ? void 0 : _b.end) || 0, flow = cut.reduce((s, r) => s + r.flow, 0), pnl = cut.reduce((s, r) => s + r.pnl, 0);
+    return { pnl, twr: chainedTwr(cut.map(r => ({ start: r.start, end: r.end, flow: r.flow }))), start, end, flow };
 }
-function liveHome(){
-  if(!state.liveData?.accounts?.length)return `<div class="section-title">홈</div>${empty('연결된 Live 계좌가 없습니다','KB 계좌 연결이 완료되면 이 화면에는 실제 DB 데이터만 표시됩니다. Demo 숫자는 섞이지 않습니다.')}`;
-  const latest=liveLatestSnapshots();if(!latest.length)return `<div class="section-title">홈</div>${empty('첫 계좌 스냅샷을 기다리는 중입니다','계좌 연결 후 첫 동기화가 완료되면 총자산과 손익이 표시됩니다.')}`;
-  const total=latest.reduce((s,r)=>s+Number(r.total_assets||0),0), s=livePeriodStats(state.period), snaps=liveAggregateSnapshots(), chartVals=snaps.map(x=>x.total), hs=liveHoldingModels();
-  const b={unrealized:latest.reduce((a,r)=>a+Number(r.unrealized_pnl||0),0),realized:latest.reduce((a,r)=>a+Number(r.realized_pnl||0),0),dividends:latest.reduce((a,r)=>a+Number(r.dividends||0),0),interest:latest.reduce((a,r)=>a+Number(r.interest||0),0),fees:latest.reduce((a,r)=>a+Number(r.fees||0),0),taxes:latest.reduce((a,r)=>a+Number(r.taxes||0),0),total:latest.reduce((a,r)=>a+Number(r.total_pnl||0),0)};
-  return `<section class="hero"><div class="eyebrow">총 자산</div><div class="asset">${money(total)}</div><div class="pnl ${cls(s.pnl)}"><span>${money(s.pnl)}</span><span>${pct(s.twr*100)}</span><span class="muted" style="font-size:12px">${state.period}</span></div>${periods(['오늘','1W','1M','3M','YTD','1Y','ALL'],state.period)}</section><div class="grid desktop-2"><section class="card"><div class="eyebrow">총자산 추이</div>${chartVals.length>1?`<div class="chart">${sparkSvg(chartVals)}</div>`:'<div class="notice topgap">스냅샷이 2일 이상 쌓이면 자산 추이가 표시됩니다.</div>'}</section><section class="card"><h3>누적 총 손익</h3><div class="metric-grid">${metric('평가손익',b.unrealized)}${metric('실현손익',b.realized)}${metric('배당',b.dividends)}${metric('이자',b.interest)}${metric('수수료',-b.fees)}${metric('세금',-b.taxes)}</div><div class="summary-row totalrow"><strong>총 손익</strong><strong class="${cls(b.total)}">${money(b.total)}</strong></div></section></div><section class="card topgap"><div class="row between"><h3 style="margin:0">보유종목 추세</h3><button class="softbtn" data-goto="analysis">전체 보기</button></div>${hs.length?hs.slice(0,5).map(liveHoldingTrendRow).join(''):'<div class="empty-inline">보유종목 데이터가 없습니다.</div>'}</section>`
+function liveHome() {
+    var _a, _b;
+    if (!((_b = (_a = state.liveData) === null || _a === void 0 ? void 0 : _a.accounts) === null || _b === void 0 ? void 0 : _b.length))
+        return `<div class="section-title">홈</div>${empty('연결된 Live 계좌가 없습니다', 'KB 계좌 연결이 완료되면 이 화면에는 실제 DB 데이터만 표시됩니다. Demo 숫자는 섞이지 않습니다.')}`;
+    const latest = liveLatestSnapshots();
+    if (!latest.length)
+        return `<div class="section-title">홈</div>${empty('첫 계좌 스냅샷을 기다리는 중입니다', '계좌 연결 후 첫 동기화가 완료되면 총자산과 손익이 표시됩니다.')}`;
+    const total = latest.reduce((s, r) => s + Number(r.total_assets || 0), 0), s = livePeriodStats(state.period), snaps = liveAggregateSnapshots(), chartVals = snaps.map(x => x.total), hs = liveHoldingModels();
+    const b = { unrealized: latest.reduce((a, r) => a + Number(r.unrealized_pnl || 0), 0), realized: latest.reduce((a, r) => a + Number(r.realized_pnl || 0), 0), dividends: latest.reduce((a, r) => a + Number(r.dividends || 0), 0), interest: latest.reduce((a, r) => a + Number(r.interest || 0), 0), fees: latest.reduce((a, r) => a + Number(r.fees || 0), 0), taxes: latest.reduce((a, r) => a + Number(r.taxes || 0), 0), total: latest.reduce((a, r) => a + Number(r.total_pnl || 0), 0) };
+    return `<section class="hero"><div class="eyebrow">총 자산</div><div class="asset">${money(total)}</div><div class="pnl ${cls(s.pnl)}"><span>${money(s.pnl)}</span><span>${pct(s.twr * 100)}</span><span class="muted" style="font-size:12px">${state.period}</span></div>${periods(['오늘', '1W', '1M', '3M', 'YTD', '1Y', 'ALL'], state.period)}</section><div class="grid desktop-2"><section class="card"><div class="eyebrow">총자산 추이</div>${chartVals.length > 1 ? `<div class="chart">${sparkSvg(chartVals)}</div>` : '<div class="notice topgap">스냅샷이 2일 이상 쌓이면 자산 추이가 표시됩니다.</div>'}</section><section class="card"><h3>누적 총 손익</h3><div class="metric-grid">${metric('평가손익', b.unrealized)}${metric('실현손익', b.realized)}${metric('배당', b.dividends)}${metric('이자', b.interest)}${metric('수수료', -b.fees)}${metric('세금', -b.taxes)}</div><div class="summary-row totalrow"><strong>총 손익</strong><strong class="${cls(b.total)}">${money(b.total)}</strong></div></section></div><section class="card topgap"><div class="row between"><h3 style="margin:0">보유종목 추세</h3><button class="softbtn" data-goto="analysis">전체 보기</button></div>${hs.length ? hs.slice(0, 5).map(liveHoldingTrendRow).join('') : '<div class="empty-inline">보유종목 데이터가 없습니다.</div>'}</section>`;
 }
-function liveHoldingTrendRow(h){const trend=h.tech?.trend||'데이터 부족';return `<button class="holding holding-btn" data-detail="${h.symbol}"><div><div class="symbol">${esc(h.name)}</div><div class="sub">${h.symbol}${h.tech?` · RSI ${h.tech.rsi14?.toFixed(0)??'-'} · 52주 고점 대비 ${pct((h.tech.drawdown||0)*100)}`:' · 가격 이력 수집 중'}</div></div><div class="amount"><span class="trend-pill ${trend.includes('상승')?'uptrend':trend.includes('하락')?'downtrend':''}">${trend}</span><div class="sub ${cls(h.day)}">${pct(h.day)}</div></div></button>`}
-function livePortfolio(){
-  let list=liveHoldingModels();if(!state.liveData?.accounts?.length)return `<div class="section-title">포트폴리오</div>${empty('Live 계좌 연결 전입니다','KB 계좌가 연결되기 전에는 실제 보유종목이 표시되지 않습니다.')}`;
-  list=list.filter(h=>state.portfolioFilter==='전체'||(state.portfolioFilter==='한국'&&h.region==='한국')||(state.portfolioFilter==='미국'&&h.region==='미국')||(state.portfolioFilter==='ETF'&&String(h.assetType).toLowerCase()==='etf'));
-  const sorts={'평가금액':(a,b)=>b.value-a.value,'비중':(a,b)=>b.weight-a.weight,'수익률':(a,b)=>b.ret-a.ret,'평가손익':(a,b)=>b.pnl-a.pnl,'오늘 등락률':(a,b)=>b.day-a.day,'종목명':(a,b)=>a.name.localeCompare(b.name,'ko')};list.sort(sorts[state.sort]);
-  return `<div class="row between"><div class="section-title">포트폴리오</div><select class="select" id="sort"><option>${state.sort}</option>${Object.keys(sorts).filter(x=>x!==state.sort).map(x=>`<option>${x}</option>`).join('')}</select></div><input class="search" id="search" placeholder="보유 종목 검색">${periods(['전체','한국','미국','ETF'],state.portfolioFilter,'filter')}<section class="card" id="holdingList">${holdingsHtml(list)}</section>`
+function liveHoldingTrendRow(h) { var _a, _b, _c; const trend = ((_a = h.tech) === null || _a === void 0 ? void 0 : _a.trend) || '데이터 부족'; return `<button class="holding holding-btn" data-detail="${h.symbol}"><div><div class="symbol">${esc(h.name)}</div><div class="sub">${h.symbol}${h.tech ? ` · RSI ${(_c = (_b = h.tech.rsi14) === null || _b === void 0 ? void 0 : _b.toFixed(0)) !== null && _c !== void 0 ? _c : '-'} · 52주 고점 대비 ${pct((h.tech.drawdown || 0) * 100)}` : ' · 가격 이력 수집 중'}</div></div><div class="amount"><span class="trend-pill ${trend.includes('상승') ? 'uptrend' : trend.includes('하락') ? 'downtrend' : ''}">${trend}</span><div class="sub ${cls(h.day)}">${pct(h.day)}</div></div></button>`; }
+function livePortfolio() {
+    var _a, _b;
+    let list = liveHoldingModels();
+    if (!((_b = (_a = state.liveData) === null || _a === void 0 ? void 0 : _a.accounts) === null || _b === void 0 ? void 0 : _b.length))
+        return `<div class="section-title">포트폴리오</div>${empty('Live 계좌 연결 전입니다', 'KB 계좌가 연결되기 전에는 실제 보유종목이 표시되지 않습니다.')}`;
+    list = list.filter(h => state.portfolioFilter === '전체' || (state.portfolioFilter === '한국' && h.region === '한국') || (state.portfolioFilter === '미국' && h.region === '미국') || (state.portfolioFilter === 'ETF' && String(h.assetType).toLowerCase() === 'etf'));
+    const sorts = { '평가금액': (a, b) => b.value - a.value, '비중': (a, b) => b.weight - a.weight, '수익률': (a, b) => b.ret - a.ret, '평가손익': (a, b) => b.pnl - a.pnl, '오늘 등락률': (a, b) => b.day - a.day, '종목명': (a, b) => a.name.localeCompare(b.name, 'ko') };
+    list.sort(sorts[state.sort]);
+    return `<div class="row between"><div class="section-title">포트폴리오</div><select class="select" id="sort"><option>${state.sort}</option>${Object.keys(sorts).filter(x => x !== state.sort).map(x => `<option>${x}</option>`).join('')}</select></div><input class="search" id="search" placeholder="보유 종목 검색">${periods(['전체', '한국', '미국', 'ETF'], state.portfolioFilter, 'filter')}<section class="card" id="holdingList">${holdingsHtml(list)}</section>`;
 }
-function liveDetailPage(symbol){
-  const h=liveHoldingModels().find(x=>x.symbol===symbol);if(!h)return livePortfolio();const hist=h.history||[],t=h.tech,range=state.detailRange||'1Y';const count={'1D':2,'1W':7,'1M':22,'3M':66,'6M':126,'1Y':252,'5Y':1260}[range]||252;const cut=hist.slice(-count),vals=cut.map(x=>x.close);
-  return `<div class="detail-head"><div><div class="eyebrow">${esc(h.market)} · ${esc(h.symbol)}</div><div class="section-title detail-title">${esc(h.name)}</div></div><span class="trend-pill">${t?.trend||'데이터 부족'}</span></div><section class="card price-card"><div class="row between"><div><div class="price">${h.currency==='USD'?'$':''}${h.price.toLocaleString('ko-KR',{maximumFractionDigits:2})}</div><div class="${cls(h.day)} strong">${pct(h.day)} 오늘</div></div><div class="amount"><div class="eyebrow">내 수익률</div><div class="${cls(h.ret)} strong">${pct(h.ret)}</div><div>${money(h.pnl)}</div></div></div>${periods(['1D','1W','1M','3M','6M','1Y','5Y'],range,'detailrange')}${vals.length>1?`<div class="chart detail-chart">${sparkSvg(vals,{avgLine:h.avg,height:220})}</div>`:'<div class="notice topgap">가격 이력이 충분히 쌓이면 차트와 기술지표가 표시됩니다.</div>'}</section><div class="grid desktop-2"><section class="card"><h3>내 보유정보</h3><div class="metric-grid">${metric('보유수량',`${fmt(h.qty)}주`)}${metric('평균매수가',`${h.currency==='USD'?'$':''}${fmt(h.avg)}`)}${metric('평가금액',h.value)}${metric('평가손익',h.pnl)}${metric('현재 비중',`${h.weight.toFixed(1)}%`)}</div></section><section class="card"><h3>기술적 추세</h3>${t?`<div class="techhero"><span class="trend-pill">${t.trend}</span><p>${trendSummary(t)}</p></div><div class="metric-grid">${metric('20일선',fmt(t.ma20))}${metric('60일선',fmt(t.ma60))}${metric('120일선',fmt(t.ma120))}${metric('200일선',fmt(t.ma200))}${metric('RSI 14',t.rsi14?.toFixed(1)||'-')}${metric('MACD Hist',t.macd?.histogram.toFixed(2)||'-')}${metric('52주 위치',`${t.position52.toFixed(1)}%`)}${metric('최근 고점 대비',pct(t.drawdown*100))}</div>`:'<div class="notice">기술적 분석에는 충분한 일별 가격 이력이 필요합니다.</div>'}</section></div>`
+function liveDetailPage(symbol) {
+    var _a, _b;
+    const h = liveHoldingModels().find(x => x.symbol === symbol);
+    if (!h)
+        return livePortfolio();
+    const hist = h.history || [], t = h.tech, range = state.detailRange || '1Y';
+    const count = { '1D': 2, '1W': 7, '1M': 22, '3M': 66, '6M': 126, '1Y': 252, '5Y': 1260 }[range] || 252;
+    const cut = hist.slice(-count), vals = cut.map(x => x.close);
+    return `<div class="detail-head"><div><div class="eyebrow">${esc(h.market)} · ${esc(h.symbol)}</div><div class="section-title detail-title">${esc(h.name)}</div></div><span class="trend-pill">${(t === null || t === void 0 ? void 0 : t.trend) || '데이터 부족'}</span></div><section class="card price-card"><div class="row between"><div><div class="price">${h.currency === 'USD' ? '$' : ''}${h.price.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}</div><div class="${cls(h.day)} strong">${pct(h.day)} 오늘</div></div><div class="amount"><div class="eyebrow">내 수익률</div><div class="${cls(h.ret)} strong">${pct(h.ret)}</div><div>${money(h.pnl)}</div></div></div>${periods(['1D', '1W', '1M', '3M', '6M', '1Y', '5Y'], range, 'detailrange')}${vals.length > 1 ? `<div class="chart detail-chart">${sparkSvg(vals, { avgLine: h.avg, height: 220 })}</div>` : '<div class="notice topgap">가격 이력이 충분히 쌓이면 차트와 기술지표가 표시됩니다.</div>'}</section><div class="grid desktop-2"><section class="card"><h3>내 보유정보</h3><div class="metric-grid">${metric('보유수량', `${fmt(h.qty)}주`)}${metric('평균매수가', `${h.currency === 'USD' ? '$' : ''}${fmt(h.avg)}`)}${metric('평가금액', h.value)}${metric('평가손익', h.pnl)}${metric('현재 비중', `${h.weight.toFixed(1)}%`)}</div></section><section class="card"><h3>기술적 추세</h3>${t ? `<div class="techhero"><span class="trend-pill">${t.trend}</span><p>${trendSummary(t)}</p></div><div class="metric-grid">${metric('20일선', fmt(t.ma20))}${metric('60일선', fmt(t.ma60))}${metric('120일선', fmt(t.ma120))}${metric('200일선', fmt(t.ma200))}${metric('RSI 14', ((_a = t.rsi14) === null || _a === void 0 ? void 0 : _a.toFixed(1)) || '-')}${metric('MACD Hist', ((_b = t.macd) === null || _b === void 0 ? void 0 : _b.histogram.toFixed(2)) || '-')}${metric('52주 위치', `${t.position52.toFixed(1)}%`)}${metric('최근 고점 대비', pct(t.drawdown * 100))}</div>` : '<div class="notice">기술적 분석에는 충분한 일별 가격 이력이 필요합니다.</div>'}</section></div>`;
 }
-function livePerformance(){
-  if(!state.liveData?.accounts?.length)return `<div class="section-title">성과</div>${empty('Live 계좌 연결 전입니다','계좌 연결 후 일별 성과가 DB에 누적되면 기간별 수익률을 계산합니다.')}`;const s=livePeriodStats(state.perfPeriod),rows=liveAggregatePerformance();
-  if(!rows.length)return `<div class="section-title">성과</div>${empty('성과 데이터가 아직 없습니다','첫 Daily Snapshot 이후부터 입출금 효과를 분리한 일별 성과가 쌓입니다.')}`;
-  return `<div class="section-title">성과</div>${periods(['오늘','1W','1M','3M','6M','YTD','1Y','ALL'],state.perfPeriod,'perf')}<section class="card"><h3>${state.perfPeriod} 투자성과</h3><div class="asset smallasset ${cls(s.pnl)}">${money(s.pnl)}</div><div class="${cls(s.twr)} strong">${pct(s.twr*100)}</div><div class="metric-grid topgap">${metric('외부 현금흐름',s.flow)}${metric('계좌 자산 변화',s.end-s.start)}${metric('기간 시작',s.start)}${metric('기간 종료',s.end)}</div><div class="notice topgap">수익률은 일별 시작자산·종료자산·외부 현금흐름을 이용한 TWR 방식으로 연결합니다.</div></section>`
+function livePerformance() {
+    var _a, _b;
+    if (!((_b = (_a = state.liveData) === null || _a === void 0 ? void 0 : _a.accounts) === null || _b === void 0 ? void 0 : _b.length))
+        return `<div class="section-title">성과</div>${empty('Live 계좌 연결 전입니다', '계좌 연결 후 일별 성과가 DB에 누적되면 기간별 수익률을 계산합니다.')}`;
+    const s = livePeriodStats(state.perfPeriod), rows = liveAggregatePerformance();
+    if (!rows.length)
+        return `<div class="section-title">성과</div>${empty('성과 데이터가 아직 없습니다', '첫 Daily Snapshot 이후부터 입출금 효과를 분리한 일별 성과가 쌓입니다.')}`;
+    return `<div class="section-title">성과</div>${periods(['오늘', '1W', '1M', '3M', '6M', 'YTD', '1Y', 'ALL'], state.perfPeriod, 'perf')}<section class="card"><h3>${state.perfPeriod} 투자성과</h3><div class="asset smallasset ${cls(s.pnl)}">${money(s.pnl)}</div><div class="${cls(s.twr)} strong">${pct(s.twr * 100)}</div><div class="metric-grid topgap">${metric('외부 현금흐름', s.flow)}${metric('계좌 자산 변화', s.end - s.start)}${metric('기간 시작', s.start)}${metric('기간 종료', s.end)}</div><div class="notice topgap">수익률은 일별 시작자산·종료자산·외부 현금흐름을 이용한 TWR 방식으로 연결합니다.</div></section>`;
 }
-function liveAnalysis(){
-  const hs=liveHoldingModels();if(!state.liveData?.accounts?.length)return `<div class="section-title">분석</div>${empty('분석할 Live 데이터가 없습니다','계좌 연결 후 실제 보유종목만 기준으로 집중도와 기술적 추세를 계산합니다.')}`;if(!hs.length)return `<div class="section-title">분석</div>${empty('보유종목 데이터가 없습니다','현금만 있거나 아직 첫 보유종목 동기화가 완료되지 않았습니다.')}`;
-  const groups={};for(const h of hs)groups[h.sector]=(groups[h.sector]||0)+h.weight;const sorted=hs.slice().sort((a,b)=>b.weight-a.weight),concentration=sorted.slice(0,5).reduce((s,h)=>s+h.weight,0);const korea=hs.filter(h=>h.region==='한국').reduce((s,h)=>s+h.weight,0),us=hs.filter(h=>h.region==='미국').reduce((s,h)=>s+h.weight,0);
-  return `<div class="section-title">분석</div><div class="grid desktop-2"><section class="card"><h3>국가·집중도</h3>${barRow('한국',korea)}${barRow('미국',us)}<div class="summary-row"><span>Top 5 집중도</span><strong>${concentration.toFixed(1)}%</strong></div><div class="summary-row"><span>최대 종목</span><strong>${esc(sorted[0].name)} ${sorted[0].weight.toFixed(1)}%</strong></div><div class="notice">집중도는 위험 정보이며 매수·매도 권고가 아닙니다.</div></section><section class="card"><h3>업종 비중</h3>${Object.entries(groups).sort((a,b)=>b[1]-a[1]).map(([a,b])=>barRow(a,b)).join('')}</section></div><section class="card topgap"><h3>보유종목 기술적 추세</h3>${hs.map(liveHoldingTrendRow).join('')}</section>`
+function liveAnalysis() {
+    var _a, _b;
+    const hs = liveHoldingModels();
+    if (!((_b = (_a = state.liveData) === null || _a === void 0 ? void 0 : _a.accounts) === null || _b === void 0 ? void 0 : _b.length))
+        return `<div class="section-title">분석</div>${empty('분석할 Live 데이터가 없습니다', '계좌 연결 후 실제 보유종목만 기준으로 집중도와 기술적 추세를 계산합니다.')}`;
+    if (!hs.length)
+        return `<div class="section-title">분석</div>${empty('보유종목 데이터가 없습니다', '현금만 있거나 아직 첫 보유종목 동기화가 완료되지 않았습니다.')}`;
+    const groups = {};
+    for (const h of hs)
+        groups[h.sector] = (groups[h.sector] || 0) + h.weight;
+    const sorted = hs.slice().sort((a, b) => b.weight - a.weight), concentration = sorted.slice(0, 5).reduce((s, h) => s + h.weight, 0);
+    const korea = hs.filter(h => h.region === '한국').reduce((s, h) => s + h.weight, 0), us = hs.filter(h => h.region === '미국').reduce((s, h) => s + h.weight, 0);
+    return `<div class="section-title">분석</div><div class="grid desktop-2"><section class="card"><h3>국가·집중도</h3>${barRow('한국', korea)}${barRow('미국', us)}<div class="summary-row"><span>Top 5 집중도</span><strong>${concentration.toFixed(1)}%</strong></div><div class="summary-row"><span>최대 종목</span><strong>${esc(sorted[0].name)} ${sorted[0].weight.toFixed(1)}%</strong></div><div class="notice">집중도는 위험 정보이며 매수·매도 권고가 아닙니다.</div></section><section class="card"><h3>업종 비중</h3>${Object.entries(groups).sort((a, b) => b[1] - a[1]).map(([a, b]) => barRow(a, b)).join('')}</section></div><section class="card topgap"><h3>보유종목 기술적 추세</h3>${hs.map(liveHoldingTrendRow).join('')}</section>`;
 }
-
-function transactionRows(){return transactions().slice(0,12).map(t=>`<button class="summary-row txrow" data-tx="${t.id}"><span><b>${t.date.slice(5)} · ${esc(t.name)}</b><small>${t.type} · ${t.source==='manual'?'수동':'자동'}</small></span><span class="${cls(t.amount)}">${money(t.amount)}</span></button>`).join('')}
-function more(){return `<div class="section-title">더보기</div><div class="grid"><section class="card"><div class="row between"><div><h3 style="margin-bottom:4px">동기화</h3><div class="sub">마지막 정상 동기화 · ${state.demo?'Demo':(state.liveData?.syncLogs?.find(x=>x.status==='success'||x.status==='partial')?.finished_at||'아직 없음')}</div></div><button class="btn secondary" id="refresh">새로고침</button></div><div id="syncMsg" class="notice topgap">${state.demo?'Demo에서는 로컬 샘플만 갱신합니다.':'KB 조회 실패 시 마지막 정상 DB 데이터를 유지합니다.'}</div><div class="summary-row"><span>자동 동기화</span><div class="switch ${state.autoSync?'on':''}" id="syncSwitch"><i></i></div></div></section>
+function transactionRows() { return transactions().slice(0, 12).map(t => `<button class="summary-row txrow" data-tx="${t.id}"><span><b>${t.date.slice(5)} · ${esc(t.name)}</b><small>${t.type} · ${t.source === 'manual' ? '수동' : '자동'}</small></span><span class="${cls(t.amount)}">${money(t.amount)}</span></button>`).join(''); }
+function more() {
+    var _a, _b, _c, _d;
+    return `<div class="section-title">더보기</div><div class="grid"><section class="card"><div class="row between"><div><h3 style="margin-bottom:4px">동기화</h3><div class="sub">마지막 정상 동기화 · ${state.demo ? 'Demo' : (((_c = (_b = (_a = state.liveData) === null || _a === void 0 ? void 0 : _a.syncLogs) === null || _b === void 0 ? void 0 : _b.find(x => x.status === 'success' || x.status === 'partial')) === null || _c === void 0 ? void 0 : _c.finished_at) || '아직 없음')}</div></div><button class="btn secondary" id="refresh">새로고침</button></div><div id="syncMsg" class="notice topgap">${state.demo ? 'Demo에서는 로컬 샘플만 갱신합니다.' : 'KB 조회 실패 시 마지막 정상 DB 데이터를 유지합니다.'}</div><div class="summary-row"><span>자동 동기화</span><div class="switch ${state.autoSync ? 'on' : ''}" id="syncSwitch"><i></i></div></div></section>
   <section class="card"><div class="row between"><h3 style="margin:0">거래내역</h3><button class="softbtn" id="addTx">+ 수동 기록</button></div><div id="txList">${transactionRows()}</div></section>
-  <section class="card"><h3>표시 설정</h3><label class="settingsrow"><span>앱 이름</span><input class="miniinput" id="appName" value="${esc(localStorage.appName||state.config?.appName||'My Portfolio')}"></label><div class="summary-row"><span>기준 통화</span><button class="btn secondary" id="currency">${state.currency}</button></div><div class="summary-row"><span>큰 금액 간단히</span><div class="switch ${state.compact?'on':''}" id="compactSwitch"><i></i></div></div><div class="summary-row"><span>다크 모드</span><div class="switch ${state.theme==='dark'?'on':''}" id="themeSwitch"><i></i></div></div><div class="summary-row"><span>상승/하락 색상</span><button class="btn secondary" id="colors">${state.colors==='kr'?'한국식':'글로벌'}</button></div></section>
+  <section class="card"><h3>표시 설정</h3><label class="settingsrow"><span>앱 이름</span><input class="miniinput" id="appName" value="${esc(localStorage.appName || ((_d = state.config) === null || _d === void 0 ? void 0 : _d.appName) || 'My Portfolio')}"></label><div class="summary-row"><span>기준 통화</span><button class="btn secondary" id="currency">${state.currency}</button></div><div class="summary-row"><span>큰 금액 간단히</span><div class="switch ${state.compact ? 'on' : ''}" id="compactSwitch"><i></i></div></div><div class="summary-row"><span>다크 모드</span><div class="switch ${state.theme === 'dark' ? 'on' : ''}" id="themeSwitch"><i></i></div></div><div class="summary-row"><span>상승/하락 색상</span><button class="btn secondary" id="colors">${state.colors === 'kr' ? '한국식' : '글로벌'}</button></div></section>
   <section class="card"><h3>백업·이동</h3><div class="actiongrid"><button class="btn secondary" id="exportJson">JSON 백업</button><button class="btn secondary" id="exportCsv">거래 CSV</button><button class="btn secondary" id="importJson">JSON 가져오기</button><button class="btn secondary danger" id="resetData">수동 데이터 초기화</button></div><input type="file" id="fileInput" accept="application/json" hidden></section>
   <section class="card"><h3>KB증권 연결</h3><div class="notice">App Key/App Secret과 토큰은 서버에서만 관리합니다. 주문·취소·정정 API는 등록하지 않습니다.</div><button class="btn topgap" id="kbtest">연결 상태 확인</button><div id="kbmsg" class="sub topgap"></div></section>
-  ${state.session?`<section class="card"><div class="row between"><div><h3 style="margin-bottom:4px">보안</h3><div class="sub">이메일 인증 세션으로 접속 중</div></div><button class="btn secondary" id="signout">로그아웃</button></div></section>`:''}</div>`}
-
-function nav(){const tabs=[['home','⌂','홈'],['portfolio','◫','포트폴리오'],['performance','⌁','성과'],['analysis','◇','분석'],['more','•••','더보기']];return `<nav class="nav">${tabs.map(([id,ico,label])=>`<button data-tab="${id}" class="${!state.detail&&state.tab===id?'active':''}"><span class="ico">${ico}</span><span>${label}</span></button>`).join('')}</nav>`}
-
-function modal(html){let el=$('#modal');if(!el){el=document.createElement('div');el.id='modal';document.body.appendChild(el)}el.innerHTML=`<div class="modalback" data-close="1"></div><div class="modalcard">${html}</div>`;el.classList.add('show');el.querySelector('[data-close]')?.addEventListener('click',closeModal)}
-function closeModal(){const m=$('#modal');if(m)m.classList.remove('show')}
-function txDetail(id){const t=transactions().find(x=>x.id===id);if(!t)return;modal(`<div class="row between"><h3>거래 상세</h3><button class="iconbtn" data-close="1">×</button></div>${[['거래일',t.date],['종목',`${t.name} · ${t.symbol}`],['구분',t.type],['가격',t.price==null?'-':fmt(t.price)],['수량',t.qty==null?'-':fmt(t.qty)],['금액',money(t.amount)],['수수료',money(t.fee||0)],['세금',money(t.tax||0)],['통화',t.currency],['출처',t.source==='manual'?'사용자 직접 입력':'자동 수집']].map(([a,b])=>`<div class="summary-row"><span>${a}</span><strong>${b}</strong></div>`).join('')}`);$('#modal [data-close="1"]')?.addEventListener('click',closeModal)}
-function addTxModal(){
-  modal(`<div class="row between"><h3>수동 거래 추가</h3><button class="iconbtn" data-close="1">×</button></div><form id="txForm" class="formgrid"><label>날짜<input required type="date" name="date" value="${TODAY}"></label><label>종목명<input required name="name" placeholder="예: NVIDIA"></label><label>종목코드<input name="symbol" placeholder="예: NVDA"></label><label>구분<select name="type"><option>매수</option><option>매도</option><option>배당</option><option>입금</option><option>출금</option><option>수수료</option><option>세금</option><option>기타</option></select></label><label>금액 (원)<input required type="number" name="amount" step="1"></label><label>수량<input type="number" name="qty" step="any"></label><label>가격<input type="number" name="price" step="any"></label><button class="btn" type="submit">저장</button><div class="sub" id="txSaveMsg"></div></form>`);
-  $('#modal [data-close="1"]')?.addEventListener('click',closeModal);
-  $('#txForm').onsubmit=async e=>{
-    e.preventDefault();const f=new FormData(e.target),type=f.get('type');let amount=Number(f.get('amount'));if(['매수','출금','수수료','세금'].includes(type)&&amount>0)amount=-amount;
-    const draft={id:'m'+Date.now(),date:f.get('date'),name:f.get('name'),symbol:f.get('symbol')||'MANUAL',type,amount,qty:Number(f.get('qty'))||null,price:Number(f.get('price'))||null,fee:0,tax:0,currency:'KRW',source:'manual'};
-    if(state.demo){state.manual.push(draft);saveManual();closeModal();render();return}
-    const msg=$('#txSaveMsg');msg.textContent='DB에 저장 중…';
-    try{
-      const account=state.liveData?.accounts?.[0];if(!account)throw new Error('먼저 Live 계좌가 연결되어야 합니다.');
-      const typeMap={'매수':'buy','매도':'sell','배당':'dividend','입금':'deposit','출금':'withdrawal','수수료':'fee','세금':'tax','기타':'other'};
-      const dbType=typeMap[type]||'other';const symbol=String(f.get('symbol')||'').trim().toUpperCase();const sec=(state.liveData?.securities||[]).find(x=>String(x.symbol).toUpperCase()===symbol);
-      if(['buy','sell','dividend'].includes(dbType)&&!sec)throw new Error('종목 거래는 먼저 동기화된 종목코드를 입력해 주세요.');
-      const occurred=`${f.get('date')}T12:00:00+09:00`;
-      await supabaseRest(state.config,state.session,'transactions',{method:'POST',headers:{Prefer:'return=representation'},body:{account_id:account.id,security_id:sec?.id||null,trade_at:occurred,type:dbType,quantity:draft.qty,price:draft.price,gross_amount:Math.abs(amount),fee:0,tax:0,net_amount:amount,currency:'KRW',source:'manual'}});
-      if(dbType==='deposit'||dbType==='withdrawal')await supabaseRest(state.config,state.session,'cash_flows',{method:'POST',headers:{Prefer:'return=representation'},body:{account_id:account.id,occurred_at:occurred,type:dbType,amount,currency:'KRW',source:'manual'}});
-      if(dbType==='dividend')await supabaseRest(state.config,state.session,'dividends',{method:'POST',headers:{Prefer:'return=representation'},body:{account_id:account.id,security_id:sec?.id||null,paid_at:occurred,gross_amount:Math.abs(amount),tax:0,net_amount:Math.abs(amount),currency:'KRW',source:'manual'}});
-      await hydrateLive();closeModal();render();
-    }catch(error){msg.textContent=error.message||'저장에 실패했습니다.'}
-  }
+  ${state.session ? `<section class="card"><div class="row between"><div><h3 style="margin-bottom:4px">보안</h3><div class="sub">이메일 인증 세션으로 접속 중</div></div><button class="btn secondary" id="signout">로그아웃</button></div></section>` : ''}</div>`;
 }
-
-function render(){
-  document.getElementById('boot-status')?.remove();
-  document.documentElement.dataset.theme=state.theme;document.documentElement.dataset.colors=state.colors==='global'?'global':'kr';
-  let body=state.detail?detailPage(state.detail):state.tab==='home'?home():state.tab==='portfolio'?portfolio():state.tab==='performance'?performance():state.tab==='analysis'?analysis():more();
-  $('#app').innerHTML=`<div class="app">${top()}<main class="content">${modeBanner()}${body}</main>${nav()}</div>`;bind();
+function nav() { const tabs = [['home', '⌂', '홈'], ['portfolio', '◫', '포트폴리오'], ['performance', '⌁', '성과'], ['analysis', '◇', '분석'], ['more', '•••', '더보기']]; return `<nav class="nav">${tabs.map(([id, ico, label]) => `<button data-tab="${id}" class="${!state.detail && state.tab === id ? 'active' : ''}"><span class="ico">${ico}</span><span>${label}</span></button>`).join('')}</nav>`; }
+function modal(html) { var _a; let el = $('#modal'); if (!el) {
+    el = document.createElement('div');
+    el.id = 'modal';
+    document.body.appendChild(el);
+} el.innerHTML = `<div class="modalback" data-close="1"></div><div class="modalcard">${html}</div>`; el.classList.add('show'); (_a = el.querySelector('[data-close]')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', closeModal); }
+function closeModal() { const m = $('#modal'); if (m)
+    m.classList.remove('show'); }
+function txDetail(id) { var _a; const t = transactions().find(x => x.id === id); if (!t)
+    return; modal(`<div class="row between"><h3>거래 상세</h3><button class="iconbtn" data-close="1">×</button></div>${[['거래일', t.date], ['종목', `${t.name} · ${t.symbol}`], ['구분', t.type], ['가격', t.price == null ? '-' : fmt(t.price)], ['수량', t.qty == null ? '-' : fmt(t.qty)], ['금액', money(t.amount)], ['수수료', money(t.fee || 0)], ['세금', money(t.tax || 0)], ['통화', t.currency], ['출처', t.source === 'manual' ? '사용자 직접 입력' : '자동 수집']].map(([a, b]) => `<div class="summary-row"><span>${a}</span><strong>${b}</strong></div>`).join('')}`); (_a = $('#modal [data-close="1"]')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', closeModal); }
+function addTxModal() {
+    var _a;
+    modal(`<div class="row between"><h3>수동 거래 추가</h3><button class="iconbtn" data-close="1">×</button></div><form id="txForm" class="formgrid"><label>날짜<input required type="date" name="date" value="${TODAY}"></label><label>종목명<input required name="name" placeholder="예: NVIDIA"></label><label>종목코드<input name="symbol" placeholder="예: NVDA"></label><label>구분<select name="type"><option>매수</option><option>매도</option><option>배당</option><option>입금</option><option>출금</option><option>수수료</option><option>세금</option><option>기타</option></select></label><label>금액 (원)<input required type="number" name="amount" step="1"></label><label>수량<input type="number" name="qty" step="any"></label><label>가격<input type="number" name="price" step="any"></label><button class="btn" type="submit">저장</button><div class="sub" id="txSaveMsg"></div></form>`);
+    (_a = $('#modal [data-close="1"]')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', closeModal);
+    $('#txForm').onsubmit = async (e) => {
+        var _a, _b, _c;
+        e.preventDefault();
+        const f = new FormData(e.target), type = f.get('type');
+        let amount = Number(f.get('amount'));
+        if (['매수', '출금', '수수료', '세금'].includes(type) && amount > 0)
+            amount = -amount;
+        const draft = { id: 'm' + Date.now(), date: f.get('date'), name: f.get('name'), symbol: f.get('symbol') || 'MANUAL', type, amount, qty: Number(f.get('qty')) || null, price: Number(f.get('price')) || null, fee: 0, tax: 0, currency: 'KRW', source: 'manual' };
+        if (state.demo) {
+            state.manual.push(draft);
+            saveManual();
+            closeModal();
+            render();
+            return;
+        }
+        const msg = $('#txSaveMsg');
+        msg.textContent = 'DB에 저장 중…';
+        try {
+            const account = (_b = (_a = state.liveData) === null || _a === void 0 ? void 0 : _a.accounts) === null || _b === void 0 ? void 0 : _b[0];
+            if (!account)
+                throw new Error('먼저 Live 계좌가 연결되어야 합니다.');
+            const typeMap = { '매수': 'buy', '매도': 'sell', '배당': 'dividend', '입금': 'deposit', '출금': 'withdrawal', '수수료': 'fee', '세금': 'tax', '기타': 'other' };
+            const dbType = typeMap[type] || 'other';
+            const symbol = String(f.get('symbol') || '').trim().toUpperCase();
+            const sec = (((_c = state.liveData) === null || _c === void 0 ? void 0 : _c.securities) || []).find(x => String(x.symbol).toUpperCase() === symbol);
+            if (['buy', 'sell', 'dividend'].includes(dbType) && !sec)
+                throw new Error('종목 거래는 먼저 동기화된 종목코드를 입력해 주세요.');
+            const occurred = `${f.get('date')}T12:00:00+09:00`;
+            await supabaseRest(state.config, state.session, 'transactions', { method: 'POST', headers: { Prefer: 'return=representation' }, body: { account_id: account.id, security_id: (sec === null || sec === void 0 ? void 0 : sec.id) || null, trade_at: occurred, type: dbType, quantity: draft.qty, price: draft.price, gross_amount: Math.abs(amount), fee: 0, tax: 0, net_amount: amount, currency: 'KRW', source: 'manual' } });
+            if (dbType === 'deposit' || dbType === 'withdrawal')
+                await supabaseRest(state.config, state.session, 'cash_flows', { method: 'POST', headers: { Prefer: 'return=representation' }, body: { account_id: account.id, occurred_at: occurred, type: dbType, amount, currency: 'KRW', source: 'manual' } });
+            if (dbType === 'dividend')
+                await supabaseRest(state.config, state.session, 'dividends', { method: 'POST', headers: { Prefer: 'return=representation' }, body: { account_id: account.id, security_id: (sec === null || sec === void 0 ? void 0 : sec.id) || null, paid_at: occurred, gross_amount: Math.abs(amount), tax: 0, net_amount: Math.abs(amount), currency: 'KRW', source: 'manual' } });
+            await hydrateLive();
+            closeModal();
+            render();
+        }
+        catch (error) {
+            msg.textContent = error.message || '저장에 실패했습니다.';
+        }
+    };
 }
-function download(name,type,text){const b=new Blob([text],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function exportBackup(){download(`my-portfolio-backup-${TODAY}.json`,'application/json',JSON.stringify({schemaVersion:1,exportedAt:new Date().toISOString(),mode:state.demo?'demo':'live',manualTransactions:state.manual,demo:{holdings:state.demo?holdings.map(({history,...x})=>x):undefined,dividends:state.demo?dividends:undefined}},null,2))}
-function exportCsv(){const rows=[['date','symbol','name','type','amount','fee','tax','currency','source'],...transactions().map(t=>[t.date,t.symbol,t.name,t.type,t.amount,t.fee||0,t.tax||0,t.currency,t.source])];download(`my-portfolio-transactions-${TODAY}.csv`,'text/csv;charset=utf-8','\ufeff'+rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n'))}
-async function hydrateLive(){
-  if(state.demo||!state.session)return;
-  try{
-    const [accounts,securities,holdingsRows,transactionsRows,snapshots,performanceRows,dividendRows,priceRows,syncLogs]=await Promise.all([
-      supabaseRest(state.config,state.session,'accounts?select=id,name,provider,base_currency,provider_account_ref&mode=eq.live&is_active=eq.true'),
-      supabaseRest(state.config,state.session,'securities?select=id,symbol,name,market,asset_type,currency,sector,country'),
-      supabaseRest(state.config,state.session,'holdings?select=id,account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,official_unrealized_pnl,currency,fx_rate_to_base,source&order=market_value.desc'),
-      supabaseRest(state.config,state.session,'transactions?select=id,account_id,security_id,trade_at,type,quantity,price,gross_amount,fee,tax,net_amount,currency,realized_pnl,official_realized_pnl,source&order=trade_at.desc&limit=500'),
-      supabaseRest(state.config,state.session,'daily_account_snapshots?select=account_id,snapshot_date,total_assets,cash,securities_value,invested_capital,unrealized_pnl,realized_pnl,dividends,interest,fees,taxes,total_pnl,external_flow&order=snapshot_date.asc&limit=5000'),
-      supabaseRest(state.config,state.session,'portfolio_performance?select=account_id,performance_date,start_value,end_value,external_flow,daily_pnl,daily_return,twr_index&order=performance_date.asc&limit=5000'),
-      supabaseRest(state.config,state.session,'dividends?select=id,account_id,security_id,paid_at,gross_amount,tax,net_amount,currency,fx_rate_to_base,source&order=paid_at.desc&limit=1000'),
-      supabaseRest(state.config,state.session,'daily_security_prices?select=security_id,price_date,close,volume,currency,source&order=price_date.asc&limit=10000'),
-      supabaseRest(state.config,state.session,'sync_logs?select=id,account_id,started_at,finished_at,status,scope,rows_read,rows_written,error_code,error_message&order=started_at.desc&limit=20'),
-    ]);
-    const securityMap=new Map(securities.map(x=>[x.id,x]));
-    const pricesBySecurity=new Map();
-    for(const row of priceRows){if(!pricesBySecurity.has(row.security_id))pricesBySecurity.set(row.security_id,[]);pricesBySecurity.get(row.security_id).push({date:row.price_date,close:Number(row.close),volume:Number(row.volume||0)})}
-    state.liveData={accounts,securities,securityMap,holdings:holdingsRows,transactions:transactionsRows,snapshots,performance:performanceRows,dividends:dividendRows,pricesBySecurity,syncLogs};
-    state.liveError=null;
-  }catch(e){state.liveError=e.message;state.liveData=null}
+function render() {
+    var _a;
+    window.__APP_BOOT_OK = true;
+    (_a = document.getElementById('boot-status')) === null || _a === void 0 ? void 0 : _a.remove();
+    document.documentElement.dataset.theme = state.theme;
+    document.documentElement.dataset.colors = state.colors === 'global' ? 'global' : 'kr';
+    let body = state.detail ? detailPage(state.detail) : state.tab === 'home' ? home() : state.tab === 'portfolio' ? portfolio() : state.tab === 'performance' ? performance() : state.tab === 'analysis' ? analysis() : more();
+    $('#app').innerHTML = `<div class="app">${top()}<main class="content">${modeBanner()}${body}</main>${nav()}</div>`;
+    bind();
 }
-function bind(){
-  $('[data-close]')?.addEventListener('click',closeModal);$('#back')?.addEventListener('click',()=>{state.detail=null;render()});
-  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.detail=null;state.tab=b.dataset.tab;render()});
-  document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>{state.detail=null;state.tab=b.dataset.goto;render()});
-  document.querySelectorAll('[data-period]').forEach(b=>b.onclick=()=>{state.period=b.dataset.period;render()});
-  document.querySelectorAll('[data-perf]').forEach(b=>b.onclick=()=>{state.perfPeriod=b.dataset.perf;render()});
-  document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{state.portfolioFilter=b.dataset.filter;render()});
-  document.querySelectorAll('[data-detailrange]').forEach(b=>b.onclick=()=>{state.detailRange=b.dataset.detailrange;render()});
-  document.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>{state.detail=b.dataset.detail;state.detailRange='1Y';render();scrollTo(0,0)});
-  document.querySelectorAll('[data-tx]').forEach(b=>b.onclick=()=>txDetail(b.dataset.tx));
-  const search=$('#search');if(search)search.oninput=e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#holdingList [data-search]').forEach(x=>x.style.display=x.dataset.search.includes(q)?'grid':'none')};
-  const sort=$('#sort');if(sort)sort.onchange=e=>{state.sort=e.target.value;render()};
-  $('#themeSwitch')?.addEventListener('click',()=>{state.theme=state.theme==='dark'?'light':'dark';localStorage.theme=state.theme;render()});
-  $('#colors')?.addEventListener('click',()=>{state.colors=state.colors==='kr'?'global':'kr';localStorage.colors=state.colors;render()});
-  $('#currency')?.addEventListener('click',()=>{state.currency=state.currency==='KRW'?'USD':'KRW';localStorage.currency=state.currency;render()});
-  $('#compactSwitch')?.addEventListener('click',()=>{state.compact=!state.compact;localStorage.compact=state.compact;render()});
-  $('#syncSwitch')?.addEventListener('click',()=>{state.autoSync=!state.autoSync;localStorage.autoSync=state.autoSync;render()});
-  $('#appName')?.addEventListener('change',e=>{localStorage.appName=e.target.value.trim()||'My Portfolio';render()});
-  $('#refresh')?.addEventListener('click',async()=>{const m=$('#syncMsg');m.textContent='동기화 중…';if(!state.demo)await hydrateLive();setTimeout(()=>{if($('#syncMsg'))$('#syncMsg').textContent=state.liveError?'일부 실패 · 마지막 정상 데이터를 유지합니다.':'정상 · 최신 데이터로 갱신했습니다.'},500)});
-  $('#kbtest')?.addEventListener('click',async()=>{const m=$('#kbmsg');m.textContent='확인 중…';try{const r=await fetch(state.config?.kbStatusUrl || '/api/kb/status');if(!r.ok)throw new Error();const j=await r.json();m.textContent=j.mode==='configured'?'서버 Secret 등록됨 · 읽기 전용 연결 준비 완료':'아직 KB 서버 Secret이 등록되지 않았습니다.'}catch{m.textContent='로컬 Demo에서는 서버 API가 실행되지 않습니다.'}});
-  $('#addTx')?.addEventListener('click',addTxModal);$('#exportJson')?.addEventListener('click',exportBackup);$('#exportCsv')?.addEventListener('click',exportCsv);
-  $('#importJson')?.addEventListener('click',()=>$('#fileInput')?.click());$('#fileInput')?.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const j=JSON.parse(await file.text());if(!Array.isArray(j.manualTransactions))throw new Error();state.manual=j.manualTransactions;saveManual();render()}catch{alert('지원되는 My Portfolio JSON 백업 파일이 아닙니다.')}});
-  $('#resetData')?.addEventListener('click',()=>{if(confirm('수동으로 추가한 Demo 기록을 초기화할까요? 자동/샘플 데이터는 유지됩니다.')){state.manual=[];saveManual();render()}});
-  $('#signout')?.addEventListener('click',signOut);
+function download(name, type, text) { const b = new Blob([text], { type }), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+function exportBackup() { download(`my-portfolio-backup-${TODAY}.json`, 'application/json', JSON.stringify({ schemaVersion: 1, exportedAt: new Date().toISOString(), mode: state.demo ? 'demo' : 'live', manualTransactions: state.manual, demo: { holdings: state.demo ? holdings.map((_a) => {
+            var { history } = _a, x = __rest(_a, ["history"]);
+            return x;
+        }) : undefined, dividends: state.demo ? dividends : undefined } }, null, 2)); }
+function exportCsv() { const rows = [['date', 'symbol', 'name', 'type', 'amount', 'fee', 'tax', 'currency', 'source'], ...transactions().map(t => [t.date, t.symbol, t.name, t.type, t.amount, t.fee || 0, t.tax || 0, t.currency, t.source])]; download(`my-portfolio-transactions-${TODAY}.csv`, 'text/csv;charset=utf-8', '\ufeff' + rows.map(r => r.map(v => `"${String(v !== null && v !== void 0 ? v : '').replaceAll('"', '""')}"`).join(',')).join('\n')); }
+async function hydrateLive() {
+    if (state.demo || !state.session)
+        return;
+    try {
+        const [accounts, securities, holdingsRows, transactionsRows, snapshots, performanceRows, dividendRows, priceRows, syncLogs] = await Promise.all([
+            supabaseRest(state.config, state.session, 'accounts?select=id,name,provider,base_currency,provider_account_ref&mode=eq.live&is_active=eq.true'),
+            supabaseRest(state.config, state.session, 'securities?select=id,symbol,name,market,asset_type,currency,sector,country'),
+            supabaseRest(state.config, state.session, 'holdings?select=id,account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,official_unrealized_pnl,currency,fx_rate_to_base,source&order=market_value.desc'),
+            supabaseRest(state.config, state.session, 'transactions?select=id,account_id,security_id,trade_at,type,quantity,price,gross_amount,fee,tax,net_amount,currency,realized_pnl,official_realized_pnl,source&order=trade_at.desc&limit=500'),
+            supabaseRest(state.config, state.session, 'daily_account_snapshots?select=account_id,snapshot_date,total_assets,cash,securities_value,invested_capital,unrealized_pnl,realized_pnl,dividends,interest,fees,taxes,total_pnl,external_flow&order=snapshot_date.asc&limit=5000'),
+            supabaseRest(state.config, state.session, 'portfolio_performance?select=account_id,performance_date,start_value,end_value,external_flow,daily_pnl,daily_return,twr_index&order=performance_date.asc&limit=5000'),
+            supabaseRest(state.config, state.session, 'dividends?select=id,account_id,security_id,paid_at,gross_amount,tax,net_amount,currency,fx_rate_to_base,source&order=paid_at.desc&limit=1000'),
+            supabaseRest(state.config, state.session, 'daily_security_prices?select=security_id,price_date,close,volume,currency,source&order=price_date.asc&limit=10000'),
+            supabaseRest(state.config, state.session, 'sync_logs?select=id,account_id,started_at,finished_at,status,scope,rows_read,rows_written,error_code,error_message&order=started_at.desc&limit=20'),
+        ]);
+        const securityMap = new Map(securities.map(x => [x.id, x]));
+        const pricesBySecurity = new Map();
+        for (const row of priceRows) {
+            if (!pricesBySecurity.has(row.security_id))
+                pricesBySecurity.set(row.security_id, []);
+            pricesBySecurity.get(row.security_id).push({ date: row.price_date, close: Number(row.close), volume: Number(row.volume || 0) });
+        }
+        state.liveData = { accounts, securities, securityMap, holdings: holdingsRows, transactions: transactionsRows, snapshots, performance: performanceRows, dividends: dividendRows, pricesBySecurity, syncLogs };
+        state.liveError = null;
+    }
+    catch (e) {
+        state.liveError = e.message;
+        state.liveData = null;
+    }
 }
-
-async function boot(){
-  state.config=await getRuntimeConfig();state.session=await currentSession(state.config);
-  if(state.config.requireAuth&&!state.session){renderLogin(state.config,{onDemo:()=>{state.demo=true;state.session=null;render()}});return}
-  state.demo=!state.session;if(!state.demo)await hydrateLive();render();
+function bind() {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+    (_a = $('[data-close]')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', closeModal);
+    (_b = $('#back')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', () => { state.detail = null; render(); });
+    document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { state.detail = null; state.tab = b.dataset.tab; render(); });
+    document.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => { state.detail = null; state.tab = b.dataset.goto; render(); });
+    document.querySelectorAll('[data-period]').forEach(b => b.onclick = () => { state.period = b.dataset.period; render(); });
+    document.querySelectorAll('[data-perf]').forEach(b => b.onclick = () => { state.perfPeriod = b.dataset.perf; render(); });
+    document.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { state.portfolioFilter = b.dataset.filter; render(); });
+    document.querySelectorAll('[data-detailrange]').forEach(b => b.onclick = () => { state.detailRange = b.dataset.detailrange; render(); });
+    document.querySelectorAll('[data-detail]').forEach(b => b.onclick = () => { state.detail = b.dataset.detail; state.detailRange = '1Y'; render(); scrollTo(0, 0); });
+    document.querySelectorAll('[data-tx]').forEach(b => b.onclick = () => txDetail(b.dataset.tx));
+    const search = $('#search');
+    if (search)
+        search.oninput = e => { const q = e.target.value.toLowerCase(); document.querySelectorAll('#holdingList [data-search]').forEach(x => x.style.display = x.dataset.search.includes(q) ? 'grid' : 'none'); };
+    const sort = $('#sort');
+    if (sort)
+        sort.onchange = e => { state.sort = e.target.value; render(); };
+    (_c = $('#themeSwitch')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; localStorage.theme = state.theme; render(); });
+    (_d = $('#colors')) === null || _d === void 0 ? void 0 : _d.addEventListener('click', () => { state.colors = state.colors === 'kr' ? 'global' : 'kr'; localStorage.colors = state.colors; render(); });
+    (_e = $('#currency')) === null || _e === void 0 ? void 0 : _e.addEventListener('click', () => { state.currency = state.currency === 'KRW' ? 'USD' : 'KRW'; localStorage.currency = state.currency; render(); });
+    (_f = $('#compactSwitch')) === null || _f === void 0 ? void 0 : _f.addEventListener('click', () => { state.compact = !state.compact; localStorage.compact = state.compact; render(); });
+    (_g = $('#syncSwitch')) === null || _g === void 0 ? void 0 : _g.addEventListener('click', () => { state.autoSync = !state.autoSync; localStorage.autoSync = state.autoSync; render(); });
+    (_h = $('#appName')) === null || _h === void 0 ? void 0 : _h.addEventListener('change', e => { localStorage.appName = e.target.value.trim() || 'My Portfolio'; render(); });
+    (_j = $('#refresh')) === null || _j === void 0 ? void 0 : _j.addEventListener('click', async () => { const m = $('#syncMsg'); m.textContent = '동기화 중…'; if (!state.demo)
+        await hydrateLive(); setTimeout(() => { if ($('#syncMsg'))
+        $('#syncMsg').textContent = state.liveError ? '일부 실패 · 마지막 정상 데이터를 유지합니다.' : '정상 · 최신 데이터로 갱신했습니다.'; }, 500); });
+    (_k = $('#kbtest')) === null || _k === void 0 ? void 0 : _k.addEventListener('click', async () => { var _a; const m = $('#kbmsg'); m.textContent = '확인 중…'; try {
+        const r = await fetch(((_a = state.config) === null || _a === void 0 ? void 0 : _a.kbStatusUrl) || '/api/kb/status');
+        if (!r.ok)
+            throw new Error();
+        const j = await r.json();
+        m.textContent = j.mode === 'configured' ? '서버 Secret 등록됨 · 읽기 전용 연결 준비 완료' : '아직 KB 서버 Secret이 등록되지 않았습니다.';
+    }
+    catch (_b) {
+        m.textContent = '로컬 Demo에서는 서버 API가 실행되지 않습니다.';
+    } });
+    (_l = $('#addTx')) === null || _l === void 0 ? void 0 : _l.addEventListener('click', addTxModal);
+    (_m = $('#exportJson')) === null || _m === void 0 ? void 0 : _m.addEventListener('click', exportBackup);
+    (_o = $('#exportCsv')) === null || _o === void 0 ? void 0 : _o.addEventListener('click', exportCsv);
+    (_p = $('#importJson')) === null || _p === void 0 ? void 0 : _p.addEventListener('click', () => { var _a; return (_a = $('#fileInput')) === null || _a === void 0 ? void 0 : _a.click(); });
+    (_q = $('#fileInput')) === null || _q === void 0 ? void 0 : _q.addEventListener('change', async (e) => { var _a; const file = (_a = e.target.files) === null || _a === void 0 ? void 0 : _a[0]; if (!file)
+        return; try {
+        const j = JSON.parse(await file.text());
+        if (!Array.isArray(j.manualTransactions))
+            throw new Error();
+        state.manual = j.manualTransactions;
+        saveManual();
+        render();
+    }
+    catch (_b) {
+        alert('지원되는 My Portfolio JSON 백업 파일이 아닙니다.');
+    } });
+    (_r = $('#resetData')) === null || _r === void 0 ? void 0 : _r.addEventListener('click', () => { if (confirm('수동으로 추가한 Demo 기록을 초기화할까요? 자동/샘플 데이터는 유지됩니다.')) {
+        state.manual = [];
+        saveManual();
+        render();
+    } });
+    (_s = $('#signout')) === null || _s === void 0 ? void 0 : _s.addEventListener('click', signOut);
 }
-boot().finally(()=>{if('serviceWorker' in navigator){const edge=globalThis.__MY_PORTFOLIO_EDGE__||{};navigator.serviceWorker.register(edge.serviceWorkerUrl||'/sw.js',{scope:edge.serviceWorkerScope||'/'}).catch(()=>{})}});
+async function boot() {
+    state.config = await getRuntimeConfig();
+    state.session = await currentSession(state.config);
+    if (state.config.requireAuth && !state.session) {
+        renderLogin(state.config, { onDemo: () => { state.demo = true; state.session = null; render(); } });
+        return;
+    }
+    state.demo = !state.session;
+    if (!state.demo)
+        await hydrateLive();
+    render();
+}
+boot();
 
 </script>
 </body>
