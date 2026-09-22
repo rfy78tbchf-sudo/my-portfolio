@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEB0lEQVR4nO3cwW3bQBCF4XGQBgLklCJSTrrJKd2knFSUgwBDkPVoiuTMvtn9v1tiwBKwv5bkkNbbt+8/Anjmy+g3AF/EAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAPS19FvAHv9/vf3/p9/fv7KfsU3vqTW30MW91IT4bDibqOMT396EnFY27P2eX0Qh6/9q57UB3FAIg5Tr24GGZsHcUAiDkep1yD7EYcdkzKCOLCBOLwc3jYyRqXEYcTngHJDHC7OlJF0h4U4LBiWEcThwLOM4HmO4azOQB8Qx0jHyijI4obDyjDmZQRxjOJ21foUcQzgfJ5xjzjaKC4jiKOe/6nGO+Io1aiMII5KvcoI4ijTrowgjhodywjiKNC0jCCObH3LCOJI1bqMII48LQbk24gjRZcB+TbiMGJVRhBHhu6nGu+I42LTlBHEca2ZyohpHhOs/76sT9/DTrZlxBw7x8dVuf1P5cXkfGVE9y+M27MkBQswZRnReufYuSTZ+8esZUTfOF5akrw+Ji4jmh5WTOaPc5cRHXeOM9vAhVvIBLdOPtUsjvNLcsmimmxd2TrFcdWHddSHvlcZ0SiOa1e0/tjUrozoEkfGZ/3Y71ynjGgRh8+F6FJlhH8cPiOs1coI8zlH5Znj9iouWEY47xzF1xQbL7dmGWEbx5CrzacvumwZ4RnHmRHTyVV5eOmVywjDOM4PH6/qY4UB+TavE9ILx9KMQc8z2jmuvWExZJFmKiOs4jhmYz2Kl2qyMsInjqRTv7IFm6+MMDnnKLgoSD0FmbKMcNg5ai4X89Zv1jJieByVg4SMVZy4jBgbR/2I6dq1nLuMGBjHqOHjVSs6fRkxKo6xY2mfwswNiMPhhsUiq3tSdRw+NywO97FOWKVzDs8n+l96V+uUEZU7h2cZL/3+pcqIsjhsy9j/KquVETVxmJex57UWLCMKzjlalHHP4UuCTOTG0a4M3Es8rFBGd1lxUMYEsuLwuXGKwxIPKz6PXOCY3EtZ5kutpc85mC/1VTEEY77UVNH4XBVAGc7qbrx97IAyzJU+z3FfA2X4q37Y59YEZbRg8UdN8DT+j5pgizggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSP8BClBOVGZLxR0AAAAASUVORK5CYII=">
 <title>My Portfolio</title>
-<!-- build: 2026-09-22-ios-safe-storage-3 -->
+<!-- build: 2026-09-22-ios-storage-fix-4 -->
 <style>
 :root{--bg:#f5f6f8;--surface:#fff;--surface2:#f0f2f5;--text:#11141a;--muted:#757b85;--line:#e7e9ee;--up:#e23c4b;--down:#2f64d6;--accent:#11a878;--shadow:0 8px 28px rgba(18,23,38,.06);--radius:22px;--safe:env(safe-area-inset-bottom)}
 [data-theme="dark"]{--bg:#090b0f;--surface:#11141a;--surface2:#171b22;--text:#f3f5f7;--muted:#949aa5;--line:#222833;--shadow:0 8px 34px rgba(0,0,0,.22)}
@@ -136,23 +136,20 @@ globalThis.__MY_PORTFOLIO_EDGE__ = {
     serviceWorkerUrl: './sw.js',
     serviceWorkerScope: './'
 };
-function safeStorageGet(key, fallback) { try {
-    var v = window.localStorage && window.safeStorageGet(key);
-    return v == null ? fallback : v;
+function safeStorageGet(key, fallback) {
+    try {
+        var storage = window.localStorage;
+        if (!storage) return fallback;
+        var v = storage.getItem(key);
+        return v == null ? fallback : v;
+    } catch (e) { return fallback; }
 }
-catch (e) {
-    return fallback;
-} }
-function safeStorageSet(key, value) { try {
-    if (window.localStorage)
-        window.safeStorageSet(key, String(value));
+function safeStorageSet(key, value) {
+    try { var storage = window.localStorage; if (storage) storage.setItem(key, String(value)); } catch (e) {}
 }
-catch (e) { } }
-function safeStorageRemove(key) { try {
-    if (window.localStorage)
-        window.safeStorageRemove(key);
+function safeStorageRemove(key) {
+    try { var storage = window.localStorage; if (storage) storage.removeItem(key); } catch (e) {}
 }
-catch (e) { } }
 var SESSION_KEY = 'my_portfolio_session_v1';
 var EDGE_RUNTIME = globalThis.__MY_PORTFOLIO_EDGE__ || {};
 function currentAppRoot() {
@@ -477,7 +474,7 @@ function pseudo(seed) {
         x += 2147483646;
     return function () { return ((x = x * 16807 % 2147483647) - 1) / 2147483646; };
 }
-function seedFrom(s) { return __spreadArray([], __read(s), false).reduce(function (a, c) { return (a * 31 + c.charCodeAt(0)) >>> 0; }, 2166136261); }
+function seedFrom(s) { var a = 2166136261; s = String(s || ''); for (var i = 0; i < s.length; i++) a = (a * 31 + s.charCodeAt(i)) >>> 0; return a; }
 function genHistory(symbol, end, vol, drift, len) {
     if (vol === void 0) { vol = .018; }
     if (drift === void 0) { drift = .00045; }
@@ -978,6 +975,7 @@ function addTxModal() {
     }); };
 }
 function render() {
+    window.__APP_BOOT_OK = true;
     var _a;
     window.__APP_BOOT_OK = true;
     (_a = document.getElementById('boot-status')) === null || _a === void 0 ? void 0 : _a.remove();
