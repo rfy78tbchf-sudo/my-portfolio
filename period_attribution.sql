@@ -8,6 +8,7 @@ declare
   v_base date;
   v_end date;
   v_items jsonb;
+  v_missing_items jsonb;
   v_allocated numeric;
   v_missing integer;
   v_total numeric;
@@ -90,8 +91,19 @@ begin
     left join manual x on x.security_id=i.security_id
   ),
   missing as (
-    select count(*) as n from end_positions e
+    select e.security_id,s.symbol,s.name,a.name as account_name,e.quantity as end_quantity,
+      case when b.security_id is null then '시작일 종목 잔고 없음'
+        when b.quantity<>e.quantity then '기간 중 보유 수량 변경'
+        when exists (select 1 from public.transactions t where t.account_id=e.account_id
+          and t.security_id=e.security_id and t.type in ('buy','sell')
+          and (t.trade_at at time zone 'Asia/Seoul')::date>v_base
+          and (t.trade_at at time zone 'Asia/Seoul')::date<=v_end) then '기간 중 매매 기록'
+        else '평가액 비교 불가' end as reason
+    from end_positions e
     left join matching_positions m on m.account_id=e.account_id and m.security_id=e.security_id
+    left join begin_positions b on b.account_id=e.account_id and b.security_id=e.security_id
+    join public.accounts a on a.id=e.account_id
+    join public.securities s on s.id=e.security_id
     where e.quantity<>0 and m.security_id is null
   )
   select coalesce(jsonb_agg(jsonb_build_object(
@@ -99,13 +111,16 @@ begin
     'price_change_krw',price_change_krw,'realized_pnl_krw',realized_pnl_krw,
     'dividend_net_krw',dividend_net_krw,'contribution_krw',contribution_krw
   ) order by abs(contribution_krw) desc) filter(where security_id is not null),'[]'::jsonb),
-  coalesce(sum(contribution_krw),0), (select n from missing)
-  into v_items,v_allocated,v_missing
+  coalesce(sum(contribution_krw),0), (select count(*) from missing),
+  (select coalesce(jsonb_agg(jsonb_build_object('symbol',symbol,'name',name,
+    'account_name',account_name,'reason',reason) order by name),'[]'::jsonb) from missing)
+  into v_items,v_allocated,v_missing,v_missing_items
   from rows;
 
   return jsonb_build_object('ok',true,'ready',true,'start_snapshot_date',v_base,
     'end_snapshot_date',v_end,'investment_pnl',v_total,'allocated_krw',v_allocated,
     'unallocated_krw',v_total-v_allocated,'positions_without_comparable_valuation',v_missing,
+    'unallocated_positions',v_missing_items,
     'items',v_items);
 end;
 $$;
