@@ -1,0 +1,114 @@
+-- Return only defensible per-security contributions. Any gap to the account's
+-- flow-adjusted P&L stays explicitly unallocated; no invented trade P&L.
+create or replace function public.get_live_period_attribution(p_period text default '1M')
+returns jsonb language plpgsql stable security invoker set search_path = '' as $$
+declare
+  v_user uuid := (select auth.uid());
+  v_summary jsonb;
+  v_base date;
+  v_end date;
+  v_items jsonb;
+  v_allocated numeric;
+  v_missing integer;
+  v_total numeric;
+begin
+  if v_user is null then raise exception 'authentication required'; end if;
+  v_summary := public.get_live_performance_summary(p_period);
+  v_base := (v_summary->>'start_snapshot_date')::date;
+  v_end := (v_summary->>'end_snapshot_date')::date;
+  if v_summary->>'return_ready' is distinct from 'true' or v_base is null or v_end is null then
+    return jsonb_build_object('ok',true,'ready',false,'items','[]'::jsonb);
+  end if;
+  v_total := (v_summary->>'investment_pnl')::numeric;
+
+  with owned as (
+    select a.id from public.accounts a where a.user_id=v_user and a.mode='live' and a.is_active
+  ),
+  begin_positions as (
+    select ds.account_id,ds.security_id,ds.quantity,
+      ds.market_value*coalesce(ds.fx_rate_to_base,1) as value_krw
+    from public.daily_security_snapshots ds join owned a on a.id=ds.account_id
+    where ds.snapshot_date=v_base
+  ),
+  end_positions as (
+    select ds.account_id,ds.security_id,ds.quantity,
+      ds.market_value*coalesce(ds.fx_rate_to_base,1) as value_krw
+    from public.daily_security_snapshots ds join owned a on a.id=ds.account_id
+    where ds.snapshot_date=v_end
+  ),
+  matching_positions as (
+    select b.account_id,b.security_id,e.value_krw-b.value_krw as price_change
+    from begin_positions b join end_positions e
+      on e.account_id=b.account_id and e.security_id=b.security_id
+    where b.quantity=e.quantity and b.quantity<>0
+      and b.value_krw is not null and e.value_krw is not null
+      and not exists (
+        select 1 from public.transactions t where t.account_id=b.account_id
+          and t.security_id=b.security_id and t.type in ('buy','sell')
+          and (t.trade_at at time zone 'Asia/Seoul')::date>v_base
+          and (t.trade_at at time zone 'Asia/Seoul')::date<=v_end
+      )
+  ),
+  marked as (select security_id,sum(price_change) as price_change from matching_positions group by security_id),
+  official_realized as (
+    select r.security_id,sum(r.realized_pnl) as pnl
+    from public.realized_pnl_events r join owned a on a.id=r.account_id
+    where r.security_id is not null and r.realized_date>v_base and r.realized_date<=v_end
+    group by r.security_id
+  ),
+  paid_dividends as (
+    select d.security_id,sum(d.net_amount*coalesce(d.fx_rate_to_base,1)) as net
+    from public.dividends d join owned a on a.id=d.account_id
+    where d.security_id is not null
+      and (d.paid_at at time zone 'Asia/Seoul')::date>v_base
+      and (d.paid_at at time zone 'Asia/Seoul')::date<=v_end
+    group by d.security_id
+  ),
+  manual as (
+    select ma.security_id,
+      sum(ma.amount) filter(where ma.kind='realized_pnl') as pnl,
+      sum(ma.amount) filter(where ma.kind='dividend') as net
+    from public.manual_adjustments ma join owned a on a.id=ma.account_id
+    where ma.user_id=v_user and ma.active and ma.security_id is not null
+      and ma.kind in ('realized_pnl','dividend') and ma.occurred_on>v_base and ma.occurred_on<=v_end
+    group by ma.security_id
+  ),
+  ids as (
+    select security_id from marked union select security_id from official_realized
+    union select security_id from paid_dividends union select security_id from manual
+  ),
+  rows as (
+    select i.security_id,s.symbol,s.name,
+      coalesce(m.price_change,0) as price_change_krw,
+      coalesce(r.pnl,0)+coalesce(x.pnl,0) as realized_pnl_krw,
+      coalesce(d.net,0)+coalesce(x.net,0) as dividend_net_krw,
+      coalesce(m.price_change,0)+coalesce(r.pnl,0)+coalesce(x.pnl,0)+coalesce(d.net,0)+coalesce(x.net,0) as contribution_krw
+    from ids i join public.securities s on s.id=i.security_id
+    left join marked m on m.security_id=i.security_id
+    left join official_realized r on r.security_id=i.security_id
+    left join paid_dividends d on d.security_id=i.security_id
+    left join manual x on x.security_id=i.security_id
+  ),
+  missing as (
+    select count(*) as n from end_positions e
+    left join matching_positions m on m.account_id=e.account_id and m.security_id=e.security_id
+    where e.quantity<>0 and m.security_id is null
+  )
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'security_id',security_id,'symbol',symbol,'name',name,
+    'price_change_krw',price_change_krw,'realized_pnl_krw',realized_pnl_krw,
+    'dividend_net_krw',dividend_net_krw,'contribution_krw',contribution_krw
+  ) order by abs(contribution_krw) desc) filter(where security_id is not null),'[]'::jsonb),
+  coalesce(sum(contribution_krw),0), (select n from missing)
+  into v_items,v_allocated,v_missing
+  from rows;
+
+  return jsonb_build_object('ok',true,'ready',true,'start_snapshot_date',v_base,
+    'end_snapshot_date',v_end,'investment_pnl',v_total,'allocated_krw',v_allocated,
+    'unallocated_krw',v_total-v_allocated,'positions_without_comparable_valuation',v_missing,
+    'items',v_items);
+end;
+$$;
+
+revoke all on function public.get_live_period_attribution(text) from public, anon;
+grant execute on function public.get_live_period_attribution(text) to authenticated;
