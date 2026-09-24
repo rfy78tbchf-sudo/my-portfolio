@@ -480,9 +480,11 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
     const std=isKr?krStd:String(mm?.symbol||rawStd);
     const rawMarket=String(r?.dl_mkt||"").trim().toUpperCase();
     const market=isKr?"KRX":String(mm?.market||rawMarket||"UNKNOWN");
-    const cur=isKr?"KRW":String(mm?.currency||currency(r?.crncy_clsf_nm,market));
-    const fx=n(r?.exch_r)||1;
     const foreignAmount=n(r?.fcrncy_amt);
+    const isWonCashFlow=(type==="deposit"||type==="withdrawal")
+      && !String(r?.crncy_clsf_nm||"").trim() && foreignAmount===0;
+    const cur=isWonCashFlow?"KRW":isKr?"KRW":String(mm?.currency||currency(r?.crncy_clsf_nm,market));
+    const fx=isWonCashFlow?1:(n(r?.exch_r)||1);
     const grossBase=foreignAmount!==0?foreignAmount:n(r?.dl_amt);
     const fee=n(r?.fee)+n(r?.abrd_fee);
     const componentTax=n(r?.incm_tx)+n(r?.dl_tx)+n(r?.rsdnt_tx)+n(r?.ffs_tx)+n(r?.trsf_tx);
