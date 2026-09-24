@@ -606,7 +606,9 @@ html,body{background:var(--bg);font-size:15px;-webkit-font-smoothing:antialiased
     var btn=document.getElementById('refreshBtn'),tab=currentTab,position=window.scrollY,indicator=document.getElementById('pullRefresh'),brokerError=null;
     btn.disabled=true;btn.textContent=syncBroker?'KB 확인 중…':'갱신 중…';
     if(syncBroker){indicator.textContent='KB 잔고 확인 중…';indicator.classList.add('visible')}
-    liveRefreshPromise=(syncBroker?edgeSync('sync-current').catch(function(e){brokerError=e.message||'KB 동기화 실패'}):Promise.resolve()).then(function(){
+    liveRefreshPromise=(syncBroker?edgeSync('sync-current').then(function(){
+      indicator.textContent='이번 달 매매내역 확인 중…';return edgeSync('sync-history-month',{month:kstMonth()})
+    }).catch(function(e){brokerError=e.message||'KB 동기화 실패'}):Promise.resolve()).then(function(){
       if(syncBroker){indicator.textContent='기간 성과 다시 계산 중…';btn.textContent='성과 갱신 중…'}
       return loadLive()
     }).then(function(){if(mode==='live'){render();if(currentTab===tab)window.scrollTo(0,position)}
