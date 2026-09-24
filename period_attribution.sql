@@ -7,18 +7,47 @@ declare
   v_summary jsonb;
   v_base date;
   v_end date;
+  v_requested_start date;
   v_items jsonb;
   v_missing_items jsonb;
+  v_foreign_sales jsonb;
+  v_foreign_sales_count integer;
   v_allocated numeric;
   v_missing integer;
   v_total numeric;
 begin
   if v_user is null then raise exception 'authentication required'; end if;
   v_summary := public.get_live_performance_summary(p_period);
+  v_requested_start := (v_summary->>'period_start')::date;
   v_base := (v_summary->>'start_snapshot_date')::date;
   v_end := (v_summary->>'end_snapshot_date')::date;
+  -- The broker's overseas realized-P&L endpoint currently returns no per-sale
+  -- amount. Record the affected trades as coverage gaps without inventing P&L.
+  with foreign_trades as (
+    select t.security_id,coalesce(s.symbol,'미확인') as symbol,
+           coalesce(s.name,'종목 연결이 없는 해외 매도') as name,count(*)::integer as sale_count,
+           max((t.trade_at at time zone 'Asia/Seoul')::date) as last_sell
+    from public.transactions t
+    join public.accounts a on a.id=t.account_id
+    left join public.securities s on s.id=t.security_id
+    where a.user_id=v_user and a.mode='live' and a.is_active
+      and t.type='sell' and t.currency is distinct from 'KRW'
+      and (t.trade_at at time zone 'Asia/Seoul')::date between
+        case when v_summary->>'return_ready'='true' and v_base is not null
+          then greatest(v_requested_start,v_base+1) else v_requested_start end
+        and (v_summary->>'period_end')::date
+    group by t.security_id,s.symbol,s.name
+  )
+  select coalesce(sum(sale_count),0)::integer,
+         coalesce(jsonb_agg(jsonb_build_object('symbol',symbol,'name',name,
+           'sale_count',sale_count,'last_sell',last_sell)
+           order by last_sell desc,symbol),'[]'::jsonb)
+  into v_foreign_sales_count,v_foreign_sales
+  from foreign_trades;
   if v_summary->>'return_ready' is distinct from 'true' or v_base is null or v_end is null then
-    return jsonb_build_object('ok',true,'ready',false,'items','[]'::jsonb);
+    return jsonb_build_object('ok',true,'ready',false,'period_start',v_requested_start,
+      'period_end',v_summary->>'period_end','foreign_sales_without_detail',v_foreign_sales_count,
+      'foreign_sale_items',v_foreign_sales,'items','[]'::jsonb);
   end if;
   v_total := (v_summary->>'investment_pnl')::numeric;
 
@@ -55,6 +84,7 @@ begin
     select r.security_id,sum(r.realized_pnl) as pnl
     from public.realized_pnl_events r join owned a on a.id=r.account_id
     where r.security_id is not null and r.realized_date>v_base and r.realized_date<=v_end
+      and coalesce(r.provider_payload->>'trd_dl_ccd','01')='01'
     group by r.security_id
   ),
   paid_dividends as (
@@ -121,6 +151,8 @@ begin
     'end_snapshot_date',v_end,'investment_pnl',v_total,'allocated_krw',v_allocated,
     'unallocated_krw',v_total-v_allocated,'positions_without_comparable_valuation',v_missing,
     'unallocated_positions',v_missing_items,
+    'period_start',v_requested_start,'period_end',v_summary->>'period_end',
+    'foreign_sales_without_detail',v_foreign_sales_count,'foreign_sale_items',v_foreign_sales,
     'items',v_items);
 end;
 $$;
