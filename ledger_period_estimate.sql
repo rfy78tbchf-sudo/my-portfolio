@@ -47,6 +47,12 @@ begin
       and f.occurred_at<=v_cutoff
       and ((f.occurred_at at time zone 'Asia/Seoul')::date>v_start
         or (p_period='ALL' and (f.occurred_at at time zone 'Asia/Seoul')::date=v_start));
+  v_external_flow := v_external_flow + coalesce((select sum(ma.amount)
+    from public.manual_adjustments ma
+    where ma.user_id=v_user and ma.account_id=v_account
+      and ma.kind='external_flow' and ma.active=true
+      and ma.occurred_on<=v_end
+      and (ma.occurred_on>v_start or (p_period='ALL' and ma.occurred_on=v_start))),0);
   select count(*) into v_unmapped from public.transactions t
     where t.account_id=v_account and t.security_id is null
       and t.type in ('buy','sell') and t.quantity>0 and t.price>0
@@ -248,7 +254,6 @@ begin
   return jsonb_build_object('ok',true,'ready',true,'method','ledger_mark_to_market_estimate',
     'period_start',v_start,'period_end',v_end,'end_snapshot_at',v_cutoff,
     'estimated_pnl_krw',v_sum,'known_external_flow_krw',v_external_flow,
-    'partial_asset_change_krw',v_sum+v_external_flow,
     'unvalued_cash_flow_count',v_unvalued_flows,
     'included_count',v_included,'candidate_count',v_total,
     'unmapped_trade_count',v_unmapped,'items',v_items,'excluded',v_excluded,
