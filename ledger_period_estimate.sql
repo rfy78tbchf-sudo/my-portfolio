@@ -76,7 +76,7 @@ begin
     from public.securities s
   ),
   relevant_trades as (
-    select k.asset_key,t.security_id,t.type,t.quantity,t.price,t.net_amount,t.gross_amount,
+    select k.asset_key,t.security_id,t.type,t.quantity,t.price,t.net_amount,t.gross_amount,t.fee,
       t.currency,t.fx_rate,(t.trade_at at time zone 'Asia/Seoul')::date as d,
       t.trade_at
     from public.transactions t join security_keys k on k.id=t.security_id
@@ -92,7 +92,10 @@ begin
              else -coalesce(t.quantity,0) end else 0 end) as period_quantity,
       count(*) filter(where t.d>v_start or (p_period='ALL' and t.d=v_start)) as trade_count,
       sum(case when t.d>v_start or (p_period='ALL' and t.d=v_start) then
-        (case when t.currency='KRW' then t.net_amount
+        (case when t.currency='KRW' and t.gross_amount is not null
+            and abs(t.net_amount)>abs(t.gross_amount)*1.2+5000
+            then t.gross_amount-coalesce(t.fee,0)
+          when t.currency='KRW' then t.net_amount
           when t.currency='USD' and t.fx_rate between 500 and 3000
             and t.gross_amount<>0
             and abs(t.net_amount/t.gross_amount) between 500 and 3000
@@ -103,7 +106,10 @@ begin
       count(*) filter(where (t.d>v_start or (p_period='ALL' and t.d=v_start)) and
         (t.currency not in ('KRW','USD') or (t.currency='USD' and f.rate is null)
           or t.net_amount is null or t.quantity is null)) as incomplete_trades,
-      count(*) filter(where (t.d>v_start or (p_period='ALL' and t.d=v_start)) and t.currency='USD') as fx_estimated_count
+      count(*) filter(where (t.d>v_start or (p_period='ALL' and t.d=v_start)) and t.currency='USD') as fx_estimated_count,
+      count(*) filter(where (t.d>v_start or (p_period='ALL' and t.d=v_start))
+        and t.currency='KRW' and t.gross_amount is not null
+        and abs(t.net_amount)>abs(t.gross_amount)*1.2+5000) as corrected_amount_count
     from relevant_trades t
     left join lateral (
       select x.rate from fx_history x
@@ -147,6 +153,7 @@ begin
       coalesce(t.trade_cash_krw,0) as trade_cash_krw,
       coalesce(t.incomplete_trades,0) as incomplete_trades,
       coalesce(t.fx_estimated_count,0) as fx_estimated_count,
+      coalesce(t.corrected_amount_count,0) as corrected_amount_count,
       coalesce(d.paid,0) as dividend_krw
     from ids i
     left join traded t on t.asset_key=i.asset_key
@@ -218,7 +225,7 @@ begin
       'start_price_date',coalesce(price_date,trade_reference_date),
       'price_source',case when start_price is not null then '저장 종가'
         when trade_reference is not null then '인접 거래가격' else '보유 없음' end,
-      'fx_estimated_count',fx_estimated_count
+      'fx_estimated_count',fx_estimated_count,'corrected_amount_count',corrected_amount_count
     ) order by abs(contribution_krw) desc) filter(where omission_reason is null),'[]'::jsonb),
     coalesce(jsonb_agg(jsonb_build_object(
       'security_id',security_id,'symbol',symbol,'name',name,
