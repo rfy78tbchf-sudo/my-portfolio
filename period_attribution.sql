@@ -15,12 +15,45 @@ declare
   v_allocated numeric;
   v_missing integer;
   v_total numeric;
+  v_account uuid;
+  v_flow numeric;
+  v_partial boolean := false;
+  v_start_assets numeric;
+  v_end_assets numeric;
 begin
   if v_user is null then raise exception 'authentication required'; end if;
   v_summary := public.get_live_performance_summary(p_period);
   v_requested_start := (v_summary->>'period_start')::date;
   v_base := (v_summary->>'start_snapshot_date')::date;
   v_end := (v_summary->>'end_snapshot_date')::date;
+  -- If the chosen period predates the first saved balance, show only the
+  -- recorded subrange, explicitly labelled as partial coverage.
+  if v_summary->>'return_ready' is distinct from 'true' and v_end is not null then
+    select a.id into v_account from public.accounts a
+    where a.user_id=v_user and a.mode='live' and a.is_active
+    order by a.created_at limit 1;
+    select min(s.snapshot_date) into v_base from public.daily_account_snapshots s
+    where s.account_id=v_account and s.snapshot_date>=v_requested_start
+      and s.snapshot_date<v_end;
+    if v_base is not null then
+      v_partial := true;
+      select s.total_assets into v_start_assets from public.daily_account_snapshots s
+      where s.account_id=v_account and s.snapshot_date=v_base
+      order by s.snapshot_at desc limit 1;
+      select s.total_assets into v_end_assets from public.daily_account_snapshots s
+      where s.account_id=v_account and s.snapshot_date=v_end
+      order by s.snapshot_at desc limit 1;
+      select coalesce((select sum(c.amount*coalesce(c.fx_rate_to_base,1))
+        from public.cash_flows c where c.account_id=v_account
+          and (c.occurred_at at time zone 'Asia/Seoul')::date>v_base
+          and (c.occurred_at at time zone 'Asia/Seoul')::date<=v_end),0)
+        + coalesce((select sum(m.amount) from public.manual_adjustments m
+          where m.user_id=v_user and m.account_id=v_account and m.active
+            and m.kind='external_flow' and m.occurred_on>v_base
+            and m.occurred_on<=v_end),0) into v_flow;
+      v_total := v_end_assets-v_start_assets-v_flow;
+    end if;
+  end if;
   -- The broker's overseas realized-P&L endpoint currently returns no per-sale
   -- amount. Record the affected trades as coverage gaps without inventing P&L.
   with foreign_trades as (
@@ -33,7 +66,7 @@ begin
     where a.user_id=v_user and a.mode='live' and a.is_active
       and t.type='sell' and t.currency is distinct from 'KRW'
       and (t.trade_at at time zone 'Asia/Seoul')::date between
-        case when v_summary->>'return_ready'='true' and v_base is not null
+        case when v_base is not null
           then greatest(v_requested_start,v_base+1) else v_requested_start end
         and (v_summary->>'period_end')::date
     group by t.security_id,s.symbol,s.name
@@ -44,12 +77,12 @@ begin
            order by last_sell desc,symbol),'[]'::jsonb)
   into v_foreign_sales_count,v_foreign_sales
   from foreign_trades;
-  if v_summary->>'return_ready' is distinct from 'true' or v_base is null or v_end is null then
+  if v_base is null or v_end is null then
     return jsonb_build_object('ok',true,'ready',false,'period_start',v_requested_start,
       'period_end',v_summary->>'period_end','foreign_sales_without_detail',v_foreign_sales_count,
       'foreign_sale_items',v_foreign_sales,'items','[]'::jsonb);
   end if;
-  v_total := (v_summary->>'investment_pnl')::numeric;
+  if not v_partial then v_total := (v_summary->>'investment_pnl')::numeric; end if;
 
   with owned as (
     select a.id from public.accounts a where a.user_id=v_user and a.mode='live' and a.is_active
@@ -147,7 +180,7 @@ begin
   into v_items,v_allocated,v_missing,v_missing_items
   from rows;
 
-  return jsonb_build_object('ok',true,'ready',true,'start_snapshot_date',v_base,
+  return jsonb_build_object('ok',true,'ready',true,'partial',v_partial,'start_snapshot_date',v_base,
     'end_snapshot_date',v_end,'investment_pnl',v_total,'allocated_krw',v_allocated,
     'unallocated_krw',v_total-v_allocated,'positions_without_comparable_valuation',v_missing,
     'unallocated_positions',v_missing_items,
