@@ -33,6 +33,14 @@ begin
         or v_key in ('trigger_pct','trade_pct') and (v_number<=-100 or v_number>1000)
         then raise exception 'target amount out of range'; end if;
     end loop;
+    if v_plan ? 'leverage' then
+      if jsonb_typeof(v_plan->'leverage') is distinct from 'number' then
+        raise exception 'invalid leverage'; end if;
+      v_number := (v_plan->>'leverage')::numeric;
+      if v_number=0 or abs(v_number)>10
+        or abs((v_plan->>'trigger_pct')::numeric*v_number-(v_plan->>'trade_pct')::numeric)>0.000001
+        then raise exception 'leverage and target do not match'; end if;
+    end if;
   end loop;
   insert into public.app_settings(user_id,key,value)
     values(v_user,'trade_target_plans',p_plans)
