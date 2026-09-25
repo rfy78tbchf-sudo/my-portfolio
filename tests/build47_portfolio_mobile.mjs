@@ -11,12 +11,15 @@ const sample={accounts:[{id:accountA,name:'KB증권'},{id:accountB,name:'KB증�
   holdings:[
     {account_id:accountB,security_id:security,quantity:210,as_of:'2026-09-23T03:35:38Z',avg_cost:11376,market_price:11354,market_value:2384270,unrealized_pnl:-4690,unrealized_pnl_rate:-.20,currency:'KRW',fx_rate_to_base:1},
     {account_id:accountA,security_id:security,quantity:200,as_of:'2026-09-25T12:35:33Z',avg_cost:11251,market_price:11305,market_value:2261000,unrealized_pnl:10890,unrealized_pnl_rate:.48,currency:'KRW',fx_rate_to_base:1}
-  ],securityMap:{[security]:{symbol:'A0173Y0',name:'KODEX 미국AI광통신네트워크',market:'KRX',currency:'KRW'}},analysis:{items:[]}};
+  ],holdingBasis:[
+    {account_id:accountB,security_id:security,valuation_krw:2384270,cost_krw:2388960,pnl_krw:-4690,rate_pct:-.1963,average_unit_krw:11376,valued_unit_krw:11353.6667},
+    {account_id:accountA,security_id:security,valuation_krw:2261000,cost_krw:2250110,pnl_krw:10890,rate_pct:.484,average_unit_krw:11250.55,valued_unit_krw:11305}
+  ],snapshots:[{total_assets:6000000}],securityMap:{[security]:{symbol:'A0173Y0',name:'KODEX 미국AI광통신네트워크',market:'KRX',currency:'KRW'}},analysis:{items:[]}};
 const context=vm.createContext({live:sample,hideZeroHoldings:false,portfolioMarket:'ALL',portfolioAccount:'ALL',portfolioSort:'value',
   kstDate:()=> '2026-09-25',kstStamp:x=>String(x).slice(0,10),
   marketGroup:()=> 'KR',money:n=>Number(n).toLocaleString('en-US')+'원',
   signedMoney:n=>(n>0?'+':'')+Number(n).toLocaleString('en-US')+'원',
-  pct:n=>(n>0?'+':'')+Number(n).toFixed(2)+'%',num:(n,d)=>Number(n).toLocaleString('en-US',{maximumFractionDigits:d}),
+  pct:n=>(n>0?'+':'')+Number(n).toFixed(2)+'%',weightPct:n=>Number(n).toFixed(1)+'%',num:(n,d)=>Number(n).toLocaleString('en-US',{maximumFractionDigits:d}),
   cls:n=>Number(n)>=0?'up':'down',esc:String,Set});
 vm.runInContext(html.slice(start,end),context);
 let view=vm.runInContext('livePortfolio()',context);
@@ -25,6 +28,7 @@ assert.match(view,/410주/);
 assert.match(view,/4,645,270원/);
 assert.match(view,/\+6,200원/);
 assert.match(view,/2개 계좌/);
+assert.match(view,/통합 총자산 대비 77\.4%/);
 assert.match(view,/2026-09-23 기준 · 새 잔고 확인 필요/);
 assert.doesNotMatch(view,/KB 평균매입단가/);
 assert.ok(html.includes('padding-bottom:calc(124px + var(--safe))'));

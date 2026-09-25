@@ -13,13 +13,14 @@ const gate={ok:true,state:'estimated',partial:true,reliable_start:'2026-09-23',
 const ctx=vm.createContext({live:{performanceGate:gate},period:'1M',
   esc:String,money:n=>Number(n).toLocaleString('en-US')+'원',
   signedMoney:n=>(Number(n)>0?'+':'')+Number(n).toLocaleString('en-US')+'원',
+  amountHtml:n=>'<span class="amount-atomic">'+(Number(n)>0?'+':'')+Number(n).toLocaleString('en-US')+'원</span>',
   pct:n=>Number(n).toFixed(2)+'%',cls:()=>'',kstStamp:()=> '9월 25일'});
 vm.runInContext(source.slice(start,end),ctx);
 const display=vm.runInContext('observedPerformanceCard()',ctx);
-assert.match(display,/1M 전체 기간의 성과가 아닙니다/);
+assert.match(display,/1M 전체 기간의 성과는 확인 중입니다/);
 assert.match(display,/2026-09-23 ~ 2026-09-25/);
 assert.match(display,/230,610원/);
-assert.match(display,/외부 순입출금 · 손익 제외/);
+assert.match(display,/기록된 순유입 · 계좌편입 포함 · 손익 제외/);
 assert.match(display,/264,002원 차이가 납니다/);
 ctx.live.observationCutoffs={ok:true,same_day:true,valuation_time_aligned:false,
   nav_gap_krw:-287640,cash_gap_krw:-2774725,

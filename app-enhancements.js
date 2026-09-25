@@ -136,10 +136,10 @@
     var a=await Promise.all([backfill,health]),recon=ctx.live.reconciliation||{},old=a[0]&&a[0][0],ai=a[1];
     if(!el.isConnected)return;
     var keySetup=document.getElementById('aiKeySetup');
-    if(keySetup)keySetup.hidden=!!(ai&&ai.configured);
+    if(keySetup){keySetup.hidden=!!(ai&&ai.status==='configured');if(ai&&ai.status==='unknown')keySetup.textContent='AI 실행환경 설정을 확인하지 못했습니다. 로그인 상태에서 다시 확인해 주세요.'}
     el.textContent='KB 잔고 일치 '+Number(recon.quantity_matched||0)+' / '+Number(recon.quantity_total||0)+'종목 · '+
       (old?'KB 과거 내역 '+old.month+'부터 확인':'KB 과거 내역 확인 대기')+' · '+
-      (ai?(ai.configured?'AI 서버 연결됨':'AI 서버 준비됨 · API 키 필요'):'AI 서버 연결 확인 필요');
+      (ai?(ai.status==='configured'?'AI 서버 설정 확인 · 실제 모델 응답은 질문 후 확인':ai.status==='missing'?'AI 서버 API 키 미설정':'AI 서버 설정 확인 불가'):'AI 서버 연결 확인 필요');
   }
   function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3>'+
     '<div class="notice">현재 보유, 최근 거래, 수량 차이, 포트폴리오 위험, 저장한 투자 논리를 서버에서 질문에 맞게 읽습니다. 확인되지 않은 숫자는 확정 성과처럼 쓰지 않습니다.</div>'+
