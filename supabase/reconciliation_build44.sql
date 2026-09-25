@@ -165,7 +165,7 @@ grant execute on function public.confirm_position_closed(uuid,text) to authentic
 -- Bounded, authenticated case timeline: raw payload and account references are excluded.
 create or replace function public.get_reconciliation_case_timeline(p_case_id uuid)
 returns jsonb language plpgsql stable security definer set search_path='' as $function$
-declare c public.reconciliation_cases;v_events jsonb;v_evidence jsonb;v_obs jsonb;
+declare c public.reconciliation_cases;v_events jsonb;v_evidence jsonb;v_obs jsonb;v_balance jsonb;
 begin
   select x.* into c from public.reconciliation_cases x
     join public.accounts a on a.id=x.account_id
@@ -198,8 +198,15 @@ begin
     join public.securities s on s.id=p.security_id
     where p.account_id=c.account_id and
       (s.id=c.security_id or s.isin=c.asset_key or (s.symbol=c.symbol and s.currency=c.currency));
+  select jsonb_build_object('settled',b.settled_quantity,'effective',b.effective_quantity,
+    'pending_buy',b.pending_buy_quantity,'pending_sell',b.pending_sell_quantity,
+    'observed_at',b.observed_at) into v_balance
+    from public.kb_balance_position_evidence b where b.account_id=c.account_id
+      and b.symbol=c.symbol and b.observed_at>=(select max(d.snapshot_at)
+        from public.daily_account_snapshots d where d.account_id=c.account_id) - interval '2 minutes'
+    order by b.observed_at desc limit 1;
   return jsonb_build_object('case',to_jsonb(c)-'user_note','events',v_events,
-    'other_official_evidence',v_evidence,'observations',v_obs);
+    'other_official_evidence',v_evidence,'observations',v_obs,'balance_evidence',v_balance);
 end $function$;
 revoke all on function public.get_reconciliation_case_timeline(uuid) from public,anon;
 grant execute on function public.get_reconciliation_case_timeline(uuid) to authenticated;
@@ -244,7 +251,7 @@ declare
   v_delta numeric;v_evidence_qty numeric;v_evidence_count int;v_realized int;
   v_status text;v_causes jsonb;v_sources jsonb;v_confidence jsonb;
   v_last_kb date;v_first_mismatch date;v_last_matched date;v_balance_date date;
-  v_market text;v_currency text;v_prev public.reconciliation_cases;
+  v_market text;v_currency text;v_prev public.reconciliation_cases;v_balance record;
 begin
   if (select auth.role()) <> 'service_role' then raise exception 'SERVICE_ROLE_REQUIRED'; end if;
   select id into v_account from public.accounts where user_id=p_user_id and mode='live'
@@ -276,6 +283,10 @@ begin
       join public.securities s on s.id=p.security_id
       where p.account_id=v_account and
         (s.id=v_security or s.isin=v_asset or (s.symbol=v_item->>'symbol' and s.currency=v_currency));
+    select b.* into v_balance from public.kb_balance_position_evidence b
+      where b.account_id=v_account and b.symbol=v_item->>'symbol'
+        and b.observed_at >= (v_report->>'balance_at')::timestamptz - interval '2 minutes'
+      order by b.observed_at desc limit 1;
     select max((t.trade_at at time zone 'Asia/Seoul')::date) into v_last_kb
       from public.transactions t join public.securities s on s.id=t.security_id
       where t.account_id=v_account and t.source='api' and
@@ -322,6 +333,14 @@ begin
       from marks m cross join last_match l group by l.d;
     if abs(v_delta)<.000001 then
       v_status:='resolved';v_causes:='["KB 잔고와 확정 원장 수량 일치"]'::jsonb;
+    elsif v_evidence_count>0 and abs(v_evidence_qty-v_delta)<.000001
+      and v_balance.symbol is not null
+      and abs(v_balance.settled_quantity-coalesce((v_item->>'ledger_qty_through_balance_day')::numeric,0))<.000001
+      and abs(v_balance.effective_quantity-coalesce((v_item->>'actual_qty')::numeric,0))<.000001
+      and abs(v_delta-(v_balance.pending_buy_quantity-v_balance.pending_sell_quantity))<.000001 then
+      v_status:='settlement_pending';
+      v_causes:=jsonb_build_array('KB 미결제 매수·매도 수량이 원장 차이와 정확히 일치',
+        'KB 해외 체결·결제 기록의 예정 결제일 이후 거래원장 자동 재확인');
     elsif v_evidence_count>0 and abs(v_evidence_qty-v_delta)<.000001 then
       v_status:='likely_missing_trade';
       v_causes:=jsonb_build_array('KB 해외 체결·결제 조회의 수량 변화가 현재 차이와 일치',
@@ -342,12 +361,13 @@ begin
       v_status:='user_confirmed_position_closed';
     end if;
     v_sources:=jsonb_build_array('KB 현재잔고','SWQA2301 거래원장');
+    if v_balance.symbol is not null then v_sources:=v_sources||'"SSQM2952 미결제수량"'::jsonb; end if;
     if v_evidence_count>0 then v_sources:=v_sources||'"SPQM2205 해외 체결·결제"'::jsonb; end if;
     if v_realized>0 then v_sources:=v_sources||'"SSQM2442 국내 실현손익"'::jsonb; end if;
     v_confidence:=jsonb_build_object(
-      'quantity',case when v_status='resolved' then 'verified' when v_status='likely_missing_trade' then 'cross_source_pending' else 'unresolved' end,
-      'trade_completeness',case when v_status='resolved' then 'verified_for_quantity' else 'incomplete' end,
-      'price_completeness',case when v_status='resolved' then 'source_rows_available' else 'unverified' end,
+      'quantity',case when v_status='resolved' then 'verified' when v_status='settlement_pending' then 'official_pending_explained' when v_status='likely_missing_trade' then 'cross_source_pending' else 'unresolved' end,
+      'trade_completeness',case when v_status='settlement_pending' then 'awaiting_ledger_settlement' when v_status='resolved' then 'verified_for_quantity' else 'incomplete' end,
+      'price_completeness',case when v_status='settlement_pending' then 'official_execution_price_unsettled' when v_status='resolved' then 'source_rows_available' else 'unverified' end,
       'fx_completeness',case when v_currency='KRW' then 'not_applicable' else 'partly_estimated' end,
       'cash_flow_completeness','unverified');
     insert into public.reconciliation_cases(account_id,asset_key,security_id,symbol,name,market,currency,

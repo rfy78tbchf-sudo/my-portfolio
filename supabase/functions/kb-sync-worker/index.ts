@@ -302,6 +302,14 @@ async function syncCurrent(userId:string) {
     p_user_id:userId,p_domestic_cash_krw:domesticCash,
     p_foreign_cash_krw_equivalent:foreignCashKrw
   });
+  const balanceEvidence=(Array.isArray(dS.Record1)?dS.Record1:[])
+    .filter((r:any)=>/^[A-Z0-9.]{1,12}$/i.test(String(r?.is_cd||"").trim()))
+    .map((r:any)=>({symbol:String(r.is_cd).trim().toUpperCase(),
+      settled_quantity:n(r?.hld_q),effective_quantity:n(r?.ec_q),
+      pending_buy_quantity:n(r?.nstmt_b_q),pending_sell_quantity:n(r?.nstmt_s_q)}));
+  await adminRpc("save_kb_balance_position_evidence_for_service",{
+    p_user_id:userId,p_rows:balanceEvidence
+  });
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
 
   return {
@@ -309,6 +317,7 @@ async function syncCurrent(userId:string) {
     domesticHoldings:d.holdings.length,
     overseasHoldings:o.holdings.length,
     totalHoldings:holdings.length,
+    balanceEvidenceRows:balanceEvidence.length,
     snapshotDate:todaySeoul(),
     reconciliation,
     orderEndpointsEnabled:false,
@@ -401,6 +410,21 @@ async function inspectPositionSources(userId:string, month:string, wanted:unknow
         Object.entries(r).filter(([k])=>safe.test(k)).map(([k,v])=>[k,String(v??"").trim().slice(0,100)])))});
   }
   return {sources:out,orderEndpointsEnabled:false};
+}
+async function inspectCurrentPositions(userId:string,wanted:unknown){
+  const symbols=Array.isArray(wanted)?wanted.map(x=>String(x).trim().toUpperCase())
+    .filter(x=>/^[A-Z0-9.]{1,12}$/.test(x)).slice(0,8):[];
+  if(!symbols.length)throw new Error("SYMBOLS_REQUIRED");
+  const {domesticRaw,overseasRaw}=await fetchCurrent(userId);
+  const fields=["is_cd","is_nm","hld_q_p6","hld_q","ec_q_p6","ec_q",
+    "val_amt","byng_amt","ordr_psbl_q","ordr_psbl_q_p6","nstmt_s_q",
+    "nstmt_b_q","now_prc","frgn_hld_q_p6","krw_val_amt"];
+  return {domestic:(domesticRaw?.dataBody?.Record1||[])
+      .filter((r:any)=>symbols.includes(String(r?.is_cd||"").trim().toUpperCase()))
+      .map((r:any)=>Object.fromEntries(fields.filter(k=>r[k]!==undefined).map(k=>[k,r[k]]))),
+    overseas:(overseasRaw?.dataBody?.Record2||[])
+      .filter((r:any)=>symbols.includes(String(r?.is_cd||"").trim().toUpperCase()))
+      .map((r:any)=>Object.fromEntries(fields.filter(k=>r[k]!==undefined).map(k=>[k,r[k]])))};
 }
 
 
@@ -1096,6 +1120,10 @@ Deno.serve(async (req:Request) => {
     if (action === "inspect-position-sources") {
       const result=await inspectPositionSources(userId,String(body?.month||""),body?.symbols);
       return json(req,{ok:true,mode:"read_only_source_audit",...result});
+    }
+    if (action === "inspect-current-positions") {
+      const result=await inspectCurrentPositions(userId,body?.symbols);
+      return json(req,{ok:true,mode:"read_only_current_position_audit",...result});
     }
     if (action === "sync-history-month") {
       const month=String(body?.month||"");
