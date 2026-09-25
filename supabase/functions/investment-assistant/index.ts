@@ -59,22 +59,28 @@ async function buildContext(token:string,userId:string,symbol:string){
   const accountId=accounts[0].id;
   const [holdings,securities]=await Promise.all([
     scopedRequest(token,'holdings?select=security_id,quantity,avg_cost,market_price,market_value,unrealized_pnl,currency,fx_rate_to_base&account_id=eq.'+accountId+'&quantity=gt.0&limit=60'),
-    scopedRequest(token,'securities?select=id,symbol,name,sector,country,currency,market&limit=2000')
+    scopedRequest(token,'securities?select=id,symbol,name,sector,country,currency,market,isin&limit=2000')
   ]);
   const byId=new Map(securities.map((s:any)=>[String(s.id),s]));
   const enriched=holdings.map((h:any)=>({...limitObject(h,['security_id','quantity','avg_cost','market_price','market_value','unrealized_pnl','currency','fx_rate_to_base']),
     security:limitObject(byId.get(String(h.security_id)),['symbol','name','sector','country','market'])}));
   const selected=symbol?securities.find((s:any)=>s.symbol===symbol):null;
   if(symbol&&!selected)throw Error('UNKNOWN_SYMBOL');
+  const relatedIds=selected?securities.filter((s:any)=>selected.isin?
+    s.isin===selected.isin:s.symbol===selected.symbol).map((s:any)=>s.id):[];
+  const ids='in.('+relatedIds.join(',')+')';
   const history=selected?await scopedRequest(token,
     'transactions?select=trade_at,type,quantity,price,currency,fee,tax,official_realized_pnl&account_id=eq.'+
-      accountId+'&security_id=eq.'+selected.id+'&order=trade_at.desc&limit=14'):[];
+      accountId+'&security_id='+ids+'&order=trade_at.desc&limit=20'):[];
   const thesis=selected?await scopedRequest(token,'investment_theses?select=id,version,rationale,catalysts,risks,add_condition,trim_condition,exit_condition,notes,updated_at&user_id=eq.'+
-    userId+'&security_id=eq.'+selected.id+'&limit=1'):[];
+    userId+'&security_id='+ids+'&order=updated_at.desc&limit=1'):[];
   const versions=thesis?.[0]?await scopedRequest(token,
     'investment_thesis_versions?select=version,fields,created_at&thesis_id=eq.'+
       thesis[0].id+'&order=version.desc&limit=4'):[];
-  const riskSummary=risk?limitObject(risk,['ok','coverage_pct','known_value_krw','top_positions','concentration','leverage','currency','sector','positions','warnings']):null;
+  const riskSummary=risk?limitObject(risk,['ok','as_of','coverage_pct','position_count',
+    'official_assets_krw','official_securities_krw','known_positions_krw',
+    'largest_symbol','largest_krw','top_three_krw','leveraged_etf_krw',
+    'foreign_currency_krw','sector_unclassified_krw']):null;
   const reconSummary=recon?{
     quantity_total:recon.quantity_total,quantity_matched:recon.quantity_matched,
     quantity_unmatched:recon.quantity_unmatched,
