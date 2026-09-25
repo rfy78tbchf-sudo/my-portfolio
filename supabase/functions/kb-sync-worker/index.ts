@@ -311,6 +311,9 @@ async function syncCurrent(userId:string) {
     p_user_id:userId,p_rows:balanceEvidence
   });
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
+  const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
+    p_user_id:userId
+  }).catch(()=>({ok:false,reason:"CASH_RECONCILIATION_RETRY_PENDING"}));
 
   return {
     applied,
@@ -320,6 +323,7 @@ async function syncCurrent(userId:string) {
     balanceEvidenceRows:balanceEvidence.length,
     snapshotDate:todaySeoul(),
     reconciliation,
+    cashAccounting,
     orderEndpointsEnabled:false,
   };
 }
@@ -570,7 +574,8 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
     const conversionRatio=foreignAmount?Math.abs(wonAmount/foreignAmount):0;
     const isWonFx=type==="fx" && foreignAmount!==0
       && conversionRatio>=500 && conversionRatio<=3000;
-    const isWonCashFlow=(type==="deposit"||type==="withdrawal")
+    const isWonCashFlow=(type==="deposit"||type==="withdrawal"||type==="tax"
+      ||type==="interest"||type==="other")
       && !String(r?.crncy_clsf_nm||"").trim() && foreignAmount===0;
     const cur=isWonCashFlow||isWonFx?"KRW":isKr?"KRW":String(mm?.currency||currency(r?.crncy_clsf_nm,market));
     const fx=isWonCashFlow||isWonFx?1:(n(r?.exch_r)||1);
@@ -584,8 +589,10 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
     const isTaxRefund=type==="tax" && /환급|입금/.test(summaryText);
     const fxDirection=type==="fx" && /출금/.test(summaryText)?"withdrawal":
       type==="fx" && /입금/.test(summaryText)?"deposit":type;
-    const net=isTaxRefund?Math.abs(netRaw):signedAmount(netRaw,fxDirection);
-    const gross=isTaxRefund?Math.abs(grossBase):signedAmount(grossBase,fxDirection);
+    const otherCashDirection=type==="other" && /공모불입 출금|공모추가납입 출금/.test(summaryText)
+      && String(r?.dl_typ_cd||"").trim()==="02"?"withdrawal":fxDirection;
+    const net=isTaxRefund?Math.abs(netRaw):signedAmount(netRaw,otherCashDirection);
+    const gross=isTaxRefund?Math.abs(grossBase):signedAmount(grossBase,otherCashDirection);
     const item={
       external_id:externalId,
       trade_at:tradeAt,
@@ -772,6 +779,9 @@ async function syncHistoryMonth(userId:string,month:string){
     p_user_id:userId,p_month:month,p_count:evidence.length
   });
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
+  const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
+    p_user_id:userId
+  }).catch(()=>({ok:false,reason:"CASH_RECONCILIATION_RETRY_PENDING"}));
 
   return {
     month,
@@ -787,6 +797,7 @@ async function syncHistoryMonth(userId:string,month:string){
     orderDatesLinked,
     retiredRevisions,
     reconciliation,
+    cashAccounting,
     dividends:norm.dividends.length,
     cashFlows:norm.cashFlows.length,
     applied,
@@ -941,6 +952,39 @@ async function syncHoldingPrices(userId:string){
     }
   }
   return {securities:results.length,rowsWritten:total,results,orderEndpointsEnabled:false};
+}
+
+async function syncHistoricalPriceNext(userId:string,requested:unknown){
+  const limit=Math.min(5,Math.max(1,Number(requested)||3));
+  const candidates=await adminRpc('get_missing_price_history_for_service',{
+    p_user_id:userId,p_limit:limit
+  });
+  if(!Array.isArray(candidates)||!candidates.length)
+    return {securities:0,rowsWritten:0,results:[],remaining:'check_progress_after_21_days'};
+  const {appKey,appSecret}=await credentials(userId);
+  const token=await issueToken(appKey,appSecret);
+  const results:any[]=[];let total=0;
+  for(const s of candidates){
+    const sid=String(s.security_id||''),symbol=String(s.symbol||'');
+    let rows:any[]=[];let written=0;let status='retrieved';let errorCode:string|null=null;
+    try{
+      rows=s.market==='KRX'
+        ?await domesticChart(appKey,token,sid,symbol,String(s.currency||'KRW'))
+        :await overseasChart(appKey,token,sid,symbol,String(s.market||''),String(s.currency||'USD'));
+      if(rows.length)written=Number(await adminRpc('upsert_daily_security_prices_for_service',{p_rows:rows})||0);
+      else status='unavailable';
+    }catch(error){status='failed';errorCode=String((error as Error)?.message||'PRICE_HISTORY_FAILED').slice(0,100)}
+    let coverage:any=null;
+    try{coverage=await adminRpc('record_price_backfill_for_service',{
+      p_user_id:userId,p_security_id:sid,p_first_trade_date:s.first_trade_date,
+      p_status:status,p_rows_read:rows.length,p_rows_written:written,p_error_code:errorCode
+    })}catch(error){throw new Error('PRICE_PROGRESS_SAVE_FAILED')}
+    total+=written;
+    results.push({symbol,status,rows:rows.length,written,
+      firstTrade:s.first_trade_date,firstPrice:coverage?.first_price_date||null,
+      fullLifecycleCovered:!!coverage?.full_lifecycle_covered,errorCode});
+  }
+  return {securities:results.length,rowsWritten:total,results};
 }
 
 async function syncHistoricalFx(){
@@ -1100,6 +1144,10 @@ Deno.serve(async (req:Request) => {
         p_detail:{securities:p?.securities||0,failed:failed.length,order_endpoints_enabled:false}
       }).catch(()=>{});
       return json(req,{ok:true,mode:"price_history_sync",...p,historicalFx:fx});
+    }
+    if (action === "sync-history-prices-next") {
+      return json(req,{ok:true,mode:"resumable_sold_security_price_backfill",
+        ...await syncHistoricalPriceNext(userId,body?.securities)});
     }
     if (action === "sync-fx-history") {
       const fx=await syncHistoricalFx();
