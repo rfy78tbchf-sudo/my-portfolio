@@ -59,7 +59,7 @@ function questionPeriod(question:string){
 }
 async function buildContext(token:string,userId:string,symbol:string,period:string){
   const [accounts,summary,risk,recon,estimate,pending,cash,attribution,coverage,cashBridges,reliable,movements,cashCases,behavior,cutoffs]=await Promise.all([
-    scopedRequest(token,'accounts?select=id,name,mode,provider&mode=eq.live&provider=eq.kb_securities&limit=1'),
+    scopedRequest(token,'accounts?select=id,name,mode,provider&user_id=eq.'+userId+'&mode=eq.live&provider=eq.kb_securities&limit=1'),
     scopedRequest(token,query('get_live_performance_summary',{}),{p_period:period}).catch(()=>null),
     scopedRequest(token,query('get_live_risk_snapshot',{}),{}).catch(()=>null),
     scopedRequest(token,query('get_live_reconciliation_report',{}),{}).catch(()=>null),
@@ -177,6 +177,8 @@ Deno.serve(async(req:Request)=>{
   if(!userId)return respond(req,{ok:false,code:'LOGIN_REQUIRED',message:'로그인한 뒤 다시 시도해 주세요.'},401);
   let body:any={};try{body=await req.json()}catch{return respond(req,{ok:false,code:'INVALID_JSON'},400)}
   if(body.action==='health'){
+    const owned=await scopedRequest(token,'accounts?select=id&user_id=eq.'+userId+'&mode=eq.live&provider=eq.kb_securities&limit=1').catch(()=>[]);
+    if(!owned.length)return respond(req,{ok:false,code:'ACCOUNT_ACCESS_DENIED'},403);
     let status='unknown';
     try{status=(await openAiKey(userId))?'configured':'missing'}catch{status='unknown'}
     return respond(req,{ok:true,configured:status==='configured',status,model:MODEL});
