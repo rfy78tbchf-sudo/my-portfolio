@@ -40,10 +40,8 @@ begin
     from public.daily_account_snapshots s where s.account_id = v_account
   ), expected as (
     select o.*,
-      coalesce((select sum(c.amount * coalesce(c.fx_rate_to_base,1))
-        from public.cash_flows c where c.account_id=v_account
-          and c.occurred_at > coalesce(o.prev_at,o.snapshot_date::timestamp at time zone 'Asia/Seoul')
-          and c.occurred_at <= o.snapshot_at),0)
+      public.allocated_external_flow(v_account,o.prev_at,o.prev_date,
+        o.snapshot_at,o.snapshot_date)
       + coalesce((select sum(m.amount) from public.manual_adjustments m
         where m.account_id=v_account and m.active=true and m.kind='external_flow'
           and m.occurred_on > coalesce(o.prev_date,o.snapshot_date-1)
@@ -95,6 +93,15 @@ begin
     'ok',true,'checked_at',now(),'repaired_days',v_repaired,
     'manual_overlap_candidates',v_overlap,'unmatched_provider_flows',v_unmatched,
     'after_snapshot_flows',v_after_snapshot,'recent_provider_flows',v_recent_count,
+    'delayed_deposits',coalesce((select jsonb_agg(jsonb_build_object(
+      'ledger_date',(c.occurred_at at time zone 'Asia/Seoul')::date,
+      'balance_date',public.cash_flow_balance_date(c.id),
+      'amount_krw',c.amount*coalesce(c.fx_rate_to_base,1)
+    ) order by c.occurred_at desc)
+      from public.cash_flows c where c.account_id=v_account and c.type='deposit'
+        and public.cash_flow_balance_date(c.id) is not null
+        and (c.occurred_at at time zone 'Asia/Seoul')::date >=
+          (now() at time zone 'Asia/Seoul')::date-30),'[]'::jsonb),
     'first_snapshot_date',v_first,
     'status',case when v_overlap+v_unmatched+v_after_snapshot>0 then 'review' else 'ok' end
   );
