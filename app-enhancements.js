@@ -128,7 +128,7 @@
     '<button id="build42Backfill" type="button" class="btn secondary full" style="margin-top:12px">과거 KB 내역 더 확인</button>'+
     '<div class="history-note">월별 KB 조회는 자동으로 이어집니다. 확인되지 않은 거래는 임의로 추가하지 않습니다.</div></section></details>'}
   async function showDataStatus(ctx){var el=document.getElementById('build42DataStatus');if(!el)return;
-    var backfill=ctx.authFetch(ctx.supabaseUrl+'/rest/v1/kb_backfill_months?select=month,ledger_rows&order=month.desc&limit=1',{
+    var backfill=ctx.authFetch(ctx.supabaseUrl+'/rest/v1/kb_backfill_months?select=month,ledger_rows&order=month.asc&limit=1',{
       headers:{apikey:ctx.publicKey}},12000,false).then(function(r){return r.ok?r.json():[]}).catch(function(){return []});
     var health=ctx.authFetch(ctx.supabaseUrl+'/functions/v1/investment-assistant',{
       method:'POST',headers:{'content-type':'application/json',apikey:ctx.publicKey},body:'{"action":"health"}'},12000,false)
@@ -138,7 +138,7 @@
     var keySetup=document.getElementById('aiKeySetup');
     if(keySetup)keySetup.hidden=!!(ai&&ai.configured);
     el.textContent='KB 잔고 일치 '+Number(recon.quantity_matched||0)+' / '+Number(recon.quantity_total||0)+'종목 · '+
-      (old?'과거 내역 확인 '+old.month+'부터':'과거 내역 확인 대기')+' · '+
+      (old?'KB 과거 내역 '+old.month+'부터 확인':'KB 과거 내역 확인 대기')+' · '+
       (ai?(ai.configured?'AI 서버 연결됨':'AI 서버 준비됨 · API 키 필요'):'AI 서버 연결 확인 필요');
   }
   function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3>'+
