@@ -395,6 +395,9 @@ function classifyLedger(r:any){
   if(/(상환|종목변경|합병|스핀오프)/.test(s) && /출고/.test(s)) return "corporate_out";
   if(/입고/.test(s)) return "transfer_in";
   if(/출고/.test(s)) return "transfer_out";
+  // Foreign-currency cash is sold to cover deposit interest tax. There is no
+  // security, share quantity, or execution price in the official event.
+  if(/예탁금세액충당매도/.test(s)) return "fx";
   // FX conversion descriptions include "매수"/"매도"; they are not stock trades
   // and must never enter the security P&L ledger as purchases or sales.
   if(/환전|외화매수|외화매도/.test(s)) return "fx";
