@@ -755,6 +755,35 @@ async function syncHoldingPrices(userId:string){
   return {securities:results.length,rowsWritten:total,results,orderEndpointsEnabled:false};
 }
 
+async function syncHistoricalFx(){
+  // The public H.10 series transmits no user portfolio or credentials to FRED.
+  // US noon rate is only a historical estimate of a Korean broker's applied FX.
+  const url="https://fred.stlouisfed.org/graph/fredgraph.csv?id=DEXKOUS&cosd=2020-01-01";
+  const reply=await fetch(url,{headers:{accept:"text/csv"},signal:AbortSignal.timeout(22000)});
+  if(!reply.ok)throw new Error("FED_FX_HTTP_"+reply.status);
+  const csv=await reply.text();
+  const lines=csv.trim().split(/\r?\n/);
+  if(!/^(DATE|observation_date),DEXKOUS\s*$/i.test(lines[0]?.trim()||""))
+    throw new Error("FED_FX_FORMAT_CHANGED");
+  const observations:{date:string;rate:number}[]=[];
+  for(const line of lines.slice(1)){
+    const match=/^(\d{4}-\d{2}-\d{2}),([0-9]+(?:\.[0-9]+)?)\s*$/.exec(line.trim());
+    if(!match)continue;
+    const rate=Number(match[2]);
+    if(rate>=500&&rate<=3000)observations.push({date:match[1],rate});
+  }
+  if(observations.length<100)throw new Error("FED_FX_TOO_FEW_OBSERVATIONS");
+  let written=0;
+  for(let i=0;i<observations.length;i+=400){
+    written+=Number(await adminRpc("upsert_historical_fx_for_service",{
+      p_rows:observations.slice(i,i+400)
+    })||0);
+  }
+  return {ok:true,source:"Federal Reserve H.10 DEXKOUS; historical proxy",
+    observations:written,firstDate:observations[0]?.date,
+    lastDate:observations[observations.length-1]?.date};
+}
+
 async function syncScenarioPrices(userId:string,securityIds:unknown){
   if(!Array.isArray(securityIds)||securityIds.length<1||securityIds.length>4) throw new Error("INVALID_TARGET_SECURITIES");
   const ids=[...new Set(securityIds.map(String))];
@@ -869,6 +898,8 @@ Deno.serve(async (req:Request) => {
     }
     if (action === "sync-prices") {
       const p=await syncHoldingPrices(userId);
+      const fx=await syncHistoricalFx().catch(e=>({ok:false,
+        error:String((e as Error)?.message||"FX_SYNC_FAILED")}));
       const rs=Array.isArray(p?.results)?p.results:[];
       const failed=rs.filter((x:any)=>!x?.ok);
       const status=failed.length===0?"success":(failed.length===rs.length?"failed":"partial");
@@ -880,7 +911,11 @@ Deno.serve(async (req:Request) => {
         p_error_message:failed.length?failed.map((x:any)=>String(x?.symbol||"?")+":"+String(x?.code||"failed")).slice(0,10).join(", "):null,
         p_detail:{securities:p?.securities||0,failed:failed.length,order_endpoints_enabled:false}
       }).catch(()=>{});
-      return json(req,{ok:true,mode:"price_history_sync",...p});
+      return json(req,{ok:true,mode:"price_history_sync",...p,historicalFx:fx});
+    }
+    if (action === "sync-fx-history") {
+      const fx=await syncHistoricalFx();
+      return json(req,{ok:true,mode:"historical_fx_proxy",...fx});
     }
     if (action === "sync-target-prices") {
       const p=await syncScenarioPrices(userId,body?.security_ids);
