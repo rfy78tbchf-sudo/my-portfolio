@@ -15,6 +15,7 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1
       - run: npx playwright install --with-deps chromium
+      - run: node tests/build49_ai_cache.mjs
       - run: node tests/build49_mobile_visual.mjs
       - uses: actions/upload-artifact@v4
         if: always()

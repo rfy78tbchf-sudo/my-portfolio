@@ -1,5 +1,5 @@
-const CACHE='my-portfolio-shell-20260926-49a';
-const SHELL=['./','./index.html','./manifest.webmanifest','./icon.png','./passkey.js','./app-enhancements.js','./vendor/jszip.min.js'];
+const CACHE='my-portfolio-shell-20260926-49b';
+const SHELL=['./','./index.html','./manifest.webmanifest','./icon.png','./passkey.js','./app-enhancements.js?v=49b','./vendor/jszip.min.js'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
 });
@@ -15,6 +15,15 @@ self.addEventListener('fetch',event=>{
     event.respondWith(fetch(req).then(res=>{
       const copy=res.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return res;
     }).catch(()=>caches.match('./index.html')));
+    return;
+  }
+  // UI scripts must update without asking iPhone PWA users to clear their
+  // site data (which would also remove their saved login session).
+  if(url.pathname.endsWith('/app-enhancements.js')||url.pathname.endsWith('/passkey.js')){
+    event.respondWith(fetch(req).then(res=>{
+      if(res.ok){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy));}
+      return res;
+    }).catch(()=>caches.match(req)));
     return;
   }
   event.respondWith(caches.match(req).then(hit=>hit||fetch(req).then(res=>{

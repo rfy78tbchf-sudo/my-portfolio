@@ -141,9 +141,9 @@
       (old?'KB 과거 내역 '+old.month+'부터 확인':'KB 과거 내역 확인 대기')+' · '+
       (ai?(ai.status==='configured'?'AI 서버 설정 확인 · 실제 모델 응답은 질문 후 확인':ai.status==='missing'?'AI 서버 API 키 미설정':'AI 서버 설정 확인 불가'):'AI 서버 연결 확인 필요');
   }
-  function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3>'+
+  function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3><button id="aiConnectionCheck" type="button" class="btn secondary full" style="margin-bottom:12px">AI 연결 설정 확인</button>'+
     '<div class="notice">현재 보유, 최근 거래, 수량 차이, 포트폴리오 위험, 저장한 투자 논리를 서버에서 질문에 맞게 읽습니다. 확인되지 않은 숫자는 확정 성과처럼 쓰지 않습니다.</div>'+
-    '<div id="aiKeySetup" class="notice" style="margin-top:12px">AI 실행환경 설정을 확인해 주세요.</div><button id="aiConnectionCheck" type="button" class="btn secondary" style="margin-top:8px">AI 연결 설정 확인</button><div id="aiConnectionState" class="sub" role="status" aria-live="polite">설정 확인은 모델을 호출하지 않습니다. 실제 응답은 아래 질문을 보내 확인합니다.</div>'+
+    '<div id="aiKeySetup" class="notice" style="margin-top:12px">AI 실행환경 설정을 확인해 주세요.</div><div id="aiConnectionState" class="sub" role="status" aria-live="polite">화면 버전 49b · 설정 확인은 모델을 호출하지 않습니다. 실제 응답은 아래 질문을 보내 확인합니다.</div>'+
     '<div class="tool-row" style="margin-top:12px"><button type="button" class="btn secondary" data-ai-question="내 포트폴리오에서 지금 확인할 위험은 무엇인가?">가장 큰 위험</button><button type="button" class="btn secondary" data-ai-question="이번 달 투자손익에 기여한 종목과 아직 확인되지 않은 자료를 알려줘.">이번 달 성과</button></div>'+
     '<select id="aiStock" class="select" style="margin-top:10px"><option value="">전체 포트폴리오</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return h.quantity>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return '<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select>'+
     '<textarea id="aiQuestion" class="input" rows="3" maxlength="800" style="margin-top:10px" placeholder="예: 이 종목을 계속 보유하는 논리가 유효한가?"></textarea>'+
