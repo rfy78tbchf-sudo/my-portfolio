@@ -143,9 +143,7 @@
   }
   function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3>'+
     '<div class="notice">현재 보유, 최근 거래, 수량 차이, 포트폴리오 위험, 저장한 투자 논리를 서버에서 질문에 맞게 읽습니다. 확인되지 않은 숫자는 확정 성과처럼 쓰지 않습니다.</div>'+
-    '<div id="aiKeySetup" class="notice" style="margin-top:12px"><b>OpenAI API 키 연결</b><div class="history-note">ChatGPT 로그인과 별도인 OpenAI API 키를 한 번 입력하면 서버의 암호화 저장소에 보관합니다. 이 화면 코드에는 키가 남지 않습니다.</div>'+
-    '<input id="aiKeyInput" type="password" class="input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="OpenAI API 키" style="margin-top:8px">'+
-    '<button id="aiKeySave" type="button" class="btn secondary full" style="margin-top:7px">AI 키 연결</button><div id="aiKeyStatus" class="status" role="status" aria-live="polite"></div></div>'+
+    '<div id="aiKeySetup" class="notice" style="margin-top:12px">투자 AI의 서버 연결 설정이 필요합니다. 설정이 완료되면 현재 계좌 데이터로 질문할 수 있습니다.</div>'+
     '<div class="tool-row" style="margin-top:12px"><button type="button" class="btn secondary" data-ai-question="내 포트폴리오에서 지금 확인할 위험은 무엇인가?">가장 큰 위험</button><button type="button" class="btn secondary" data-ai-question="이번 달 투자손익에 기여한 종목과 아직 확인되지 않은 자료를 알려줘.">이번 달 성과</button></div>'+
     '<select id="aiStock" class="select" style="margin-top:10px"><option value="">전체 포트폴리오</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return h.quantity>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return '<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select>'+
     '<textarea id="aiQuestion" class="input" rows="3" maxlength="800" style="margin-top:10px" placeholder="예: 이 종목을 계속 보유하는 논리가 유효한가?"></textarea>'+
@@ -187,17 +185,6 @@
       }catch(e){preview.textContent='파일을 읽지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     };
     document.getElementById('aiAsk').onclick=function(){ask(document.getElementById('aiQuestion').value.trim())};
-    document.getElementById('aiKeySave').onclick=async function(){var btn=this,input=document.getElementById('aiKeyInput'),
-      status=document.getElementById('aiKeyStatus'),key=input.value.trim();
-      if(!key){status.textContent='OpenAI API 키를 입력해 주세요.';return}
-      btn.disabled=true;status.textContent='서버에서 키를 확인하는 중…';input.value='';
-      try{var r=await ctx.authFetch(ctx.supabaseUrl+'/functions/v1/investment-assistant',{
-        method:'POST',headers:{'content-type':'application/json',apikey:ctx.publicKey},
-        body:JSON.stringify({action:'connect-key',api_key:key})},20000,false),body=await r.json();
-        if(!r.ok)throw Error(body.message||'키 연결 실패');
-        status.textContent='AI 분석 준비 완료';await showDataStatus(ctx)
-      }catch(e){status.textContent=e.message||'다시 시도해 주세요.'}finally{btn.disabled=false;key=''}
-    };
     showDataStatus(ctx);
     var backfill=document.getElementById('build42Backfill');backfill.onclick=function(){
       backfill.disabled=true;backfill.textContent='과거 KB 내역 확인 중…';

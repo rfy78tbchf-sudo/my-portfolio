@@ -175,26 +175,12 @@ Deno.serve(async(req:Request)=>{
   let body:any={};try{body=await req.json()}catch{return respond(req,{ok:false,code:'INVALID_JSON'},400)}
   if(body.action==='health')return respond(req,{ok:true,
     configured:Boolean(await openAiKey(userId).catch(()=>'')),model:MODEL});
-  if(body.action==='connect-key'){
-    const candidate=String(body.api_key||'').trim();
-    if(!/^sk-[A-Za-z0-9_-]{30,200}$/.test(candidate))
-      return respond(req,{ok:false,code:'INVALID_API_KEY',message:'OpenAI API 키 형식을 확인해 주세요.'},400);
-    try{
-      const validation=await fetch('https://api.openai.com/v1/models',{headers:{
-        'authorization':'Bearer '+candidate},signal:AbortSignal.timeout(10000)});
-      if(!validation.ok)return respond(req,{ok:false,code:'INVALID_API_KEY',
-        message:'OpenAI에서 키를 확인하지 못했습니다. API 키와 프로젝트 권한을 확인해 주세요.'},422);
-      await serverRpc('set_ai_api_key_for_service',{p_user_id:userId,p_api_key:candidate});
-      return respond(req,{ok:true,configured:true});
-    }catch{return respond(req,{ok:false,code:'KEY_STORE_ERROR',
-      message:'키 저장 연결을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.'},502)}
-  }
   const question=String(body.question||'').trim(),symbol=String(body.symbol||'').trim().toUpperCase();
   if(question.length<2||question.length>800||symbol.length>15||!/^[A-Z0-9.]*$/.test(symbol))
     return respond(req,{ok:false,code:'INVALID_QUESTION',message:'질문과 종목을 확인해 주세요.'},400);
   const key=await openAiKey(userId).catch(()=>'');
   if(!key)return respond(req,{ok:false,code:'AI_SECRET_MISSING',
-    message:'더보기 → 투자 AI 분석에서 OpenAI API 키를 한 번 연결해 주세요.'},503);
+    message:'투자 AI 서버 연결 설정이 필요합니다. 관리자 설정이 완료되면 다시 시도해 주세요.'},503);
   try{
     const today=new Date().toISOString().slice(0,10);
     const prior=await scopedRequest(token,'ai_analysis_history?select=id&user_id=eq.'+userId+
