@@ -1,4 +1,4 @@
-const CACHE='my-portfolio-shell-20260925-46c';
+const CACHE='my-portfolio-shell-20260925-47a';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon.png','./passkey.js','./app-enhancements.js','./vendor/jszip.min.js'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
