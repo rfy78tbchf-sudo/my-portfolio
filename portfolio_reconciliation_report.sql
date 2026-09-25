@@ -74,7 +74,8 @@ begin
     where account_id=v_account group by external_id having count(*)>1
   ) d;
   select count(*) into v_missing_fx from public.transactions
-    where account_id=v_account and currency<>'KRW' and fx_rate is null
+    where account_id=v_account and currency='USD'
+      and (fx_rate is null or fx_rate not between 500 and 3000)
       and type in ('buy','sell');
   select count(*) into v_unknown_sales from public.transactions
     where account_id=v_account and type='sell' and security_id is null;
