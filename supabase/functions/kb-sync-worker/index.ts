@@ -298,6 +298,11 @@ async function syncCurrent(userId:string) {
     p_holdings:holdings,
     p_summary:summary,
   });
+  await adminRpc("save_kb_cash_observation_for_service",{
+    p_user_id:userId,p_domestic_cash_krw:domesticCash,
+    p_foreign_cash_krw_equivalent:foreignCashKrw
+  });
+  const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
 
   return {
     applied,
@@ -305,6 +310,7 @@ async function syncCurrent(userId:string) {
     overseasHoldings:o.holdings.length,
     totalHoldings:holdings.length,
     snapshotDate:todaySeoul(),
+    reconciliation,
     orderEndpointsEnabled:false,
   };
 }
@@ -360,6 +366,43 @@ async function previewHistory(userId:string){
   };
 }
 
+// Read-only source audit: report field names and position-related fields only.
+// Never return account references, names of people, credentials or tokens.
+async function inspectPositionSources(userId:string, month:string, wanted:unknown){
+  const current=todaySeoul().slice(0,7);
+  if(month!==current && month!==new Date(Date.parse(current+"-01T00:00:00Z")-86400000).toISOString().slice(0,7))
+    throw new Error("ONLY_RECENT_MONTHS_SUPPORTED");
+  const symbols=Array.isArray(wanted)?wanted.map(x=>String(x).trim().toUpperCase())
+    .filter(x=>/^[A-Z0-9.]{1,12}$/.test(x)).slice(0,8):[];
+  if(!symbols.length) throw new Error("SYMBOLS_REQUIRED");
+  const {start,end}=monthBounds(month);
+  const {appKey,appSecret}=await credentials(userId),token=await issueToken(appKey,appSecret);
+  const master=await loadSecurityMaster(),ids=new Set(symbols);
+  Object.entries(master).forEach(([isin,row])=>{if(symbols.includes(String(row.symbol||"").toUpperCase()))ids.add(isin)});
+  const sources=[
+    ["SWQA2301","/api/v1/swqa2301",{strt_dt:start,end_dt:end,is_no:"",srt_clsf:"1"},"Record1"],
+    ["SPQM2205","/api/v1/spqm2205",{stnd_is_cd:"",strt_ordr_dt:start,end_ordr_dt:end,krw_unty_mgn_rqst_f:"0",trd_clsf:"99",dl_clsf:"0"},"Record1"],
+    ["SPQM2207","/api/v1/spqm2207",{strt_ordr_dt:start,end_ordr_dt:end,stnd_is_cd:"",std_crncy_f:"2",exch_r_aplc_f:"2",frgn_stk_mgn_ccd:"",dl_clsf:""},"Record2"],
+    ["SSQM2442","/api/v1/ssqm2442",{inq_strt_dt:start,inq_end_dt:end,is_cd:""},"Record1"]
+  ] as const;
+  const out:any[]=[];
+  for(const [code,path,body,key] of sources){
+    const x=await pagedTr(appKey,token,path,body,key,100);
+    if(x.truncated)throw new Error(code+"_TRUNCATED");
+    const rows=x.rows.filter((r:any)=>{
+      const vals=[r?.stnd_is_cd,r?.shrt_is_cd,r?.is_cd,r?.is_no]
+        .map(v=>String(v||"").trim().toUpperCase());
+      return vals.some(v=>ids.has(v)||ids.has(normalizeKrSymbol(v)));
+    });
+    const fields=Array.from(new Set(x.rows.slice(0,10).flatMap((r:any)=>Object.keys(r)))).sort();
+    const safe=/^(stnd_is_cd|shrt_is_cd|is_cd|is_nm|shrt_is_nm|smry_nm|dl_typ_cd|trd_dl_ccd|trd_clsf|trd_clsf_nm|dl_clsf|dl_sq|nxt_key|ordr_md_cd|ordr_md_nm|stmt_f|stmt_q_p6|aplc_exch_r|.*_dt|.*_q|.*_uprc|.*_prc|frgn_agr_amt_p4|frgn_stmt_amt_p4)$/;
+    out.push({source:code,period:{start,end},pages:x.pages,totalRows:x.rows.length,
+      fields,matchedRows:rows.length,events:rows.slice(0,25).map((r:any)=>Object.fromEntries(
+        Object.entries(r).filter(([k])=>safe.test(k)).map(([k,v])=>[k,String(v??"").trim().slice(0,100)])))});
+  }
+  return {sources:out,orderEndpointsEnabled:false};
+}
+
 
 function normalizeKrSymbol(raw:any){
   const s=String(raw||"").trim().toUpperCase();
@@ -385,6 +428,9 @@ function monthBounds(month:string){
 }
 function classifyLedger(r:any){
   const s=(String(r?.smry_nm||"")+" "+String(r?.dl_typ_cd||"")).trim();
+  // A reversal or correction is not a second execution. Preserve the source
+  // row as 'other' until its original event can be paired by provider ID.
+  if(/취소|정정/.test(s)) return "other";
   if(/세금|제세|원천|소득세|주민세|거래세|농특세|양도세/.test(s)) return "tax";
   if(/배당금 입금|분배금 입금|분배 입금/.test(s)) return "dividend";
   // A share transfer/split changes position quantity without any execution
@@ -519,6 +565,8 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
       trade_at:tradeAt,
       settlement_at:"",
       type,
+      raw_type:summaryText,
+      normalized_type:type,
       symbol:std||"",
       name:String(mm?.name||r?.is_nm||"").trim(),
       market,
@@ -565,6 +613,37 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
     }
   }
   return {transactions:tx,dividends:divs,cashFlows:flows};
+}
+async function settlementEvidence(rows:any[],ledger:any[]){
+  const used=new Set<number>(),out:any[]=[];
+  for(const r of rows){
+    const side=String(r?.trd_clsf_nm||"").trim();
+    const type=side==="매수"?"buy":side==="매도"?"sell":"";
+    const isin=String(r?.stnd_is_cd||"").trim().toUpperCase();
+    const symbol=String(r?.shrt_is_cd||"").trim().toUpperCase();
+    const order=isoDate8(r?.ordr_dt),settlement=isoDate8(r?.stmt_dt);
+    const qty=n(r?.stmt_q_p6),price=n(r?.frgn_stmt_prc_p6);
+    if(!type||!/^US[A-Z0-9]{10}$/.test(isin)||!symbol||!order||qty<=0||price<=0)continue;
+    // Consume an identical official ledger row at most once. Different sizes
+    // remain evidence, never synthesized executions or cash flows.
+    const matched=ledger.findIndex((t:any,i:number)=>!used.has(i)&&
+      String(t?.dl_dt||"")===String(r?.stmt_dt||"")&&
+      String(t?.stnd_is_cd||"").toUpperCase()===isin&&
+      classifyLedger(t)===type&&n(t?.q)===qty);
+    if(matched>=0){used.add(matched);continue;}
+    const fields=[isin,symbol,order,settlement,type,qty,price,
+      String(r?.frgn_stmt_amt_p4||""),String(r?.frgn_agr_amt_p4||"")];
+    const bytes=new TextEncoder().encode(JSON.stringify(fields));
+    const hash=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",bytes)))
+      .map(x=>x.toString(16).padStart(2,"0")).join("");
+    out.push({source:"SPQM2205",source_key:hash,asset_key:isin,symbol,
+      raw_type:side,event_type:type,order_date:order,trade_date:order,
+      settlement_date:settlement,quantity:qty,price,
+      gross_amount:nOrNull(r?.frgn_stmt_amt_p4),currency:String(r?.crncy_cd||"USD"),
+      evidence:{order_date:order,settlement_date:settlement,source:"SPQM2205",
+        settlement_flag:String(r?.stmt_f||"").slice(0,12)}});
+  }
+  return out;
 }
 function normalizeRealized(rows:any[],month:string){
   return rows.map((r:any)=>{
@@ -651,6 +730,15 @@ async function syncHistoryMonth(userId:string,month:string){
     p_cash_flows:norm.cashFlows,
     p_realized:realizedRows
   });
+  const evidence=await settlementEvidence(settlement.rows,ledger.rows);
+  const evidenceWritten=await adminRpc("save_kb_position_evidence_for_service",{
+    p_user_id:userId,p_rows:evidence
+  });
+  await adminRpc("record_kb_evidence_month_for_service",{
+    p_user_id:userId,p_month:month,p_count:evidence.length
+  });
+  const orderDatesLinked=await adminRpc("link_kb_order_dates_for_service",{p_user_id:userId});
+  const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
 
   return {
     month,
@@ -661,6 +749,10 @@ async function syncHistoryMonth(userId:string,month:string){
     realizedPages:realized.pages,
     overseasSettlementRows:settlement.rows.length,
     overseasSettlementMappings:settlementMap.length,
+    overseasSettlementEvidence:evidence.length,
+    evidenceWritten,
+    orderDatesLinked,
+    reconciliation,
     dividends:norm.dividends.length,
     cashFlows:norm.cashFlows.length,
     applied,
@@ -682,6 +774,28 @@ async function backfillNextMonths(userId:string,requested:unknown){
     result.push({month,ledgerRows:step.ledgerRows,settlementRows:step.overseasSettlementRows});
   }
   return {months:result,completed:result.length};
+}
+async function backfillEvidenceNext(userId:string,requested:unknown){
+  const count=Math.min(2,Math.max(1,Number(requested)||1)),months:any[]=[];
+  for(let i=0;i<count;i++){
+    const month=String(await adminRpc("next_kb_evidence_month_for_service",{p_user_id:userId})||"");
+    if(!month)break;
+    const result=await syncHistoryMonth(userId,month);
+    months.push({month,evidence:result.overseasSettlementEvidence,
+      ledger:result.ledgerRows,linked:result.orderDatesLinked});
+  }
+  return {months,completed:months.length};
+}
+async function recheckRecentHistory(userId:string){
+  const current=todaySeoul().slice(0,7),months:any[]=[];
+  for(const offset of [1,2]){
+    const month=new Date(Date.UTC(Number(current.slice(0,4)),Number(current.slice(5,7))-1-offset,1))
+      .toISOString().slice(0,7);
+    if(months.some(x=>x.month===month))continue;
+    const result=await syncHistoryMonth(userId,month);
+    months.push({month,ledger:result.ledgerRows,evidence:result.overseasSettlementEvidence});
+  }
+  return {months};
 }
 
 function isoDate8(v:any){
@@ -969,6 +1083,10 @@ Deno.serve(async (req:Request) => {
       const h = await previewHistory(userId);
       return json(req,{ok:true,mode:"history_preview",...h});
     }
+    if (action === "inspect-position-sources") {
+      const result=await inspectPositionSources(userId,String(body?.month||""),body?.symbols);
+      return json(req,{ok:true,mode:"read_only_source_audit",...result});
+    }
     if (action === "sync-history-month") {
       const month=String(body?.month||"");
       const h=await syncHistoryMonth(userId,month);
@@ -977,6 +1095,14 @@ Deno.serve(async (req:Request) => {
     if(action==="backfill-next"){
       const report=await backfillNextMonths(userId,body?.months);
       return json(req,{ok:true,mode:"idempotent_kb_backfill",...report,orderEndpointsEnabled:false});
+    }
+    if(action==="backfill-evidence-next"){
+      const report=await backfillEvidenceNext(userId,body?.months);
+      return json(req,{ok:true,mode:"idempotent_kb_secondary_evidence",...report,orderEndpointsEnabled:false});
+    }
+    if(action==="recheck-recent-history"){
+      return json(req,{ok:true,mode:"recent_source_corrections",
+        ...await recheckRecentHistory(userId),orderEndpointsEnabled:false});
     }
     return json(req,{ok:false,code:"UNKNOWN_ACTION"},400);
   } catch(e) {
