@@ -736,10 +736,17 @@ async function syncHistoryMonth(userId:string,month:string){
   const evidenceWritten=await adminRpc("save_kb_position_evidence_for_service",{
     p_user_id:userId,p_rows:evidence
   });
+  const sourceKeys=evidence.map(x=>x.source_key);
+  await adminRpc("reactivate_kb_evidence_for_service",{
+    p_user_id:userId,p_source_keys:sourceKeys
+  });
+  const orderDatesLinked=await adminRpc("link_kb_order_dates_for_service",{p_user_id:userId});
+  const retiredRevisions=await adminRpc("finish_kb_evidence_month_for_service",{
+    p_user_id:userId,p_month:month,p_source_keys:sourceKeys
+  });
   await adminRpc("record_kb_evidence_month_for_service",{
     p_user_id:userId,p_month:month,p_count:evidence.length
   });
-  const orderDatesLinked=await adminRpc("link_kb_order_dates_for_service",{p_user_id:userId});
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
 
   return {
@@ -754,6 +761,7 @@ async function syncHistoryMonth(userId:string,month:string){
     overseasSettlementEvidence:evidence.length,
     evidenceWritten,
     orderDatesLinked,
+    retiredRevisions,
     reconciliation,
     dividends:norm.dividends.length,
     cashFlows:norm.cashFlows.length,

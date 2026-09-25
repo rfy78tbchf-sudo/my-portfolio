@@ -29,6 +29,7 @@ create table if not exists public.kb_position_evidence (
   gross_amount numeric,
   currency text,
   evidence jsonb not null default '{}'::jsonb,
+  active boolean not null default true,
   fetched_at timestamptz not null default now(),
   unique(account_id,source,source_key)
 );
@@ -187,6 +188,7 @@ begin
     'settlement_date',settlement_date,'type',event_type,'quantity',quantity,'price',price,
     'currency',currency) order by order_date),'[]'::jsonb) into v_evidence
     from public.kb_position_evidence e where e.account_id=c.account_id and e.asset_key=c.asset_key
+      and e.active
       and not exists(select 1 from public.transactions t
         where t.account_id=e.account_id and t.provider_payload->>'stnd_is_cd'=e.asset_key
           and (t.trade_at at time zone 'Asia/Seoul')::date=e.settlement_date
@@ -264,7 +266,7 @@ begin
     select coalesce(sum(case when event_type='buy' then quantity
          when event_type='sell' then -quantity else 0 end),0),count(*)
       into v_evidence_qty,v_evidence_count from public.kb_position_evidence e
-      where e.account_id=v_account and e.asset_key=v_asset and e.source='SPQM2205'
+      where e.account_id=v_account and e.asset_key=v_asset and e.source='SPQM2205' and e.active
         and e.order_date <= v_balance_date and e.order_date >= v_balance_date-10
         and not exists(select 1 from public.transactions t
           where t.account_id=e.account_id and t.provider_payload->>'stnd_is_cd'=e.asset_key

@@ -48,12 +48,13 @@ function limitObject(input:any,keys:string[]){
   const x:Record<string,unknown>={};for(const k of keys)if(input?.[k]!==undefined)x[k]=input[k];return x;
 }
 async function buildContext(token:string,userId:string,symbol:string){
-  const [accounts,summary,risk,recon,estimate]=await Promise.all([
+  const [accounts,summary,risk,recon,estimate,pending]=await Promise.all([
     scopedRequest(token,'accounts?select=id,name,mode,provider&mode=eq.live&provider=eq.kb_securities&limit=1'),
     scopedRequest(token,query('get_live_performance_summary',{}),{p_period:'1M'}).catch(()=>null),
     scopedRequest(token,query('get_live_risk_snapshot',{}),{}).catch(()=>null),
     scopedRequest(token,query('get_live_reconciliation_report',{}),{}).catch(()=>null),
     scopedRequest(token,query('get_live_ledger_period_estimate',{}),{p_period:'1M'}).catch(()=>null),
+    scopedRequest(token,query('get_pending_kb_position_events',{}),{}).catch(()=>[]),
   ]);
   if(!accounts?.length)throw Error('NO_LIVE_ACCOUNT');
   const accountId=accounts[0].id;
@@ -97,11 +98,14 @@ async function buildContext(token:string,userId:string,symbol:string){
       ['estimated_pnl_krw','included_count','candidate_count','unmapped_trade_count','items','excluded','note']):null,
     risk:riskSummary,reconciliation:reconSummary,
     reconciliation_cases:cases,
+    pending_settlement_events:pending,
     affected_security: selected?cases.find((c:any)=>c.symbol===selected.symbol||
-      (selected.isin&&c.asset_key===selected.isin))||null:null,
-    confidence:(selected&&cases.some((c:any)=>c.symbol===selected.symbol||
-      (selected.isin&&c.asset_key===selected.isin)))||
-      (!selected&&cases.length)||estimate?.included_count!==estimate?.candidate_count?'partially_unresolved':
+      (selected.isin&&c.asset_key===selected.isin))||
+      (pending.some((e:any)=>e.symbol===selected.symbol)?{symbol:selected.symbol,status:'settlement_pending'}:null):null,
+    confidence:(selected&&(cases.some((c:any)=>c.symbol===selected.symbol||
+      (selected.isin&&c.asset_key===selected.isin))||
+      pending.some((e:any)=>e.symbol===selected.symbol)))||
+      (!selected&&(cases.length||pending.length))||estimate?.included_count!==estimate?.candidate_count?'partially_unresolved':
       (summary?.return_exact&&summary?.return_ready?'confirmed':'estimated')};
 }
 
@@ -146,6 +150,7 @@ Deno.serve(async(req:Request)=>{
 먼저 기존 투자 논리를 검토하고, 이를 약화하는 근거와 반례도 짚는다. 확정/추정/미해결 신뢰도를 분명히 구분한다.
 원장 수량이 맞지 않거나 가격이 없으면 정확한 기간 수익을 주장하지 않는다. 주문을 실행하지 않는다.
 reconciliation_cases에 등장하는 종목은 수량 차이의 원인 후보와 결제 예정일을 설명하되 실현손익을 확정하지 않는다. 일치한 종목의 확인된 자료와 무관한 기간은 계속 분석한다. 사용자가 종료를 확인했더라도 매도일·가격을 추정하지 않는다.
+pending_settlement_events는 수량 순변화가 0인 종목이라도 매매 손익 상세가 아직 원장에 정착되지 않았을 수 있음을 뜻한다.
 보유 논리, 유지·약화 요인, 새 위험, 포트폴리오 영향, 다음 확인 사항, 대응 시나리오를 간결히 쓴다.`;
     const openai=await fetch('https://api.openai.com/v1/responses',{method:'POST',
       headers:{'content-type':'application/json','authorization':'Bearer '+key},

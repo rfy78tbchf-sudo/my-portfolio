@@ -57,6 +57,7 @@ begin
     from public.transactions t join public.kb_position_evidence e
       on e.account_id=t.account_id
       and e.asset_key=t.provider_payload->>'stnd_is_cd'
+      and e.active
       and e.settlement_date=(t.trade_at at time zone 'Asia/Seoul')::date
       and e.event_type=t.type and e.quantity=t.quantity
     where t.account_id=v_account and t.source='api' and t.provider_revision='SWQA2301'
