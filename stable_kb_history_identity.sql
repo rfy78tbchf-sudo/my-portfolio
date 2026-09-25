@@ -84,8 +84,9 @@ begin
       type=excluded.type,quantity=excluded.quantity,price=excluded.price,
       gross_amount=excluded.gross_amount,fee=excluded.fee,tax=excluded.tax,
       net_amount=excluded.net_amount,currency=excluded.currency,fx_rate=excluded.fx_rate,
-      realized_pnl=excluded.realized_pnl,
-      official_realized_pnl=excluded.official_realized_pnl,
+      realized_pnl=coalesce(excluded.realized_pnl,public.transactions.realized_pnl),
+      official_realized_pnl=coalesce(excluded.official_realized_pnl,
+        public.transactions.official_realized_pnl),
       provider_payload_hash=excluded.provider_payload_hash,provider_payload=excluded.provider_payload,
       updated_at=now()
     where (public.transactions.security_id,public.transactions.trade_at,
@@ -98,8 +99,10 @@ begin
       is distinct from (excluded.security_id,excluded.trade_at,
       excluded.settlement_at,excluded.type,excluded.quantity,excluded.price,
       excluded.gross_amount,excluded.fee,excluded.tax,excluded.net_amount,
-      excluded.currency,excluded.fx_rate,excluded.realized_pnl,
-      excluded.official_realized_pnl,excluded.provider_payload_hash,excluded.provider_payload);
+      excluded.currency,excluded.fx_rate,
+      coalesce(excluded.realized_pnl,public.transactions.realized_pnl),
+      coalesce(excluded.official_realized_pnl,public.transactions.official_realized_pnl),
+      excluded.provider_payload_hash,excluded.provider_payload);
     v_tx:=v_tx+1;
   end loop;
 
