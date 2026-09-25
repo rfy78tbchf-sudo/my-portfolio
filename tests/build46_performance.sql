@@ -1,7 +1,7 @@
 -- Read-only production smoke test. Run as an operator; no account rows are changed.
 do $test$
 declare v_user uuid; v_account uuid; v_today jsonb; v_month jsonb;
-  v_movements jsonb; v_cases integer; v_rows integer;
+  v_movements jsonb; v_behavior jsonb; v_cases integer; v_rows integer;
 begin
   select id,user_id into v_account,v_user from public.accounts
   where mode='live' and is_active order by created_at limit 1;
@@ -31,6 +31,11 @@ begin
   v_movements:=public.get_live_verified_position_movements('오늘');
   if (v_movements->>'attribution_complete')::boolean is true then
     raise exception 'Incomplete position movements presented as full attribution'; end if;
+  v_behavior:=public.get_live_behavior_summary();
+  if (v_behavior->>'lifecycle_eligible_symbols')::integer>
+     (v_behavior->>'traded_symbols')::integer or
+     (v_behavior->>'return_based_patterns_available')::boolean is true then
+    raise exception 'Behavior facts exceeded reliable ledger coverage'; end if;
   select count(*) into v_cases from public.live_cash_case_assessments
   where account_id=v_account;
   select count(*) into v_rows from public.daily_performance_evidence

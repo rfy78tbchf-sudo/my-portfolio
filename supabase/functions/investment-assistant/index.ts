@@ -58,7 +58,7 @@ function questionPeriod(question:string){
   return '1M';
 }
 async function buildContext(token:string,userId:string,symbol:string,period:string){
-  const [accounts,summary,risk,recon,estimate,pending,cash,attribution,coverage,cashBridges,reliable,movements,cashCases]=await Promise.all([
+  const [accounts,summary,risk,recon,estimate,pending,cash,attribution,coverage,cashBridges,reliable,movements,cashCases,behavior]=await Promise.all([
     scopedRequest(token,'accounts?select=id,name,mode,provider&mode=eq.live&provider=eq.kb_securities&limit=1'),
     scopedRequest(token,query('get_live_performance_summary',{}),{p_period:period}).catch(()=>null),
     scopedRequest(token,query('get_live_risk_snapshot',{}),{}).catch(()=>null),
@@ -72,6 +72,7 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
     scopedRequest(token,query('get_live_reliable_performance',{}),{p_period:period}).catch(()=>null),
     scopedRequest(token,query('get_live_verified_position_movements',{}),{p_period:period}).catch(()=>null),
     scopedRequest(token,'live_cash_case_assessments?select=start_date,end_date,cause_classification,remaining_difference_krw,same_day_nav_source_delta&order=end_date.desc&limit=5').catch(()=>[]),
+    scopedRequest(token,query('get_live_behavior_summary',{}),{}).catch(()=>null),
   ]);
   if(!accounts?.length)throw Error('NO_LIVE_ACCOUNT');
   const accountId=accounts[0].id;
@@ -125,6 +126,10 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
       ['start_date','end_date','items','compared_positions','end_positions','omitted_positions',
         'position_snapshots_time_aligned','attribution_complete']):null,
     classified_cash_cases:cashCases,
+    ledger_behavior:behavior&&behavior.ok?limitObject(behavior,
+      ['buy_events','sell_events','traded_symbols','lifecycle_eligible_symbols',
+        'additional_buys','partial_sells','full_sells','reentries',
+        'invalid_lifecycle_events','return_based_patterns_available']):null,
     selected_security:selected?limitObject(selected,['symbol','name','currency','country','sector']):null,
     recent_trades:history,thesis:thesis?.[0]?limitObject(thesis[0],
       ['version','rationale','catalysts','risks','add_condition','trim_condition','exit_condition','notes','updated_at']):null,
@@ -206,6 +211,7 @@ cash_accounting의 원화 관측 외에 과거 역산 현금과 외화 원금은
 reconciliation_cases에 등장하는 종목은 수량 차이의 원인 후보와 결제 예정일을 설명하되 실현손익을 확정하지 않는다. 일치한 종목의 확인된 자료와 무관한 기간은 계속 분석한다. 사용자가 종료를 확인했더라도 매도일·가격을 추정하지 않는다.
 settlement_pending은 KB 현재잔고의 미결제 매수·매도 수량과 공식 체결의 순수량이 원장 차이와 일치한 상태다. 수량 차이의 원인은 확인됐지만 결제 전 손익은 확정하지 않는다.
 pending_settlement_events는 수량 순변화가 0인 종목이라도 매매 손익 상세가 아직 원장에 정착되지 않았을 수 있음을 뜻한다.
+ledger_behavior는 매매 횟수만 원장 전체에서 세고, 추가매수·일부매도·재진입은 수량 흐름이 성립하는 종목만 센다. 행동 수치로 수익이나 전략 효과를 추측하지 않는다.
 보유 논리, 유지·약화 요인, 새 위험, 포트폴리오 영향, 다음 확인 사항, 대응 시나리오를 간결히 쓴다.`;
     const openai=await fetch('https://api.openai.com/v1/responses',{method:'POST',
       headers:{'content-type':'application/json','authorization':'Bearer '+key},
@@ -222,7 +228,7 @@ pending_settlement_events는 수량 순변화가 0인 종목이라도 매매 손
       user_id:userId,question,symbol:symbol||null,answer,confidence:context.confidence,
       context_sources:['holdings','reconciliation','period_performance','risk',
         'reliable_observed_period','partial_unchanged_position_movements',
-        'period_attribution','cash_accounting','classified_cash_cases','cash_bridges','long_term_coverage',
+        'period_attribution','cash_accounting','classified_cash_cases','cash_bridges','long_term_coverage','ledger_behavior',
         ...(symbol?['trades','investment_thesis','thesis_versions']:[])],model:MODEL
     }).catch(()=>null);
     return respond(req,{ok:true,answer,confidence:context.confidence,model:MODEL});
