@@ -387,9 +387,11 @@ function classifyLedger(r:any){
   const s=(String(r?.smry_nm||"")+" "+String(r?.dl_typ_cd||"")).trim();
   if(/세금|제세|원천|소득세|주민세|거래세|농특세|양도세/.test(s)) return "tax";
   if(/배당금 입금|분배금 입금|분배 입금/.test(s)) return "dividend";
+  // FX conversion descriptions include "매수"/"매도"; they are not stock trades
+  // and must never enter the security P&L ledger as purchases or sales.
+  if(/환전|외화매수|외화매도/.test(s)) return "fx";
   if(/매수/.test(s)) return "buy";
   if(/매도/.test(s)) return "sell";
-  if(/환전|외화매수|외화매도/.test(s)) return "fx";
   if(/예탁금이용료|쿠폰|이자/.test(s)) return "interest";
   if(/ADR FEE|금융비용|수수료/.test(s)) return "fee";
   if(/공모불입|공모주환불금|공모추가납입|단수주매각대금|대체입금|대체출금/.test(s)) return "other";
@@ -481,20 +483,26 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
     const rawMarket=String(r?.dl_mkt||"").trim().toUpperCase();
     const market=isKr?"KRX":String(mm?.market||rawMarket||"UNKNOWN");
     const foreignAmount=n(r?.fcrncy_amt);
+    const wonAmount=n(r?.ec_amt);
+    const conversionRatio=foreignAmount?Math.abs(wonAmount/foreignAmount):0;
+    const isWonFx=type==="fx" && foreignAmount!==0
+      && conversionRatio>=500 && conversionRatio<=3000;
     const isWonCashFlow=(type==="deposit"||type==="withdrawal")
       && !String(r?.crncy_clsf_nm||"").trim() && foreignAmount===0;
-    const cur=isWonCashFlow?"KRW":isKr?"KRW":String(mm?.currency||currency(r?.crncy_clsf_nm,market));
-    const fx=isWonCashFlow?1:(n(r?.exch_r)||1);
-    const grossBase=foreignAmount!==0?foreignAmount:n(r?.dl_amt);
+    const cur=isWonCashFlow||isWonFx?"KRW":isKr?"KRW":String(mm?.currency||currency(r?.crncy_clsf_nm,market));
+    const fx=isWonCashFlow||isWonFx?1:(n(r?.exch_r)||1);
+    const grossBase=isWonFx?wonAmount:foreignAmount!==0?foreignAmount:n(r?.dl_amt);
     const fee=n(r?.fee)+n(r?.abrd_fee);
     const componentTax=n(r?.incm_tx)+n(r?.dl_tx)+n(r?.rsdnt_tx)+n(r?.ffs_tx)+n(r?.trsf_tx);
     const tax=n(r?.tx)!==0?n(r?.tx):componentTax;
-    const netRaw=n(r?.ec_amt)!==0?n(r?.ec_amt):grossBase;
+    const netRaw=wonAmount!==0?wonAmount:grossBase;
     const externalId=`KB:SWQA2301:${String(r.dl_dt)}:${seq}`;
     const summaryText=String(r?.smry_nm||"");
     const isTaxRefund=type==="tax" && /환급|입금/.test(summaryText);
-    const net=isTaxRefund?Math.abs(netRaw):signedAmount(netRaw,type);
-    const gross=isTaxRefund?Math.abs(grossBase):signedAmount(grossBase,type);
+    const fxDirection=type==="fx" && /출금/.test(summaryText)?"withdrawal":
+      type==="fx" && /입금/.test(summaryText)?"deposit":type;
+    const net=isTaxRefund?Math.abs(netRaw):signedAmount(netRaw,fxDirection);
+    const gross=isTaxRefund?Math.abs(grossBase):signedAmount(grossBase,fxDirection);
     const item={
       external_id:externalId,
       trade_at:tradeAt,
@@ -711,9 +719,22 @@ async function syncHoldingPrices(userId:string){
   const {appKey,appSecret}=await credentials(userId);
   const token=await issueToken(appKey,appSecret);
   const secs=await adminRpc("get_live_holding_securities_for_service",{p_user_id:userId});
+  // Keep historical prices for the user's previously traded leveraged pair and
+  // its underlying ETF even after the position has been fully sold.
+  const benchResponse=await fetch(SUPABASE_URL+
+    "/rest/v1/securities?select=id,symbol,market,currency&symbol=in.(SOXX,SOXL,SOXS)",{
+      headers:{apikey:SECRET_KEY}
+    });
+  const benchmarks=benchResponse.ok?await benchResponse.json():[];
+  const syncList=[...(Array.isArray(secs)?secs:[])];
+  for(const b of (Array.isArray(benchmarks)?benchmarks:[])){
+    if(!syncList.some((s:any)=>String(s?.security_id||"")===String(b.id))){
+      syncList.push({security_id:b.id,symbol:b.symbol,market:b.market,currency:b.currency});
+    }
+  }
   const results:any[]=[];
   let total=0;
-  for(const s of (Array.isArray(secs)?secs:[])){
+  for(const s of syncList){
     const sid=String(s?.security_id||"");
     const symbol=String(s?.symbol||"");
     const market=String(s?.market||"");
