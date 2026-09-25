@@ -17,6 +17,7 @@ assert.equal(period('올해 내 성과는?'),'YTD');
 assert.equal(period('최근 6개월 성과는?'),'6M');
 
 let bridgeResult=[];
+let observedResult=null;
 let summary={return_ready:true,return_exact:true,period_start:'2026-09-24',
   start_snapshot_date:'2026-09-24',end_snapshot_date:'2026-09-25',
   investment_pnl:1_865_286,return_pct:3.064};
@@ -24,6 +25,9 @@ testScope.scopedRequest=async(_token,path)=>{
   if(path.startsWith('accounts?'))return [{id:'synthetic-account'}];
   if(path.startsWith('live_cash_observation_bridges?'))return bridgeResult;
   if(path.startsWith('rpc/get_live_performance_summary'))return summary;
+  if(path.startsWith('rpc/get_live_reliable_performance'))return observedResult;
+  if(path.startsWith('rpc/get_live_verified_position_movements'))return {
+    ready:true,attribution_complete:false,items:[],omitted_positions:4};
   if(path.startsWith('rpc/get_live_ledger_period_estimate'))return {included_count:0,candidate_count:0};
   if(path.startsWith('rpc/get_pending_kb_position_events'))return [];
   if(path.startsWith('rpc/'))return null;
@@ -59,4 +63,14 @@ result=await build(...args.slice(0,3),'6M');
 assert.equal(result.period_evidence.supported_period,false);
 assert.equal(result.period_performance,null);
 assert.equal(result.period_attribution,null);
-console.log('build45 AI period evidence tests passed');
+observedResult={ok:true,state:'estimated',requested_period:'6M',partial:true,
+  requested_start:'2026-03-25',reliable_start:'2026-09-23',observed_through:'2026-09-25',
+  investment_pnl:230610,return_estimate_pct:.3676,twr_pct:null,
+  same_day_other_source_nav_gap_krw:-226226};
+result=await build(...args.slice(0,3),'6M');
+assert.equal(result.reliable_observed_period.partial,true);
+assert.equal(result.reliable_observed_period.twr_pct,null);
+assert.equal(result.period_performance,null);
+assert.equal(result.partial_unchanged_position_movements.attribution_complete,false);
+assert.match(source,/partial=true면 요청한 기간 전체 성과라고 말하지 않고/);
+console.log('build46 AI observed-window evidence tests passed');

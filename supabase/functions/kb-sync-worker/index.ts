@@ -314,6 +314,9 @@ async function syncCurrent(userId:string) {
   const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
     p_user_id:userId
   }).catch(()=>({ok:false,reason:"CASH_RECONCILIATION_RETRY_PENDING"}));
+  const performanceEvidence=await adminRpc("refresh_daily_performance_evidence_for_service",{
+    p_user_id:userId
+  }).catch(()=>({ok:false,reason:"PERFORMANCE_RECALCULATION_RETRY_PENDING"}));
 
   return {
     applied,
@@ -324,6 +327,7 @@ async function syncCurrent(userId:string) {
     snapshotDate:todaySeoul(),
     reconciliation,
     cashAccounting,
+    performanceEvidence,
     orderEndpointsEnabled:false,
   };
 }
@@ -782,6 +786,9 @@ async function syncHistoryMonth(userId:string,month:string){
   const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
     p_user_id:userId
   }).catch(()=>({ok:false,reason:"CASH_RECONCILIATION_RETRY_PENDING"}));
+  const performanceEvidence=await adminRpc("refresh_daily_performance_evidence_for_service",{
+    p_user_id:userId
+  }).catch(()=>({ok:false,reason:"PERFORMANCE_RECALCULATION_RETRY_PENDING"}));
 
   return {
     month,
@@ -798,6 +805,7 @@ async function syncHistoryMonth(userId:string,month:string){
     retiredRevisions,
     reconciliation,
     cashAccounting,
+    performanceEvidence,
     dividends:norm.dividends.length,
     cashFlows:norm.cashFlows.length,
     applied,
@@ -870,7 +878,7 @@ function normalizeChartRows(securityId:string,currencyCode:string,rows:any[],kin
   }
   return out;
 }
-async function domesticChart(appKey:string,token:string,securityId:string,symbolRaw:string,currencyCode:string){
+async function domesticChart(appKey:string,token:string,securityId:string,symbolRaw:string,currencyCode:string,cursor=""){
   const symbol=String(symbolRaw||"").replace(/^A/,"").trim();
   let lastErr:any=null;
   for(const mkt of ["0","1"]){
@@ -878,7 +886,7 @@ async function domesticChart(appKey:string,token:string,securityId:string,symbol
       try{
         const data=await callTr(appKey,token,"/api/v1/ivs11560",{
           info_ccd:"1",mkt_clsf:mkt,chrt_clsf:"D",minute_tck_indx:"",
-          is_cd:symbol,inq_clsf:inq,strt_dy:"",inq_cnt:"300"
+          is_cd:symbol,inq_clsf:inq,strt_dy:cursor,inq_cnt:"300"
         });
         const b=data?.dataBody||{};
         const rows=Array.isArray(b?.out2)?b.out2:[];
@@ -890,7 +898,7 @@ async function domesticChart(appKey:string,token:string,securityId:string,symbol
   if(lastErr) throw lastErr;
   return [];
 }
-async function overseasChart(appKey:string,token:string,securityId:string,symbol:string,exchange:string,currencyCode:string){
+async function overseasChart(appKey:string,token:string,securityId:string,symbol:string,exchange:string,currencyCode:string,cursor=""){
   // An ETF can trade on a different US venue than the one KB assigned to its
   // security master. Try the broker's other US exchange codes before declaring
   // historical prices unavailable. Keep the broker's split-adjusted series;
@@ -903,7 +911,7 @@ async function overseasChart(appKey:string,token:string,securityId:string,symbol
       const data=await callTr(appKey,token,"/api/v1/gsc10060",{
         krx_cd:venue,is_cd:String(symbol||"").trim().toUpperCase(),
         chrt_clsf:"3",bndl:"",mdfy_stk_prc_use_f:"1",
-        rcrd_c:"300",srch_strt_dy:"",clsf:"1"
+        rcrd_c:"300",srch_strt_dy:cursor,clsf:"1"
       });
       const b=data?.dataBody||{};
       const rows=normalizeChartRows(securityId,currencyCode,
@@ -985,6 +993,68 @@ async function syncHistoricalPriceNext(userId:string,requested:unknown){
       fullLifecycleCovered:!!coverage?.full_lifecycle_covered,errorCode});
   }
   return {securities:results.length,rowsWritten:total,results};
+}
+
+async function syncHistoricalPriceWindows(userId:string,requested:unknown,requestedSymbol:unknown){
+  const limit=Math.min(5,Math.max(1,Number(requested)||3));
+  const targeted=String(requestedSymbol||'').trim().toUpperCase();
+  if(targeted&&!/^[A-Z0-9._-]{1,20}$/.test(targeted))throw new Error('INVALID_SYMBOL');
+  const candidates=await adminRpc('get_next_price_windows_for_service',{
+    p_user_id:userId,p_limit:targeted?150:limit
+  });
+  const windows=targeted?(Array.isArray(candidates)?candidates:[])
+    .filter((x:any)=>String(x.symbol||'').toUpperCase()===targeted).slice(0,1):candidates;
+  if(!Array.isArray(windows)||!windows.length)
+    return {securities:0,rowsWritten:0,results:[],remaining:'no_eligible_verified_symbol'};
+  const {appKey,appSecret}=await credentials(userId);
+  const token=await issueToken(appKey,appSecret);
+  const results:any[]=[];let total=0;
+  for(const s of windows){
+    const sid=String(s.security_id||''),symbol=String(s.symbol||'');
+    const cursor=String(s.cursor_date||'').slice(0,10);
+    const cursor8=cursor.replace(/-/g,'');
+    let rows:any[]=[];let written=0;let status='retrieved';let errorCode:string|null=null;
+    try{
+      const received=s.market==='KRX'
+        ?await domesticChart(appKey,token,sid,symbol,String(s.currency||'KRW'),cursor8)
+        :await overseasChart(appKey,token,sid,symbol,String(s.market||''),
+          String(s.currency||'USD'),cursor8);
+      rows=received.filter((r:any)=>String(r.price_date||'')<=cursor);
+      if(rows.length)written=Number(await adminRpc('upsert_daily_security_prices_for_service',
+        {p_rows:rows})||0);
+      else status='blocked';
+    }catch(error){status='failed';errorCode=String((error as Error)?.message||'PRICE_WINDOW_FAILED').slice(0,100)}
+    const progress=await adminRpc('record_price_window_for_service',{
+      p_user_id:userId,p_security_id:sid,p_cursor:cursor,p_status:status,
+      p_rows_read:rows.length,p_rows_written:written,p_error_code:errorCode
+    });
+    total+=written;
+    results.push({symbol,cursor,status,rows:rows.length,written,
+      firstTrade:s.first_trade_date,firstPrice:progress?.oldest_price_date||null,
+      fullLifecycleCovered:!!progress?.full_lifecycle_covered,errorCode});
+  }
+  return {securities:results.length,rowsWritten:total,results};
+}
+
+async function probeEarlierPriceWindow(userId:string,requestedSymbol:unknown,cursor:unknown){
+  const day=String(cursor||'');
+  if(!/^20\d{6}$/.test(day))throw new Error('INVALID_PRICE_CURSOR');
+  const holdings=await adminRpc('get_live_holding_securities_for_service',{p_user_id:userId});
+  const selected=(Array.isArray(holdings)?holdings:[]).find((h:any)=>
+    String(h.symbol||'').toUpperCase()===String(requestedSymbol||'').toUpperCase());
+  if(!selected)throw new Error('SYMBOL_NOT_IN_LIVE_HOLDINGS');
+  const {appKey,appSecret}=await credentials(userId);
+  const token=await issueToken(appKey,appSecret);
+  const rows=selected.market==='KRX'
+    ?await domesticChart(appKey,token,String(selected.security_id),String(selected.symbol),
+      String(selected.currency||'KRW'),day)
+    :await overseasChart(appKey,token,String(selected.security_id),String(selected.symbol),
+      String(selected.market||''),String(selected.currency||'USD'),day);
+  const dates=rows.map((x:any)=>String(x.price_date||'')).filter(Boolean).sort();
+  return {symbol:selected.symbol,cursor:day,count:dates.length,
+    oldest:dates[0]||null,newest:dates.at(-1)||null,
+    cursor_respected:dates.length>0&&String(dates.at(-1))<=
+      day.slice(0,4)+'-'+day.slice(4,6)+'-'+day.slice(6,8)};
 }
 
 async function syncHistoricalFx(){
@@ -1146,8 +1216,22 @@ Deno.serve(async (req:Request) => {
       return json(req,{ok:true,mode:"price_history_sync",...p,historicalFx:fx});
     }
     if (action === "sync-history-prices-next") {
-      return json(req,{ok:true,mode:"resumable_sold_security_price_backfill",
-        ...await syncHistoricalPriceNext(userId,body?.securities)});
+      const result=await syncHistoricalPriceNext(userId,body?.securities);
+      if(result.rowsWritten>0)await adminRpc("refresh_daily_performance_evidence_for_service",{
+        p_user_id:userId
+      }).catch(()=>{});
+      return json(req,{ok:true,mode:"resumable_sold_security_price_backfill",...result});
+    }
+    if (action === "sync-history-price-windows") {
+      const result=await syncHistoricalPriceWindows(userId,body?.securities,body?.symbol);
+      if(result.rowsWritten>0)await adminRpc('refresh_daily_performance_evidence_for_service',{
+        p_user_id:userId
+      }).catch(()=>{});
+      return json(req,{ok:true,mode:'cursor_historical_price_backfill',...result});
+    }
+    if (action === "probe-earlier-price") {
+      return json(req,{ok:true,mode:"price_cursor_probe",
+        ...await probeEarlierPriceWindow(userId,body?.symbol,body?.cursor)});
     }
     if (action === "sync-fx-history") {
       const fx=await syncHistoricalFx();
