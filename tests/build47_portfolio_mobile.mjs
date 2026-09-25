@@ -28,7 +28,7 @@ assert.match(view,/410주/);
 assert.match(view,/4,645,270원/);
 assert.match(view,/\+6,200원/);
 assert.match(view,/2개 계좌/);
-assert.match(view,/통합 총자산 대비 77\.4%/);
+assert.match(view,/앱 합산 자산 대비 77\.4%/);
 assert.match(view,/2026-09-23 기준 · 새 잔고 확인 필요/);
 assert.doesNotMatch(view,/KB 평균매입단가/);
 assert.ok(html.includes('padding-bottom:calc(124px + var(--safe))'));
