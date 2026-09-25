@@ -68,7 +68,9 @@ begin
       and t.fx_rate between 500 and 3000
     group by 1
     union all
-    select f.rate_date,f.rate,1 from public.fx_rates f
+    select f.rate_date,f.rate,
+      case when f.source='kb_account_snapshot' then 1 else 2 end
+      from public.fx_rates f
     where f.base_currency='USD' and f.quote_currency='KRW'
       and f.rate between 500 and 3000
   ),
