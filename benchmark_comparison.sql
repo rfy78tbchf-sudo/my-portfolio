@@ -13,6 +13,8 @@ declare
   v_end_close record;
   v_start_fx numeric;
   v_end_fx numeric;
+  v_start_fx_source text;
+  v_end_fx_source text;
   v_return numeric;
 begin
   if (select auth.uid()) is null then raise exception 'authentication required'; end if;
@@ -52,14 +54,16 @@ begin
     return jsonb_build_object('ok',true,'ready',false,'symbol',p_symbol,
       'reason','비교 가능한 시작일·종료일 종가가 아직 없습니다');
   end if;
-  select f.rate into v_start_fx from public.fx_rates f
+  select f.rate,f.source into v_start_fx,v_start_fx_source from public.fx_rates f
     where f.base_currency='USD' and f.quote_currency='KRW'
       and f.rate_date between v_start-7 and v_start
-      and f.rate>0 order by f.rate_date desc limit 1;
-  select f.rate into v_end_fx from public.fx_rates f
+      and f.rate>0 order by f.rate_date desc,
+        case when f.source='kb_account_snapshot' then 0 else 1 end limit 1;
+  select f.rate,f.source into v_end_fx,v_end_fx_source from public.fx_rates f
     where f.base_currency='USD' and f.quote_currency='KRW'
       and f.rate_date between v_end-7 and v_end
-      and f.rate>0 order by f.rate_date desc limit 1;
+      and f.rate>0 order by f.rate_date desc,
+        case when f.source='kb_account_snapshot' then 0 else 1 end limit 1;
   if v_start_fx is null or v_end_fx is null then
     return jsonb_build_object('ok',true,'ready',false,'symbol',p_symbol,
       'reason','당시 원/달러 환율이 부족해 원화 투자성과와 비교하지 않습니다');
@@ -73,7 +77,8 @@ begin
     'benchmark_return_krw_pct',v_return,
     'difference_pct',(v_perf->>'return_pct')::numeric-v_return,
     'benchmark_return_usd_pct',(v_end_close.close/v_start_close.close-1)*100,
-    'fx_start',v_start_fx,'fx_end',v_end_fx);
+    'fx_start',v_start_fx,'fx_end',v_end_fx,
+    'fx_start_source',v_start_fx_source,'fx_end_source',v_end_fx_source);
 end $$;
 revoke all on function public.get_live_benchmark_comparison(text,text) from public,anon;
 grant execute on function public.get_live_benchmark_comparison(text,text) to authenticated;
