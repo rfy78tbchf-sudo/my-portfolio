@@ -26,6 +26,10 @@ testScope.scopedRequest=async(_token,path)=>{
   if(path.startsWith('live_cash_observation_bridges?'))return bridgeResult;
   if(path.startsWith('rpc/get_live_performance_summary'))return summary;
   if(path.startsWith('rpc/get_live_reliable_performance'))return observedResult;
+  if(path.startsWith('rpc/get_live_observation_cutoffs'))return {ok:true,
+    legacy:{fetched_at:'2026-09-25T09:10:03Z',nav:65964015,cash:94241},
+    current:{fetched_at:'2026-09-25T12:35:33Z',nav:65676375,cash:-2680484},
+    same_day:true,nav_gap_krw:-287640,cash_gap_krw:-2774725,valuation_time_aligned:false};
   if(path.startsWith('rpc/get_live_verified_position_movements'))return {
     ready:true,attribution_complete:false,items:[],omitted_positions:4};
   if(path.startsWith('rpc/get_live_ledger_period_estimate'))return {included_count:0,candidate_count:0};
@@ -70,6 +74,9 @@ observedResult={ok:true,state:'estimated',requested_period:'6M',partial:true,
 result=await build(...args.slice(0,3),'6M');
 assert.equal(result.reliable_observed_period.partial,true);
 assert.equal(result.reliable_observed_period.twr_pct,null);
+assert.equal(result.valuation_cutoffs.nav_gap_krw,-287640);
+assert.equal(result.valuation_cutoffs.valuation_time_aligned,false);
+assert.match(source,/두 총자산·현금의 차이를 하루 투자손익으로 해석하지 않는다/);
 assert.equal(result.period_performance,null);
 assert.equal(result.partial_unchanged_position_movements.attribution_complete,false);
 assert.match(source,/partial=true면 요청한 기간 전체 성과라고 말하지 않고/);

@@ -58,7 +58,7 @@ function questionPeriod(question:string){
   return '1M';
 }
 async function buildContext(token:string,userId:string,symbol:string,period:string){
-  const [accounts,summary,risk,recon,estimate,pending,cash,attribution,coverage,cashBridges,reliable,movements,cashCases,behavior]=await Promise.all([
+  const [accounts,summary,risk,recon,estimate,pending,cash,attribution,coverage,cashBridges,reliable,movements,cashCases,behavior,cutoffs]=await Promise.all([
     scopedRequest(token,'accounts?select=id,name,mode,provider&mode=eq.live&provider=eq.kb_securities&limit=1'),
     scopedRequest(token,query('get_live_performance_summary',{}),{p_period:period}).catch(()=>null),
     scopedRequest(token,query('get_live_risk_snapshot',{}),{}).catch(()=>null),
@@ -73,6 +73,7 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
     scopedRequest(token,query('get_live_verified_position_movements',{}),{p_period:period}).catch(()=>null),
     scopedRequest(token,'live_cash_case_assessments?select=start_date,end_date,cause_classification,remaining_difference_krw,same_day_nav_source_delta&order=end_date.desc&limit=5').catch(()=>[]),
     scopedRequest(token,query('get_live_behavior_summary',{}),{}).catch(()=>null),
+    scopedRequest(token,query('get_live_observation_cutoffs',{}),{}).catch(()=>null),
   ]);
   if(!accounts?.length)throw Error('NO_LIVE_ACCOUNT');
   const accountId=accounts[0].id;
@@ -126,6 +127,8 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
       ['start_date','end_date','items','compared_positions','end_positions','omitted_positions',
         'position_snapshots_time_aligned','attribution_complete']):null,
     classified_cash_cases:cashCases,
+    valuation_cutoffs:cutoffs&&cutoffs.ok?limitObject(cutoffs,
+      ['legacy','current','same_day','nav_gap_krw','cash_gap_krw','valuation_time_aligned']):null,
     ledger_behavior:behavior&&behavior.ok?limitObject(behavior,
       ['buy_events','sell_events','traded_symbols','lifecycle_eligible_symbols',
         'additional_buys','partial_sells','full_sells','reentries',
@@ -192,7 +195,7 @@ Deno.serve(async(req:Request)=>{
 먼저 기존 투자 논리를 검토하고, 이를 약화하는 근거와 반례도 짚는다. 확정/추정/미해결 신뢰도를 분명히 구분한다.
 원장 수량이 맞지 않거나 가격이 없으면 정확한 기간 수익을 주장하지 않는다. 주문을 실행하지 않는다.
 period_evidence.supported_period=false면 기존 성과 요약은 해당 기간 조회를 지원하지 않는다. 별도 reliable_observed_period는 요청 기간 중 실제 확인된 구간만 다룰 수 있다. period_evidence.investment_result_usable=false면 선택 기간 전체의 확정 투자손익이나 수익률을 주장하지 않는다. period_attribution.partial=true는 start_snapshot_date부터의 짧은 관측 구간이며 질문한 전체 기간의 성과가 아니다. period_attribution.unallocated_krw는 설명하지 못한 차이이며 자산·종목 이익으로 추정 배정하지 않는다. period_evidence.cash_bridge_gaps는 현금 원장과 KB 관측값 사이의 검증 오차이며 확정 손익이 아니다.
-reliable_observed_period.state=estimated이면 investment_pnl은 외부 입출금을 뺀 해당 관측 구간의 추정 투자손익으로만 말한다. partial=true면 요청한 기간 전체 성과라고 말하지 않고 reliable_start~observed_through의 짧은 실제 관측기간을 밝힌다. return_estimate_pct는 입출금 반영 시각을 가정한 참고 수익률이며 twr_pct가 null이면 확정 투자수익률을 주장하지 않는다. same_day_other_source_nav_gap_krw가 있으면 같은 날 KB 조회시각에 따른 NAV 차이를 말한다. partial_unchanged_position_movements는 거래가 없고 수량이 같은 종목의 평가액 변화 일부일 뿐 종목별 전체 성과기여 순위가 아니다. 이 부분값들의 합을 전체 투자손익과 같다고 하지 않는다. classified_cash_cases는 설명된 시차와 미해결 잔차를 구분한다.
+reliable_observed_period.state=estimated이면 investment_pnl은 외부 입출금을 뺀 해당 관측 구간의 추정 투자손익으로만 말한다. partial=true면 요청한 기간 전체 성과라고 말하지 않고 reliable_start~observed_through의 짧은 실제 관측기간을 밝힌다. return_estimate_pct는 입출금 반영 시각을 가정한 참고 수익률이며 twr_pct가 null이면 확정 투자수익률을 주장하지 않는다. valuation_cutoffs의 legacy/current는 같은 날 서로 다른 시각의 KB 잔고이므로 두 총자산·현금의 차이를 하루 투자손익으로 해석하지 않는다. same_day_other_source_nav_gap_krw가 있으면 같은 날 KB 조회시각에 따른 NAV 차이를 말한다. partial_unchanged_position_movements는 거래가 없고 수량이 같은 종목의 평가액 변화 일부일 뿐 종목별 전체 성과기여 순위가 아니다. 이 부분값들의 합을 전체 투자손익과 같다고 하지 않는다. classified_cash_cases는 설명된 시차와 미해결 잔차를 구분한다.
 cash_accounting의 원화 관측 외에 과거 역산 현금과 외화 원금은 확정값이 아니다. 현금 대조 오류를 투자손익으로 이동시키거나 숫자를 맞추지 않는다. long_term_coverage가 가격과 잔고 기록의 한계를 드러내면 장기 성과를 확정하지 않는다.
 reconciliation_cases에 등장하는 종목은 수량 차이의 원인 후보와 결제 예정일을 설명하되 실현손익을 확정하지 않는다. 일치한 종목의 확인된 자료와 무관한 기간은 계속 분석한다. 사용자가 종료를 확인했더라도 매도일·가격을 추정하지 않는다.
 settlement_pending은 KB 현재잔고의 미결제 매수·매도 수량과 공식 체결의 순수량이 원장 차이와 일치한 상태다. 수량 차이의 원인은 확인됐지만 결제 전 손익은 확정하지 않는다.
@@ -214,7 +217,7 @@ ledger_behavior는 매매 횟수만 원장 전체에서 세고, 추가매수·�
       user_id:userId,question,symbol:symbol||null,answer,confidence:context.confidence,
       context_sources:['holdings','reconciliation','period_performance','risk',
         'reliable_observed_period','partial_unchanged_position_movements',
-        'period_attribution','cash_accounting','classified_cash_cases','cash_bridges','long_term_coverage','ledger_behavior',
+        'period_attribution','cash_accounting','classified_cash_cases','valuation_cutoffs','cash_bridges','long_term_coverage','ledger_behavior',
         ...(symbol?['trades','investment_thesis','thesis_versions']:[])],model:MODEL
     }).catch(()=>null);
     return respond(req,{ok:true,answer,confidence:context.confidence,model:MODEL});
