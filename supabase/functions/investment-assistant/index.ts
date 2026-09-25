@@ -3,7 +3,9 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 const URL_ROOT=Deno.env.get('SUPABASE_URL')||'';
 const PUB_KEYS=JSON.parse(Deno.env.get('SUPABASE_PUBLISHABLE_KEYS')||'{}');
 const PUBLIC_KEY=PUB_KEYS.default||Deno.env.get('SUPABASE_ANON_KEY')||'';
-const OPENAI_KEY=Deno.env.get('OPENAI_API_KEY')||'';
+const SEC_KEYS=JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS')||'{}');
+const SERVICE_KEY=SEC_KEYS.default||Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
+const DEFAULT_OPENAI_KEY=Deno.env.get('OPENAI_API_KEY')||'';
 const MODEL=Deno.env.get('INVESTMENT_AI_MODEL')||'gpt-5-mini';
 const ORIGIN='https://rfy78tbchf-sudo.github.io';
 
@@ -28,6 +30,18 @@ async function scopedRequest(token:string,path:string,post?:unknown){
     body:post===undefined?undefined:JSON.stringify(post),signal:AbortSignal.timeout(12000)});
   if(!r.ok)throw Error('PORTFOLIO_CONTEXT_UNAVAILABLE');
   return await r.json();
+}
+async function serverRpc(name:string,args:Record<string,unknown>){
+  if(!SERVICE_KEY)throw Error('SERVICE_NOT_CONFIGURED');
+  const r=await fetch(URL_ROOT+'/rest/v1/rpc/'+name,{method:'POST',headers:{
+    'apikey':SERVICE_KEY,
+    'content-type':'application/json'},body:JSON.stringify(args),signal:AbortSignal.timeout(9000)});
+  if(!r.ok)throw Error('SERVER_KEY_STORE_UNAVAILABLE');
+  return r.json();
+}
+async function openAiKey(userId:string){
+  if(DEFAULT_OPENAI_KEY)return DEFAULT_OPENAI_KEY;
+  return String(await serverRpc('get_ai_api_key_for_service',{p_user_id:userId})||'');
 }
 function query(name:string,args:Record<string,unknown>){return 'rpc/'+name}
 function limitObject(input:any,keys:string[]){
@@ -88,11 +102,28 @@ Deno.serve(async(req:Request)=>{
   const userId=await userFromToken(token).catch(()=>null);
   if(!userId)return respond(req,{ok:false,code:'LOGIN_REQUIRED',message:'로그인한 뒤 다시 시도해 주세요.'},401);
   let body:any={};try{body=await req.json()}catch{return respond(req,{ok:false,code:'INVALID_JSON'},400)}
-  if(body.action==='health')return respond(req,{ok:true,configured:Boolean(OPENAI_KEY),model:MODEL});
+  if(body.action==='health')return respond(req,{ok:true,
+    configured:Boolean(await openAiKey(userId).catch(()=>'')),model:MODEL});
+  if(body.action==='connect-key'){
+    const candidate=String(body.api_key||'').trim();
+    if(!/^sk-[A-Za-z0-9_-]{30,200}$/.test(candidate))
+      return respond(req,{ok:false,code:'INVALID_API_KEY',message:'OpenAI API 키 형식을 확인해 주세요.'},400);
+    try{
+      const validation=await fetch('https://api.openai.com/v1/models',{headers:{
+        'authorization':'Bearer '+candidate},signal:AbortSignal.timeout(10000)});
+      if(!validation.ok)return respond(req,{ok:false,code:'INVALID_API_KEY',
+        message:'OpenAI에서 키를 확인하지 못했습니다. API 키와 프로젝트 권한을 확인해 주세요.'},422);
+      await serverRpc('set_ai_api_key_for_service',{p_user_id:userId,p_api_key:candidate});
+      return respond(req,{ok:true,configured:true});
+    }catch{return respond(req,{ok:false,code:'KEY_STORE_ERROR',
+      message:'키 저장 연결을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.'},502)}
+  }
   const question=String(body.question||'').trim(),symbol=String(body.symbol||'').trim().toUpperCase();
   if(question.length<2||question.length>800||symbol.length>15||!/^[A-Z0-9.]*$/.test(symbol))
     return respond(req,{ok:false,code:'INVALID_QUESTION',message:'질문과 종목을 확인해 주세요.'},400);
-  if(!OPENAI_KEY)return respond(req,{ok:false,code:'AI_SECRET_MISSING',message:'서버의 OpenAI API Secret 연결을 기다리고 있습니다.'},503);
+  const key=await openAiKey(userId).catch(()=>'');
+  if(!key)return respond(req,{ok:false,code:'AI_SECRET_MISSING',
+    message:'더보기 → 투자 AI 분석에서 OpenAI API 키를 한 번 연결해 주세요.'},503);
   try{
     const today=new Date().toISOString().slice(0,10);
     const prior=await scopedRequest(token,'ai_analysis_history?select=id&user_id=eq.'+userId+
@@ -105,7 +136,7 @@ Deno.serve(async(req:Request)=>{
 원장 수량이 맞지 않거나 가격이 없으면 정확한 기간 수익을 주장하지 않는다. 주문을 실행하지 않는다.
 보유 논리, 유지·약화 요인, 새 위험, 포트폴리오 영향, 다음 확인 사항, 대응 시나리오를 간결히 쓴다.`;
     const openai=await fetch('https://api.openai.com/v1/responses',{method:'POST',
-      headers:{'content-type':'application/json','authorization':'Bearer '+OPENAI_KEY},
+      headers:{'content-type':'application/json','authorization':'Bearer '+key},
       body:JSON.stringify({model:MODEL,instructions:instruction,
         input:'투자자 질문: '+question+'\n서버에서 선별한 계좌 데이터(JSON): '+JSON.stringify(context),
         max_output_tokens:1800,store:false}),signal:AbortSignal.timeout(45000)});
