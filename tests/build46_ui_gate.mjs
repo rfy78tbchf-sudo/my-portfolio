@@ -12,6 +12,7 @@ const gate={ok:true,state:'estimated',partial:true,reliable_start:'2026-09-23',
   closing_assets:65964015,same_day_other_source_nav_gap_krw:-264002};
 const ctx=vm.createContext({live:{performanceGate:gate},period:'1M',
   esc:String,money:n=>Number(n).toLocaleString('en-US')+'원',
+  signedMoney:n=>(Number(n)>0?'+':'')+Number(n).toLocaleString('en-US')+'원',
   pct:n=>Number(n).toFixed(2)+'%',cls:()=>'',kstStamp:()=> '9월 25일'});
 vm.runInContext(source.slice(start,end),ctx);
 const display=vm.runInContext('observedPerformanceCard()',ctx);
@@ -23,7 +24,6 @@ assert.match(display,/264,002원 차이가 납니다/);
 ctx.live.observationCutoffs={ok:true,same_day:true,valuation_time_aligned:false,
   nav_gap_krw:-287640,cash_gap_krw:-2774725,
   legacy:{fetched_at:'2026-09-25T09:10:03Z'},current:{fetched_at:'2026-09-25T12:35:33Z'}};
-ctx.signedMoney=n=>(Number(n)>0?'+':'')+Number(n).toLocaleString('en-US')+'원';
 const aligned=vm.runInContext('observedPerformanceCard()',ctx);
 assert.match(aligned,/287,640원/);
 assert.match(aligned,/2,774,725원/);
