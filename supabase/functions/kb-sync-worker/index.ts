@@ -437,6 +437,8 @@ function classifyLedger(r:any){
   // price or external cash flow. Keep both legs of corporate actions.
   if(/(액면분할|액면병합)/.test(s) && /입고/.test(s)) return "split_in";
   if(/(액면분할|액면병합)/.test(s) && /출고/.test(s)) return "split_out";
+  if(/(주식배당|무상증자|유상증자|권리배정)/.test(s) && /입고/.test(s)) return "corporate_in";
+  if(/(주식배당|무상증자|유상증자|권리배정)/.test(s) && /출고/.test(s)) return "corporate_out";
   if(/(상환|종목변경|합병|스핀오프)/.test(s) && /입고/.test(s)) return "corporate_in";
   if(/(상환|종목변경|합병|스핀오프)/.test(s) && /출고/.test(s)) return "corporate_out";
   if(/입고/.test(s)) return "transfer_in";

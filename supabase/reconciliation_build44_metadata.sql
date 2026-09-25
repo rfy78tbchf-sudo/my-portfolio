@@ -16,8 +16,8 @@ begin
     when new.type in ('corporate_in','corporate_out') and v_summary~'종목변경' then 'SYMBOL_CHANGE'
     when new.type in ('corporate_in','corporate_out') and v_summary~'스핀오프' then 'SPINOFF'
     when new.type in ('corporate_in','corporate_out') and v_summary~'합병' then 'MERGER'
-    when new.type in ('corporate_in','corporate_out') and v_summary~'배당' then 'STOCK_DIVIDEND'
-    when new.type in ('corporate_in','corporate_out') and v_summary~'권리' then 'RIGHTS_EVENT'
+    when new.type in ('corporate_in','corporate_out') and v_summary~'주식배당|무상증자' then 'STOCK_DIVIDEND'
+    when new.type in ('corporate_in','corporate_out') and v_summary~'권리|유상증자' then 'RIGHTS_EVENT'
     else upper(new.type) end;
   new.fetched_at:=now();
   v_date:=coalesce(new.provider_payload->>'ordr_dt','');
