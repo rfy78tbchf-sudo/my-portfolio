@@ -387,6 +387,14 @@ function classifyLedger(r:any){
   const s=(String(r?.smry_nm||"")+" "+String(r?.dl_typ_cd||"")).trim();
   if(/세금|제세|원천|소득세|주민세|거래세|농특세|양도세/.test(s)) return "tax";
   if(/배당금 입금|분배금 입금|분배 입금/.test(s)) return "dividend";
+  // A share transfer/split changes position quantity without any execution
+  // price or external cash flow. Keep both legs of corporate actions.
+  if(/(액면분할|액면병합)/.test(s) && /입고/.test(s)) return "split_in";
+  if(/(액면분할|액면병합)/.test(s) && /출고/.test(s)) return "split_out";
+  if(/(상환|종목변경|합병|스핀오프)/.test(s) && /입고/.test(s)) return "corporate_in";
+  if(/(상환|종목변경|합병|스핀오프)/.test(s) && /출고/.test(s)) return "corporate_out";
+  if(/입고/.test(s)) return "transfer_in";
+  if(/출고/.test(s)) return "transfer_out";
   // FX conversion descriptions include "매수"/"매도"; they are not stock trades
   // and must never enter the security P&L ledger as purchases or sales.
   if(/환전|외화매수|외화매도/.test(s)) return "fx";
@@ -657,6 +665,22 @@ async function syncHistoryMonth(userId:string,month:string){
   };
 }
 
+async function backfillNextMonths(userId:string,requested:unknown){
+  const count=Math.min(3,Math.max(1,Number(requested)||1));
+  const result:any[]=[];
+  for(let i=0;i<count;i++){
+    const month=String(await adminRpc("next_kb_backfill_month_for_service",{p_user_id:userId})||"");
+    if(!month)break;
+    const step=await syncHistoryMonth(userId,month);
+    await adminRpc("record_kb_backfill_month_for_service",{
+      p_user_id:userId,p_month:month,p_ledger_rows:step.ledgerRows,
+      p_settlement_rows:step.overseasSettlementRows
+    });
+    result.push({month,ledgerRows:step.ledgerRows,settlementRows:step.overseasSettlementRows});
+  }
+  return {months:result,completed:result.length};
+}
+
 function isoDate8(v:any){
   const s=String(v||"").replace(/[^0-9]/g,"");
   if(s.length!==8) return "";
@@ -705,15 +729,28 @@ async function domesticChart(appKey:string,token:string,securityId:string,symbol
   return [];
 }
 async function overseasChart(appKey:string,token:string,securityId:string,symbol:string,exchange:string,currencyCode:string){
-  const data=await callTr(appKey,token,"/api/v1/gsc10060",{
-    krx_cd:String(exchange||"NAS").trim().toUpperCase(),
-    is_cd:String(symbol||"").trim().toUpperCase(),
-    chrt_clsf:"3",bndl:"",mdfy_stk_prc_use_f:"1",
-    rcrd_c:"300",srch_strt_dy:"",clsf:"1"
-  });
-  const b=data?.dataBody||{};
-  const rows=Array.isArray(b?.out2)?b.out2:[];
-  return normalizeChartRows(securityId,currencyCode,rows,"overseas");
+  // An ETF can trade on a different US venue than the one KB assigned to its
+  // security master. Try the broker's other US exchange codes before declaring
+  // historical prices unavailable. Keep the broker's split-adjusted series;
+  // never multiply it by corporate-action quantities a second time.
+  const primary=String(exchange||"NAS").trim().toUpperCase();
+  const exchanges=[primary,...["NAS","NYS","AMX"].filter(x=>x!==primary)];
+  let lastError:unknown=null;
+  for(const venue of exchanges){
+    try{
+      const data=await callTr(appKey,token,"/api/v1/gsc10060",{
+        krx_cd:venue,is_cd:String(symbol||"").trim().toUpperCase(),
+        chrt_clsf:"3",bndl:"",mdfy_stk_prc_use_f:"1",
+        rcrd_c:"300",srch_strt_dy:"",clsf:"1"
+      });
+      const b=data?.dataBody||{};
+      const rows=normalizeChartRows(securityId,currencyCode,
+        Array.isArray(b?.out2)?b.out2:[],"overseas");
+      if(rows.length)return rows;
+    }catch(error){lastError=error}
+  }
+  if(lastError)throw lastError;
+  return [];
 }
 async function syncHoldingPrices(userId:string){
   const {appKey,appSecret}=await credentials(userId);
@@ -933,6 +970,10 @@ Deno.serve(async (req:Request) => {
       const month=String(body?.month||"");
       const h=await syncHistoryMonth(userId,month);
       return json(req,{ok:true,mode:"history_month_sync",...h});
+    }
+    if(action==="backfill-next"){
+      const report=await backfillNextMonths(userId,body?.months);
+      return json(req,{ok:true,mode:"idempotent_kb_backfill",...report,orderEndpointsEnabled:false});
     }
     return json(req,{ok:false,code:"UNKNOWN_ACTION"},400);
   } catch(e) {
