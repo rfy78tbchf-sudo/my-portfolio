@@ -81,7 +81,9 @@
       '<div class="sub">체결일이 확인되지 않은 거래의 기간 경계는 잠정입니다. 매도별 원가 계산과 기간 전체 성과를 구분합니다.</div>'+
       '<div class="notice">매도 '+Number(r.candidate_count||0)+'건 중 계산 '+Number(r.ready_count||0)+
       '건 (주문일 근거), 원가만 계산·날짜 미대조 '+Number(r.partial_count||0)+'건, 순서 '+Number(r.order_unverified_count||0)+
-      '건, 원가 '+Number(r.cost_review_count||0)+'건, 원본 '+Number(r.source_review_count||0)+
+      '건'+(r.direct_order_count!=null?' (해당일 '+Number(r.direct_order_count||0)+
+        '건 · 이전 거래 영향 '+Number(r.carried_order_count||0)+'건)':'')+
+      ', 원가 '+Number(r.cost_review_count||0)+'건, 원본 '+Number(r.source_review_count||0)+
       '건 확인 필요. 두 부분합은 더하지 않으며 계좌 기간성과가 아닙니다.</div>'+totals+
       (groupsHtml||'<div class="notice">선택 기간에 매도 내역이 없습니다.</div>')+'</section>';
   }

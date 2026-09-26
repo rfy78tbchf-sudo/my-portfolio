@@ -8,14 +8,19 @@ import {webcrypto} from 'node:crypto';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const ui=readFileSync(new URL('../realized-sales-ui.js',import.meta.url),'utf8');
 const sql=readFileSync(new URL('../supabase/build54h_mixed_source_guard.sql',import.meta.url),'utf8');
+const provenance=readFileSync(new URL('../supabase/build55b_realized_issue_provenance.sql',import.meta.url),'utf8');
 const cycle=readFileSync(new URL('../supabase/build54e_lifecycle_review.sql',import.meta.url),'utf8');
 const reqSql=readFileSync(new URL('../supabase/build54d_ai_analysis_request.sql',import.meta.url),'utf8');
 assert.match(sql,/and v_day_valid then/);
 assert.match(sql,/if v_trade.type='sell' and v_day.d between/);
 assert.match(sql,/v_seen_mixed:=v_day.d/);
+assert.match(provenance,/'source_transaction_id',v_trade.external_id/);
+assert.match(provenance,/'missing_fields'/);
+assert.match(provenance,/'direct_order_count',v_direct_order/);
+assert.match(provenance,/'carried_order_count',v_carried_order/);
 assert.match(cycle,/v_opening and v_ending/);
 assert.match(reqSql,/primary key\(user_id,id\)/);
-assert.match(html,/realized-sales-ui\.js\?v=55a/);
+assert.match(html,/realized-sales-ui\.js\?v=55b/);
 const scope=vm.createContext({window:{}});vm.runInContext(ui,scope);
 const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',currency:'USD',
   trade_date:'2026-09-18',date_basis:'broker_order_date_no_intraday_time',status:'calculated',
@@ -24,7 +29,8 @@ const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',c
   historical_krw_estimate:93560};
 const report={ok:true,period:'1M',period_start:'2026-08-26',period_end:'2026-09-26',
   calculation_version:'realized-sales-v2',candidate_count:3,ready_count:1,
-  partial_count:1,order_unverified_count:1,cost_review_count:0,source_review_count:0,
+  partial_count:1,order_unverified_count:1,direct_order_count:0,carried_order_count:1,
+  cost_review_count:0,source_review_count:0,
   items:[sale,{...sale,transaction_id:'second',symbol:'OTHER',status:'order_unverified',realized_local:null,
     issue_date:'2026-08-21'},
     {...sale,transaction_id:'third',symbol:'DATE',status:'partial_date',realized_local:25,
@@ -36,6 +42,7 @@ assert.match(rendered,/매도 3건 중 계산 1건/);
 assert.match(rendered,/기간 포함 미확정/);
 assert.match(rendered,/원장 기록일 기준 USD 원가 산출 · 1건/);
 assert.match(rendered,/이전 혼합거래일의 원가 배분이 이후 매도에 영향/);
+assert.match(rendered,/해당일 0건 · 이전 거래 영향 1건/);
 assert.match(rendered,/− 배분 원가 400\.8/);
 assert.match(rendered,/원화 관리손익 추정/);
 assert.doesNotMatch(rendered,/계좌 기간성과 78/);
