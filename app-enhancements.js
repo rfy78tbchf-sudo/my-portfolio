@@ -179,7 +179,7 @@
       var basis=document.getElementById('aiBasis');if(basis)basis.textContent='분석 기준 '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'관측 미확인')+
         ' · '+(data.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':data.response_kind==='model'?'모델 응답':'서버 검증 답변')+
         ' · 계산 '+(data.calculation_version||'기준 확인 필요')+
-        (data.account_scope_state==='isa_overlap_unverified'?' · ISA 중복 여부 미확인':'');
+        (data.account_scope_state==='isa_overlap_unverified'?' · ISA 중복 여부 미확인':data.account_scope_state==='verified'?' · ISA 별도 계좌 확인 · 수동잔고 기준시각 차이':'');
       loadPrevious(context);
     }catch(e){answer.textContent='분석을 완료하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
@@ -202,7 +202,8 @@
         '자산 변화 '+won(m.scenario.impact_krw)+' · 앱 합산 자산 대비 '+Number(m.scenario.asset_impact_pct).toFixed(2)+'% (참고).\n'+
         '분모 '+won(m.denominator.value)+' = KB 응답 '+won(m.denominator.kb_response_value)+' + ISA 수동 '+won(m.denominator.manual_overlay)+
         ' · '+new Date(m.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
-        '. ISA 중복 포함 여부 미확인. 나머지 자산과 환율은 그대로 둔 조건부 계산이며 예측이 아닙니다.';
+        (m.account_scope_state==='verified'?'. KB 계좌별 화면에서 ISA 별도 확인. ISA 수동잔고는 다른 시각 기록.':'. ISA 중복 포함 여부 미확인.')+
+        ' 나머지 자산과 환율은 그대로 둔 조건부 계산이며 예측이 아닙니다.';
     }catch(e){el.textContent='계산에 필요한 같은 시각의 평가 자료를 확인하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
   }

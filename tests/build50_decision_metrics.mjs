@@ -45,6 +45,14 @@ assert.equal(request[0].change_pct,-10);
 assert.match(inputs.scenarioResult.textContent,/-1,500,000원/);
 assert.match(inputs.scenarioResult.textContent,/ISA 중복 포함 여부 미확인/);
 assert.match(inputs.scenarioResult.textContent,/예측이 아닙니다/);
+context.authFetch=async()=>({ok:true,json:async()=>({ok:true,
+  observation_at:'2026-01-02T00:00:00Z',account_scope_state:'verified',
+  position:{symbol:'ARM',value:15000000},
+  denominator:{value:60000000,kb_response_value:51000000,manual_overlay:9000000},
+  scenario:{impact_krw:-1500000,asset_impact_pct:-2.5}})});
+await vm.runInContext('runScenario()',box);
+assert.match(inputs.scenarioResult.textContent,/ISA 별도 확인/);
+assert.doesNotMatch(inputs.scenarioResult.textContent,/ISA 중복 포함 여부 미확인/);
 inputs.scenarioChange.value='-120';
 await vm.runInContext('runScenario()',box);
 assert.equal(request.length,1,'invalid change cannot call the server');
