@@ -5,6 +5,7 @@ import vm from 'node:vm';
 const sql=readFileSync(new URL('../supabase/build50_decision_metrics.sql',import.meta.url),'utf8');
 const edge=readFileSync(new URL('../supabase/functions/investment-assistant/index.ts',import.meta.url),'utf8');
 const ai=readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8');
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert.match(sql,/where a\.user_id=\(select auth\.uid\(\)\)/);
 assert.match(sql,/as_of is distinct from v_as_of/);
 assert.match(sql,/v_position\*p_change_pct\/100/);
@@ -13,6 +14,9 @@ assert.match(edge,/confidence:context\.confidence==='confirmed'\?'confirmed'/,
   'history confidence must satisfy the real database constraint');
 assert.doesNotMatch(edge,/ai_analysis_history'[\s\S]{0,900}\.catch\(\(\)=>null\)/,
   'history failures must never be swallowed');
+assert.match(html,/id="thesisAnalyze"/);
+assert.match(html,/if\(!thesisSaved\)/);
+assert.match(html,/thesisSaved=!!\(updated&&updated\.thesis&&updated\.thesis\.version\)/);
 
 // Exercise the shipping scenario UI with synthetic figures and the actual RPC payload.
 const inputs={scenarioSymbol:{value:'ARM'},scenarioChange:{value:'-10'},
