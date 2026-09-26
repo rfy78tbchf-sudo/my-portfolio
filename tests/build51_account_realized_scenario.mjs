@@ -7,6 +7,7 @@ const enhanced=readFileSync(new URL('../app-enhancements.js',import.meta.url),'u
 const observation=readFileSync(new URL('../supabase/build51_latest_isa_observation.sql',import.meta.url),'utf8');
 const weight=readFileSync(new URL('../supabase/build51_weight_reduction_scenario.sql',import.meta.url),'utf8');
 const trace=readFileSync(new URL('../supabase/build51_realized_trade_trace.sql',import.meta.url),'utf8');
+const cashScope=readFileSync(new URL('../supabase/build51d_cash_account_scope.sql',import.meta.url),'utf8');
 assert.match(observation,/on conflict \(account_id,source_reference\) do nothing/);
 assert.match(observation,/balance_effective_at/);
 assert.doesNotMatch(observation,/insert into public\.(?:transactions|manual_adjustments|daily_account_snapshots)/);
@@ -14,6 +15,7 @@ assert.match(weight,/v_assets\*p_target_pct\/100/);
 assert.match(weight,/cash_increase_before_cost_krw/);
 assert.match(trace,/public\.get_live_ledger_realized\(p_period\)/);
 assert.match(trace,/a\.user_id=\(select auth\.uid\(\)\)/);
+assert.match(cashScope,/a\.provider='kb_securities'/,'the automatic KB cash bridge excludes manual ISA');
 assert.equal(55_538_715+9_150_078,64_688_793);
 assert.equal(9_150_078-9_128_990,21_088);
 
