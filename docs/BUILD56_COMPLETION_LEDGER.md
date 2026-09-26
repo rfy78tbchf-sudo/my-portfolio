@@ -42,3 +42,17 @@ The Build 57b follow-up rejects ambiguous multiple-percentage questions instead
 of treating the current share as a target, and changes the request ID when the
 primary account observation changes. The owner must still submit the first
 authenticated model question to verify production history.
+
+## Build 58 evidence and review
+
+| User question | Implemented path | Verification and remaining condition |
+| --- | --- | --- |
+| Does an official company report address my reason for holding? | Security detail → saved thesis → AI review. The existing OpenAI search is limited to the public company identity and official issuer/SEC domains; a linked document and its AI summary are stored with the answer. Publication day is marked confirmed only if it can also be found in the linked HTML. The reporting period remains an AI reading of the document. | Isolated search and date tests pass; ARM's official Q1 fiscal 2027 shareholder letter dated July 29, 2026 is independently available. The owner's new request must still verify that the deployed search returns that document and a useful model answer. If the source cannot be verified, the page says official evidence is unavailable. |
+| What did I know when I made this choice? | Existing owner decision RPC now captures the linked source metadata, thesis version, available price record, account valuation basis, and a server calculated ±10% example in append-only columns. The user's own choice and reason remain separate from the AI response. | Live schema and RPC definition checked; existing analysis rows retained. No owner decision existed at the time of change. Target-weight scenarios are not captured in the decision snapshot yet, so the stored example does not claim to be the user's chosen target. |
+| What changed after my choice? | Reopening the security compares documents actually published after the decision with the saved source URLs, a same-currency later close, and owner-scoped broker ledger entries. A document fetched again with an older publication date creates no event; free-text review conditions stay unverified unless a clear present-close rule can be checked. The home surfaces a saved decision only when a new dated official source is stored or the owner-entered calendar date is due. | Isolated tests cover same source re-fetch, genuinely later document, another holding, missing date, price currency mismatch, and plan versus recorded trade. Owner follow-up after time passes is pending; the existing 30-row activity window cannot establish absence of trades. |
+
+The Build 58 schema is additive; no original transaction, cash, thesis, or
+historical answer is rewritten. The previous frontend and Edge function remain
+compatible with the new nullable/defaulted evidence columns. To revert the
+product flow, restore the prior frontend and Edge version; retaining the extra
+snapshot columns preserves new owner decisions and permits future migration.
