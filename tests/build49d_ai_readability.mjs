@@ -11,26 +11,40 @@ assert.equal(focus('내 포트폴리오에서 지금 확인할 위험은 무엇�
 assert.equal(focus('최근 한 달 왜 벌었어?'),'performance');
 assert.equal(focus('SOXX 매도 실현손익은?'),'realized');
 assert.equal(focus('ARM을 계속 보유할 논리가 있어?'),'thesis');
-const context={as_of:'2026-09-26',account_scope:{broker_account_overlap_verified:false},confidence:'estimated',
-  risk:{official_assets_krw:60_000_000,largest_symbol:'ARM',largest_krw:15_000_000,top_three_krw:35_000_000},
-  holdings:[{security:{symbol:'ARM',name:'예시 종목'},quantity:30,valuation_krw:15_000_000}],
+const observation='2026-09-26T00:10:03Z';
+const context={as_of:'2026-09-26',account_scope:{broker_account_overlap_verified:false,
+  snapshot_at:observation,app_display_total:60_000_000,kb_response_total:51_000_000,overlay_logged:9_000_000},confidence:'estimated',
+  risk:{official_assets_krw:60_000_000,as_of:observation,valuation_time_aligned:true,
+    largest_symbol:'ARM',largest_krw:15_000_000.2,top_three_krw:35_000_000.8},
+  holdings:[{security:{symbol:'ARM',name:'예시 종목'},quantity:30,valuation_krw:15_000_000,as_of:observation}],
   reconciliation:{quantity_total:10,quantity_matched:5},pending_settlement_events:[{symbol:'META'}],
   thesis:null,ledger_realized:{items:[{symbol:'SOXX'}]},
   period_evidence:{investment_result_usable:false,cash_bridge_gaps:[{difference_krw:100}]},
   reliable_observed_period:{partial:true},selected_security:{symbol:'ARM'}};
 const risk=select(context,'risk');
-assert.equal(risk.risk.largest_pct_of_kb_response,25);
-assert.equal(risk.risk.top_three_pct_of_kb_response,58.33);
-assert.deepEqual(Array.from(risk.unsettled_symbols),['META']);
+assert.equal(risk.risk.largest_share,'앱 표시 총자산 대비 25.00% (참고 비중)');
+assert.equal(risk.risk.top_three_share,'앱 표시 총자산 대비 58.33% (참고 비중)');
+assert.equal(risk.risk.top_three_value,'35,000,001원','fractional broker KRW is rounded only on display');
+assert.equal(risk.risk.display_total,'60,000,000원');
+assert.equal(risk.data_status.isa_kb_overlap_verified,false);
+assert.equal('official_assets_krw' in risk.risk,false,'do not expose the mixed-scope numeric total for model arithmetic');
+assert.equal('coverage_pct' in risk.risk,false,'coverage of combined assets is not missing-position coverage');
 assert.equal('thesis' in risk,false,'missing thesis must not dominate a risk answer');
 assert.equal('ledger_realized' in risk,false,'realized ledger must not dominate a risk answer');
 assert.equal('period_evidence' in risk,false,'performance evidence must not dominate a risk answer');
-assert.equal(select({...context,risk:{...context.risk,largest_krw:null}},'risk').risk.largest_pct_of_kb_response,null);
+assert.equal(select({...context,risk:{...context.risk,largest_krw:null}},'risk').risk.largest_value,null);
+assert.equal(select({...context,risk:{...context.risk,valuation_time_aligned:false}},'risk').risk.top_three_share,null,
+  'a time-misaligned snapshot must not acquire a precise share');
+assert.equal(select({...context,account_scope:{...context.account_scope,app_display_total:65_000_000}},'risk').risk.top_three_share,null,
+  'account scope mismatch must not be masked by another denominator');
 assert.equal(select(context,'performance').period_evidence.investment_result_usable,false);
 assert.equal(select(context,'realized').ledger_realized.items[0].symbol,'SOXX');
 const style=vm.runInContext('answerStyle',scope)('risk');
 assert.match(style,/가장 큰 위험:/);assert.match(style,/근거:/);assert.match(style,/450자/);
 assert.match(backend,/focusPolicy\(focus\)/);
+assert.match(backend,/변동성이 증가했다/,'unobserved volatility must not be claimed');
+const screen=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert.match(screen,/이를 미분류 종목 금액으로 단정하지 않습니다/);
 
 const frontend=readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8');
 const start=frontend.indexOf('  function renderAiAnswer('),end=frontend.indexOf('  async function ask(',start);
