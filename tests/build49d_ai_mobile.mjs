@@ -37,6 +37,18 @@ try{
     assert.ok(size.text.includes('KB 조회 총자산 대비 25%'));
     assert.ok(size.bottom<=size.navTop,`${width}px answer covered by nav`);
     await page.screenshot({path:`mobile-artifacts/ai-answer-${width}.png`,fullPage:true});
+    await page.locator('details.more-list').filter({hasText:'목표 비중까지 축소'}).evaluate(node=>node.open=true);
+    await page.locator('#weightResult').evaluate(node=>node.textContent=
+      'ARM 평가액 15,154,956원 → 목표 10.00% · 가정상 매도 8,686,077원\n'+
+      '매도 후 보유 6,468,879원 · 보유 현금 증가 8,686,077원 · 총자산 64,688,793원 (비용 전, 변화 없음).\n'+
+      '분모: KB 55,538,715원 + ISA 최신 총액 9,150,078원 · 계좌별 기준시각 다름.');
+    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+    const scenario=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,
+      bottom:document.querySelector('#weightResult').getBoundingClientRect().bottom,
+      navTop:document.querySelector('.nav').getBoundingClientRect().top}));
+    assert.equal(scenario.overflow,false,`${width}px target-weight scenario overflow`);
+    assert.ok(scenario.bottom<=scenario.navTop,`${width}px scenario hidden by navigation`);
+    await page.screenshot({path:`mobile-artifacts/weight-scenario-${width}.png`,fullPage:true});
     await page.close();
   }
 }finally{await browser.close()}

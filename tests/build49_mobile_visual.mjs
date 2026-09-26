@@ -8,8 +8,10 @@ const css=source.slice(source.indexOf('<style>')+7,source.indexOf('</style>'));
 const start=source.indexOf('  function livePortfolio(){');
 const end=source.indexOf('  function demoPerformance(){',start);
 const account='sample-auto';
-const sample={accounts:[{id:account,name:'자동계좌'}],holdingBasis:[],holdings:[],
-  snapshots:[{total_assets:100_000_000}],securityMap:{},settlementBasis:[]};
+const sample={accounts:[{id:account,name:'자동계좌'},{id:'sample-manual',name:'ISA 수동'}],holdingBasis:[],holdings:[],
+  snapshots:[{total_assets:100_000_000,snapshot_at:'2026-09-26T03:00:00Z'}],
+  accountScope:{current_isa_capture_at:'2026-09-26T02:42:00Z'},
+  securityMap:{},settlementBasis:[]};
 for(let i=0;i<6;i++){
   const id='sample-'+i,quantity=100+i,value=19_300_000+i*1_111_111,cost=value+300_000;
   sample.securityMap[id]={name:i===0?'개인정보가 없는 긴 예시 해외 반도체 및 기술 투자 종목(ADR)':'예시 종목 '+i,symbol:'TEST'+i,market:'NASDAQ'};
@@ -17,6 +19,9 @@ for(let i=0;i<6;i++){
   sample.holdingBasis.push({account_id:account,security_id:id,quantity,valuation_krw:value,cost_krw:cost,
     pnl_krw:value-cost,average_unit_krw:cost/quantity,valued_unit_krw:value/quantity});
 }
+sample.holdings.push({account_id:'sample-manual',security_id:'sample-0',quantity:3,as_of:'2026-09-23T03:35:38Z'});
+sample.holdingBasis.push({account_id:'sample-manual',security_id:'sample-0',quantity:3,
+  valuation_krw:900_000,cost_krw:850_000,pnl_krw:50_000});
 const ctx=vm.createContext({live:sample,hideZeroHoldings:false,portfolioMarket:'ALL',portfolioAccount:'ALL',portfolioSort:'value',
   kstDate:()=> '2026-09-25',kstStamp:x=>String(x).slice(0,10),marketGroup:()=> 'OVERSEAS',
   money:n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원',
@@ -26,6 +31,8 @@ const ctx=vm.createContext({live:sample,hideZeroHoldings:false,portfolioMarket:'
 vm.runInContext(source.slice(start,end),ctx);
 const portfolio=vm.runInContext('livePortfolio()',ctx);
 assert.equal((portfolio.match(/class="row holding portfolio-row clickable"/g)||[]).length,6);
+assert.match(portfolio,/20,200,000원/,'the same security across accounts appears once with both position values');
+assert.doesNotMatch(portfolio,/ISA 화면 undefined/);
 const doc=`<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${css}\nbody{margin:0}.test-nav{position:fixed;bottom:0;left:0;right:0;height:82px;background:white;border-top:1px solid #ddd;z-index:5}.test-content{padding:18px 16px 140px}</style></head><body><main class="test-content">${portfolio}</main><nav class="test-nav">포트폴리오</nav></body></html>`;
 mkdirSync('mobile-artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true});
