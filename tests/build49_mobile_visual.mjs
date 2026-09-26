@@ -50,6 +50,16 @@ try{
     assert.equal(state.overflow,false,`${width}px horizontal overflow`);
     assert.equal(state.amountWrap,false,`${width}px amount wraps`);
     assert.ok(state.lastRow<=state.nav,`${width}px last row hidden by navigation`);
+    if(width===390){
+      await page.evaluate(()=>document.documentElement.style.zoom='1.25');
+      const enlarged=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,
+        amountStyle:getComputedStyle(document.querySelector('.position-value')).whiteSpace,
+        amountWidth:document.querySelector('.position-value').getBoundingClientRect().width}));
+      assert.equal(enlarged.overflow,false,'390px enlarged layout overflow');
+      assert.equal(enlarged.amountStyle,'nowrap','390px enlarged amount is a single unit');
+      assert.ok(enlarged.amountWidth>0);
+      await page.screenshot({path:'mobile-artifacts/portfolio-390-enlarged.png',fullPage:true});
+    }
     await page.close();
   }
 }finally{await browser.close()}
