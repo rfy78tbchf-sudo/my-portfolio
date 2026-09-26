@@ -171,10 +171,13 @@ function questionContext(context:any,focus:string){
         isa_kb_overlap_verified:scope.broker_account_overlap_verified===true},
       top_holdings:holdings.slice(0,3).map((h:any)=>({symbol:h.symbol,name:h.name}))};
   }
-  if(focus==='thesis')return {...common,selected_security:context.selected_security,
+  if(focus==='thesis')return {...common,
+    selected_security:context.selected_security?limitObject(context.selected_security,['symbol','name','currency','country','sector']):null,
     holding:holdings.find((h:any)=>h.symbol===context.selected_security?.symbol)||null,
-    thesis:context.thesis||undefined,thesis_versions:context.thesis_versions||[],
-    recent_trades:context.recent_trades,risk:context.risk,
+    thesis:context.thesis?limitObject(context.thesis,['version','rationale','catalysts','risks','add_condition','trim_condition','exit_condition','notes','updated_at']):null,
+    decision_metrics:context.decision_metrics?.ok?limitObject(context.decision_metrics,
+      ['observation_at','account_scope_state','position','top_three','scenario']):null,
+    // Prior versions and the full transaction ledger are not needed to review today's saved thesis.
     affected_security:context.affected_security};
   if(focus==='realized'){
     const report=context.realized_sales||{},items=report.items||[];
@@ -476,16 +479,26 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       headers:{'content-type':'application/json','authorization':'Bearer '+key},
       body:JSON.stringify({model:MODEL,instructions:instruction,
         input:'투자자 질문: '+question+'\n서버에서 질문에 맞게 선별한 계좌 데이터(JSON): '+JSON.stringify(relevant),
-        max_output_tokens:1800,store:false}),signal:AbortSignal.timeout(40000)});
+        ...(MODEL.startsWith('gpt-5')?{reasoning:{effort:'low'}}:{}),
+        max_output_tokens:3200,store:false}),signal:AbortSignal.timeout(40000)});
     if(!openai.ok){const failure=await providerFailure(openai);
       await finishAnalysis(token,requestId,'model_failed',null,null,failure.code);
       return respond(req,{...failure,request_id:requestId},502)}
     const result=await openai.json();
     const modelAnswer=String(result.output_text||result.output?.flatMap((o:any)=>o.content||[])
       .filter((c:any)=>c.type==='output_text').map((c:any)=>c.text).join('\n')||'').trim();
-    if(!modelAnswer){await finishAnalysis(token,requestId,'model_failed',null,null,'AI_EMPTY');
-      return respond(req,{ok:false,code:'AI_EMPTY',request_id:requestId,
-        message:'답변을 생성하지 못했습니다.'},502)}
+    if(result.status==='incomplete'||!modelAnswer){
+      const exhausted=result.incomplete_details?.reason==='max_output_tokens';
+      const refused=result.output?.some((o:any)=>o.content?.some((c:any)=>c.type==='refusal'));
+      const code=exhausted?'AI_OUTPUT_LIMIT':refused?'AI_REFUSED':'AI_EMPTY';
+      console.warn('investment-assistant model did not finish',{
+        status:String(result.status||'unknown').slice(0,30),
+        reason:String(result.incomplete_details?.reason||'none').slice(0,40),
+        output_tokens:Number(result.usage?.output_tokens||0),code});
+      await finishAnalysis(token,requestId,'model_failed',null,null,code);
+      return respond(req,{ok:false,code,request_id:requestId,
+        message:refused?'이 요청에는 AI 답변을 제공할 수 없습니다. 질문을 바꿔 주세요.':
+          'AI가 답변을 끝내지 못했습니다. 다시 누르면 새 요청으로 시도합니다.'},502)}
     let answer=modelAnswer,responseKind='model';
     // In a risk answer only the server formats figures. Reject model arithmetic,
     // category changes (volatility/forecast), and unverified account scope claims.
@@ -596,10 +609,13 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
         message:responseStaged?'모델 답변은 보관됐지만 이력 저장에 실패했습니다. 저장만 다시 시도할 수 있습니다.':
           '모델 답변을 생성했지만 보관과 이력 저장에 실패했습니다. 이 답변은 다시 열 수 없습니다.'});
     }
+    const code=stage==='model'?'AI_MODEL_UNAVAILABLE':'ANALYSIS_FAILED';
     await finishAnalysis(token,requestId,stage==='model'?'model_failed':'context_failed',
-      null,null,'ANALYSIS_FAILED');
+      null,null,code);
     const known=['NO_LIVE_ACCOUNT','UNKNOWN_SYMBOL','AMBIGUOUS_SYMBOL','PORTFOLIO_CONTEXT_UNAVAILABLE'].includes(reason);
-    return respond(req,{ok:false,code:known?reason:'ANALYSIS_FAILED',
-      message:known?'계좌 또는 종목 데이터를 확인해 주세요.':'분석에 필요한 데이터를 읽지 못했습니다. 잠시 뒤 다시 시도해 주세요.'},known?400:500);
+    return respond(req,{ok:false,code:known?reason:code,request_id:requestId,
+      message:known?'계좌 또는 종목 데이터를 확인해 주세요.':
+        stage==='model'?'AI 응답에 문제가 생겼습니다. 다시 누르면 새 요청으로 시도합니다.':
+          '분석에 필요한 데이터를 읽지 못했습니다. 잠시 뒤 다시 시도해 주세요.'},known?400:500);
   }
 });

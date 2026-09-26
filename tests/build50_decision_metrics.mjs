@@ -16,7 +16,8 @@ assert.doesNotMatch(edge,/ai_analysis_history'[\s\S]{0,900}\.catch\(\(\)=>null\)
   'history failures must never be swallowed');
 assert.match(html,/id="thesisAnalyze"/);
 assert.match(html,/if\(requireThesis&&!thesisSaved\)/,'thesis review requires a saved thesis, general review remains available');
-assert.match(html,/thesisSaved=!!\(updated&&updated\.thesis&&updated\.thesis\.version\)/);
+assert.match(html,/thesisVersion=Number\(updated&&updated\.thesis&&updated\.thesis\.version\|\|0\)/);
+assert.match(html,/thesisSaved=thesisVersion>0/);
 assert.match(html,/top1=alignedMetrics\?Number\(live\.decisionMetrics\.position\.weight_pct\)/,
   'analysis uses the same observation and denominator as the risk card');
 

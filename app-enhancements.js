@@ -180,12 +180,18 @@
     if(links.querySelector('a'))el.appendChild(links)
   }
   window.portfolioRenderAiAnswer=renderAiAnswer;
-  async function analysisRequestId(question,symbol){
+  var analysisFailures=new Map();
+  function advanceAnalysisRequestId(question,symbol,revision){
+    var key=[question,symbol||'',revision||''].join('|');
+    analysisFailures.set(key,(analysisFailures.get(key)||0)+1);
+  }
+  async function analysisRequestId(question,symbol,revision){
     var accountScope=context.live&&context.live.accountScope||{},
       scope=(accountScope.current_primary_observed_at||'')+'|'+(accountScope.current_isa_observation_id||'')+'|'+(accountScope.current_isa_correction_id||''),
-      bucket=Math.floor(Date.now()/120000);
+      bucket=Math.floor(Date.now()/120000),
+      key=[question,symbol||'',revision||''].join('|');
     var bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(
-      [question,symbol,scope,bucket].join('|')))).slice(0,16);
+      [question,symbol,scope,bucket,revision||'',analysisFailures.get(key)||0].join('|')))).slice(0,16);
     bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
     var hex=Array.from(bytes,function(v){return v.toString(16).padStart(2,'0')}).join('');
     return [hex.slice(0,8),hex.slice(8,12),hex.slice(12,16),hex.slice(16,20),hex.slice(20)].join('-')
@@ -198,7 +204,9 @@
       var res=await context.authFetch(context.supabaseUrl+'/functions/v1/investment-assistant',{
       method:'POST',headers:{'content-type':'application/json','apikey':context.publicKey},
       body:JSON.stringify({question:question,symbol:symbol||null,request_id:requestId})},60000,false),data=await res.json();
-      if(!res.ok)throw Error(data.message||data.code||'분석 서버 응답 실패');
+      if(!res.ok){if(['AI_EMPTY','AI_OUTPUT_LIMIT','AI_MODEL_UNAVAILABLE','ANALYSIS_PREVIOUSLY_FAILED'].includes(data.code))
+        advanceAnalysisRequestId(question,symbol);
+        throw Error(data.message||data.code||'분석 서버 응답 실패')}
       renderAiAnswer(answer,data.answer||'응답이 없습니다.');
       renderOfficialSources(answer,data.external_sources);
       var basis=document.getElementById('aiBasis'),basisDetails=document.getElementById('aiBasisDetails'),technical=document.getElementById('aiBasisTechnical');
@@ -228,6 +236,7 @@
     finally{btn.disabled=false}
   }
   window.portfolioAnalysisRequestId=analysisRequestId;
+  window.portfolioAdvanceAnalysisRequestId=advanceAnalysisRequestId;
   window.portfolioAskQuestion=function(question,symbol){
     var box=document.getElementById('aiAsk'),input=document.getElementById('aiQuestion'),select=document.getElementById('aiStock');
     if(!box||!input||!select)return;

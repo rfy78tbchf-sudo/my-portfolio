@@ -70,7 +70,7 @@ assert.equal(nav({position:1002,cash:0,payable:1002}),
   nav({position:1002,cash:-1002,payable:0}));
 
 const source=readFileSync(new URL('../supabase/functions/investment-assistant/index.ts',import.meta.url),'utf8');
-let handler,modelCalls=0,history=[],state='unused',saveAllowed=true,stagedPayload=null;
+let handler,modelCalls=0,history=[],state='unused',saveAllowed=true,stagedPayload=null,modelReply=null;
 const reqId='12345678-1234-4234-8234-123456789abc';
 const accountId='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 const userId='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -80,7 +80,13 @@ const runtime=vm.createContext({Deno:{env:{get:(key)=>key==='OPENAI_API_KEY'?'mo
     if(url==='https://api.openai.com/v1/responses'){
       modelCalls++;assert.equal(options.headers.authorization,'Bearer mock-model-key');
       assert.doesNotMatch(options.body,/mock-user-token|mock-model-key/);
-      return new Response(JSON.stringify({id:'mock-response-id',output_text:'가격이 바뀌면 점검하세요.',usage:{total_tokens:25}}));
+      const payload=JSON.parse(options.body);
+      if(payload.input.includes('저장된 투자 논리')){
+        assert.equal(payload.reasoning.effort,'low');
+        assert.equal(payload.max_output_tokens,3200);
+        assert.doesNotMatch(payload.input,/지난 버전의 비밀 메모/);
+      }
+      return new Response(JSON.stringify(modelReply||{id:'mock-response-id',output_text:'가격이 바뀌면 점검하세요.',usage:{total_tokens:25}}));
     }
     throw Error('unexpected network request');
   },Request,Response,Headers,URL,Date,AbortSignal,crypto:webcrypto,console});
@@ -177,4 +183,41 @@ assert.match(result.body.answer,/총자산은 같습니다/);
 assert.match(result.body.answer,/ISA 총액은.*시각이 달라/);
 assert.match(result.body.answer,/\+600,000원/,'reduced allocation still participates in upside');
 assert.equal(history[0].calculation_version,'choice-comparison-v1');
+// An HTTP 200 without a finished answer must not be saved or presented as analysis.
+state='unused';history=[];
+runtime.buildContext=async()=>({as_of:'2026-09-26',confidence:'estimated',
+  account_scope:{snapshot_at:'2026-09-26T00:00:00Z'},
+  selected_security:{symbol:'TEST',name:'Test Company'},
+  thesis:{version:2,rationale:'테스트용 보유 논리'},
+  thesis_versions:[{notes:'지난 버전의 비밀 메모'}]});
+runtime.publicCompanyEvidence=async()=>null;
+vm.runInContext('buildContext=globalThis.buildContext;publicCompanyEvidence=globalThis.publicCompanyEvidence',runtime);
+modelReply={id:'empty-model-response',status:'incomplete',
+  incomplete_details:{reason:'max_output_tokens'},output:[{type:'reasoning'}],
+  usage:{output_tokens:3200}};
+const thesisAsk=(id)=>handler(new Request('https://example.test/functions/v1/investment-assistant',{
+  method:'POST',headers:{origin:'https://rfy78tbchf-sudo.github.io',authorization:'Bearer mock-user-token',
+    'content-type':'application/json'},body:JSON.stringify({request_id:id,symbol:'TEST',
+    question:'저장된 투자 논리를 검토해 줘'})
+})).then(async r=>({code:r.status,body:await r.json()}));
+const callsBeforeEmpty=modelCalls;
+result=await thesisAsk(reqId);
+assert.equal(result.code,502);
+assert.equal(result.body.code,'AI_OUTPUT_LIMIT');
+assert.equal(state,'model_failed');
+assert.equal(history.length,0);
+assert.equal(modelCalls,callsBeforeEmpty+1,'incomplete output is never silently retried at model cost');
+result=await thesisAsk(reqId);
+assert.equal(result.code,409);
+assert.equal(result.body.code,'ANALYSIS_PREVIOUSLY_FAILED');
+assert.equal(modelCalls,callsBeforeEmpty+1,'failed request ID cannot generate another model bill');
+state='unused';modelReply={id:'completed-model-response',status:'completed',
+  output:[{type:'message',content:[{type:'output_text',text:'판단: 확인된 보유 논리를 점검합니다.'}]}],
+  usage:{total_tokens:58}};
+result=await thesisAsk('22345678-1234-4234-8234-123456789abc');
+assert.equal(result.code,200);
+assert.equal(result.body.thesis_version,2);
+assert.match(result.body.answer,/판단: 확인된 보유 논리/);
+assert.equal(history.length,1);
+assert.equal(modelCalls,callsBeforeEmpty+2);
 console.log('Build 54 isolated sale, FX, lifecycle guard, settlement and mock AI save/reopen/failure passed');
