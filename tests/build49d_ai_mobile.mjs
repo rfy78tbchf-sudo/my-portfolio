@@ -55,6 +55,8 @@ try{
       'internal ID must not appear in the history list');
     await page.locator('.ai-history-item').evaluate(node=>node.open=true);
     assert.equal(await page.locator('.ai-history-item .ai-history-meta').evaluate(node=>node.open),false);
+    assert.equal(await page.locator('.ai-history-item .ai-history-body p strong').first().evaluate(node=>getComputedStyle(node).display),'block',
+      `${width}px history headings must be separated from their text`);
     await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await page.screenshot({path:`mobile-artifacts/ai-history-${width}.png`,fullPage:true});
