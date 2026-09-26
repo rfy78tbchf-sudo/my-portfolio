@@ -30,6 +30,8 @@ assert.match(rendered,/매도 대금은 새 수익이나 외부 입금이 아닙
 assert.match(html,/rpc\('get_live_choice_comparison'/);
 assert.match(html,/detailDecisionForm/);
 assert.match(html,/rpc\('save_investment_decision'/);
+assert.match(html,/general\.onclick=function\(\)\{runDetailAnalysis\(false\)\}/);
+assert.match(html,/lastDetailAnalysisId=x\.analysis_id/);
 assert.match(sql,/investment_decisions_owner_insert[\s\S]*auth\.uid\(\)/);
 assert.match(sql,/security invoker/);
 assert.match(sql,/v_after\*p_down_pct\/100/);

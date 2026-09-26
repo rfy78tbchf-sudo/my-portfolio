@@ -28,6 +28,7 @@ try{
         var metric=(name,value)=>'<div class="metric"><span>'+name+'</span><b>'+value+'</b></div>';
         var securityChart=()=>'',interpretTechnical=()=>'',thesisEditor=()=>'<form id="thesisForm"><textarea data-thesis-field="rationale"></textarea><button type="submit">저장</button><span id="thesisStatus"></span></form>';
         var authFetch=async()=>({ok:true,json:async()=>[]});
+        if(!crypto.randomUUID)Object.defineProperty(crypto,'randomUUID',{value:()=> '12345678-1234-4234-8234-123456789abc'});
         var rpc=async function(name,p){
           if(name==='get_live_security_detail')throw Error('security not found');
           if(name==='get_live_security_activity')return {items:[]};
@@ -55,7 +56,9 @@ try{
     await page.locator('#detailReason').fill('I can absorb this exposure');
     await page.locator('#detailReview').fill('Recheck the reported operating result');
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    await page.getByText('내 판단 저장 완료').waitFor();
+    await page.waitForFunction(()=>/저장 완료|저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
+    const saveMessage=await page.locator('#detailDecisionStatus').textContent();
+    assert.match(saveMessage,/내 판단 저장 완료/,saveMessage);
     await page.evaluate(()=>window.openTestDetail('held'));
     await page.getByText('I can absorb this exposure').waitFor({state:'attached'});
     await page.evaluate(()=>window.openTestDetail('other'));
