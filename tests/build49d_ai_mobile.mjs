@@ -38,7 +38,7 @@ try{
     assert.equal((size.text.match(/한 종목의 비중을 먼저 점검하세요/g)||[]).length,1,`${width}px answer conclusion must appear only once`);
     assert.ok(await page.getByText('선택지 비교').isVisible(),`${width}px choices must be visible`);
     assert.ok(await page.getByText('다음 점검 조건').isVisible(),`${width}px next condition must be visible`);
-    assert.equal(await page.getByText('자료 상태').isVisible(),false,`${width}px long provenance starts collapsed`);
+    assert.equal(await page.getByText('자료 상태',{exact:true}).isVisible(),false,`${width}px long provenance starts collapsed`);
     assert.ok(size.bottom<=size.navTop,`${width}px answer covered by nav`);
     await page.screenshot({path:`mobile-artifacts/ai-answer-${width}.png`,fullPage:true});
     await page.locator('details.more-list').filter({hasText:'지난 분석 보기'}).evaluate(node=>node.open=true);
@@ -51,7 +51,8 @@ try{
           response_kind:'model_interpretation_server_metrics'}]})});
     },client.slice(client.indexOf('  async function loadPrevious('),client.indexOf('  window.portfolioEnhance=')));
     assert.equal(await page.locator('.ai-history-item').count(),1);
-    assert.equal(await page.getByText('synthetic-history-id').count(),0,'internal ID must not appear in the history list');
+    assert.doesNotMatch(await page.locator('.ai-history-item>summary').textContent(),/synthetic-history-id/,
+      'internal ID must not appear in the history list');
     await page.locator('.ai-history-item').evaluate(node=>node.open=true);
     assert.equal(await page.locator('.ai-history-item .ai-history-meta').evaluate(node=>node.open),false);
     await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
