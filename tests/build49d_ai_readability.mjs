@@ -11,6 +11,7 @@ assert.equal(focus('내 포트폴리오에서 지금 확인할 위험은 무엇�
 assert.equal(focus('최근 한 달 왜 벌었어?'),'performance');
 assert.equal(focus('SOXX 매도 실현손익은?'),'realized');
 assert.equal(focus('ARM을 계속 보유할 논리가 있어?'),'thesis');
+assert.equal(focus('ARM 보유 논리와 위험을 같이 점검해 줘'),'thesis');
 const observation='2026-09-26T00:10:03Z';
 const context={as_of:'2026-09-26',account_scope:{broker_account_overlap_verified:false,
   snapshot_at:observation,app_display_total:60_000_000,kb_response_total:51_000_000,overlay_logged:9_000_000},confidence:'estimated',

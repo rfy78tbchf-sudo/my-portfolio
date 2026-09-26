@@ -51,7 +51,7 @@ context.authFetch=async()=>({ok:true,json:async()=>({ok:true,
   denominator:{value:60000000,kb_response_value:51000000,manual_overlay:9000000,primary_observed_at:'2026-01-02T00:00:00Z',isa_captured_at:'2026-01-01T23:30:00Z'},
   scenario:{impact_krw:-1500000,asset_impact_pct:-2.5}})});
 await vm.runInContext('runScenario()',box);
-assert.match(inputs.scenarioResult.textContent,/ISA 화면/);
+assert.match(inputs.scenarioResult.textContent,/ISA 관측/);
 assert.match(inputs.scenarioResult.textContent,/계좌 식별자 연결은 미확인/);
 inputs.scenarioChange.value='-120';
 await vm.runInContext('runScenario()',box);

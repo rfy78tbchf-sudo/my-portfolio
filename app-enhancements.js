@@ -204,7 +204,7 @@
         '자산 변화 '+won(m.scenario.impact_krw)+' · 앱 합산 자산 대비 '+Number(m.scenario.asset_impact_pct).toFixed(2)+'% (참고).\n'+
         '분모 '+won(m.denominator.value)+' = KB 응답 '+won(m.denominator.kb_response_value)+' + 최신 ISA 총액 '+won(m.denominator.manual_overlay)+
         ' · KB 관측 '+new Date(m.denominator.primary_observed_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
-        ' / ISA 화면 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        ' / ISA 관측 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
         '. ISA 잔고 유효시각과 계좌 식별자 연결은 미확인.'+
         ' 나머지 자산과 환율은 그대로 둔 조건부 계산이며 예측이 아닙니다.';
     }catch(e){el.textContent='계산에 필요한 같은 시각의 평가 자료를 확인하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
@@ -223,7 +223,7 @@
         '매도 후 보유 '+fmt(v.position_after_krw)+' · 보유 현금 증가 '+fmt(v.cash_increase_before_cost_krw)+' · 총자산 '+fmt(v.assets_after_before_cost_krw)+' (비용 전, 변화 없음).\n'+
         '분모: KB '+fmt(m.denominator.kb_response_value)+' + ISA 최신 총액 '+fmt(m.denominator.manual_overlay)+
         ' · KB '+new Date(m.denominator.primary_observed_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
-        ' / ISA 화면 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        ' / ISA 관측 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
         ' · ISA 잔고 유효시각·계좌 식별자 미확인. 매매 수수료·세금·환율·실제 체결 제약 제외. 주문이나 예상 손익이 아닙니다.'+
         (v.pnl_classification&&v.pnl_classification.state==='hypothetical_cost_basis_before_fees'?
           '\n원가 기준 분류 가정: 매도분 '+fmt(v.pnl_classification.hypothetical_realized_krw)+
