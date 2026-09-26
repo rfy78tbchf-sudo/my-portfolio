@@ -145,11 +145,13 @@ state='unused';history=[];
 const previousScoped=runtime.scopedRequest;
 let weightInputs=[];
 runtime.scopedRequest=async(token,path,post)=>{
-  if(path==='rpc/get_live_weight_reduction_scenario'){
-    weightInputs.push(post);return {ok:true,calculation_version:'weight-scenario-v1',
+  if(path==='rpc/get_live_choice_comparison'){
+    weightInputs.push(post);return {ok:true,calculation_version:'choice-comparison-v1',
       observation_at:'2026-09-26T00:00:00Z',account_scope_state:'verified',
-      position:{symbol:'TEST',value:12000000,weight_pct:20},
-      denominator:{value:60000000},scenario:{target_weight_pct:10,sale_value_krw:6000000}};
+      hold:{symbol:'TEST',value_krw:12000000,weight_pct:20,down_impact_krw:-1200000,up_impact_krw:1200000},
+      reduce:{value_krw:6000000,weight_pct:10,cash_increase_krw:6000000,
+        down_impact_krw:-600000,up_impact_krw:600000},
+      price_assumptions:{down_pct:-10,up_pct:10},denominator:{value:60000000}};
   }
   return previousScoped(token,path,post);
 };
@@ -173,5 +175,6 @@ assert.equal(weightInputs[0].p_target_pct,10);
 assert.match(result.body.answer,/6,000,000원/);
 assert.match(result.body.answer,/총자산은 같습니다/);
 assert.match(result.body.answer,/ISA 총액은.*시각이 달라/);
-assert.equal(history[0].calculation_version,'weight-scenario-v1');
+assert.match(result.body.answer,/\+600,000원/,'reduced allocation still participates in upside');
+assert.equal(history[0].calculation_version,'choice-comparison-v1');
 console.log('Build 54 isolated sale, FX, lifecycle guard, settlement and mock AI save/reopen/failure passed');

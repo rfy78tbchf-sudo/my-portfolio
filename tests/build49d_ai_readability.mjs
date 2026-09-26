@@ -46,7 +46,7 @@ assert.equal(select({...context,account_scope:{...context.account_scope,app_disp
 assert.equal(select(context,'performance').period_evidence.investment_result_usable,false);
 assert.equal(select(context,'realized').realized_sales.items[0].symbol,'SOXX');
 const style=vm.runInContext('answerStyle',scope)('risk');
-assert.match(style,/가장 큰 위험:/);assert.match(style,/근거:/);assert.match(style,/450자/);
+assert.match(style,/가장 큰 위험:/);assert.match(style,/근거:/);assert.match(style,/500자/);
 assert.match(backend,/focusPolicy\(focus\)/);
 assert.match(backend,/변동성이 증가했다/,'unobserved volatility must not be claimed');
 const screen=readFileSync(new URL('../index.html',import.meta.url),'utf8');

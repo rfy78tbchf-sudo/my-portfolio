@@ -12,7 +12,10 @@ const account={risk:{ok:true,largest_symbol:'TEST',largest_krw:12000000,
   decisionMetrics:{ok:true,observation_at:'2026-09-26T00:00:00Z',
     position:{symbol:'TEST',value:12000000,weight_pct:20},
     denominator:{value:60000000},scenario:{impact_krw:-1200000}},
-  securities:[{id:'synthetic-security',symbol:'TEST',name:'Synthetic Holding'}]};
+  securities:[{id:'unheld-duplicate',symbol:'TEST',name:'Wrong Duplicate'},
+    {id:'synthetic-security',symbol:'TEST',name:'Synthetic Holding'}],
+  holdings:[{security_id:'synthetic-security',quantity:12}],
+  securityMap:{'synthetic-security':{id:'synthetic-security',symbol:'TEST',name:'Synthetic Holding'}}};
 const fmt=n=>Number(n).toLocaleString('ko-KR')+'원';
 const scope=vm.createContext({live:account,esc:x=>String(x),money:fmt,num:(n,d)=>Number(n).toFixed(d),
   signedMoney:n=>Number(n)>0?'+'+fmt(n):fmt(n),kstStamp:x=>x,Date,Number,String});
@@ -23,6 +26,8 @@ assert.match(view,/12,000,000원/);
 assert.match(view,/20\.0% \(참고\)/);
 assert.match(view,/-1,200,000원/);
 assert.match(view,/보유 이유 보기/);
+assert.match(view,/data-decision-detail="synthetic-security"/,'home sends the held security ID');
+assert.doesNotMatch(view,/data-decision-detail="unheld-duplicate"/);
 assert.match(view,/AI 의견 받기/);
 assert.match(view,/내 목표 비중/);
 assert.doesNotMatch(view,/수익률 20%|원장 사건/);
@@ -36,8 +41,11 @@ view=vm.runInContext('decisionHomeCard()',scope);
 assert.doesNotMatch(view,/homeWeightForm/);
 account.decisionMetrics={...account.decisionMetrics,ok:false};
 
-assert.match(html,/thesisEditor\(results\[2\]\).*<section class="card" style="margin-top:12px"><h3>내 논리 점검/);
+assert.match(html,/thesisEditor\(results\[2\]\)/);
+assert.match(html,/<h3>내 논리 점검/);
+assert.match(html,/get_investment_decisions/);
+assert.match(html,/save_investment_decision/);
 assert.match(html,/거래 기록과 결제 상세/);
 assert.match(html,/data-decision-ai/);
-assert.match(html,/get_live_weight_reduction_scenario/);
+assert.match(html,/get_live_choice_comparison/);
 console.log('Build 57 home decisions gate misaligned figures and link thesis / AI / owner target');

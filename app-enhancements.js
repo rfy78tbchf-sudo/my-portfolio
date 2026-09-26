@@ -154,7 +154,7 @@
     el.textContent='';
     var lines=String(value||'').trim().split(/\n+/).map(function(line){return line.trim()}).filter(Boolean);
     function addLines(parent,items){items.forEach(function(line,index){
-      var p=document.createElement('p'),head=line.match(/^(가장 큰 위험|기간 성과|매도 손익|보유 논리|핵심 의견|내 계좌 근거|선택지 비교|다음 점검 조건|판단|지지|약화|선택지|핵심|근거|다음 확인|자료 상태):\s*(.*)$/);
+      var p=document.createElement('p'),head=line.match(/^(가장 큰 위험|기간 성과|매도 손익|보유 논리|핵심 의견|내 계좌 근거|공식 자료|선택지 비교|다음 점검 조건|판단|지지|약화|선택지|핵심|근거|다음 확인|자료 상태):\s*(.*)$/);
       p.className=parent===el&&index===0?'ai-answer-lead':'ai-answer-line';
       if(head){var label=document.createElement('strong');label.textContent=head[1];p.appendChild(label);p.appendChild(document.createTextNode(head[2]))}
       else p.textContent=line;
@@ -169,6 +169,15 @@
       summary.textContent=/^자료 상태:/.test(lines[visible])?'자료 상태와 추가 근거':'나머지 답변 보기';details.appendChild(summary);addLines(details,lines.slice(visible));
       el.appendChild(details);
     }
+  }
+  function renderOfficialSources(el,urls){
+    if(!el||!Array.isArray(urls))return;
+    var links=document.createElement('p');links.className='source-links';
+    links.appendChild(document.createTextNode('실제 조회한 공식 자료 · '));
+    urls.slice(0,3).forEach(function(raw){try{var u=new URL(raw),host=u.hostname.toLowerCase();
+      if(u.protocol!=='https:'||!(host==='sec.gov'||host.endsWith('.sec.gov')||host==='investors.arm.com'||host==='newsroom.arm.com'))return;
+      var a=document.createElement('a');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=host+' 원문';links.appendChild(a);links.appendChild(document.createTextNode(' '))}catch(_){}});
+    if(links.querySelector('a'))el.appendChild(links)
   }
   window.portfolioRenderAiAnswer=renderAiAnswer;
   async function analysisRequestId(question,symbol){
@@ -191,6 +200,7 @@
       body:JSON.stringify({question:question,symbol:symbol||null,request_id:requestId})},60000,false),data=await res.json();
       if(!res.ok)throw Error(data.message||data.code||'분석 서버 응답 실패');
       renderAiAnswer(answer,data.answer||'응답이 없습니다.');
+      renderOfficialSources(answer,data.external_sources);
       var basis=document.getElementById('aiBasis'),basisDetails=document.getElementById('aiBasisDetails'),technical=document.getElementById('aiBasisTechnical');
       if(basis)basis.textContent=(data.history_saved===false?(data.save_retry_available?'답변 보관됨 · 저장 다시 시도 가능':'답변 생성됨 · 저장 확인 필요'):data.reused_saved_analysis?'저장된 답변 다시 표시':'답변 저장됨')+
         ' · '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'})+' 기준':'자료 시각 확인 필요');
@@ -278,7 +288,7 @@
     finally{btn.disabled=false}
   }
   async function loadPrevious(ctx){var el=document.getElementById('aiPrevious');if(!el)return;
-    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=id,answer,question,created_at,observation_at,isa_observation_id,isa_correction_id,isa_capture_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=10',{
+    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=id,answer,question,created_at,observation_at,isa_observation_id,isa_correction_id,isa_capture_at,calculation_version,thesis_version,response_kind,external_sources&order=created_at.desc&limit=10',{
       headers:{apikey:ctx.publicKey}},12000,false);
       if(!r.ok)throw Error('HISTORY_READ_FAILED');var rows=await r.json();
       if(!el.isConnected)return;if(!rows||!rows.length){el.textContent='아직 저장된 분석이 없습니다.';return}
@@ -301,6 +311,7 @@
             !!(currentMetrics&&currentMetrics.ok&&
               (h.isa_correction_id||null)!==(currentMetrics.denominator.isa_correction_id||null));
         renderAiAnswer(body,h.answer||'저장된 답변이 없습니다.');
+        renderOfficialSources(body,h.external_sources);
         var status=document.createElement('p');status.className='ai-history-status';
         status.textContent=changed?'이전 자료 기준 · 현재 자료로 다시 질문할 수 있습니다.':'저장 당시의 자료 기준';body.appendChild(status);
         var meta=document.createElement('details'),metaHead=document.createElement('summary'),metaBody=document.createElement('div');

@@ -12,7 +12,9 @@ const live={risk:{ok:true,largest_symbol:'LONG',largest_krw:123456789,
   decisionMetrics:{ok:true,observation_at:'2026-09-26T00:00:00Z',
     position:{symbol:'LONG',value:123456789,weight_pct:24.12},
     denominator:{value:511345671},scenario:{impact_krw:-12345678.9}},
-  securities:[{id:'synthetic',symbol:'LONG',name:'Synthetic Very Long Semiconductor Index Fund Example'}]};
+  securities:[{id:'synthetic',symbol:'LONG',name:'Synthetic Very Long Semiconductor Index Fund Example'}],
+  holdings:[{security_id:'synthetic',quantity:8}],
+  securityMap:{synthetic:{id:'synthetic',symbol:'LONG',name:'Synthetic Very Long Semiconductor Index Fund Example'}}};
 const scope=vm.createContext({live,esc:x=>String(x),money:n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원',
   signedMoney:n=>Number(n)>0?'+'+Math.round(Number(n)).toLocaleString('ko-KR')+'원':Math.round(Number(n)).toLocaleString('ko-KR')+'원',
   num:(n,d)=>Number(n).toFixed(d),kstStamp:x=>x,Date,Number,String});
