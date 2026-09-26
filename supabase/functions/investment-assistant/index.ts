@@ -43,6 +43,33 @@ async function openAiKey(userId:string){
   if(DEFAULT_OPENAI_KEY)return DEFAULT_OPENAI_KEY;
   return String(await serverRpc('get_ai_api_key_for_service',{p_user_id:userId})||'');
 }
+async function providerFailure(response:Response){
+  let providerCode='';
+  try{
+    const body=await response.json();
+    const value=String(body?.error?.code||body?.error?.type||'');
+    if(['insufficient_quota','billing_hard_limit_reached','credit_balance_exhausted',
+      'rate_limit_exceeded','model_not_found','invalid_api_key'].includes(value))providerCode=value;
+  }catch{/* A non-JSON upstream error still has a useful HTTP status. */}
+  const status=response.status;
+  let code='MODEL_CONNECTION_FAILED',message='AI 제공 서비스의 응답을 확인해야 합니다. 잠시 후 다시 시도해 주세요.';
+  if(status===401){
+    code='AUTHENTICATION_FAILED';message='AI 서버의 OpenAI API 키 인증이 거부됐습니다. 서버에 저장한 키를 확인해 주세요.';
+  }else if(status===403||status===404){
+    code='MODEL_ACCESS_PROBLEM';message='설정된 API 프로젝트에서 AI 모델을 사용할 수 있는지 확인해 주세요.';
+  }else if(status===429){
+    if(['insufficient_quota','billing_hard_limit_reached','credit_balance_exhausted'].includes(providerCode)){
+      code='API_CREDIT_UNAVAILABLE';message='OpenAI API 사용 가능 잔액 또는 한도가 부족합니다. API 결제·사용량을 확인해 주세요.';
+    }else{
+      code='API_LIMIT_REACHED';message='OpenAI API 요청 제한에 도달했습니다. 잠시 뒤 다시 시도하고, 계속되면 API 사용량을 확인해 주세요.';
+    }
+  }else if(status===400||status===422){
+    code='AI_REQUEST_REJECTED';message='AI 서버의 요청 형식을 확인해야 합니다. 사용자 계좌 데이터는 변경되지 않았습니다.';
+  }
+  // Never log upstream response bodies, prompts, authorization headers, or key fragments.
+  console.warn('investment-assistant upstream',JSON.stringify({http_status:status,code,provider_code:providerCode||'unclassified'}));
+  return {ok:false,code,message,provider_status:status};
+}
 function query(name:string,args:Record<string,unknown>){return 'rpc/'+name}
 function limitObject(input:any,keys:string[]){
   const x:Record<string,unknown>={};for(const k of keys)if(input?.[k]!==undefined)x[k]=input[k];return x;
@@ -221,11 +248,7 @@ ledger_behavior는 매매 횟수만 원장 전체에서 세고, 추가매수·�
       body:JSON.stringify({model:MODEL,instructions:instruction,
         input:'투자자 질문: '+question+'\n서버에서 선별한 계좌 데이터(JSON): '+JSON.stringify(context),
         max_output_tokens:1800,store:false}),signal:AbortSignal.timeout(45000)});
-    if(!openai.ok){
-      const code=openai.status===401?'AUTHENTICATION_FAILED':openai.status===403||openai.status===404?'MODEL_ACCESS_PROBLEM':openai.status===429?'USAGE_OR_BILLING_PROBLEM':'MODEL_CONNECTION_FAILED';
-      return respond(req,{ok:false,code,
-        message:'AI 서버 연결을 확인해야 합니다. 사용량·모델 접근 상태를 관리자에게 알려 주세요.'},502);
-    }
+    if(!openai.ok)return respond(req,await providerFailure(openai),502);
     const result=await openai.json();
     const answer=String(result.output_text||result.output?.flatMap((o:any)=>o.content||[])
       .filter((c:any)=>c.type==='output_text').map((c:any)=>c.text).join('\n')||'').trim();
