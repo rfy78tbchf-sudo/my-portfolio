@@ -25,7 +25,7 @@ const worker=vm.createContext({
     {ok:true,body:network,clone(){return this}},URL,
 });
 vm.runInContext(sw,worker);
-const request={url:'https://example.test/app-enhancements.js?v=51',method:'GET',mode:'cors'};
+const request={url:'https://example.test/app-enhancements.js?v=51f',method:'GET',mode:'cors'};
 async function ask(){let response;callbacks.fetch({request,respondWith(p){response=p}});return response}
 assert.equal((await ask()).body,'fresh','new AI script wins over stale Cache Storage');
 network='offline';assert.equal(await ask(),'old','offline cache still works');
