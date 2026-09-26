@@ -195,7 +195,7 @@ function questionContext(context:any,focus:string){
       top_holdings:holdings.slice(0,3).map((h:any)=>({symbol:h.symbol,name:h.name}))};
   }
   if(focus==='thesis')return {
-    selected_security:context.selected_security?limitObject(context.selected_security,['symbol','name','currency','country','sector']):null,
+    selected_security:context.selected_security?limitObject(context.selected_security,['symbol','name','currency','country','market','sector']):null,
     thesis:context.thesis?limitObject(context.thesis,['version','rationale','catalysts','risks','add_condition','trim_condition','exit_condition','notes','updated_at']):null,
     prior_user_decision:context.latest_decision?limitObject(context.latest_decision,
       ['created_at','choice','reason','review_condition','thesis_version','official_evidence_snapshot','price_snapshot']):null,
@@ -303,16 +303,41 @@ function thesisReviewFallback(context:any){
       '다음 확인: 내 보유 이유에 적은 조건과 실제 가격·기업 자료를 대조하세요.');
 }
 async function publicCompanyEvidence(key:string,security:any){
-  const symbol=String(security?.symbol||'').toUpperCase(),name=String(security?.name||'');
+  const symbol=String(security?.symbol||'').toUpperCase(),name=String(security?.name||'').trim();
   if(!/^[A-Z0-9.]{1,15}$/.test(symbol)||!name||/ETF|ETN|레버리지|인버스/i.test(name))return null;
-  const domains=['sec.gov',...(symbol==='ARM'?['investors.arm.com','newsroom.arm.com']:[])];
+  const country=String(security?.country||'').toUpperCase(),market=String(security?.market||'').toUpperCase();
+  const korea=country==='KR'||['KRX','KOSPI','KOSDAQ','KONEX'].includes(market);
+  const usa=country==='US'||['NAS','NYS','AMX','NASDAQ','NYSE','NYSE AMERICAN'].includes(market);
+  // Conflicting or unknown listing identities must not silently default to the SEC.
+  if(korea===usa)return null;
+  const domains=korea?['dart.fss.or.kr','kind.krx.co.kr']:
+    ['sec.gov',...(symbol==='ARM'?['investors.arm.com','newsroom.arm.com']:[])];
+  const exactDocument=(raw:string)=>{
+    try{
+      const u=new URL(raw);
+      if(u.protocol!=='https:'||u.username||u.password||u.port||
+        !domains.some(d=>u.hostname===d||(!korea&&u.hostname.endsWith('.'+d))))return false;
+      if(korea){
+        if(u.hostname==='dart.fss.or.kr')return u.pathname==='/dsaf001/main.do'&&
+          /^\d{14}$/.test(u.searchParams.get('rcpNo')||'');
+        return (u.pathname==='/common/disclsviewer.do'&&
+          /^\d{14}$/.test(u.searchParams.get('acptNo')||u.searchParams.get('acptno')||''))||
+          /^\/external\/20\d\d\/\d\d\/\d\d\/\d+\/\d{14}\/\d+\.htm$/i.test(u.pathname);
+      }
+      if(u.hostname==='sec.gov'||u.hostname.endsWith('.sec.gov'))
+        return /^\/Archives\/edgar\/data\/\d+\/(?:[^/]+\/)*[^/]+\.(?:htm|html|txt|xml)$/i.test(u.pathname);
+      return !/\/(?:financials\/(?:quarterly-annual-results|sec-filings)|news-events\/?|Archives\/edgar\/data\/\d+\/?)(?:[?#]|$)/i.test(raw);
+    }catch{return false}
+  };
   try{
     // Only public security identity enters search; holdings and personal notes stay in the subsequent private model call.
     const response=await fetch('https://api.openai.com/v1/responses',{method:'POST',
       headers:{'content-type':'application/json','authorization':'Bearer '+key},
       body:JSON.stringify({model:MODEL,tools:[{type:'web_search',filters:{allowed_domains:domains}}],
         tool_choice:'required',include:['web_search_call.action.sources'],
-        input:'Search an official issuer IR earnings release or SEC filing for public company '+symbol+' ('+name+'). Return only JSON {"summary":"one verified result and one limitation, no investment recommendation","published_on":"YYYY-MM-DD or null","period":"financial reporting period or null","source_url":"the exact official document URL"}. Distinguish a reported result from management guidance. Never include personal account data.',
+        input:(korea?'Search a specific original DART filing or KRX KIND disclosure for Korean listed company ':
+          'Search an official issuer IR earnings release or SEC filing for US listed company ')+
+          symbol+' ('+name+'). Return only JSON {"summary":"one reported result and one limitation, no investment recommendation","published_on":"YYYY-MM-DD or null","period":"financial reporting period or null","source_url":"the exact original filing or release URL"}. Distinguish a reported result from management guidance. Never include personal account data.',
         ...(MODEL.startsWith('gpt-5')?{reasoning:{effort:'low'}}:{}),
         max_output_tokens:1800,store:false}),signal:AbortSignal.timeout(25000)});
     if(!response.ok){console.warn('official evidence search unavailable',{status:response.status});return null}
@@ -322,7 +347,7 @@ async function publicCompanyEvidence(key:string,security:any){
       .flatMap((x:any)=>x.action?.sources||[]).map((x:any)=>String(x.url||'')),
       ...(result.output||[]).flatMap((x:any)=>x.content||[])
         .flatMap((x:any)=>x.annotations||[]).map((x:any)=>String(x.url||''))]
-      .filter((url:string)=>{try{const u=new URL(url);return u.protocol==='https:'&&domains.some(d=>u.hostname===d||u.hostname.endsWith('.'+d))}catch{return false}})
+      .filter(exactDocument)
       .slice(0,30);
     if(!links.length)return null;
     const raw=String(result.output_text||result.output?.flatMap((x:any)=>x.content||[])
@@ -331,22 +356,35 @@ async function publicCompanyEvidence(key:string,security:any){
     const parsed=JSON.parse(json);
     const linked=links.find(url=>url.split('#')[0]===String(parsed.source_url||'').split('#')[0]);
     if(!linked||typeof parsed.summary!=='string'||parsed.summary.length<20)return null;
-    if(/\/(?:financials\/(?:quarterly-annual-results|sec-filings)|news-events\/?|Archives\/edgar\/data\/\d+\/?)(?:[?#]|$)/i.test(linked))return null;
-    // A model-reported publication day is a candidate until confirmed in the linked document.
+    // A search result's date is only a candidate. The original document must confirm it.
     let publishedOn:null|string=null;
     const candidate=String(parsed.published_on||'');
-    if(/^20\d\d-\d\d-\d\d$/.test(candidate)&&candidate<=new Date().toISOString().slice(0,10)){
+    const [year,month,day]=candidate.split('-').map(Number);
+    const localToday=new Intl.DateTimeFormat('sv-SE',{timeZone:korea?'Asia/Seoul':'America/New_York',
+      year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const validDate=/^20\d\d-\d\d-\d\d$/.test(candidate)&&
+      new Date(Date.UTC(year,month-1,day)).toISOString().slice(0,10)===candidate&&
+      candidate<=localToday;
+    if(validDate){
       try{
         const document=await fetch(linked,{headers:{'user-agent':'PortfolioEvidence/1.0 contact via issuer IR'},
           signal:AbortSignal.timeout(7000)});
-        if(document.ok&&/text\/html|text\/plain/i.test(document.headers.get('content-type')||'')){
-          const original=(await document.text()).slice(0,350000).replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/g,' ');
-          const [year,month,day]=candidate.split('-').map(Number);
+        if(document.ok&&(!document.url||document.url===linked)&&
+          /text\/html|text\/plain/i.test(document.headers.get('content-type')||'')){
+          const original=(await document.text()).slice(0,350000).replace(/<[^>]+>/g,' ')
+            .replace(/&nbsp;|&#160;/g,' ');
           const monthName=new Intl.DateTimeFormat('en-US',{month:'long',timeZone:'UTC'}).format(new Date(Date.UTC(year,month-1,day)));
-          if(original.includes(candidate)||new RegExp(monthName+'\\s+'+day+',?\\s+'+year,'i').test(original))publishedOn=candidate;
+          const datePresent=original.includes(candidate)||original.includes(candidate.replace(/-/g,'.'))||
+            original.includes(candidate.replace(/-/g,'/'))||
+            new RegExp(year+'\\s*[.\\-/]\\s*0?'+month+'\\s*[.\\-/]\\s*0?'+day+'(?:\\D|$)').test(original)||
+            new RegExp(year+'\\s*년\\s*0?'+month+'\\s*월\\s*0?'+day+'\\s*일').test(original)||
+            new RegExp(monthName+'\\s+'+day+',?\\s+'+year,'i').test(original);
+          const issuerPresent=!korea||original.includes(name)||original.includes(symbol);
+          if(datePresent&&issuerPresent)publishedOn=candidate;
         }
-      }catch{/* Source can remain linked without asserting its publication date. */}
+      }catch{/* Without the original document, the date cannot be confirmed. */}
     }
+    if(!publishedOn)return null;
     return {summary:parsed.summary.slice(0,550),sources:[linked],
       documents:[{url:linked,title:name+' 공식 자료',published_on:publishedOn,
         period:typeof parsed.period==='string'?parsed.period.slice(0,80):null,
@@ -454,7 +492,7 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
       ['buy_events','sell_events','traded_symbols','lifecycle_eligible_symbols',
         'additional_buys','partial_sells','full_sells','reentries',
         'invalid_lifecycle_events','return_based_patterns_available']):null,
-    selected_security:selected?limitObject(selected,['symbol','name','currency','country','sector']):null,
+    selected_security:selected?limitObject(selected,['symbol','name','currency','country','market','sector']):null,
     latest_decision:decisions?.[0]||null,
     recent_trades:history,price_evidence:thesisReview?
       (priceRows?priceTrendEvidence(priceRows,selected.symbol,selected.currency):
