@@ -52,7 +52,7 @@ const homeCtx=vm.createContext({live:displayLive,liveError:null,period:'1M',isaN
   latestManualRows:()=>[],completeSnapshotPeriod:()=>false,ledgerHeadlineReady:()=>false,
   esc:String,money:n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원',signedMoney:String,
   cls:empty,kstStamp:x=>String(x).slice(0,10),periods:empty,reconciliationHomeStatus:empty,
-  assetChart:empty,metric:empty,homeBrowseCard:empty,riskOverviewCard:empty,decisionHomeCard:empty,
+  assetChart:empty,metric:empty,homeBrowseCard:empty,riskOverviewCard:empty,decisionHomeCard:empty,reviewHomeCard:empty,
   cashFlowAuditCard:empty,annualGoalCard:empty,tradeTargetCard:empty,
   dividendCard:empty,priceAlertCard:empty,upcomingAgenda:empty,dataStatusCard:empty});
 vm.runInContext(html.slice(homeStart,homeEnd),homeCtx);
