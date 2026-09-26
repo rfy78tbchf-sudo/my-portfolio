@@ -50,9 +50,15 @@
             ' · 당시 원화 투자손익과 다름</div>'+
           '<div class="sub">과거 환율 기반 원화 관리손익 추정 '+(x.historical_krw_estimate==null?
             '자료 부족':fmt(x.historical_krw_estimate,'원',0))+' · 실제 환전/세무 금액 아님</div>':'';
+        var reason=x.issue==='same_day_buy_sell_execution_order'?'같은 날짜의 매수·매도 체결 순서가 없음':
+          x.issue==='mixed_day_source_invalid'?'같은 날짜의 거래 원본 비용 대조 실패':
+          x.status==='order_unverified'&&x.issue_date?'이전 혼합거래일의 원가 배분이 이후 매도에 영향':
+          x.status==='cost_review'?'이전 취득·입고 원가 또는 수량 확인 필요':
+          x.status==='source_review'?'수량·순대금·비용의 원본 대조 필요':
+          names[x.status]||'원본 확인 필요';
         var cost=done?'<div class="sub">매도 순대금 '+n(x.net_proceeds,2)+' '+escape(cur)+
           ' − 배분 원가 '+n(x.allocated_cost,2)+' '+escape(cur)+' · 매수 수수료는 원가, 매도 비용은 순대금에 포함</div>'+fx:
-          '<div class="sub">'+escape(x.issue||names[x.status]||'원본 확인 필요')+
+          '<div class="sub">'+escape(reason)+
             (x.issue_date?' · '+escape(x.issue_date):'')+'</div>';
         return '<div class="row sold-ledger-row"><div><b>'+escape(date)+' · '+n(x.quantity||0,6)+
           '주</b><div class="sub">'+escape(basis)+(x.ledger_date&&x.ledger_date!==date?

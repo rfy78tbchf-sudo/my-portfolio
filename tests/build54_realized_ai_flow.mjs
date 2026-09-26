@@ -15,7 +15,7 @@ assert.match(sql,/if v_trade.type='sell' and v_day.d between/);
 assert.match(sql,/v_seen_mixed:=v_day.d/);
 assert.match(cycle,/v_opening and v_ending/);
 assert.match(reqSql,/primary key\(user_id,id\)/);
-assert.match(html,/realized-sales-ui\.js\?v=55/);
+assert.match(html,/realized-sales-ui\.js\?v=55a/);
 const scope=vm.createContext({window:{}});vm.runInContext(ui,scope);
 const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',currency:'USD',
   trade_date:'2026-09-18',date_basis:'broker_order_date_no_intraday_time',status:'calculated',
@@ -25,7 +25,8 @@ const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',c
 const report={ok:true,period:'1M',period_start:'2026-08-26',period_end:'2026-09-26',
   calculation_version:'realized-sales-v2',candidate_count:3,ready_count:1,
   partial_count:1,order_unverified_count:1,cost_review_count:0,source_review_count:0,
-  items:[sale,{...sale,transaction_id:'second',symbol:'OTHER',status:'order_unverified',realized_local:null},
+  items:[sale,{...sale,transaction_id:'second',symbol:'OTHER',status:'order_unverified',realized_local:null,
+    issue_date:'2026-08-21'},
     {...sale,transaction_id:'third',symbol:'DATE',status:'partial_date',realized_local:25,
       date_basis:'ledger_date_execution_unverified'}]};
 const rendered=scope.window.realizedSalesUi.section({realizedSales:report,
@@ -34,12 +35,22 @@ assert.match(rendered,/1건만/);
 assert.match(rendered,/매도 3건 중 계산 1건/);
 assert.match(rendered,/기간 포함 미확정/);
 assert.match(rendered,/원장 기록일 기준 USD 원가 산출 · 1건/);
+assert.match(rendered,/이전 혼합거래일의 원가 배분이 이후 매도에 영향/);
 assert.match(rendered,/− 배분 원가 400\.8/);
 assert.match(rendered,/원화 관리손익 추정/);
 assert.doesNotMatch(rendered,/계좌 기간성과 78/);
 const costCents=10*10000+200,allocatedCents=costCents*4/10,proceedsCents=4*12000-100;
 assert.equal(proceedsCents-allocatedCents,7820);
 assert.equal(costCents-allocatedCents,60120);
+// A same-day round trip is not automatically order invariant under moving average.
+function moved(steps){let qty=50,cost=5000,pnl=0;
+  for(const step of steps){if(step.type==='buy'){qty+=50;cost+=5500}
+    else{const allocated=cost*50/qty;cost-=allocated;qty-=50;pnl+=6000-allocated}}
+  return {pnl,cost,qty};
+}
+assert.deepEqual(moved([{type:'buy'},{type:'sell'}]),{pnl:750,cost:5250,qty:50});
+assert.deepEqual(moved([{type:'sell'},{type:'buy'}]),{pnl:1000,cost:5500,qty:50});
+assert.equal(6000-5000+6000-5500,1500,'period value change is distinct from per-sale allocation');
 assert.equal(110-100,10);
 assert.equal((110-100)*1400,14000);
 assert.equal(110*1400-100*1300,24000);
