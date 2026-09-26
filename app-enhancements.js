@@ -224,7 +224,12 @@
         '분모: KB '+fmt(m.denominator.kb_response_value)+' + ISA 최신 총액 '+fmt(m.denominator.manual_overlay)+
         ' · KB '+new Date(m.denominator.primary_observed_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
         ' / ISA 화면 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
-        ' · ISA 잔고 유효시각·계좌 식별자 미확인. 매매 수수료·세금·환율·실제 체결 제약 제외. 주문이나 예상 손익이 아닙니다.';
+        ' · ISA 잔고 유효시각·계좌 식별자 미확인. 매매 수수료·세금·환율·실제 체결 제약 제외. 주문이나 예상 손익이 아닙니다.'+
+        (v.pnl_classification&&v.pnl_classification.state==='hypothetical_cost_basis_before_fees'?
+          '\n원가 기준 분류 가정: 매도분 '+fmt(v.pnl_classification.hypothetical_realized_krw)+
+          ' / 잔여 평가차액 '+fmt(v.pnl_classification.hypothetical_remaining_unrealized_krw)+
+          ' · 기존 평가차액 '+fmt(v.pnl_classification.original_unrealized_krw)+
+          '을 분류한 값입니다. 새 투자손익은 0원이며 증권사 공식 실현손익이 아닙니다.':'\n원가·평가 기준이 맞지 않아 실현/평가손익 분류는 계산하지 않았습니다.');
     }catch(e){el.textContent='시나리오 계산 실패 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
   }

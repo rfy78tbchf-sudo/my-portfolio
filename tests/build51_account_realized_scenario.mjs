@@ -27,7 +27,10 @@ const response={ok:true,position:{symbol:'ARM',value:15_154_956},
     primary_observed_at:'2026-09-26T03:10:03Z',isa_captured_at:'2026-09-26T02:42:00Z'},
   scenario:{target_weight_pct:10,sale_value_krw:8_686_076.7,
     position_after_krw:6_468_879.3,cash_increase_before_cost_krw:8_686_076.7,
-    assets_after_before_cost_krw:64_688_793}};
+    assets_after_before_cost_krw:64_688_793,
+    pnl_classification:{state:'hypothetical_cost_basis_before_fees',
+      hypothetical_realized_krw:-360_564.074, hypothetical_remaining_unrealized_krw:-268_526.926,
+      original_unrealized_krw:-629_091,net_new_investment_pnl_krw:0}}};
 const context={supabaseUrl:'https://example.invalid',publicKey:'fake-public',
   authFetch:async(_,args)=>{calls.push(JSON.parse(args.body));return {ok:true,json:async()=>response}}};
 const start=enhanced.indexOf('  async function runWeightScenario()');
@@ -40,6 +43,8 @@ assert.deepEqual(calls,[{action:'weight-scenario',symbol:'ARM',target_pct:10}]);
 assert.match(inputs.weightResult.textContent,/8,686,077원/);
 assert.match(inputs.weightResult.textContent,/총자산 64,688,793원 \(비용 전, 변화 없음\)/);
 assert.match(inputs.weightResult.textContent,/잔고 유효시각·계좌 식별자 미확인/);
+assert.match(inputs.weightResult.textContent,/새 투자손익은 0원/);
+assert.match(inputs.weightResult.textContent,/매도분 -360,564원 \/ 잔여 평가차액 -268,527원/);
 inputs.weightTarget.value='105';await vm.runInContext('runWeightScenario()',ui);
 assert.equal(calls.length,1,'invalid target never leaves device');
 
