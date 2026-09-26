@@ -143,11 +143,29 @@
   }
   function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3><button id="aiConnectionCheck" type="button" class="btn secondary full" style="margin-bottom:12px">AI 연결 설정 확인</button>'+
     '<div class="notice">현재 보유, 최근 거래, 수량 차이, 포트폴리오 위험, 저장한 투자 논리를 서버에서 질문에 맞게 읽습니다. 확인되지 않은 숫자는 확정 성과처럼 쓰지 않습니다.</div>'+
-    '<div id="aiKeySetup" class="notice" style="margin-top:12px">AI 실행환경 설정을 확인해 주세요.</div><div id="aiConnectionState" class="sub" role="status" aria-live="polite">화면 버전 49b · 설정 확인은 모델을 호출하지 않습니다. 실제 응답은 아래 질문을 보내 확인합니다.</div>'+
+    '<div id="aiKeySetup" class="notice" style="margin-top:12px">AI 실행환경 설정을 확인해 주세요.</div><div id="aiConnectionState" class="sub" role="status" aria-live="polite">설정 확인은 모델을 호출하지 않습니다. 실제 응답은 아래 질문을 보내 확인합니다.</div>'+
     '<div class="tool-row" style="margin-top:12px"><button type="button" class="btn secondary" data-ai-question="내 포트폴리오에서 지금 확인할 위험은 무엇인가?">가장 큰 위험</button><button type="button" class="btn secondary" data-ai-question="이번 달 투자손익에 기여한 종목과 아직 확인되지 않은 자료를 알려줘.">이번 달 성과</button></div>'+
     '<select id="aiStock" class="select" style="margin-top:10px"><option value="">전체 포트폴리오</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return h.quantity>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return '<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select>'+
     '<textarea id="aiQuestion" class="input" rows="3" maxlength="800" style="margin-top:10px" placeholder="예: 이 종목을 계속 보유하는 논리가 유효한가?"></textarea>'+
-    '<button id="aiAsk" type="button" class="btn full" style="margin-top:8px">내 데이터로 분석</button><div id="aiAnswer" class="notice" style="margin-top:12px;white-space:pre-wrap" role="status" aria-live="polite">질문을 입력하거나 바로가기 질문을 눌러 주세요.</div></section></details>'}
+    '<button id="aiAsk" type="button" class="btn full" style="margin-top:8px">내 데이터로 분석</button><div id="aiAnswer" class="ai-answer" role="status" aria-live="polite">질문을 입력하거나 바로가기 질문을 눌러 주세요.</div></section></details>'}
+  function renderAiAnswer(el,value){
+    el.textContent='';
+    var lines=String(value||'').trim().split(/\n+/).map(function(line){return line.trim()}).filter(Boolean);
+    function addLines(parent,items){items.forEach(function(line,index){
+      var p=document.createElement('p'),head=line.match(/^(가장 큰 위험|기간 성과|매도 손익|보유 논리|핵심|근거|다음 확인|자료 상태):\s*(.*)$/);
+      p.className=index===0?'ai-answer-lead':'ai-answer-line';
+      if(head){var label=document.createElement('strong');label.textContent=head[1]+'  ';p.appendChild(label);p.appendChild(document.createTextNode(head[2]))}
+      else p.textContent=line;
+      parent.appendChild(p);
+    })}
+    if(lines.length>4||String(value||'').length>550){
+      var intro=lines[0]||'',short=intro.length>300?intro.slice(0,300).replace(/\s+\S*$/,'')+'…':intro;
+      addLines(el,[short]);
+      var details=document.createElement('details'),summary=document.createElement('summary');
+      summary.textContent='전체 답변 펼쳐보기';details.appendChild(summary);addLines(details,lines);
+      el.appendChild(details);
+    }else addLines(el,lines);
+  }
   async function ask(question){var btn=document.getElementById('aiAsk'),answer=document.getElementById('aiAnswer');if(!btn||!answer)return;
     var symbol=document.getElementById('aiStock').value;if(!question){answer.textContent='질문을 입력해 주세요.';return}
     btn.disabled=true;answer.textContent='현재 계좌와 투자 논리를 확인하는 중…';
@@ -155,7 +173,7 @@
       method:'POST',headers:{'content-type':'application/json','apikey':context.publicKey},
       body:JSON.stringify({question:question,symbol:symbol||null})},60000,false),data=await res.json();
       if(!res.ok)throw Error(data.message||data.code||'분석 서버 응답 실패');
-      answer.textContent=data.answer||'응답이 없습니다.';
+      renderAiAnswer(answer,data.answer||'응답이 없습니다.');
     }catch(e){answer.textContent='분석을 완료하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
   }
