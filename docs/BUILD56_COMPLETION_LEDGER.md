@@ -56,3 +56,26 @@ historical answer is rewritten. The previous frontend and Edge function remain
 compatible with the new nullable/defaulted evidence columns. To revert the
 product flow, restore the prior frontend and Edge version; retaining the extra
 snapshot columns preserves new owner decisions and permits future migration.
+
+## Build 58b Korean evidence and source correction
+
+Official evidence is shown as a short Korean summary. An original issuer/SEC
+document is available behind a Korean **원문 보기** link, rather than displaying
+the English model summary and English reporting-period string on the main
+screen. New US issuer searches request Korean output and require a short excerpt
+that appears in the linked report body; Korean listed companies retain the
+independent original URL, issuer, and date checks for DART/KRX, and their
+original links also have Korean labels. SEC filing index pages cannot serve as the
+body of an earnings report. Failed source checks omit the company claim while
+preserving the account and user-authored thesis analysis.
+
+Four earlier ARM analyses received additive Korean reading notes. Three linked
+announcements about a shareholder letter but cited figures absent from the
+linked announcement body; the interface says so and links the original
+shareholder letter directly. A fourth SEC index was incorrectly described as
+earnings although its exhibit is annual meeting voting results. That analysis
+now has a prominent correction before its historical answer and cannot be
+used as a new earnings event on the home or in the decision review. Original
+English summaries, answers, source URLs, original transaction data, and saved
+owner decisions remain intact. These annotations do not assert that the
+owner's thesis or later trades have been validated.

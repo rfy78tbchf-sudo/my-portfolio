@@ -325,7 +325,8 @@ async function publicCompanyEvidence(key:string,security:any){
           /^\/external\/20\d\d\/\d\d\/\d\d\/\d+\/\d{14}\/\d+\.htm$/i.test(u.pathname);
       }
       if(u.hostname==='sec.gov'||u.hostname.endsWith('.sec.gov'))
-        return /^\/Archives\/edgar\/data\/\d+\/(?:[^/]+\/)*[^/]+\.(?:htm|html|txt|xml)$/i.test(u.pathname);
+        return /^\/Archives\/edgar\/data\/\d+\/(?:[^/]+\/)*[^/]+\.(?:htm|html|txt|xml)$/i.test(u.pathname)&&
+          !/-index\.html?$/i.test(u.pathname);
       return !/\/(?:financials\/(?:quarterly-annual-results|sec-filings)|news-events\/?|Archives\/edgar\/data\/\d+\/?)(?:[?#]|$)/i.test(raw);
     }catch{return false}
   };
@@ -336,8 +337,9 @@ async function publicCompanyEvidence(key:string,security:any){
       body:JSON.stringify({model:MODEL,tools:[{type:'web_search',filters:{allowed_domains:domains}}],
         tool_choice:'required',include:['web_search_call.action.sources'],
         input:(korea?'Search a specific original DART filing or KRX KIND disclosure for Korean listed company ':
-          'Search an official issuer IR earnings release or SEC filing for US listed company ')+
-          symbol+' ('+name+'). Return only JSON {"summary":"one reported result and one limitation, no investment recommendation","published_on":"YYYY-MM-DD or null","period":"financial reporting period or null","source_url":"the exact original filing or release URL"}. Distinguish a reported result from management guidance. Never include personal account data.',
+          'Search the body of an official issuer report or SEC exhibit for US listed company ')+symbol+' ('+name+'). '+
+          'Return only JSON {"summary_ko":"한국어 1~2문장: 원문에서 확인된 핵심 사실과 한계, 숫자와 통화 단위를 유지","period_ko":"한국어 대상 기간 또는 null","source_excerpt":"미국 문서에서 실제로 연속하는 5~14개 단어의 핵심 근거 구절, 한국 공시는 null 가능","published_on":"YYYY-MM-DD or null","source_url":"실제 원문 URL"}. '+
+          '미국 자료는 목록이나 주주서한 링크만 있는 짧은 안내가 아닌 실제 보고서 본문을 고른다. 전망은 이미 달성된 실적으로 표현하지 않는다. 개인 계좌나 사용자 메모는 검색에 포함하지 않는다.',
         ...(MODEL.startsWith('gpt-5')?{reasoning:{effort:'low'}}:{}),
         max_output_tokens:1800,store:false}),signal:AbortSignal.timeout(25000)});
     if(!response.ok){console.warn('official evidence search unavailable',{status:response.status});return null}
@@ -355,9 +357,11 @@ async function publicCompanyEvidence(key:string,security:any){
     const json=raw.slice(raw.indexOf('{'),raw.lastIndexOf('}')+1);
     const parsed=JSON.parse(json);
     const linked=links.find(url=>url.split('#')[0]===String(parsed.source_url||'').split('#')[0]);
-    if(!linked||typeof parsed.summary!=='string'||parsed.summary.length<20)return null;
-    // A search result's date is only a candidate. The original document must confirm it.
-    let publishedOn:null|string=null;
+    const summary=String(parsed.summary_ko||parsed.summary||'').trim(),excerpt=String(parsed.source_excerpt||'').trim();
+    if(!linked||summary.length<20||!/[가-힣]/.test(summary)||
+      (!korea&&(excerpt.split(/\s+/).length<5||excerpt.length>220)))return null;
+    // The date must appear in the original company document, not just a search result.
+    let publishedOn:null|string=null,sourceBody='';
     const candidate=String(parsed.published_on||'');
     const [year,month,day]=candidate.split('-').map(Number);
     const localToday=new Intl.DateTimeFormat('sv-SE',{timeZone:korea?'Asia/Seoul':'America/New_York',
@@ -373,6 +377,7 @@ async function publicCompanyEvidence(key:string,security:any){
           /text\/html|text\/plain/i.test(document.headers.get('content-type')||'')){
           const original=(await document.text()).slice(0,350000).replace(/<[^>]+>/g,' ')
             .replace(/&nbsp;|&#160;/g,' ');
+          sourceBody=original.replace(/\s+/g,' ').trim();
           const monthName=new Intl.DateTimeFormat('en-US',{month:'long',timeZone:'UTC'}).format(new Date(Date.UTC(year,month-1,day)));
           const datePresent=original.includes(candidate)||original.includes(candidate.replace(/-/g,'.'))||
             original.includes(candidate.replace(/-/g,'/'))||
@@ -382,12 +387,17 @@ async function publicCompanyEvidence(key:string,security:any){
           const issuerPresent=!korea||original.includes(name)||original.includes(symbol);
           if(datePresent&&issuerPresent)publishedOn=candidate;
         }
-      }catch{/* Without the original document, the date cannot be confirmed. */}
+      }catch{/* Without the original document, no claim enters model context. */}
     }
     if(!publishedOn)return null;
-    return {summary:parsed.summary.slice(0,550),sources:[linked],
+    // For US issuers, the specific quote must also occur in the linked report
+    // body. A press-release stub cannot supply figures that live elsewhere.
+    const normalize=(value:string)=>value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+    if(!korea&&(!sourceBody||!normalize(sourceBody).includes(normalize(excerpt))))return null;
+    return {summary:summary.slice(0,400),sources:[linked],
       documents:[{url:linked,title:name+' 공식 자료',published_on:publishedOn,
-        period:typeof parsed.period==='string'?parsed.period.slice(0,80):null,
+        period:typeof parsed.period_ko==='string'&&/[가-힣]/.test(parsed.period_ko)?parsed.period_ko.slice(0,80):
+          (korea&&typeof parsed.period==='string'&&/[가-힣]/.test(parsed.period)?parsed.period.slice(0,80):null),
         retrieved_at:new Date().toISOString(),date_verified:!!publishedOn}]};
   }catch{console.warn('official evidence search returned no usable document');return null}
 }

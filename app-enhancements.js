@@ -173,10 +173,10 @@
   function renderOfficialSources(el,urls){
     if(!el||!Array.isArray(urls))return;
     var links=document.createElement('p');links.className='source-links';
-    links.appendChild(document.createTextNode('실제 조회한 공식 자료 · '));
+    links.appendChild(document.createTextNode('공식 자료 · '));
     urls.slice(0,3).forEach(function(raw){try{var u=new URL(raw),host=u.hostname.toLowerCase();
-      if(u.protocol!=='https:'||!(host==='sec.gov'||host.endsWith('.sec.gov')||host==='investors.arm.com'||host==='newsroom.arm.com'))return;
-      var a=document.createElement('a');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=host+' 원문';links.appendChild(a);links.appendChild(document.createTextNode(' '))}catch(_){}});
+      if(u.protocol!=='https:'||!(host==='sec.gov'||host.endsWith('.sec.gov')||host==='investors.arm.com'||host==='newsroom.arm.com'||host==='dart.fss.or.kr'||host==='kind.krx.co.kr'))return;
+      var a=document.createElement('a');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent='원문 보기 ↗';links.appendChild(a);links.appendChild(document.createTextNode(' '))}catch(_){}});
     if(links.querySelector('a'))el.appendChild(links)
   }
   window.portfolioRenderAiAnswer=renderAiAnswer;

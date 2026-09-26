@@ -118,7 +118,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
     </form>
     <div id="loginMsg" class="msg"></div>
     <button id="demoBtn" class="btn secondary full" type="button">Demo Mode 보기</button>
-    <div class="boot-ok">화면 초기화 정상 · build 58</div>
+    <div class="boot-ok">화면 초기화 정상 · build 58b</div>
   </div>
 </section>
 
@@ -250,7 +250,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
     if(!decision)return '';
     var old=decision.official_evidence_snapshot||{},oldDocs=Array.isArray(old.documents)?old.documents:[],
       known=new Set(oldDocs.map(function(x){return x.url})),saved=String(decision.created_at||''),
-      fresh=(analyses||[]).filter(function(x){return x.created_at>saved}).flatMap(function(x){return x.official_evidence&&x.official_evidence.documents||[]})
+      fresh=(analyses||[]).filter(function(x){return x.created_at>saved&&!(x.official_evidence&&x.official_evidence.source_mismatch)}).flatMap(function(x){return x.official_evidence&&x.official_evidence.documents||[]})
         .filter(function(x){return x.published_on&&x.published_on>saved.slice(0,10)&&!known.has(x.url)}),
       recent=Array.isArray(currentPrices)?currentPrices.filter(function(x){return x.close!=null&&x.price_date})
         .sort(function(a,b){return String(b.price_date).localeCompare(String(a.price_date))})[0]:null,
@@ -273,32 +273,52 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
     var detail='<details class="more-list"><summary>당시 근거와 이후 자료 자세히</summary>'+
       '<div class="sub">당시 계좌 관측 '+esc(account.observation_at?kstStamp(account.observation_at):'기록 부족')+
       ' · 보유 논리 버전 '+esc(decision.thesis_version||'없음')+'</div>'+
-      (oldDocs.length?'<div class="sub">당시 공식 문서 '+oldDocs.map(function(x){return esc(x.published_on||'발표일 미확인')+' · '+esc(x.period||'기간 미확인')}).join(', ')+'</div>':'<div class="sub">당시 연결된 공식 문서 없음</div>')+
+      (oldDocs.length?'<div class="sub">당시 공식 문서 '+oldDocs.map(function(x){return esc(x.published_on||'발표일 미확인')+' · '+esc(officialPeriodKo(x))}).join(', ')+'</div>':'<div class="sub">당시 연결된 공식 문서 없음</div>')+
       (scenario.minus_ten_krw!=null?'<div class="sub">당시 ±10% 가정 '+esc(signedMoney(scenario.minus_ten_krw))+' / '+esc(signedMoney(scenario.plus_ten_krw))+' (나머지 자산·환율 고정, 실제 거래 아님)</div>':'')+
       '<div class="sub">'+priceLine+'</div>'+
       (tradeRows.length?'<div class="sub">이후 원장에 기록된 매매 '+tradeRows.map(function(x){return (x.kind==='sell'?'매도':'매수')+' '+esc(String(x.occurred_at).slice(0,10))}).join(' · ')+' (체결시각 확정 여부는 원본 확인 필요)</div>':
         '<div class="sub">이 조회 범위에서 판단 이후 매매 기록을 확인하지 못했습니다. 계획을 체결로 취급하지 않습니다.</div>')+
-      (fresh.length?'<div class="sub">새 공식 자료 '+fresh.map(function(x){return esc(x.published_on)+' · '+esc(x.period||'실적 기간 확인 필요')}).join(', ')+'</div>':'')+
+      (fresh.length?'<div class="sub">새 공식 자료 '+fresh.map(function(x){return esc(x.published_on)+' · '+esc(officialPeriodKo(x))}).join(', ')+'</div>':'')+
       '<div class="sub">판단 이후 종목 가격 변화는 계좌 전체 손익이 아닙니다. 당시 정보에 대한 판단은 결과만으로 평가하지 않습니다.</div></details>';
     return '<section class="decision-review"><h3>지난 판단 이후</h3><p>'+summary+'</p><p>'+condition+'</p>'+detail+'</section>';
   }
+  function officialPeriodKo(doc){
+    var value=String(doc&&((doc.period_ko||doc.period))||'');
+    if(/[가-힣]/.test(value))return value.slice(0,80);
+    var date=value.match(/(March|June|September|December)\s+(\d{1,2}),?\s+(20\d\d)/i);
+    if(date){var months={march:3,june:6,september:9,december:12};
+      return date[3]+'년 '+months[date[1].toLowerCase()]+'월 '+Number(date[2])+'일 종료 '+
+        (/year|fiscal/i.test(value)?'분기·회계연도':'분기')}
+    return '대상 기간은 원문에서 확인';
+  }
   function aiSourceLinks(container,urls){
     if(!container||!Array.isArray(urls)||!urls.length)return;
-    var box=document.createElement('div');box.className='source-links';box.appendChild(document.createTextNode('공식 자료 · '));
+    var box=document.createElement('div');box.className='source-links';
     urls.slice(0,3).forEach(function(raw,i){try{var u=new URL(raw),host=u.hostname.toLowerCase();
-      if(u.protocol!=='https:'||!(host==='sec.gov'||host.endsWith('.sec.gov')||host==='investors.arm.com'||host==='newsroom.arm.com'))return;
-      var link=document.createElement('a');link.href=u.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=host+' 원문 '+(i+1);box.appendChild(link);box.appendChild(document.createTextNode(' '))}catch(e){}});
+      if(u.protocol!=='https:'||!(host==='sec.gov'||host.endsWith('.sec.gov')||host==='investors.arm.com'||host==='newsroom.arm.com'||host==='dart.fss.or.kr'||host==='kind.krx.co.kr'))return;
+      var link=document.createElement('a');link.href=u.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent='공식 자료 원문 보기'+(urls.length>1?' '+(i+1):'')+' ↗';box.appendChild(link);box.appendChild(document.createTextNode(' '))}catch(e){}});
     if(box.querySelector('a'))container.appendChild(box);
   }
   function aiOfficialEvidence(container,evidence){
     if(!container||!evidence||!Array.isArray(evidence.documents)||!evidence.documents.length)return;
     var doc=evidence.documents[0],box=document.createElement('div');box.className='decision-impact';
     var title=document.createElement('b'),body=document.createElement('p'),date=document.createElement('small');
-    title.textContent='공식 자료와 보유 이유';
-    body.textContent='AI가 공식 문서를 읽어 정리: '+String(evidence.summary||'내용은 원문에서 확인해 주세요.');
+    title.textContent=evidence.source_mismatch?'이전 근거 정정':'공식 자료 요약';
+    var summary=String(evidence.summary_ko||evidence.summary||'');
+    body.textContent=(evidence.source_mismatch&&evidence.source_warning_ko)||(/[가-힣]/.test(summary)?summary.slice(0,420):
+      '이전 분석의 영어 요약은 한국어로 검증되지 않았습니다. 연결된 원문을 확인해 주세요.');
     date.textContent='발표 '+(doc.date_verified&&doc.published_on?doc.published_on:'일자 미확인')+
-      ' · 대상 '+String(doc.period||'기간 미확인')+' · 조회 '+(doc.retrieved_at?kstStamp(doc.retrieved_at):'시각 미확인');
-    box.appendChild(title);box.appendChild(body);box.appendChild(date);container.appendChild(box);
+      ' · 대상 '+officialPeriodKo(doc)+' · 조회 '+(doc.retrieved_at?kstStamp(doc.retrieved_at):'시각 미확인');
+    box.appendChild(title);box.appendChild(body);
+    if(evidence.source_warning_ko&&!evidence.source_mismatch){var warning=document.createElement('p');warning.className='sub';warning.textContent=evidence.source_warning_ko;box.appendChild(warning)}
+    box.appendChild(date);
+    if(evidence.followup_url){try{var source=new URL(evidence.followup_url),domain=source.hostname.toLowerCase();
+      if(source.protocol==='https:'&&(domain==='investors.arm.com'||domain==='newsroom.arm.com'||domain==='sec.gov'||domain.endsWith('.sec.gov'))){
+        var original=document.createElement('a');original.href=source.href;original.target='_blank';original.rel='noopener noreferrer';
+        original.textContent=evidence.source_mismatch?'정정한 공시 원문 보기 ↗':'실적 주주서한 원문 보기 ↗';
+        original.className='source-links';box.appendChild(original)}}catch(e){}}
+    if(evidence.source_mismatch&&container.firstChild)container.insertBefore(box,container.firstChild);
+    else container.appendChild(box);
   }
   function openSecurityDetail(id){
     if(!id||detailLoading)return;
@@ -362,7 +382,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
               if(window.portfolioRenderAiAnswer)window.portfolioRenderAiAnswer(b,h.answer);
               else b.textContent=h.answer||'저장된 답변이 없습니다.';
               aiOfficialEvidence(b,h.official_evidence);
-              aiSourceLinks(b,h.external_sources);
+              if(!(h.official_evidence&&h.official_evidence.followup_url))aiSourceLinks(b,h.external_sources);
               var meta=document.createElement('details'),metaSummary=document.createElement('summary'),info=document.createElement('div');
               meta.className='ai-history-meta';metaSummary.textContent='자료 기준과 기록 정보';
               info.textContent='논리 버전 '+(h.thesis_version||'입력 없음')+' · '+
@@ -466,7 +486,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
         if(window.portfolioRenderAiAnswer)window.portfolioRenderAiAnswer(out,x.answer);
         else out.textContent=x.answer;
         aiOfficialEvidence(out,x.official_evidence);
-        aiSourceLinks(out,x.external_sources);
+        if(!(x.official_evidence&&x.official_evidence.followup_url))aiSourceLinks(out,x.external_sources);
         if(x.history_saved!==false&&x.analysis_id)lastDetailAnalysisId=x.analysis_id;
         var status=document.createElement('p');status.className='ai-history-status';
         status.textContent=(x.response_kind==='validated_fallback'?'서버 검증 답변':'AI 답변')+
@@ -952,7 +972,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       var d=decisions[i],s=live.securityMap[d.security_id];
       if(!s||!live.holdings.some(function(h){return h.security_id===d.security_id&&Number(h.quantity)>0}))continue;
       var old=d.official_evidence_snapshot&&d.official_evidence_snapshot.documents||[];
-      var unseen=analyses.filter(function(a){return a.symbol===s.symbol&&a.created_at>d.created_at})
+      var unseen=analyses.filter(function(a){return a.symbol===s.symbol&&a.created_at>d.created_at&&!(a.official_evidence&&a.official_evidence.source_mismatch)})
         .flatMap(function(a){return a.official_evidence&&a.official_evidence.documents||[]})
         .find(function(a){return a.published_on&&a.published_on>String(d.created_at).slice(0,10)&&
           !old.some(function(b){return b.url===a.url})});
@@ -1327,7 +1347,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
 </script>
 <script type="module" src="./passkey.js"></script>
 <script defer src="./vendor/jszip.min.js"></script>
-<script defer src="./app-enhancements.js?v=57h"></script>
+<script defer src="./app-enhancements.js?v=58b"></script>
 <script defer src="./realized-sales-ui.js?v=56"></script>
 
 <div id="detailModal" class="detail-modal hidden"><div class="detail-sheet"><div class="detail-head"><div><b>종목 상세</b><div class="sub">KB 가격 데이터 · 객관적 기술지표</div></div><button id="detailClose" class="close-btn" aria-label="닫기">×</button></div><div id="detailBody"></div></div></div>

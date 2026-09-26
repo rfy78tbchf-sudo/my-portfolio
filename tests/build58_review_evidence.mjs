@@ -31,6 +31,9 @@ scope.articles=[...articles,{created_at:'2026-09-12T09:00:00Z',official_evidence
   {url:'https://www.sec.gov/new',published_on:'2026-09-10',period:'Q2 FY27'}]}}];
 text=vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope);
 assert.match(text,/판단 이후 발표된 공식 자료 1건/);
+scope.articles[1].official_evidence.source_mismatch=true;
+assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),/새 공식 발표는 아직 확인되지 않았습니다/,
+  'a filing that was misidentified as earnings cannot trigger a new thesis review');
 scope.articles=[{created_at:'2026-09-12T09:00:00Z',official_evidence:{documents:[
   {url:'https://www.sec.gov/unverified',published_on:null}]}}];
 assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),/새 공식 발표는 아직 확인되지 않았습니다/);
@@ -61,6 +64,35 @@ assert.match(vm.runInContext('reviewHomeCard()',homeScope),/지난 판단 이후
 homeScope.live.reviewAnalyses=[];
 homeScope.live.reviewDecisions[0].review_condition='2026-09-22 확인';
 assert.match(vm.runInContext('reviewHomeCard()',homeScope),/점검 날짜/);
+const localeStart=html.indexOf('  function officialPeriodKo('),localeEnd=html.indexOf('  function openSecurityDetail(',localeStart);
+assert.ok(localeStart>0&&localeEnd>localeStart);
+function element(tag){return {tag,children:[],_text:'',className:'',
+  set textContent(value){this._text=String(value);this.children=[]},
+  get textContent(){return this._text+this.children.map(child=>child.textContent).join('')},
+  get firstChild(){return this.children[0]||null},
+  appendChild(child){this.children.push(child);return child},
+  insertBefore(child,before){this.children.splice(this.children.indexOf(before),0,child);return child},
+  querySelector(name){return this.children.find(child=>child.tag===name)||null}}}
+const localeScope=vm.createContext({URL,kstStamp:()=> '9. 26.',document:{createElement:element,
+  createTextNode:value=>({textContent:String(value)})}});
+vm.runInContext(html.slice(localeStart,localeEnd),localeScope);
+let localized=element('div');localeScope.localized=localized;
+vm.runInContext('aiOfficialEvidence(localized,{documents:[{period:"quarter ended March 31, 2026"}],summary:"Revenue grew 22% in the quarter."})',localeScope);
+assert.doesNotMatch(localized.textContent,/Revenue grew|quarter ended/,'legacy English summaries are not shown as app copy');
+localized=element('div');localeScope.localized=localized;
+vm.runInContext('aiOfficialEvidence(localized,{documents:[{period:"quarter ended March 31, 2026",published_on:"2026-05-06",date_verified:true}],summary:"English old copy",summary_ko:"공식 발표는 실적 주주서한 발행을 알립니다.",source_warning_ko:"매출액은 이 발표문에 없습니다.",followup_url:"https://investors.arm.com/static-files/verified-letter"})',localeScope);
+assert.match(localized.textContent,/실적 주주서한 발행/);
+assert.match(localized.textContent,/2026년 3월 31일 종료 분기/);
+assert.doesNotMatch(localized.textContent,/English old copy|quarter ended/);
+assert.match(localized.textContent,/원문 보기/);
+const answer=element('p');answer.textContent='지난 잘못된 답변';localized=element('div');localized.appendChild(answer);localeScope.localized=localized;
+vm.runInContext('aiOfficialEvidence(localized,{documents:[{period:null}],source_mismatch:true,source_warning_ko:"주주총회 공시를 실적 발표로 잘못 설명했습니다."})',localeScope);
+assert.match(localized.children[0].textContent,/주주총회 공시/,'a material source correction precedes the old answer');
+const links=element('div');localeScope.links=links;
+vm.runInContext('aiSourceLinks(links,["https://www.sec.gov/example.htm","https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260925001234"])',localeScope);
+assert.match(links.textContent,/공식 자료 원문 보기/);
+assert.doesNotMatch(links.textContent,/sec.gov/,'source addresses remain behind a Korean label');
+assert.equal(links.children[0].children.filter(child=>child.tag==='a').length,2,'Korean and US official originals are available');
 const begin=edge.indexOf('async function publicCompanyEvidence('),finish=edge.indexOf('function focusPolicy(',begin);
 assert.ok(begin>0&&finish>begin);
 let calls=[];
@@ -72,13 +104,14 @@ const evidenceScope=vm.createContext({MODEL:'gpt-5-mini',URL,Date,Intl,AbortSign
       {headers:{'content-type':'text/html'}});
     return new Response(JSON.stringify({status:'completed',output:[
       {type:'web_search_call',action:{sources:[{url:officialUrl}]}},
-      {content:[{type:'output_text',text:JSON.stringify({summary:'The issuer reports a period result, while guidance remains an expectation.',published_on:'2026-07-29',period:'quarter ended June 30, 2026',source_url:officialUrl})}]}]}),
+      {content:[{type:'output_text',text:JSON.stringify({summary_ko:'회사는 2026년 6월 종료 분기의 실적을 발표했습니다. 경영진 전망은 달성된 실적이 아닙니다.',source_excerpt:'Quarter ended June 30, 2026',published_on:'2026-07-29',period_ko:'2026년 6월 30일 종료 분기',source_url:officialUrl})}]}]}),
       {headers:{'content-type':'application/json'}})
   },Response});
 vm.runInContext(stripTypeScriptTypes(edge.slice(begin,finish)),evidenceScope);
 const evidence=await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope);
 assert.equal(evidence.documents[0].published_on,'2026-07-29');
 assert.equal(evidence.documents[0].date_verified,true);
+assert.match(evidence.summary,/회사는/);
 assert.equal(calls.length,2);
 assert.deepEqual(JSON.parse(calls[0].options.body).tools[0].filters.allowed_domains,
   ['sec.gov','investors.arm.com','newsroom.arm.com']);
@@ -86,12 +119,17 @@ assert.ok(!calls[0].options.body.includes('holdings')&&!calls[0].options.body.in
 calls=[];
 evidenceScope.fetch=async(url,options)=>{
   calls.push({url,options});
-  if(url===officialUrl)return new Response('<html>Report date cannot be confirmed</html>',{headers:{'content-type':'text/html'}});
+  if(url===officialUrl)return new Response('<html>Quarter ended June 30, 2026. Report date cannot be confirmed</html>',{headers:{'content-type':'text/html'}});
   return new Response(JSON.stringify({status:'completed',output:[
     {type:'web_search_call',action:{sources:[{url:officialUrl}]}},
-    {content:[{type:'output_text',text:JSON.stringify({summary:'The linked official report describes the reporting period without an independently confirmed publication date.',published_on:'2026-07-29',period:'a quarter',source_url:officialUrl})}]}]}));
+    {content:[{type:'output_text',text:JSON.stringify({summary_ko:'회사는 분기 자료를 공개했습니다. 발표일은 확인되지 않아 새 소식으로 단정할 수 없습니다.',source_excerpt:'Quarter ended June 30, 2026',published_on:'2026-07-29',period_ko:'2026년 6월 30일 종료 분기',source_url:officialUrl})}]}]}));
 };
 const unverified=await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope);
 assert.equal(unverified,null,'an unverified search date cannot enter the model context');
+evidenceScope.fetch=async()=>new Response(JSON.stringify({status:'completed',output:[
+  {type:'web_search_call',action:{sources:[{url:'https://www.sec.gov/Archives/edgar/data/1973239/000197323926000128/0001973239-26-000128-index.htm'}]}},
+  {content:[{type:'output_text',text:JSON.stringify({summary_ko:'ARM의 실적이 확인됐다고 주장하지만 이 자료는 공시 목록 페이지입니다.',source_excerpt:'Filing Date September 10 2026',published_on:'2026-09-10',period_ko:'실적 분기',source_url:'https://www.sec.gov/Archives/edgar/data/1973239/000197323926000128/0001973239-26-000128-index.htm'})}]}]}));
+assert.equal(await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope),null,
+  'a filing index must never be cited as the body of an earnings release');
 assert.equal(await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"SOXL",name:"Leveraged ETF"})',evidenceScope),null);
 console.log('Official publication versus retrieval, same-currency price, actual ledger events and saved evidence separated');
