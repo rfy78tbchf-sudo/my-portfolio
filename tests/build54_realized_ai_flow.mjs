@@ -15,7 +15,7 @@ assert.match(sql,/if v_trade.type='sell' and v_day.d between/);
 assert.match(sql,/v_seen_mixed:=v_day.d/);
 assert.match(cycle,/v_opening and v_ending/);
 assert.match(reqSql,/primary key\(user_id,id\)/);
-assert.match(html,/realized-sales-ui\.js\?v=54a/);
+assert.match(html,/realized-sales-ui\.js\?v=55/);
 const scope=vm.createContext({window:{}});vm.runInContext(ui,scope);
 const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',currency:'USD',
   trade_date:'2026-09-18',date_basis:'broker_order_date_no_intraday_time',status:'calculated',
@@ -23,13 +23,17 @@ const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',c
   reference_fx_date:'2026-09-26',reference_fx_source:'test',reference_krw:109480,
   historical_krw_estimate:93560};
 const report={ok:true,period:'1M',period_start:'2026-08-26',period_end:'2026-09-26',
-  calculation_version:'realized-sales-v2',candidate_count:2,ready_count:1,
-  partial_count:0,order_unverified_count:1,cost_review_count:0,source_review_count:0,
-  items:[sale,{...sale,transaction_id:'second',symbol:'OTHER',status:'order_unverified',realized_local:null}]};
+  calculation_version:'realized-sales-v2',candidate_count:3,ready_count:1,
+  partial_count:1,order_unverified_count:1,cost_review_count:0,source_review_count:0,
+  items:[sale,{...sale,transaction_id:'second',symbol:'OTHER',status:'order_unverified',realized_local:null},
+    {...sale,transaction_id:'third',symbol:'DATE',status:'partial_date',realized_local:25,
+      date_basis:'ledger_date_execution_unverified'}]};
 const rendered=scope.window.realizedSalesUi.section({realizedSales:report,
   accounts:[{id:'owner',provider:'kb_securities',name:'Broker'}]},'1M','owner');
 assert.match(rendered,/1건만/);
-assert.match(rendered,/매도 2건 중 계산 1건/);
+assert.match(rendered,/매도 3건 중 계산 1건/);
+assert.match(rendered,/기간 포함 미확정/);
+assert.match(rendered,/원장 기록일 기준 USD 원가 산출 · 1건/);
 assert.match(rendered,/− 배분 원가 400\.8/);
 assert.match(rendered,/원화 관리손익 추정/);
 assert.doesNotMatch(rendered,/계좌 기간성과 78/);
@@ -46,7 +50,7 @@ assert.equal(nav({position:1002,cash:0,payable:1002}),
   nav({position:1002,cash:-1002,payable:0}));
 
 const source=readFileSync(new URL('../supabase/functions/investment-assistant/index.ts',import.meta.url),'utf8');
-let handler,modelCalls=0,history=[],state='unused',saveAllowed=true;
+let handler,modelCalls=0,history=[],state='unused',saveAllowed=true,stagedPayload=null;
 const reqId='12345678-1234-4234-8234-123456789abc';
 const accountId='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 const userId='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -73,7 +77,11 @@ runtime.scopedRequest=async(_token,path,post)=>{
     if(state==='unused'){state='processing';return {reserved:true,state}}
     return {reserved:false,state,analysis_id:history[0]?.id};
   }
+  if(path.startsWith('rpc/remember_ai_analysis_response')){
+    stagedPayload=post.p_payload;return true;
+  }
   if(path.startsWith('rpc/finish_ai_analysis_request')){state=post.p_state;return true}
+  if(path.startsWith('ai_analysis_requests?'))return [{state,generated_payload:stagedPayload}];
   if(path==='ai_analysis_history'){
     if(!saveAllowed)throw Error('mock history save denied');
     history=[{...post,id:analysisId}];return history;
@@ -82,9 +90,9 @@ runtime.scopedRequest=async(_token,path,post)=>{
   throw Error('unexpected scoped read '+path);
 };
 vm.runInContext('userFromToken=globalThis.userFromToken;openAiKey=globalThis.openAiKey;buildContext=globalThis.buildContext;scopedRequest=globalThis.scopedRequest',runtime);
-async function ask(){return handler(new Request('https://example.test/functions/v1/investment-assistant',{
+async function ask(action){return handler(new Request('https://example.test/functions/v1/investment-assistant',{
   method:'POST',headers:{origin:'https://rfy78tbchf-sudo.github.io',authorization:'Bearer mock-user-token',
-    'content-type':'application/json'},body:JSON.stringify({request_id:reqId,
+    'content-type':'application/json'},body:JSON.stringify({action,request_id:reqId,
     question:'매도손익 계산 근거를 설명해 줘'})})).then(async r=>({code:r.status,body:await r.json()}))}
 let result=await ask();
 assert.equal(result.code,200);
@@ -102,7 +110,14 @@ assert.equal(history.length,1);
 state='unused';history=[];saveAllowed=false;
 result=await ask();
 assert.equal(result.body.history_saved,false);
+assert.equal(result.body.save_retry_available,true);
 assert.equal(state,'history_failed');
 assert.equal(modelCalls,2);
 assert.equal(result.body.request_id,reqId);
+saveAllowed=true;
+result=await ask('retry-save');
+assert.equal(result.body.history_saved,true);
+assert.equal(result.body.reused_saved_analysis,true);
+assert.equal(modelCalls,2,'saving a retained answer does not recall the model');
+assert.equal(history.length,1);
 console.log('Build 54 isolated sale, FX, lifecycle guard, settlement and mock AI save/reopen/failure passed');

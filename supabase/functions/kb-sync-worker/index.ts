@@ -586,8 +586,16 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
     const grossBase=isWonFx?wonAmount:foreignAmount!==0?foreignAmount:n(r?.dl_amt);
     const fee=n(r?.fee)+n(r?.abrd_fee);
     const componentTax=n(r?.incm_tx)+n(r?.dl_tx)+n(r?.rsdnt_tx)+n(r?.ffs_tx)+n(r?.trsf_tx);
-    const tax=n(r?.tx)!==0?n(r?.tx):componentTax;
     const netRaw=wonAmount!==0?wonAmount:grossBase;
+    const rawTotalCharge=n(r?.tx);
+    // Domestic SWQA2301 `tx` can contain the brokerage fee as well as tax.
+    // Only split it when the independent gross and cash fields reconcile.
+    const combinedDomesticCharge=(type==='buy'||type==='sell')&&cur==='KRW'&&
+      rawTotalCharge>=fee&&rawTotalCharge>0&&
+      Math.abs(Math.abs(netRaw)-Math.abs(n(r?.dl_amt))-
+        (type==='buy'?rawTotalCharge:-rawTotalCharge))<=0.02;
+    const tax=combinedDomesticCharge?rawTotalCharge-fee:
+      rawTotalCharge!==0?rawTotalCharge:componentTax;
     const externalId=`KB:SWQA2301:${String(r.dl_dt)}:${seq}`;
     const summaryText=String(r?.smry_nm||"");
     const isTaxRefund=type==="tax" && /환급|입금/.test(summaryText);

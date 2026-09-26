@@ -21,24 +21,29 @@
       controls+'<div class="notice">매도별 계산을 불러오지 못했습니다. 계좌나 기간을 다시 선택해 주세요.</div></section>';
     var items=r.items||[],names={calculated:'계산 완료',partial_date:'체결일 확인 필요',
       order_unverified:'거래 순서 확인 필요',cost_review:'원가 확인 필요',source_review:'원본 확인 필요'};
-    var sums={},groups={};
+    var sums={},provisional={},groups={};
     items.forEach(function(x){
       (groups[x.symbol]||(groups[x.symbol]=[])).push(x);
       if(x.realized_local==null)return;
-      var cur=x.currency||'통화 미확인',v=sums[cur]||(sums[cur]={pnl:0,n:0});
+      var cur=x.currency||'통화 미확인',bucket=x.status==='partial_date'?provisional:sums,
+        v=bucket[cur]||(bucket[cur]={pnl:0,n:0});
       v.pnl+=Number(x.realized_local);v.n++;
     });
     var totals=Object.keys(sums).sort().map(function(cur){var v=sums[cur];
-      return '<div class="row"><span>계산 가능한 '+escape(cur)+' 매도손익 · '+v.n+'건만</span>'+
+      return '<div class="row"><span>주문일 근거가 있는 '+escape(cur)+' 원장 매도손익 · '+v.n+'건만</span>'+
         '<strong>'+fmt(v.pnl,' '+escape(cur),2)+'</strong></div>';
     }).join('')||'<div class="notice">이 기간에 계산을 마친 매도는 없습니다.</div>';
+    totals+=Object.keys(provisional).sort().map(function(cur){var v=provisional[cur];
+      return '<div class="row"><span>원장 기록일 기준 '+escape(cur)+' 원가 산출 · '+v.n+'건 · 기간 포함 미확정</span>'+
+        '<strong>'+fmt(v.pnl,' '+escape(cur),2)+'</strong></div>';
+    }).join('');
     var groupsHtml=Object.keys(groups).sort().map(function(symbol){
       var rows=groups[symbol],cur=rows[0].currency||'',known=rows.filter(function(x){return x.realized_local!=null});
       var total=known.reduce(function(v,x){return v+Number(x.realized_local)},0);
       var details=rows.map(function(x){
         var done=x.realized_local!=null,date=x.trade_date||'';
         var basis=x.date_basis==='ledger_date_execution_unverified'?
-          '원장 기록일 · 체결일 미대조':'증권사 주문일 · 일중 시각 미확인';
+          '원장 기록일 · 주문/체결일 미대조':'증권사 주문일 · 체결일과 순서 미대조';
         var fx=done&&cur==='USD'?
           '<div class="sub">최근 저장 환율 참고 환산 '+(x.reference_krw==null?'자료 없음':
             fmt(x.reference_krw,'원',0)+' ('+escape(x.reference_fx_date)+' · '+escape(x.reference_fx_source)+')')+
@@ -65,12 +70,13 @@
         '</summary>'+details+cycle+'</details>';
     }).join('');
     return '<section class="card" style="margin-top:12px"><h3>기간 중 매도손익 · 계좌별 원장</h3>'+
-      controls+'<div class="sub">주문일 근거 우선 · '+escape(r.period_start)+' ~ '+escape(r.period_end)+
+      controls+'<div class="sub">주문일 확인 시 주문일로 잠정 분류 · '+escape(r.period_start)+' ~ '+escape(r.period_end)+
       ' (한국시간) · 원가: 계좌별 이동평균 · '+escape(r.calculation_version)+'</div>'+
+      '<div class="sub">체결일이 확인되지 않은 거래의 기간 경계는 잠정입니다. 매도별 원가 계산과 기간 전체 성과를 구분합니다.</div>'+
       '<div class="notice">매도 '+Number(r.candidate_count||0)+'건 중 계산 '+Number(r.ready_count||0)+
-      '건, 날짜 부분 확인 '+Number(r.partial_count||0)+'건, 순서 '+Number(r.order_unverified_count||0)+
+      '건 (주문일 근거), 원가만 계산·날짜 미대조 '+Number(r.partial_count||0)+'건, 순서 '+Number(r.order_unverified_count||0)+
       '건, 원가 '+Number(r.cost_review_count||0)+'건, 원본 '+Number(r.source_review_count||0)+
-      '건 확인 필요. 계산분은 부분합이며 계좌 기간성과가 아닙니다.</div>'+totals+
+      '건 확인 필요. 두 부분합은 더하지 않으며 계좌 기간성과가 아닙니다.</div>'+totals+
       (groupsHtml||'<div class="notice">선택 기간에 매도 내역이 없습니다.</div>')+'</section>';
   }
   function oneMonthCoverage(live){

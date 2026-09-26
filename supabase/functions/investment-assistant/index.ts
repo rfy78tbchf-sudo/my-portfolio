@@ -51,6 +51,37 @@ async function finishAnalysis(token:string,id:string,state:string,historyId:stri
     p_response_kind:responseKind,p_error_code:errorCode})}
   catch{console.warn('investment-assistant request-state update failed',state)}
 }
+async function retryHistory(req:Request,token:string,userId:string,id:string){
+  if(!/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id))
+    return respond(req,{ok:false,code:'INVALID_REQUEST_ID'},400);
+  const rows=await scopedRequest(token,'ai_analysis_requests?select=state,analysis_id,generated_payload&id=eq.'+id+
+    '&user_id=eq.'+userId+'&limit=1');
+  const row=rows?.[0];
+  if(!row)return respond(req,{ok:false,code:'REQUEST_NOT_FOUND'},404);
+  const existing=async()=>{
+    const history=await scopedRequest(token,'ai_analysis_history?select=*&request_id=eq.'+id+'&limit=1');
+    return history?.[0]||null;
+  };
+  if(row.state==='saved'){
+    const h=await existing();
+    return h?respond(req,{ok:true,...h,analysis_id:h.id,request_id:id,
+      history_saved:true,reused_saved_analysis:true}):
+      respond(req,{ok:false,code:'HISTORY_NOT_FOUND'},409);
+  }
+  if(row.state!=='history_failed'||!row.generated_payload)
+    return respond(req,{ok:false,code:'NO_RETRYABLE_RESPONSE'},409);
+  let saved;
+  try{saved=(await scopedRequest(token,'ai_analysis_history',row.generated_payload))?.[0]}
+  catch{
+    try{saved=await existing()}
+    catch{return respond(req,{ok:false,code:'HISTORY_READ_FAILED',request_id:id},503)}
+  }
+  if(!saved?.id)return respond(req,{ok:false,code:'HISTORY_WRITE_FAILED',
+    message:'생성된 답변은 보관 중입니다. 이력 저장을 다시 시도해 주세요.',request_id:id},503);
+  await finishAnalysis(token,id,'saved',saved.id,saved.response_kind);
+  return respond(req,{ok:true,...saved,analysis_id:saved.id,request_id:id,
+    history_saved:true,reused_saved_analysis:true});
+}
 async function providerFailure(response:Response){
   let providerCode='';
   try{
@@ -319,6 +350,10 @@ Deno.serve(async(req:Request)=>{
   const userId=await userFromToken(token).catch(()=>null);
   if(!userId)return respond(req,{ok:false,code:'LOGIN_REQUIRED',message:'로그인한 뒤 다시 시도해 주세요.'},401);
   let body:any={};try{body=await req.json()}catch{return respond(req,{ok:false,code:'INVALID_JSON'},400)}
+  if(body.action==='retry-save'){
+    try{return await retryHistory(req,token,userId,String(body.request_id||''))}
+    catch{return respond(req,{ok:false,code:'HISTORY_READ_FAILED'},503)}
+  }
   if(body.action==='health'){
     const owned=await scopedRequest(token,'accounts?select=id&user_id=eq.'+userId+'&mode=eq.live&provider=eq.kb_securities&limit=1').catch(()=>[]);
     if(!owned.length)return respond(req,{ok:false,code:'ACCOUNT_ACCESS_DENIED'},403);
@@ -362,7 +397,7 @@ Deno.serve(async(req:Request)=>{
     message:'투자 AI 서버 연결 설정이 필요합니다. 관리자 설정이 완료되면 다시 시도해 주세요.'},503);
   const requestId=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
     .test(String(body.request_id||''))?String(body.request_id):crypto.randomUUID();
-  let stage='context',generatedAnswer='',generatedKind='';
+  let stage='context',generatedAnswer='',generatedKind='',responseStaged=false;
   try{
     const today=new Date().toISOString().slice(0,10);
     const prior=await scopedRequest(token,'ai_analysis_history?select=id&user_id=eq.'+userId+
@@ -376,6 +411,7 @@ Deno.serve(async(req:Request)=>{
           ...cached[0],analysis_id:cached[0].id,request_id:requestId,history_saved:true,
           reused_saved_analysis:true});
       }
+      if(reservation.state==='history_failed')return retryHistory(req,token,userId,requestId);
       return respond(req,{ok:false,code:reservation.state==='processing'?'ANALYSIS_RUNNING':'ANALYSIS_PREVIOUSLY_FAILED',
         message:reservation.state==='processing'?'같은 질문을 분석하는 중입니다. 잠시 뒤 지난 분석을 확인해 주세요.':
           '이전 요청이 완료되지 않았습니다. 새로 분석을 눌러 주세요.',request_id:requestId},409);
@@ -446,7 +482,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       responseKind='validated_fallback';
     }
     generatedAnswer=answer;generatedKind=responseKind;stage='history';
-    const saved=await scopedRequest(token,'ai_analysis_history',{
+    const historyPayload={
       user_id:userId,request_id:requestId,question,symbol:symbol||null,answer,
       confidence:context.confidence==='confirmed'?'confirmed':
         context.confidence==='estimated'?'estimated':'unresolved',
@@ -465,7 +501,11 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       provider_response_id:String(result.id||'').slice(0,100)||null,
       usage_total_tokens:Number(result.usage?.total_tokens||0),
       latency_ms:Date.now()-started,response_kind:responseKind
-    });
+    };
+    responseStaged=await scopedRequest(token,query('remember_ai_analysis_response',{}),{
+      p_id:requestId,p_payload:historyPayload});
+    if(!responseStaged)throw Error('RESPONSE_STAGING_FAILED');
+    const saved=await scopedRequest(token,'ai_analysis_history',historyPayload);
     if(!saved?.[0]?.id)throw Error('HISTORY_WRITE_FAILED');
     await finishAnalysis(token,requestId,'saved',saved[0].id,responseKind);
     return respond(req,{ok:true,answer,confidence:context.confidence,model:MODEL,
@@ -488,7 +528,9 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       await finishAnalysis(token,requestId,'history_failed',null,generatedKind,'HISTORY_WRITE_FAILED');
       return respond(req,{ok:true,answer:generatedAnswer,request_id:requestId,
         response_kind:generatedKind,history_saved:false,
-        message:'모델 답변은 생성됐지만 이력 저장에 실패했습니다. 이 답변은 다시 열 수 없습니다.'});
+        save_retry_available:responseStaged,
+        message:responseStaged?'모델 답변은 보관됐지만 이력 저장에 실패했습니다. 저장만 다시 시도할 수 있습니다.':
+          '모델 답변을 생성했지만 보관과 이력 저장에 실패했습니다. 이 답변은 다시 열 수 없습니다.'});
     }
     await finishAnalysis(token,requestId,stage==='model'?'model_failed':'context_failed',
       null,null,'ANALYSIS_FAILED');
