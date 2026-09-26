@@ -11,7 +11,7 @@ const testScope=vm.createContext({Deno:{env:{get:()=>''}},fetch:async()=>{throw 
 vm.runInContext(stripTypeScriptTypes(pureSource),testScope);
 
 const period=vm.runInContext('questionPeriod',testScope);
-assert.equal(period('이번 달 실제 투자로 얼마 벌었지?'),'1M');
+assert.equal(period('이번 달 실제 투자로 얼마 벌었지?'),'THIS_MONTH');
 assert.equal(period('오늘 얼마나 벌었어?'),'오늘');
 assert.equal(period('올해 내 성과는?'),'YTD');
 assert.equal(period('최근 6개월 성과는?'),'6M');

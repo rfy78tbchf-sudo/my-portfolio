@@ -169,23 +169,36 @@
       el.appendChild(details);
     }else addLines(el,lines);
   }
-  async function ask(question){var btn=document.getElementById('aiAsk'),answer=document.getElementById('aiAnswer');if(!btn||!answer)return;
+  async function analysisRequestId(question,symbol){
+    var scope=(context.live&&context.live.accountScope||{}).current_isa_observation_id||'',
+      bucket=Math.floor(Date.now()/120000);
+    var bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(
+      [question,symbol,scope,bucket].join('|')))).slice(0,16);
+    bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+    var hex=Array.from(bytes,function(v){return v.toString(16).padStart(2,'0')}).join('');
+    return [hex.slice(0,8),hex.slice(8,12),hex.slice(12,16),hex.slice(16,20),hex.slice(20)].join('-')
+  }
+  async function ask(question){var btn=document.getElementById('aiAsk'),answer=document.getElementById('aiAnswer');if(!btn||!answer||btn.disabled)return;
     var symbol=document.getElementById('aiStock').value;if(!question){answer.textContent='질문을 입력해 주세요.';return}
     btn.disabled=true;answer.textContent='현재 계좌와 투자 논리를 확인하는 중…';
-    try{var res=await context.authFetch(context.supabaseUrl+'/functions/v1/investment-assistant',{
+    try{var requestId=await analysisRequestId(question,symbol);
+      var res=await context.authFetch(context.supabaseUrl+'/functions/v1/investment-assistant',{
       method:'POST',headers:{'content-type':'application/json','apikey':context.publicKey},
-      body:JSON.stringify({question:question,symbol:symbol||null})},60000,false),data=await res.json();
+      body:JSON.stringify({question:question,symbol:symbol||null,request_id:requestId})},60000,false),data=await res.json();
       if(!res.ok)throw Error(data.message||data.code||'분석 서버 응답 실패');
       renderAiAnswer(answer,data.answer||'응답이 없습니다.');
-      var basis=document.getElementById('aiBasis');if(basis)basis.textContent='분석 기준 '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'관측 미확인')+
+      var basis=document.getElementById('aiBasis');if(basis)basis.textContent='분석 '+(data.analysis_id||data.request_id||'ID 확인 필요')+
+        (data.history_saved===false?' · 답변 생성 성공 / 이력 저장 실패 · 다시 열 수 없음':data.reused_saved_analysis?' · 저장된 분석 다시 표시':' · 이력 저장 확인')+
+        ' · 기준 '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'관측 미확인')+
         ' · '+(data.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':data.response_kind==='model'?'모델 응답':'서버 검증 답변')+
         ' · 계산 '+(data.calculation_version||'기준 확인 필요')+
         (data.isa_capture_at?' · ISA 화면 '+new Date(data.isa_capture_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'')+
         (data.account_scope_state==='isa_overlap_unverified'?' · 계좌 범위 확인 필요':data.account_scope_state==='verified'?' · 계좌별 금액 확인 · 계좌 식별자/ISA 평가시각 미대조':'');
-      loadPrevious(context);
+      if(data.history_saved!==false)loadPrevious(context);
     }catch(e){answer.textContent='분석을 완료하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
   }
+  window.portfolioAnalysisRequestId=analysisRequestId;
   async function checkAiConnection(){var el=document.getElementById('aiConnectionState');if(!el)return;el.textContent='로그인 계좌와 서버 설정 확인 중…';
     try{var r=await context.authFetch(context.supabaseUrl+'/functions/v1/investment-assistant',{
       method:'POST',headers:{'content-type':'application/json',apikey:context.publicKey},body:'{"action":"health"}'},12000,false);
@@ -221,6 +234,10 @@
       var fmt=function(n){return Math.round(Number(n)).toLocaleString('ko-KR')+'원'},v=m.scenario;
       el.textContent=symbol+' 평가액 '+fmt(m.position.value)+' → 목표 '+Number(v.target_weight_pct).toFixed(2)+'% · 가정상 매도 '+fmt(v.sale_value_krw)+'\n'+
         '매도 후 보유 '+fmt(v.position_after_krw)+' · 보유 현금 증가 '+fmt(v.cash_increase_before_cost_krw)+' · 총자산 '+fmt(v.assets_after_before_cost_krw)+' (비용 전, 변화 없음).\n'+
+        (v.share_quantity_case&&v.share_quantity_case.status==='integer_shares_estimate'?
+          '정수 주식수 참고: '+Number(v.share_quantity_case.shares_to_sell)+'주를 가정하면 실제 도달 비중 '+
+          Number(v.share_quantity_case.achieved_weight_pct).toFixed(2)+'%, 현금 증가 '+
+          fmt(v.share_quantity_case.cash_increase_before_cost_krw)+' (현재 평균 평가단가 기준, 체결가격 미확인).\n':'')+
         '분모: KB '+fmt(m.denominator.kb_response_value)+' + ISA 최신 총액 '+fmt(m.denominator.manual_overlay)+
         ' · KB '+new Date(m.denominator.primary_observed_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
         ' / ISA 관측 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
@@ -234,18 +251,32 @@
     finally{btn.disabled=false}
   }
   async function loadPrevious(ctx){var el=document.getElementById('aiPrevious');if(!el)return;
-    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=answer,question,created_at,observation_at,isa_observation_id,isa_capture_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=1',{
+    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=id,answer,question,created_at,observation_at,isa_observation_id,isa_capture_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=10',{
       headers:{apikey:ctx.publicKey}},12000,false);
-      if(!r.ok)throw Error('HISTORY_READ_FAILED');var rows=await r.json(),h=rows&&rows[0];
-      if(!el.isConnected)return;if(!h){el.textContent='아직 저장된 분석이 없습니다.';return}
-      el.textContent='질문: '+h.question+'\n답변: '+h.answer+'\n생성 '+new Date(h.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
-        ' · 관측 '+(h.observation_at?new Date(h.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'기준시각 기록 이전')+
-        ' · 계산 '+(h.calculation_version||'기존 버전')+' · 논리 '+(h.thesis_version||'입력 없음')+
-        (h.isa_capture_at?' · ISA 화면 '+new Date(h.isa_capture_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'')+
-        (ctx.live&&ctx.live.decisionMetrics&&ctx.live.decisionMetrics.ok&&
-          (h.calculation_version!==ctx.live.decisionMetrics.calculation_version||
-           h.isa_observation_id!==ctx.live.decisionMetrics.denominator.isa_observation_id)?
-          ' · 이전 기준: 새 데이터로 다시 분석 가능':' · 당시 기록 (현재 값으로 갱신하지 않음)');
+      if(!r.ok)throw Error('HISTORY_READ_FAILED');var rows=await r.json();
+      if(!el.isConnected)return;if(!rows||!rows.length){el.textContent='아직 저장된 분석이 없습니다.';return}
+      el.textContent='';rows.forEach(function(h,index){
+        var detail=document.createElement('details'),head=document.createElement('summary'),
+          body=document.createElement('div');
+        if(index===0)detail.open=true;
+        head.textContent=new Date(h.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+          ' · '+String(h.question||'질문').slice(0,32);
+        var currentMetrics=ctx.live&&ctx.live.decisionMetrics,
+          isRealized=/실현|매도\s*손익|매매\s*손익/.test(h.question||''),
+          latestVersion=isRealized?ctx.live&&ctx.live.realizedSales&&ctx.live.realizedSales.calculation_version:
+            currentMetrics&&currentMetrics.ok&&currentMetrics.calculation_version,
+          changed=!!(latestVersion&&h.calculation_version&&h.calculation_version!==latestVersion)||
+            !!(currentMetrics&&currentMetrics.ok&&h.isa_observation_id&&
+              h.isa_observation_id!==currentMetrics.denominator.isa_observation_id);
+        body.textContent='분석 '+h.id+' · '+(h.response_kind==='model'?'실제 모델 응답':
+          h.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':'서버 검증 답변')+
+          '\n질문: '+h.question+'\n답변: '+h.answer+
+          '\n관측 '+(h.observation_at?new Date(h.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'시각 미확인')+
+          ' · 계산 '+(h.calculation_version||'기존 버전')+' · 논리 '+(h.thesis_version||'입력 없음')+
+          (h.isa_capture_at?' · ISA 화면 '+new Date(h.isa_capture_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'')+
+          (changed?' · 이전 기준: 새 데이터로 다시 분석 가능':' · 당시 기록 (현재 값으로 갱신하지 않음)');
+        body.style.whiteSpace='pre-wrap';detail.appendChild(head);detail.appendChild(body);el.appendChild(detail)
+      });
     }catch(_){if(el.isConnected)el.textContent='지난 분석을 불러오지 못했습니다.'}
   }
   window.portfolioEnhance=function(ctx){context=ctx;if(ctx.tab!=='more'||ctx.mode!=='live'||!ctx.live)return;

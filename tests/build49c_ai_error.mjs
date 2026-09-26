@@ -23,5 +23,6 @@ await check(429,{code:'insufficient_quota'},'API_CREDIT_UNAVAILABLE');
 await check(429,{code:'rate_limit_exceeded'},'API_LIMIT_REACHED');
 await check(503,{message:'sk-test-secret'},'MODEL_CONNECTION_FAILED');
 assert.ok(!JSON.stringify(warnings).includes('sk-test-secret'),'Provider error details must never reach logs');
-assert.ok(source.includes('return respond(req,await providerFailure(openai),502)'));
+assert.match(source,/const failure=await providerFailure\(openai\)/);
+assert.match(source,/finishAnalysis\(token,requestId,'model_failed'/);
 console.log('AI provider errors are safely categorized without logging keys or raw error bodies.');

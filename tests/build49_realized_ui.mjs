@@ -6,28 +6,27 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).filter(Boolean);
 for(const [i,source] of scripts.entries())assert.doesNotThrow(()=>new vm.Script(source),`inline script ${i}`);
 
-const soldStart=html.indexOf('    var sold=(live.soldHoldings&&live.soldHoldings.items)||[];');
-const soldEnd=html.indexOf('\n    return ',soldStart);
-assert.ok(soldStart>0&&soldEnd>soldStart,'production sold rows are found');
-const makeContext=(items)=>vm.createContext({live:{soldHoldings:{ok:true,items,ready_count:1,candidate_count:2}},period:'1W',
-  cls:n=>n<0?'down':'up',esc:s=>String(s).replace(/</g,'&lt;'),
-  num:(n,d)=>Number(n).toLocaleString('ko-KR',{maximumFractionDigits:d})});
-const nvo={symbol:'NVO',name:'노보노디스크(ADR)',market:'NASDAQ',currency:'USD',sell_quantity:74,
-  last_sell:'2026-09-23',position_state:'fully_closed',status:'ledger_calculated',
-  realized_local:-382.62,allocated_cost:3343.14,net_proceeds:2960.52};
-const blocked={symbol:'SOXL',name:'긴 반도체 관련 상품',sell_quantity:12,last_sell:'2026-09-22',
-  status:'missing_evidence',position_state:'unverified',missing_code:'same_day_execution_order_unverified',
-  missing_date:'2026-09-22'};
-const cx=makeContext([nvo,blocked]);vm.runInContext(html.slice(soldStart,soldEnd),cx);
-const result=vm.runInContext('soldSection',cx);
+const source=readFileSync(new URL('../realized-sales-ui.js',import.meta.url),'utf8');
+const scope=vm.createContext({window:{}});vm.runInContext(source,scope);
+const report={ok:true,period_start:'2026-08-26',period_end:'2026-09-26',candidate_count:2,
+  ready_count:1,partial_count:0,order_unverified_count:1,cost_review_count:0,source_review_count:0,
+  calculation_version:'realized-sales-v2',items:[
+    {transaction_id:'sale-1',symbol:'NVO',name:'종목 A',currency:'USD',quantity:74,
+      trade_date:'2026-09-21',date_basis:'broker_order_date_no_intraday_time',status:'calculated',
+      realized_local:-382.62,allocated_cost:3343.14,net_proceeds:2960.52,
+      reference_krw:-530000,reference_fx_date:'2026-09-26',reference_fx_source:'test',
+      historical_krw_estimate:-434871},
+    {transaction_id:'sale-2',symbol:'SOXL',name:'긴 이름의 종목',currency:'USD',quantity:12,
+      trade_date:'2026-09-22',status:'order_unverified',issue_date:'2026-09-22'}]};
+const result=scope.window.realizedSalesUi.section({realizedSales:report,accounts:[{id:'a',provider:'kb_securities',name:'종합위탁'}]},'1M','a');
 assert.match(result,/−382\.62 USD/);
 assert.match(result,/3,343\.14 USD/);
 assert.match(result,/2,960\.52 USD/);
-assert.match(result,/당일 매수·매도 체결순서 확인 필요/);
-assert.doesNotMatch(result,/KB 해외손익 조회값 없음/);
+assert.match(result,/거래 순서 확인 필요/);
+assert.match(result,/원화 관리손익 추정/);
+assert.match(result,/당시 원화 투자손익과 다름/);
+assert.match(result,/data-realized-sale="sale-1"/);
 assert.doesNotMatch(result,/\bNaN\b/);
-assert.match(result,/거래통화 기준이며 계좌 원화 기간성과에 합산하지 않습니다/);
-
 const riskStart=html.indexOf('  function riskOverviewCard(home){');
 const riskEnd=html.indexOf('  function benchmarkCard(){',riskStart);
 const risk=vm.createContext({live:{risk:{ok:true,official_assets_krw:65844164,

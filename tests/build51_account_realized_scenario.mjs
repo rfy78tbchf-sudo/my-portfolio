@@ -72,16 +72,14 @@ const soxxNetSell=1553.66-3.88-0.04;
 assert.equal(soxxBuys.reduce((a,b)=>a+b,0).toFixed(2),'1555.70');
 assert.equal(soxxNetSell.toFixed(2),'1549.74');
 assert.equal((soxxNetSell-soxxBuys.reduce((a,b)=>a+b,0)).toFixed(2),'-5.96');
-const soldStart=html.indexOf('    var sold=(live.soldHoldings&&live.soldHoldings.items)||[];');
-const soldEnd=html.indexOf('\n    return ',soldStart);
-const scope=vm.createContext({live:{soldHoldings:{ok:true,ready_count:1,candidate_count:1,
-  items:[{status:'ledger_calculated',symbol:'SOXX',currency:'USD',sell_quantity:3,
-    last_sell:'2026-09-22',realized_local:-5.96,allocated_cost:1555.7,net_proceeds:1549.74}]}},
-  period:'1W',cls:n=>n<0?'down':'up',esc:String,
-  num:(n,d)=>Number(n).toLocaleString('ko-KR',{maximumFractionDigits:d})});
-vm.runInContext(html.slice(soldStart,soldEnd),scope);
-const row=vm.runInContext('soldSection',scope);
-assert.match(row,/data-realized-trace="SOXX"/);
+const source=readFileSync(new URL('../realized-sales-ui.js',import.meta.url),'utf8');
+const scope=vm.createContext({window:{}});vm.runInContext(source,scope);
+const row=scope.window.realizedSalesUi.section({accounts:[{id:'a',provider:'kb_securities'}],
+  realizedSales:{ok:true,period_start:'2026-08-26',period_end:'2026-09-26',candidate_count:1,
+  ready_count:1,partial_count:0,order_unverified_count:0,cost_review_count:0,source_review_count:0,
+  items:[{transaction_id:'soxx-sale',status:'calculated',symbol:'SOXX',currency:'USD',quantity:3,
+    trade_date:'2026-09-18',realized_local:-5.96,allocated_cost:1555.7,net_proceeds:1549.74}]}},'1M','a');
+assert.match(row,/data-realized-sale="soxx-sale"/);
 assert.match(row,/−5\.96 USD/);
-assert.match(row,/원본 거래 보기/);
+assert.match(row,/매도별 원본·원가 경로 보기/);
 console.log('build51 ISA total-only, owner-scope trace, real SOXX figures and weight scenario passed');

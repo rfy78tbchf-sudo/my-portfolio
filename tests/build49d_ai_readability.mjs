@@ -20,6 +20,7 @@ const context={as_of:'2026-09-26',account_scope:{broker_account_overlap_verified
   holdings:[{security:{symbol:'ARM',name:'예시 종목'},quantity:30,valuation_krw:15_000_000,as_of:observation}],
   reconciliation:{quantity_total:10,quantity_matched:5},pending_settlement_events:[{symbol:'META'}],
   thesis:null,ledger_realized:{items:[{symbol:'SOXX'}]},
+  realized_sales:{ok:true,period_start:'2026-08-26',period_end:'2026-09-26',items:[{symbol:'SOXX',status:'calculated'}]},
   period_evidence:{investment_result_usable:false,cash_bridge_gaps:[{difference_krw:100}]},
   reliable_observed_period:{partial:true},selected_security:{symbol:'ARM'}};
 const risk=select(context,'risk');
@@ -39,7 +40,7 @@ assert.equal(select({...context,risk:{...context.risk,valuation_time_aligned:fal
 assert.equal(select({...context,account_scope:{...context.account_scope,app_display_total:65_000_000}},'risk').risk.top_three_share,null,
   'account scope mismatch must not be masked by another denominator');
 assert.equal(select(context,'performance').period_evidence.investment_result_usable,false);
-assert.equal(select(context,'realized').ledger_realized.items[0].symbol,'SOXX');
+assert.equal(select(context,'realized').realized_sales.items[0].symbol,'SOXX');
 const style=vm.runInContext('answerStyle',scope)('risk');
 assert.match(style,/가장 큰 위험:/);assert.match(style,/근거:/);assert.match(style,/450자/);
 assert.match(backend,/focusPolicy\(focus\)/);
