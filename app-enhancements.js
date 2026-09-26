@@ -147,7 +147,9 @@
     '<div class="tool-row" style="margin-top:12px"><button type="button" class="btn secondary" data-ai-question="내 포트폴리오에서 지금 확인할 위험은 무엇인가?">가장 큰 위험</button><button type="button" class="btn secondary" data-ai-question="이번 달 투자손익에 기여한 종목과 아직 확인되지 않은 자료를 알려줘.">이번 달 성과</button></div>'+
     '<select id="aiStock" class="select" style="margin-top:10px"><option value="">전체 포트폴리오</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return h.quantity>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return '<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select>'+
     '<textarea id="aiQuestion" class="input" rows="3" maxlength="800" style="margin-top:10px" placeholder="예: 이 종목을 계속 보유하는 논리가 유효한가?"></textarea>'+
-    '<button id="aiAsk" type="button" class="btn full" style="margin-top:8px">내 데이터로 분석</button><div id="aiAnswer" class="ai-answer" role="status" aria-live="polite">질문을 입력하거나 바로가기 질문을 눌러 주세요.</div></section></details>'}
+    '<button id="aiAsk" type="button" class="btn full" style="margin-top:8px">내 데이터로 분석</button><div id="aiAnswer" class="ai-answer" role="status" aria-live="polite">질문을 입력하거나 바로가기 질문을 눌러 주세요.</div><div id="aiBasis" class="sub" aria-live="polite"></div>'+
+    '<details class="more-list"><summary>종목 하락 가정 계산 · 주문 아님</summary><div class="tool-row"><label>종목 <select id="scenarioSymbol" class="select"><option value="ARM">ARM</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return Number(h.quantity)>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return s.symbol==='ARM'?'':'<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select></label><label>평가액 변화 (%) <input id="scenarioChange" class="input" type="number" value="-10" min="-90" max="100" step="1"></label></div><button id="scenarioRun" type="button" class="btn secondary full">가정 계산</button><div id="scenarioResult" class="ai-answer" role="status" aria-live="polite"></div></details>'+
+    '<details class="more-list"><summary>지난 분석 보기</summary><div id="aiPrevious" class="ai-answer">기록을 불러오는 중…</div></details></section></details>'}
   function renderAiAnswer(el,value){
     el.textContent='';
     var lines=String(value||'').trim().split(/\n+/).map(function(line){return line.trim()}).filter(Boolean);
@@ -174,6 +176,11 @@
       body:JSON.stringify({question:question,symbol:symbol||null})},60000,false),data=await res.json();
       if(!res.ok)throw Error(data.message||data.code||'분석 서버 응답 실패');
       renderAiAnswer(answer,data.answer||'응답이 없습니다.');
+      var basis=document.getElementById('aiBasis');if(basis)basis.textContent='분석 기준 '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'관측 미확인')+
+        ' · '+(data.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':data.response_kind==='model'?'모델 응답':'서버 검증 답변')+
+        ' · 계산 '+(data.calculation_version||'기준 확인 필요')+
+        (data.account_scope_state==='isa_overlap_unverified'?' · ISA 중복 여부 미확인':'');
+      loadPrevious(context);
     }catch(e){answer.textContent='분석을 완료하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
   }
@@ -182,11 +189,39 @@
       method:'POST',headers:{'content-type':'application/json',apikey:context.publicKey},body:'{"action":"health"}'},12000,false);
       var data=await r.json();el.textContent=!r.ok?'로그인 계좌 권한 또는 서버 연결 확인 필요':data.status==='configured'?'서버 키 설정됨 · 실제 모델 응답은 질문하기에서 확인':data.status==='missing'?'서버 키 미설정 · 관리자 설정 필요':'서버 설정 확인 불가';
     }catch(_){el.textContent='서버 설정 확인 불가 · 나중에 다시 시도해 주세요.'}}
+  async function runScenario(){var btn=document.getElementById('scenarioRun'),el=document.getElementById('scenarioResult');if(!btn||!el)return;
+    var symbol=document.getElementById('scenarioSymbol').value,change=Number(document.getElementById('scenarioChange').value);
+    if(!Number.isFinite(change)||change< -90||change>100){el.textContent='변화율은 -90%부터 +100%까지 입력해 주세요.';return}
+    btn.disabled=true;el.textContent='동일 관측의 종목 평가액과 자산 분모 확인 중…';
+    try{var res=await context.authFetch(context.supabaseUrl+'/functions/v1/investment-assistant',{
+      method:'POST',headers:{'content-type':'application/json',apikey:context.publicKey},
+      body:JSON.stringify({action:'scenario',symbol:symbol,change_pct:change})},12000,false),m=await res.json();
+      if(!res.ok||!m.ok)throw Error(m.reason||m.code||'기준 시각 불일치');
+      var won=function(n){return Math.round(Number(n)).toLocaleString('ko-KR')+'원'};
+      el.textContent=symbol+' 평가액 '+won(m.position.value)+'에서 '+change+'%를 가정하면 '+
+        '자산 변화 '+won(m.scenario.impact_krw)+' · 앱 합산 자산 대비 '+Number(m.scenario.asset_impact_pct).toFixed(2)+'% (참고).\n'+
+        '분모 '+won(m.denominator.value)+' = KB 응답 '+won(m.denominator.kb_response_value)+' + ISA 수동 '+won(m.denominator.manual_overlay)+
+        ' · '+new Date(m.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        '. ISA 중복 포함 여부 미확인. 나머지 자산과 환율은 그대로 둔 조건부 계산이며 예측이 아닙니다.';
+    }catch(e){el.textContent='계산에 필요한 같은 시각의 평가 자료를 확인하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
+    finally{btn.disabled=false}
+  }
+  async function loadPrevious(ctx){var el=document.getElementById('aiPrevious');if(!el)return;
+    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=answer,question,created_at,observation_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=1',{
+      headers:{apikey:ctx.publicKey}},12000,false);
+      if(!r.ok)throw Error('HISTORY_READ_FAILED');var rows=await r.json(),h=rows&&rows[0];
+      if(!el.isConnected)return;if(!h){el.textContent='아직 저장된 분석이 없습니다.';return}
+      el.textContent='질문: '+h.question+'\n답변: '+h.answer+'\n생성 '+new Date(h.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        ' · 관측 '+(h.observation_at?new Date(h.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'기준시각 기록 이전')+
+        ' · 계산 '+(h.calculation_version||'기존 버전')+' · 논리 '+(h.thesis_version||'입력 없음')+' · 당시 기록 (현재 값으로 갱신하지 않음)';
+    }catch(_){if(el.isConnected)el.textContent='지난 분석을 불러오지 못했습니다.'}
+  }
   window.portfolioEnhance=function(ctx){context=ctx;if(ctx.tab!=='more'||ctx.mode!=='live'||!ctx.live)return;
     var grid=ctx.content.querySelector('.grid.settings');if(!grid)return;
     var box=document.createElement('div');box.innerHTML=aiCard()+importCard()+dataStatusCard();
     while(box.firstChild)grid.insertBefore(box.firstChild,grid.children[2]||null);
     var checkButton=document.getElementById('aiConnectionCheck');if(checkButton)checkButton.onclick=checkAiConnection;
+    document.getElementById('scenarioRun').onclick=runScenario;loadPrevious(ctx);
     var fileInput=document.getElementById('kbStatementFile'),preview=document.getElementById('kbStatementPreview');staged=null;
     fileInput.onchange=async function(){staged=null;var file=fileInput.files&&fileInput.files[0];if(!file)return;
       preview.textContent='선택한 파일의 거래 유형과 중복 가능성을 확인하는 중…';
