@@ -44,7 +44,7 @@ assert.match(style,/가장 큰 위험:/);assert.match(style,/근거:/);assert.ma
 assert.match(backend,/focusPolicy\(focus\)/);
 assert.match(backend,/변동성이 증가했다/,'unobserved volatility must not be claimed');
 const screen=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.match(screen,/이를 미분류 종목 금액으로 단정하지 않습니다/);
+assert.match(screen,/미분류 종목 금액이나 현금으로 단정하지 않습니다/);
 
 const frontend=readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8');
 const start=frontend.indexOf('  function renderAiAnswer('),end=frontend.indexOf('  async function ask(',start);

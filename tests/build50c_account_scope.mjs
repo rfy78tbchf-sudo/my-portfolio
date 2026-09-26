@@ -22,7 +22,11 @@ const accountScope={ok:true,snapshot_at:date,overlay_matches_manual:true,
   overlay_logged:9_128_990,manual_observed_at:'2026-09-23T03:35:38Z',
   broker_scope_capture_at:'2026-09-26T02:42:00Z',
   broker_scope_primary_value:55_538_715,broker_scope_isa_value:9_150_078,
-  broker_scope_total_value:64_688_793};
+  broker_scope_total_value:64_688_793,current_display_total:64_688_793,
+  current_primary_value:55_538_715,current_primary_observed_at:date,
+  current_isa_value:9_150_078,current_isa_capture_at:'2026-09-26T02:42:00Z',
+  isa_unexplained_change:21_088,isa_components_at:'2026-09-23T03:35:38Z',
+  isa_total_only:true};
 const live={accounts:[{}],snapshots:[{snapshot_at:date,total_assets:64_667_705,
   securities_value:54_000_000}],manualSnapshots:[],performance:null,
   homeChart:{items:[]},performanceGate:null,ledgerEstimate:null,accountScope,settings:{}};
@@ -36,12 +40,13 @@ const ctx=vm.createContext({live,liveError:null,period:'1W',latestManualRows:()=
   priceAlertCard:empty,upcomingAgenda:empty,dataStatusCard:empty});
 vm.runInContext(html.slice(begin,end),ctx);
 let screen=vm.runInContext('liveHome()',ctx);
-assert.match(screen,/KB 자동계좌 \+ ISA 수동잔고 · ISA 기준시각 다름/);
-assert.match(screen,/64,667,705원/);
+assert.match(screen,/계좌별 최신 기록 합계/);
+assert.match(screen,/64,688,793원/);
 assert.match(screen,/9,150,078원/);
-assert.match(screen,/21,088원.*손익으로 처리하지 않습니다/);
+assert.match(screen,/21,088원.*손익이나 입금으로 분류하지 않았습니다/);
+assert.doesNotMatch(screen,/차이 21,088원.*현금으로/);
 accountScope.broker_account_overlap_verified=false;
 screen=vm.runInContext('liveHome()',ctx);
-assert.match(screen,/ISA 포함 여부 미검증/);
-assert.doesNotMatch(screen,/ISA 별도 계좌를 확인/);
+assert.match(screen,/계좌 식별자 미대조/);
+assert.match(screen,/계좌 식별자 연결은 미확인/);
 console.log('build50c broker split, stale manual NAV, verified and unverified rendering passed');

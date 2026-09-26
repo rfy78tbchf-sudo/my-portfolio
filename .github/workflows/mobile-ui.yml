@@ -22,6 +22,7 @@ jobs:
       - run: node tests/build49d_ai_mobile.mjs
       - run: node tests/build50_decision_metrics.mjs
       - run: node tests/build50c_account_scope.mjs
+      - run: node tests/build51_account_realized_scenario.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

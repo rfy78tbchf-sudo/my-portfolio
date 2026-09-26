@@ -39,5 +39,5 @@ assert.match(html,/function amountHtml\(n\)/);
 assert.match(html,/function flowBasisHtml\(\)/);
 assert.match(html,/var perf=observedReady&&observed\.partial\?/);
 assert.ok(html.includes("총자산 관측 · '+period"));
-assert.match(html,/\+reconciliationHomeStatus\(\)\+flow\+homeBrowseCard\(securitiesValue,totalAssets\)/);
+assert.match(html,/\+reconciliationHomeStatus\(\)\+flow\+homeBrowseCard\(securitiesValue,Number\(last\.total_assets\|\|0\)\)/);
 console.log('build48 source-linked valuation, flow labels and responsive amount layout passed');

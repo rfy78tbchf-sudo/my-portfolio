@@ -42,7 +42,7 @@ assert.doesNotMatch(riskText,/\+23\.99%/);
 assert.match(riskText,/미분류/);
 assert.match(riskText,/실질 환노출/);
 
-assert.match(html,/KB 응답 '\+money\(scope\.kb_response_total\)/);
+assert.match(html,/scope\.current_primary_value/);
 assert.match(html,/app_display_total|overlay_matches_manual/);
 assert.doesNotMatch(html,/통합 총자산 대비/);
 console.log('build49 production row logic, source scope and risk signs passed');

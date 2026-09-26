@@ -149,6 +149,7 @@
     '<textarea id="aiQuestion" class="input" rows="3" maxlength="800" style="margin-top:10px" placeholder="예: 이 종목을 계속 보유하는 논리가 유효한가?"></textarea>'+
     '<button id="aiAsk" type="button" class="btn full" style="margin-top:8px">내 데이터로 분석</button><div id="aiAnswer" class="ai-answer" role="status" aria-live="polite">질문을 입력하거나 바로가기 질문을 눌러 주세요.</div><div id="aiBasis" class="sub" aria-live="polite"></div>'+
     '<details class="more-list"><summary>종목 하락 가정 계산 · 주문 아님</summary><div class="tool-row"><label>종목 <select id="scenarioSymbol" class="select"><option value="ARM">ARM</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return Number(h.quantity)>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return s.symbol==='ARM'?'':'<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select></label><label>평가액 변화 (%) <input id="scenarioChange" class="input" type="number" value="-10" min="-90" max="100" step="1"></label></div><button id="scenarioRun" type="button" class="btn secondary full">가정 계산</button><div id="scenarioResult" class="ai-answer" role="status" aria-live="polite"></div></details>'+
+    '<details class="more-list"><summary>목표 비중까지 축소 · 대금은 현금 보유</summary><div class="tool-row"><label>종목 <select id="weightSymbol" class="select">'+((context.live&&context.live.holdings)||[]).filter(function(h){return Number(h.quantity)>0}).map(function(h){var x=context.live.securityMap[h.security_id]||{};return '<option value="'+escapeHtml(x.symbol||'')+'">'+escapeHtml(x.name||x.symbol||'종목')+'</option>'}).join('')+'</select></label><label>목표 비중 (%) <input id="weightTarget" class="input" type="number" value="10" min="0" max="100" step="0.1"></label></div><button id="weightRun" type="button" class="btn secondary full">현금 보유 가정 계산</button><div id="weightResult" class="ai-answer" role="status" aria-live="polite"></div></details>'+
     '<details class="more-list"><summary>지난 분석 보기</summary><div id="aiPrevious" class="ai-answer">기록을 불러오는 중…</div></details></section></details>'}
   function renderAiAnswer(el,value){
     el.textContent='';
@@ -179,7 +180,8 @@
       var basis=document.getElementById('aiBasis');if(basis)basis.textContent='분석 기준 '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'관측 미확인')+
         ' · '+(data.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':data.response_kind==='model'?'모델 응답':'서버 검증 답변')+
         ' · 계산 '+(data.calculation_version||'기준 확인 필요')+
-        (data.account_scope_state==='isa_overlap_unverified'?' · ISA 중복 여부 미확인':data.account_scope_state==='verified'?' · ISA 별도 계좌 확인 · 수동잔고 기준시각 차이':'');
+        (data.isa_capture_at?' · ISA 화면 '+new Date(data.isa_capture_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'')+
+        (data.account_scope_state==='isa_overlap_unverified'?' · 계좌 범위 확인 필요':data.account_scope_state==='verified'?' · 계좌별 금액 확인 · 계좌 식별자/ISA 평가시각 미대조':'');
       loadPrevious(context);
     }catch(e){answer.textContent='분석을 완료하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
@@ -200,21 +202,45 @@
       var won=function(n){return Math.round(Number(n)).toLocaleString('ko-KR')+'원'};
       el.textContent=symbol+' 평가액 '+won(m.position.value)+'에서 '+change+'%를 가정하면 '+
         '자산 변화 '+won(m.scenario.impact_krw)+' · 앱 합산 자산 대비 '+Number(m.scenario.asset_impact_pct).toFixed(2)+'% (참고).\n'+
-        '분모 '+won(m.denominator.value)+' = KB 응답 '+won(m.denominator.kb_response_value)+' + ISA 수동 '+won(m.denominator.manual_overlay)+
-        ' · '+new Date(m.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
-        (m.account_scope_state==='verified'?'. KB 계좌별 화면에서 ISA 별도 확인. ISA 수동잔고는 다른 시각 기록.':'. ISA 중복 포함 여부 미확인.')+
+        '분모 '+won(m.denominator.value)+' = KB 응답 '+won(m.denominator.kb_response_value)+' + 최신 ISA 총액 '+won(m.denominator.manual_overlay)+
+        ' · KB 관측 '+new Date(m.denominator.primary_observed_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        ' / ISA 화면 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        '. ISA 잔고 유효시각과 계좌 식별자 연결은 미확인.'+
         ' 나머지 자산과 환율은 그대로 둔 조건부 계산이며 예측이 아닙니다.';
     }catch(e){el.textContent='계산에 필요한 같은 시각의 평가 자료를 확인하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
   }
+  async function runWeightScenario(){var btn=document.getElementById('weightRun'),el=document.getElementById('weightResult');if(!btn||!el)return;
+    var symbol=document.getElementById('weightSymbol').value,target=Number(document.getElementById('weightTarget').value);
+    if(!symbol||!Number.isFinite(target)||target<0||target>100){el.textContent='종목과 0~100% 사이 목표 비중을 입력해 주세요.';return}
+    btn.disabled=true;el.textContent='최신 계좌 총액과 선택 종목 평가액을 확인하는 중…';
+    try{var res=await context.authFetch(context.supabaseUrl+'/functions/v1/investment-assistant',{
+      method:'POST',headers:{'content-type':'application/json',apikey:context.publicKey},
+      body:JSON.stringify({action:'weight-scenario',symbol:symbol,target_pct:target})},12000,false),m=await res.json();
+      if(!res.ok||!m.ok)throw Error(m.code==='TARGET_EXCEEDS_CURRENT_WEIGHT'?'현재 보유 비중 '+Number(m.current_weight_pct).toFixed(2)+'%보다 낮은 목표를 입력해 주세요.':m.code||'계산 근거 확인 필요');
+      var fmt=function(n){return Math.round(Number(n)).toLocaleString('ko-KR')+'원'},v=m.scenario;
+      el.textContent=symbol+' 평가액 '+fmt(m.position.value)+' → 목표 '+Number(v.target_weight_pct).toFixed(2)+'% · 가정상 매도 '+fmt(v.sale_value_krw)+'\n'+
+        '매도 후 보유 '+fmt(v.position_after_krw)+' · 보유 현금 증가 '+fmt(v.cash_increase_before_cost_krw)+' · 총자산 '+fmt(v.assets_after_before_cost_krw)+' (비용 전, 변화 없음).\n'+
+        '분모: KB '+fmt(m.denominator.kb_response_value)+' + ISA 최신 총액 '+fmt(m.denominator.manual_overlay)+
+        ' · KB '+new Date(m.denominator.primary_observed_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        ' / ISA 화면 '+new Date(m.denominator.isa_captured_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
+        ' · ISA 잔고 유효시각·계좌 식별자 미확인. 매매 수수료·세금·환율·실제 체결 제약 제외. 주문이나 예상 손익이 아닙니다.';
+    }catch(e){el.textContent='시나리오 계산 실패 · '+(e.message||'다시 시도해 주세요.')}
+    finally{btn.disabled=false}
+  }
   async function loadPrevious(ctx){var el=document.getElementById('aiPrevious');if(!el)return;
-    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=answer,question,created_at,observation_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=1',{
+    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=answer,question,created_at,observation_at,isa_observation_id,isa_capture_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=1',{
       headers:{apikey:ctx.publicKey}},12000,false);
       if(!r.ok)throw Error('HISTORY_READ_FAILED');var rows=await r.json(),h=rows&&rows[0];
       if(!el.isConnected)return;if(!h){el.textContent='아직 저장된 분석이 없습니다.';return}
       el.textContent='질문: '+h.question+'\n답변: '+h.answer+'\n생성 '+new Date(h.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
         ' · 관측 '+(h.observation_at?new Date(h.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'기준시각 기록 이전')+
-        ' · 계산 '+(h.calculation_version||'기존 버전')+' · 논리 '+(h.thesis_version||'입력 없음')+' · 당시 기록 (현재 값으로 갱신하지 않음)';
+        ' · 계산 '+(h.calculation_version||'기존 버전')+' · 논리 '+(h.thesis_version||'입력 없음')+
+        (h.isa_capture_at?' · ISA 화면 '+new Date(h.isa_capture_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'')+
+        (ctx.live&&ctx.live.decisionMetrics&&ctx.live.decisionMetrics.ok&&
+          (h.calculation_version!==ctx.live.decisionMetrics.calculation_version||
+           h.isa_observation_id!==ctx.live.decisionMetrics.denominator.isa_observation_id)?
+          ' · 이전 기준: 새 데이터로 다시 분석 가능':' · 당시 기록 (현재 값으로 갱신하지 않음)');
     }catch(_){if(el.isConnected)el.textContent='지난 분석을 불러오지 못했습니다.'}
   }
   window.portfolioEnhance=function(ctx){context=ctx;if(ctx.tab!=='more'||ctx.mode!=='live'||!ctx.live)return;
@@ -222,7 +248,7 @@
     var box=document.createElement('div');box.innerHTML=aiCard()+importCard()+dataStatusCard();
     while(box.firstChild)grid.insertBefore(box.firstChild,grid.children[2]||null);
     var checkButton=document.getElementById('aiConnectionCheck');if(checkButton)checkButton.onclick=checkAiConnection;
-    document.getElementById('scenarioRun').onclick=runScenario;loadPrevious(ctx);
+    document.getElementById('scenarioRun').onclick=runScenario;document.getElementById('weightRun').onclick=runWeightScenario;loadPrevious(ctx);
     var fileInput=document.getElementById('kbStatementFile'),preview=document.getElementById('kbStatementPreview');staged=null;
     fileInput.onchange=async function(){staged=null;var file=fileInput.files&&fileInput.files[0];if(!file)return;
       preview.textContent='선택한 파일의 거래 유형과 중복 가능성을 확인하는 중…';
