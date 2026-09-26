@@ -64,7 +64,7 @@ assert.match(vm.runInContext('reviewHomeCard()',homeScope),/점검 날짜/);
 const begin=edge.indexOf('async function publicCompanyEvidence('),finish=edge.indexOf('function focusPolicy(',begin);
 assert.ok(begin>0&&finish>begin);
 let calls=[];
-const officialUrl='https://www.sec.gov/Archives/edgar/data/test/arm-q1.htm';
+const officialUrl='https://www.sec.gov/Archives/edgar/data/123456/arm-q1.htm';
 const evidenceScope=vm.createContext({MODEL:'gpt-5-mini',URL,Date,Intl,AbortSignal,console,
   fetch:async(url,options)=>{
     calls.push({url,options});
@@ -76,10 +76,12 @@ const evidenceScope=vm.createContext({MODEL:'gpt-5-mini',URL,Date,Intl,AbortSign
       {headers:{'content-type':'application/json'}})
   },Response});
 vm.runInContext(stripTypeScriptTypes(edge.slice(begin,finish)),evidenceScope);
-const evidence=await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings"})',evidenceScope);
+const evidence=await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope);
 assert.equal(evidence.documents[0].published_on,'2026-07-29');
 assert.equal(evidence.documents[0].date_verified,true);
 assert.equal(calls.length,2);
+assert.deepEqual(JSON.parse(calls[0].options.body).tools[0].filters.allowed_domains,
+  ['sec.gov','investors.arm.com','newsroom.arm.com']);
 assert.ok(!calls[0].options.body.includes('holdings')&&!calls[0].options.body.includes('memo'));
 calls=[];
 evidenceScope.fetch=async(url,options)=>{
@@ -89,7 +91,7 @@ evidenceScope.fetch=async(url,options)=>{
     {type:'web_search_call',action:{sources:[{url:officialUrl}]}},
     {content:[{type:'output_text',text:JSON.stringify({summary:'The linked official report describes the reporting period without an independently confirmed publication date.',published_on:'2026-07-29',period:'a quarter',source_url:officialUrl})}]}]}));
 };
-const unverified=await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings"})',evidenceScope);
-assert.equal(unverified.documents[0].published_on,null,'an unverified search date cannot become a new event');
+const unverified=await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope);
+assert.equal(unverified,null,'an unverified search date cannot enter the model context');
 assert.equal(await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"SOXL",name:"Leveraged ETF"})',evidenceScope),null);
 console.log('Official publication versus retrieval, same-currency price, actual ledger events and saved evidence separated');
