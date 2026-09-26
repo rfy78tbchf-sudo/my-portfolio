@@ -8,7 +8,7 @@ import {webcrypto} from 'node:crypto';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const ui=readFileSync(new URL('../realized-sales-ui.js',import.meta.url),'utf8');
 const sql=readFileSync(new URL('../supabase/build54h_mixed_source_guard.sql',import.meta.url),'utf8');
-const provenance=readFileSync(new URL('../supabase/build55b_realized_issue_provenance.sql',import.meta.url),'utf8');
+const provenance=readFileSync(new URL('../supabase/build56c_realized_cause_origin.sql',import.meta.url),'utf8');
 const cycle=readFileSync(new URL('../supabase/build54e_lifecycle_review.sql',import.meta.url),'utf8');
 const reqSql=readFileSync(new URL('../supabase/build54d_ai_analysis_request.sql',import.meta.url),'utf8');
 assert.match(sql,/and v_day_valid then/);
@@ -18,9 +18,10 @@ assert.match(provenance,/'source_transaction_id',v_trade.external_id/);
 assert.match(provenance,/'missing_fields'/);
 assert.match(provenance,/'direct_order_count',v_direct_order/);
 assert.match(provenance,/'carried_order_count',v_carried_order/);
+assert.match(provenance,/v_issue_origin:=v_seen_mixed/);
 assert.match(cycle,/v_opening and v_ending/);
 assert.match(reqSql,/primary key\(user_id,id\)/);
-assert.match(html,/realized-sales-ui\.js\?v=55c/);
+assert.match(html,/realized-sales-ui\.js\?v=56/);
 const scope=vm.createContext({window:{}});vm.runInContext(ui,scope);
 const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',currency:'USD',
   trade_date:'2026-09-18',date_basis:'broker_order_date_no_intraday_time',status:'calculated',
@@ -40,8 +41,9 @@ const rendered=scope.window.realizedSalesUi.section({realizedSales:report,
 assert.match(rendered,/1건만/);
 assert.match(rendered,/매도 3건 중 계산 1건/);
 assert.match(rendered,/기간 포함 미확정/);
-assert.match(rendered,/원장 기록일 기준 USD 원가 산출 · 1건/);
+assert.match(rendered,/원장 기록일 기준 USD 손익금액 산출 · 1건/);
 assert.match(rendered,/이전 혼합거래일의 원가 배분이 이후 매도에 영향/);
+assert.match(rendered,/원인 사건 1개 · 영향받은 매도 1건/);
 assert.match(rendered,/해당일 0건 · 이전 거래 영향 1건/);
 assert.match(rendered,/− 배분 원가 400\.8/);
 assert.match(rendered,/원화 관리손익 추정/);

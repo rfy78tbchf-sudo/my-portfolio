@@ -25,4 +25,11 @@ assert.equal(bought.tax,0);
 assert.equal(bought.net_amount,-10010);
 const unexplained=sandbox.normalizeLedger([{...base,kind:'sell',dl_sq:'3',ec_amt:'3663500'}]).transactions[0];
 assert.equal(unexplained.tax,22395,'non-reconciling cash is not silently reclassified');
+const netSale=sandbox.normalizeLedger([{...base,kind:'sell',dl_sq:'4',dl_amt:'1000',
+  ec_amt:'997',fee:'2',tx:'3',dl_tx:'1'}]).transactions[0];
+assert.equal(netSale.gross_amount,1000);
+assert.equal(netSale.fee,2);
+assert.equal(netSale.tax,1);
+assert.equal(netSale.net_amount,997,'cash is already net of all three units of charges');
+assert.equal(netSale.net_amount-800,197,'moving-average cost uses net sale cash, not 994');
 console.log('Broker total charge split and raw preservation passed');

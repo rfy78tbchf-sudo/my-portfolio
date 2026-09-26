@@ -29,12 +29,22 @@
         v=bucket[cur]||(bucket[cur]={pnl:0,n:0});
       v.pnl+=Number(x.realized_local);v.n++;
     });
+    var causes={};
+    items.filter(function(x){return x.status==='order_unverified'&&x.issue_date}).forEach(function(x){
+      var key=String(x.symbol||'')+'|'+String(x.issue_date),c=causes[key]||(causes[key]={
+        symbol:x.symbol,date:x.issue_date,direct:0,carried:0});
+      if(x.issue_category==='direct_mixed_day')c.direct++;
+      else c.carried++;
+    });
+    var causeList=Object.keys(causes).sort().map(function(k){var c=causes[k];
+      return '<div class="row"><span>'+escape(c.symbol)+' · '+escape(c.date)+'</span><strong class="sub">직접 '+c.direct+'건 · 이후 '+c.carried+'건</strong></div>';
+    }).join('');
     var totals=Object.keys(sums).sort().map(function(cur){var v=sums[cur];
       return '<div class="row realized-total-row"><span>주문일 근거가 있는 '+escape(cur)+' 원장 매도손익 · '+v.n+'건만</span>'+
         '<strong>'+fmt(v.pnl,' '+escape(cur),2)+'</strong></div>';
     }).join('')||'<div class="notice">이 기간에 계산을 마친 매도는 없습니다.</div>';
     totals+=Object.keys(provisional).sort().map(function(cur){var v=provisional[cur];
-      return '<div class="row realized-total-row"><span>원장 기록일 기준 '+escape(cur)+' 원가 산출 · '+v.n+'건 · 기간 포함 미확정</span>'+
+      return '<div class="row realized-total-row"><span>원장 기록일 기준 '+escape(cur)+' 손익금액 산출 · '+v.n+'건 · 기간 포함 미확정</span>'+
         '<strong>'+fmt(v.pnl,' '+escape(cur),2)+'</strong></div>';
     }).join('');
     var groupsHtml=Object.keys(groups).sort().map(function(symbol){
@@ -80,11 +90,14 @@
       ' (한국시간) · 원가: 계좌별 이동평균 · '+escape(r.calculation_version)+'</div>'+
       '<div class="sub">체결일이 확인되지 않은 거래의 기간 경계는 잠정입니다. 매도별 원가 계산과 기간 전체 성과를 구분합니다.</div>'+
       '<div class="notice">매도 '+Number(r.candidate_count||0)+'건 중 계산 '+Number(r.ready_count||0)+
-      '건 (주문일 근거), 원가만 계산·날짜 미대조 '+Number(r.partial_count||0)+'건, 순서 '+Number(r.order_unverified_count||0)+
+      '건 (주문일 근거), 손익금액 계산·날짜 미대조 '+Number(r.partial_count||0)+'건, 순서 '+Number(r.order_unverified_count||0)+
       '건'+(r.direct_order_count!=null?' (해당일 '+Number(r.direct_order_count||0)+
         '건 · 이전 거래 영향 '+Number(r.carried_order_count||0)+'건)':'')+
       ', 원가 '+Number(r.cost_review_count||0)+'건, 원본 '+Number(r.source_review_count||0)+
       '건 확인 필요. 두 부분합은 더하지 않으며 계좌 기간성과가 아닙니다.</div>'+totals+
+      (causeList?'<details class="more-list"><summary>순서 확인이 필요한 원인 사건 '+Object.keys(causes).length+
+        '개 · 영향받은 매도 '+Number(r.order_unverified_count||0)+'건</summary>'+causeList+
+        '<div class="sub">공식 체결시각이나 체결순번이 확인되면 해당 사건과 이어지는 매도를 함께 다시 계산합니다.</div></details>':'')+
       (groupsHtml||'<div class="notice">선택 기간에 매도 내역이 없습니다.</div>')+'</section>';
   }
   function oneMonthCoverage(live){

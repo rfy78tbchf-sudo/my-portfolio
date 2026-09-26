@@ -970,17 +970,21 @@ async function syncHoldingPrices(userId:string){
   return {securities:results.length,rowsWritten:total,results,orderEndpointsEnabled:false};
 }
 
-async function syncHistoricalPriceNext(userId:string,requested:unknown){
+async function syncHistoricalPriceNext(userId:string,requested:unknown,requestedSymbol:unknown){
   const limit=Math.min(5,Math.max(1,Number(requested)||3));
+  const targeted=String(requestedSymbol||'').trim().toUpperCase();
+  if(targeted&&!/^[A-Z0-9._-]{1,20}$/.test(targeted))throw new Error('INVALID_SYMBOL');
   const candidates=await adminRpc('get_missing_price_history_for_service',{
-    p_user_id:userId,p_limit:limit
+    p_user_id:userId,p_limit:targeted?150:limit
   });
-  if(!Array.isArray(candidates)||!candidates.length)
+  const selected=targeted?(Array.isArray(candidates)?candidates:[])
+    .filter((s:any)=>String(s.symbol||'').toUpperCase()===targeted).slice(0,1):candidates;
+  if(!Array.isArray(selected)||!selected.length)
     return {securities:0,rowsWritten:0,results:[],remaining:'check_progress_after_21_days'};
   const {appKey,appSecret}=await credentials(userId);
   const token=await issueToken(appKey,appSecret);
   const results:any[]=[];let total=0;
-  for(const s of candidates){
+  for(const s of selected){
     const sid=String(s.security_id||''),symbol=String(s.symbol||'');
     let rows:any[]=[];let written=0;let status='retrieved';let errorCode:string|null=null;
     try{
@@ -1224,7 +1228,7 @@ Deno.serve(async (req:Request) => {
       return json(req,{ok:true,mode:"price_history_sync",...p,historicalFx:fx});
     }
     if (action === "sync-history-prices-next") {
-      const result=await syncHistoricalPriceNext(userId,body?.securities);
+      const result=await syncHistoricalPriceNext(userId,body?.securities,body?.symbol);
       if(result.rowsWritten>0)await adminRpc("refresh_daily_performance_evidence_for_service",{
         p_user_id:userId
       }).catch(()=>{});
