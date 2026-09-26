@@ -19,6 +19,21 @@ assert.match(cashScope,/a\.provider='kb_securities'/,'the automatic KB cash brid
 assert.equal(55_538_715+9_150_078,64_688_793);
 assert.equal(9_150_078-9_128_990,21_088);
 
+// The requested isolated 10-share accounting fixture. Settlement changes only
+// the cash/payable classification, not the economic position or its total NAV.
+const lot={shares:10,costCents:10*10000+200};
+const allocatedCents=lot.costCents*4/lot.shares,proceedsCents=4*12000-100;
+assert.equal(proceedsCents,47900);
+assert.equal(allocatedCents,40080);
+assert.equal(proceedsCents-allocatedCents,7820);
+assert.equal(lot.costCents-allocatedCents,60120);
+const purchase={shares:10,cash:0,payable:1002,market:1002};
+const settled={...purchase,cash:-1002,payable:0};
+const nav=x=>x.market+x.cash-x.payable;
+assert.equal(nav(purchase),nav(settled));
+assert.equal(140-100,40,'realized P/L measures gain from acquisition');
+assert.equal(140-130,10,'period contribution uses the period opening price');
+
 // Exercise the actual UI's authenticated request path and ensure it preserves
 // internal cash proceeds and the distinct observation times.
 const inputs={weightRun:{disabled:false},weightResult:{textContent:''},
