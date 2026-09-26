@@ -24,6 +24,9 @@ try{
       window.__answer=answer;(0,eval)(source+'\nrenderAiAnswer(document.getElementById("aiAnswer"),window.__answer)');
     },{source:client.slice(client.indexOf('  function renderAiAnswer('),end),answer});
     await page.locator('#aiAnswer').scrollIntoViewIfNeeded();
+    // A fixed navigation bar is not accounted for by scrollIntoViewIfNeeded.
+    // Verify the bottom reached by a user's final scroll, as on iPhone.
+    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
     const size=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,
       fontsize:parseFloat(getComputedStyle(document.querySelector('.ai-answer')).fontSize),
       text:document.querySelector('.ai-answer').textContent,
