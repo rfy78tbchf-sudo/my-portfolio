@@ -17,6 +17,8 @@ assert.doesNotMatch(edge,/ai_analysis_history'[\s\S]{0,900}\.catch\(\(\)=>null\)
 assert.match(html,/id="thesisAnalyze"/);
 assert.match(html,/if\(!thesisSaved\)/);
 assert.match(html,/thesisSaved=!!\(updated&&updated\.thesis&&updated\.thesis\.version\)/);
+assert.match(html,/top1=alignedMetrics\?Number\(live\.decisionMetrics\.position\.weight_pct\)/,
+  'analysis uses the same observation and denominator as the risk card');
 
 // Exercise the shipping scenario UI with synthetic figures and the actual RPC payload.
 const inputs={scenarioSymbol:{value:'ARM'},scenarioChange:{value:'-10'},
