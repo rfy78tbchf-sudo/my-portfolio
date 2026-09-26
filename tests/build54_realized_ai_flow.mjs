@@ -212,12 +212,28 @@ assert.equal(result.code,409);
 assert.equal(result.body.code,'ANALYSIS_PREVIOUSLY_FAILED');
 assert.equal(modelCalls,callsBeforeEmpty+1,'failed request ID cannot generate another model bill');
 state='unused';modelReply={id:'completed-model-response',status:'completed',
-  output:[{type:'message',content:[{type:'output_text',text:'판단: 확인된 보유 논리를 점검합니다.'}]}],
+  output:[{type:'message',content:[{type:'output_text',text:
+    '판단: 보유 이유는 이번 자료만으로 확인되지 않았습니다.\n'+
+    '근거: 현재 잔고는 보유 상태를 보여주지만 보유 이유의 타당성은 입증하지 않습니다.\n'+
+    '선택지: 근거가 유지된다면 보유를 검토하고 달라졌다면 비중을 다시 판단하세요.\n'+
+    '다음 확인: 보유 이유와 관련된 실제 가격 또는 기업 자료를 확인하세요.'}]}],
   usage:{total_tokens:58}};
 result=await thesisAsk('22345678-1234-4234-8234-123456789abc');
 assert.equal(result.code,200);
 assert.equal(result.body.thesis_version,2);
-assert.match(result.body.answer,/판단: 확인된 보유 논리/);
+assert.match(result.body.answer,/판단: 보유 이유는 이번 자료만으로 확인되지 않았습니다/);
+assert.equal(result.body.response_kind,'model');
 assert.equal(history.length,1);
 assert.equal(modelCalls,callsBeforeEmpty+2);
+state='unused';history=[];
+modelReply={id:'bad-prose-response',status:'completed',output:[{type:'message',content:[{
+  type:'output_text',text:'판단: 저장한 논리를 확인한다 — 한 문장.\n'+
+    '지지: 비중 23%가 가격 돌파의 근거입니다.\n'+
+    '약화: settlement_pending 상태입니다.\n'+
+    '선택지: 유지 또는 축소할 수 있습니다.'}]}],usage:{total_tokens:70}};
+result=await thesisAsk('32345678-1234-4234-8234-123456789abc');
+assert.equal(result.code,200);
+assert.equal(result.body.response_kind,'validated_fallback');
+assert.doesNotMatch(result.body.answer,/한 문장|settlement_pending|비중 23%/);
+assert.equal(history[0].answer,result.body.answer,'the readable fallback is saved and reopened');
 console.log('Build 54 isolated sale, FX, lifecycle guard, settlement and mock AI save/reopen/failure passed');

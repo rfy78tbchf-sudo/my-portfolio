@@ -45,8 +45,39 @@ assert.equal(select({...context,account_scope:{...context.account_scope,app_disp
   'account scope mismatch must not be masked by another denominator');
 assert.equal(select(context,'performance').period_evidence.investment_result_usable,false);
 assert.equal(select(context,'realized').realized_sales.items[0].symbol,'SOXX');
+const thesisContext=select({...context,
+  thesis:{version:1,rationale:'최근 추세 돌파',updated_at:observation},
+  affected_security:{status:'settlement_pending'},
+  decision_metrics:{ok:true,position:{symbol:'ARM',value:15_000_000,weight_pct:23.43},
+    account_scope_state:'verified',observation_at:observation}},'thesis');
+assert.equal(thesisContext.thesis.version,1);
+assert.equal(thesisContext.portfolio_exposure.weight_pct,23.43);
+assert.equal(thesisContext.evidence_scope.price_and_volume_series_provided,false);
+assert.equal('affected_security' in thesisContext,false,'settlement state is not thesis evidence');
+assert.equal('recent_trades' in thesisContext,false,'transaction rows do not verify a price breakout');
+assert.equal('account_scope' in thesisContext,false,'internal account diagnostics are excluded from a thesis review');
+const validate=vm.runInContext('readableThesisAnswer',scope);
+const fallback=vm.runInContext('thesisReviewFallback',scope);
+const poor='판단: 최근 추세 돌파를 확인한다 — 한 문장.\n'+
+  '지지: ARM 비중 23.43%가 상승 논리의 근거입니다.\n'+
+  '약화: settlement_pending 상태이며 관측시간 2026-09-26T12:10:03Z.\n'+
+  '선택지: 유지 또는 축소를 검토합니다.';
+assert.equal(validate(poor,false),null,'the screenshot-style answer is never shown as a finished review');
+assert.equal(validate('판단: 논리는 조건부로 볼 수 있습니다.\n'+
+  '근거: ARM 비중 23.43%가 추세 돌파의 근거입니다.\n'+
+  '선택지: 이유를 점검해 보세요.\n'+
+  '다음 확인: 기준 가격을 정하세요.',false),null,
+'position size cannot validate price movement');
+const concise='판단: 추세 돌파 논리는 이번 자료만으로 확인되지 않았습니다.\n'+
+  '근거: 이 분석에 돌파 전후 가격과 거래량 시계열이 없습니다.\n'+
+  '선택지: 기준을 충족할 때 보유를 검토하고, 이탈하면 비중을 다시 판단하세요.\n'+
+  '다음 확인: 직접 정한 기준 기간의 종가와 거래량을 비교하세요.';
+assert.equal(validate(concise,false),concise);
+assert.doesNotMatch(fallback({thesis:{rationale:'최근 추세 돌파'}}),/settlement_pending|2026-09-26T/);
+assert.match(fallback({thesis:{rationale:'최근 추세 돌파'}}),/가격·거래량/);
 const style=vm.runInContext('answerStyle',scope)('risk');
 assert.match(style,/가장 큰 위험:/);assert.match(style,/근거:/);assert.match(style,/500자/);
+assert.match(vm.runInContext('answerStyle',scope)('thesis'),/비중·평가액은 투자 논리를 뒷받침하는 증거가 아니다/);
 assert.match(backend,/focusPolicy\(focus\)/);
 assert.match(backend,/변동성이 증가했다/,'unobserved volatility must not be claimed');
 const screen=readFileSync(new URL('../index.html',import.meta.url),'utf8');
