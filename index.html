@@ -221,7 +221,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
   function comparisonHtml(x){
     if(!x||!x.ok)return '<div class="notice">선택지 계산에 필요한 평가 자료가 없습니다.</div>';
     var h=x.hold,r=x.reduce,a=x.price_assumptions;
-    var q=function(n){return n==null?'수량 확인 필요':num(n,3)+'주'};
+    var q=function(n){return n==null?'수량 확인 필요':num(n,Number.isInteger(Number(n))?0:3)+'주'};
     return '<table class="choice-comparison"><thead><tr><th>비교</th><th>현재 유지</th><th>일부 축소</th></tr></thead><tbody>'+
       '<tr><td>보유 수량</td><td>'+q(h.quantity)+'</td><td>'+q(r.quantity_reference)+'</td></tr>'+
       '<tr><td>평가액</td><td>'+money(h.value_krw)+'</td><td>'+money(r.value_krw)+'</td></tr>'+
