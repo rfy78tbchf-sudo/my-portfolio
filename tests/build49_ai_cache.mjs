@@ -7,7 +7,7 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const ai=readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 assert.match(html,/app-enhancements\.js\?v=57h/,'page requests a new URL for the AI UI');
-assert.match(html,/thesis-review-v4/,'updated evidence cannot reuse the old generic analysis');
+assert.match(html,/thesis-review-v5/,'updated evidence cannot reuse the old generic analysis');
 assert.match(html,/controllerchange/,'installed PWA reloads after worker update');
 const start=ai.indexOf('  function aiCard(){'),end=ai.indexOf('  async function ask(',start);
 assert.ok(start>0&&end>start);
