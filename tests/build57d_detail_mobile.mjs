@@ -24,6 +24,7 @@ try{
         var detailLoading=false,stored=[],SUPABASE_URL='https://example.invalid',SUPABASE_KEY='test-only';
         var esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
         var num=(x,d)=>Number(x).toFixed(d),money=x=>Math.round(Number(x)).toLocaleString('ko-KR')+'원';
+        var finiteMetric=x=>x==null||x===''?NaN:Number(x);
         var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstStamp=String;
         var metric=(name,value)=>'<div class="metric"><span>'+name+'</span><b>'+value+'</b></div>';
         var securityChart=()=>'',interpretTechnical=()=>'',thesisEditor=()=>'<form id="thesisForm"><textarea data-thesis-field="rationale"></textarea><button type="submit">저장</button><span id="thesisStatus"></span></form>';
