@@ -140,4 +140,35 @@ assert.equal(result.body.history_saved,true);
 assert.equal(result.body.reused_saved_analysis,true);
 assert.equal(modelCalls,2,'saving a retained answer does not recall the model');
 assert.equal(history.length,1);
+// A chosen target must be calculated by the owner-scoped scenario RPC, not invented by the model.
+state='unused';history=[];
+const previousScoped=runtime.scopedRequest;
+let weightInputs=[];
+runtime.scopedRequest=async(token,path,post)=>{
+  if(path==='rpc/get_live_weight_reduction_scenario'){
+    weightInputs.push(post);return {ok:true,calculation_version:'weight-scenario-v1',
+      observation_at:'2026-09-26T00:00:00Z',account_scope_state:'verified',
+      position:{symbol:'TEST',value:12000000,weight_pct:20},
+      denominator:{value:60000000},scenario:{target_weight_pct:10,sale_value_krw:6000000}};
+  }
+  return previousScoped(token,path,post);
+};
+vm.runInContext('scopedRequest=globalThis.scopedRequest',runtime);
+const weightAsk=(question)=>handler(new Request('https://example.test/functions/v1/investment-assistant',{
+  method:'POST',headers:{origin:'https://rfy78tbchf-sudo.github.io',authorization:'Bearer mock-user-token',
+    'content-type':'application/json'},body:JSON.stringify({request_id:reqId,symbol:'TEST',question})
+})).then(async r=>({code:r.status,body:await r.json()}));
+const beforeWeight=modelCalls;
+result=await weightAsk('이 종목을 일부 줄이고 현금으로 보유하면 어떻게 달라져?');
+assert.equal(result.code,400);
+assert.equal(result.body.code,'TARGET_WEIGHT_REQUIRED');
+assert.equal(modelCalls,beforeWeight);
+result=await weightAsk('TEST 비중을 10%까지 줄이고 현금으로 보유하면 어떻게 달라져?');
+assert.equal(result.code,200);
+assert.equal(modelCalls,beforeWeight+1);
+assert.equal(weightInputs[0].p_target_pct,10);
+assert.match(result.body.answer,/6,000,000원/);
+assert.match(result.body.answer,/총자산은 같습니다/);
+assert.match(result.body.answer,/ISA 총액은.*시각이 달라/);
+assert.equal(history[0].calculation_version,'weight-scenario-v1');
 console.log('Build 54 isolated sale, FX, lifecycle guard, settlement and mock AI save/reopen/failure passed');

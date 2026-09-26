@@ -30,6 +30,8 @@ jobs:
       - run: node tests/build54a_isa_correction.mjs
       - run: node tests/build55_domestic_charge.mjs
       - run: node tests/build54_mobile.mjs
+      - run: node tests/build57_decision_journey.mjs
+      - run: node tests/build57_decision_mobile.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
