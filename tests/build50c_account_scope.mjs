@@ -35,7 +35,7 @@ const ctx=vm.createContext({live,liveError:null,period:'1W',latestManualRows:()=
   completeSnapshotPeriod:()=>false,ledgerHeadlineReady:()=>false,
   esc:String,money,cls:empty,kstStamp:()=> '9. 26. 11:42 KST',periods:()=>'',
   reconciliationHomeStatus:empty,assetChart:empty,metric:empty,
-  homeBrowseCard:empty,riskOverviewCard:empty,cashFlowAuditCard:empty,
+  homeBrowseCard:empty,riskOverviewCard:empty,decisionHomeCard:empty,cashFlowAuditCard:empty,
   annualGoalCard:empty,tradeTargetCard:empty,dividendCard:empty,
   priceAlertCard:empty,upcomingAgenda:empty,dataStatusCard:empty});
 vm.runInContext(html.slice(begin,end),ctx);
