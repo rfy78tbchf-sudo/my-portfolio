@@ -236,4 +236,57 @@ assert.equal(result.code,200);
 assert.equal(result.body.response_kind,'validated_fallback');
 assert.doesNotMatch(result.body.answer,/한 문장|settlement_pending|비중 23%/);
 assert.equal(history[0].answer,result.body.answer,'the readable fallback is saved and reopened');
+// Held-security price records reach the real model input, and server-verified prices
+// replace unsupported model numbers without mutating the user's saved thesis.
+state='unused';history=[];
+let sawPriceContext=false;
+const standardFetch=runtime.fetch;
+runtime.fetch=async(url,options)=>{
+  if(url==='https://api.openai.com/v1/responses'&&JSON.parse(options.body).input.includes('서버에서 질문에 맞게 선별한 계좌 데이터')){
+    const input=JSON.parse(options.body).input;
+    assert.match(input,/"latest_close":110/);
+    assert.match(input,/"prior_20_closing_high":120/);
+    assert.doesNotMatch(input,/지난 버전의 비밀 메모/);
+    sawPriceContext=true;
+  }
+  return standardFetch(url,options);
+};
+const confirmedPrice={ready:true,symbol:'TEST',currency:'USD',price_date:'2026-09-25',
+  latest_close:110,prior_20_closing_high:120,above_prior_20_closing_high:false,
+  volume_vs_prior_20_average:2,source:'kb_openapi',
+  comparison:'latest versus preceding 20 recorded closes'};
+runtime.buildContext=async()=>({as_of:'2026-09-26',confidence:'estimated',
+  account_scope:{snapshot_at:'2026-09-26T00:00:00Z'},
+  selected_security:{symbol:'TEST',name:'Test Company',currency:'USD'},
+  thesis:{version:2,rationale:'최근 추세 돌파'},price_evidence:confirmedPrice});
+vm.runInContext('buildContext=globalThis.buildContext;fetch=globalThis.fetch',runtime);
+modelReply={id:'price-model-response',status:'completed',output:[{type:'message',content:[{
+  type:'output_text',text:'판단: 아직 개인의 돌파 기준을 충족했는지 알 수 없습니다.\n'+
+    '근거: 저장된 이전 기록의 종가 비교는 개인의 돌파 규칙과 다릅니다.\n'+
+    '선택지: 내 기준과 일치한다면 유지 조건을 살피고, 일치하지 않는다면 변경 조건을 다시 검토하세요.\n'+
+    '다음 확인: 내가 정한 돌파 기간과 기준 가격을 기록해 후속 종가에 적용하세요.'}]}],
+  usage:{total_tokens:60}};
+result=await thesisAsk('42345678-1234-4234-8234-123456789abc');
+assert.equal(result.code,200);
+assert.equal(result.body.response_kind,'model_interpretation_server_metrics');
+assert.equal(sawPriceContext,true);
+assert.match(result.body.answer,/110달러.*120달러.*2배/);
+assert.match(result.body.answer,/선택지: 내 기준과 일치한다면/);
+assert.doesNotMatch(result.body.answer,/시계열.*없|가격.*부재/);
+assert.ok(history[0].context_sources.includes('daily_security_prices'));
+assert.equal(history[0].thesis_version,2);
+const countAfterPrice=modelCalls;
+result=await thesisAsk('42345678-1234-4234-8234-123456789abc');
+assert.equal(result.body.reused_saved_analysis,true);
+assert.equal(modelCalls,countAfterPrice,'reopening a saved analysis never calls the model');
+state='unused';history=[];
+modelReply={id:'incorrect-missing-price',status:'completed',output:[{type:'message',content:[{
+  type:'output_text',text:'판단: 추세는 아직 알 수 없습니다.\n'+
+    '근거: 가격·거래량 시계열이 이번 분석에 없습니다.\n'+
+    '선택지: 가격 추세를 확인하고 유지 여부를 검토하세요.\n'+
+    '다음 확인: 돌파 기간과 기준 가격을 기록해 두세요.'}]}],usage:{total_tokens:60}};
+result=await thesisAsk('52345678-1234-4234-8234-123456789abc');
+assert.equal(result.body.response_kind,'validated_fallback');
+assert.match(result.body.answer,/110달러.*120달러/);
+assert.doesNotMatch(result.body.answer,/시계열.*없|가격.*부재/);
 console.log('Build 54 isolated sale, FX, lifecycle guard, settlement and mock AI save/reopen/failure passed');

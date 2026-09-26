@@ -52,12 +52,35 @@ const thesisContext=select({...context,
     account_scope_state:'verified',observation_at:observation}},'thesis');
 assert.equal(thesisContext.thesis.version,1);
 assert.equal(thesisContext.portfolio_exposure.weight_pct,23.43);
-assert.equal(thesisContext.evidence_scope.price_and_volume_series_provided,false);
+assert.equal(thesisContext.price_evidence.ready,false);
+assert.equal(thesisContext.evidence_scope.price_comparison_is_user_rule,false);
 assert.equal('affected_security' in thesisContext,false,'settlement state is not thesis evidence');
 assert.equal('recent_trades' in thesisContext,false,'transaction rows do not verify a price breakout');
 assert.equal('account_scope' in thesisContext,false,'internal account diagnostics are excluded from a thesis review');
 const validate=vm.runInContext('readableThesisAnswer',scope);
 const fallback=vm.runInContext('thesisReviewFallback',scope);
+const priceEvidence=vm.runInContext('priceTrendEvidence',scope);
+const synthetic=Array.from({length:21},(_,i)=>({price_date:'2026-09-'+String(25-i).padStart(2,'0'),
+  close:i===0?110:i===1?120:100,volume:i===0?200:100,currency:'USD',source:'kb_openapi',
+  observed_at:observation}));
+const verified=priceEvidence(synthetic,'TEST','USD');
+assert.equal(verified.ready,true);
+assert.equal(verified.above_prior_20_closing_high,false);
+assert.equal(verified.prior_20_closing_high,120);
+assert.equal(verified.volume_vs_prior_20_average,2);
+assert.equal(priceEvidence([...synthetic,{...synthetic[0],close:999,observed_at:'2026-09-20'}],
+  'TEST','USD').latest_close,110,'duplicate price dates do not inflate the 20-day window');
+assert.equal(priceEvidence(synthetic.slice(0,20),'TEST','USD').ready,false);
+assert.equal(priceEvidence(synthetic.map((row,i)=>i===10?{...row,currency:'KRW'}:row),'TEST','USD').ready,false);
+assert.equal(priceEvidence(synthetic.map((row,i)=>i===10?{...row,source:'other'}:row),'TEST','USD').ready,false);
+const withPrice={...context,selected_security:{symbol:'TEST',currency:'USD'},
+  thesis:{version:2,rationale:'최근 추세 돌파'},price_evidence:verified};
+const review=select(withPrice,'thesis');
+assert.equal(review.price_evidence.latest_close,110);
+assert.equal(review.price_evidence.source_label,'KB 가격 원본');
+assert.equal(review.evidence_scope.price_comparison_is_user_rule,false);
+assert.match(fallback(withPrice),/110달러.*120달러/);
+assert.doesNotMatch(fallback(withPrice),/가격·거래량 시계열을 이번 분석에 사용하지/);
 const poor='판단: 최근 추세 돌파를 확인한다 — 한 문장.\n'+
   '지지: ARM 비중 23.43%가 상승 논리의 근거입니다.\n'+
   '약화: settlement_pending 상태이며 관측시간 2026-09-26T12:10:03Z.\n'+
@@ -73,11 +96,12 @@ const concise='판단: 추세 돌파 논리는 이번 자료만으로 확인되�
   '선택지: 기준을 충족할 때 보유를 검토하고, 이탈하면 비중을 다시 판단하세요.\n'+
   '다음 확인: 직접 정한 기준 기간의 종가와 거래량을 비교하세요.';
 assert.equal(validate(concise,false),concise);
+assert.equal(validate(concise,false,true),null,'stored price data contradict a missing-price assertion');
 assert.doesNotMatch(fallback({thesis:{rationale:'최근 추세 돌파'}}),/settlement_pending|2026-09-26T/);
 assert.match(fallback({thesis:{rationale:'최근 추세 돌파'}}),/가격·거래량/);
 const style=vm.runInContext('answerStyle',scope)('risk');
 assert.match(style,/가장 큰 위험:/);assert.match(style,/근거:/);assert.match(style,/500자/);
-assert.match(vm.runInContext('answerStyle',scope)('thesis'),/비중·평가액은 투자 논리를 뒷받침하는 증거가 아니다/);
+assert.match(vm.runInContext('answerStyle',scope)('thesis'),/비중·평가액은 투자 논리의 증거가 아니다/);
 assert.match(backend,/focusPolicy\(focus\)/);
 assert.match(backend,/변동성이 증가했다/,'unobserved volatility must not be claimed');
 const screen=readFileSync(new URL('../index.html',import.meta.url),'utf8');
