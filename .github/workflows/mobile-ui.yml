@@ -24,6 +24,8 @@ jobs:
       - run: node tests/build50c_account_scope.mjs
       - run: node tests/build51_account_realized_scenario.mjs
       - run: node tests/build52_current_isa.mjs
+      - run: node tests/build53_isa_upload.mjs
+      - run: node tests/build53_isa_mobile.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
