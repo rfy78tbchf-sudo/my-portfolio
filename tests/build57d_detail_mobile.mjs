@@ -44,6 +44,7 @@ try{
       window.openTestDetail('held');
     },html.slice(start,end));
     await page.getByText('My TEST reason').first().waitFor();
+    await page.getByText('가격 차트와 기술지표').click();
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
     await page.locator('#detailWeightTarget').fill('10');
     await page.locator('#detailWeightRun').click();
