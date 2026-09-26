@@ -170,7 +170,8 @@
     }else addLines(el,lines);
   }
   async function analysisRequestId(question,symbol){
-    var scope=(context.live&&context.live.accountScope||{}).current_isa_observation_id||'',
+    var accountScope=context.live&&context.live.accountScope||{},
+      scope=(accountScope.current_isa_observation_id||'')+'|'+(accountScope.current_isa_correction_id||''),
       bucket=Math.floor(Date.now()/120000);
     var bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(
       [question,symbol,scope,bucket].join('|')))).slice(0,16);
@@ -251,7 +252,7 @@
     finally{btn.disabled=false}
   }
   async function loadPrevious(ctx){var el=document.getElementById('aiPrevious');if(!el)return;
-    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=id,answer,question,created_at,observation_at,isa_observation_id,isa_capture_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=10',{
+    try{var r=await ctx.authFetch(ctx.supabaseUrl+'/rest/v1/ai_analysis_history?select=id,answer,question,created_at,observation_at,isa_observation_id,isa_correction_id,isa_capture_at,calculation_version,thesis_version,response_kind&order=created_at.desc&limit=10',{
       headers:{apikey:ctx.publicKey}},12000,false);
       if(!r.ok)throw Error('HISTORY_READ_FAILED');var rows=await r.json();
       if(!el.isConnected)return;if(!rows||!rows.length){el.textContent='아직 저장된 분석이 없습니다.';return}
@@ -267,7 +268,9 @@
             currentMetrics&&currentMetrics.ok&&currentMetrics.calculation_version,
           changed=!!(latestVersion&&h.calculation_version&&h.calculation_version!==latestVersion)||
             !!(currentMetrics&&currentMetrics.ok&&h.isa_observation_id&&
-              h.isa_observation_id!==currentMetrics.denominator.isa_observation_id);
+              h.isa_observation_id!==currentMetrics.denominator.isa_observation_id)||
+            !!(currentMetrics&&currentMetrics.ok&&
+              (h.isa_correction_id||null)!==(currentMetrics.denominator.isa_correction_id||null));
         body.textContent='분석 '+h.id+' · '+(h.response_kind==='model'?'실제 모델 응답':
           h.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':'서버 검증 답변')+
           '\n질문: '+h.question+'\n답변: '+h.answer+

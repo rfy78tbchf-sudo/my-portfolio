@@ -27,6 +27,7 @@ jobs:
       - run: node tests/build53_isa_upload.mjs
       - run: node tests/build53_isa_mobile.mjs
       - run: node tests/build54_realized_ai_flow.mjs
+      - run: node tests/build54a_isa_correction.mjs
       - run: node tests/build54_mobile.mjs
       - uses: actions/upload-artifact@v4
         if: always()

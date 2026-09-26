@@ -8,7 +8,7 @@
 - USD realized, latest stored USD/KRW rate reference, and historical per purchase/sale market rate KRW management estimate are separate fields. An absent historical rate yields null, never 1. Market FX is neither evidence of a conversion nor an official tax basis. Cash FX effects after a sale are outside stock P/L.
 - Performance includes independent sale account/period controls, per security/per sale drilldown, and one month reconstruction inputs. An available subtotal is never presented as total account performance.
 - AI uses an owner bound request ID throughout reservation, server calculation, model response, history write and reload. Concurrent duplicate requests do not invoke another model. A failed history write is shown separately from a failed model response. Scenario metrics continue to be computed on the server, with integer share feasibility for a target weight. The user's investment thesis remains owner authored and versioned.
-- Migration order: `build54_realized_sales`, `build54b_realized_nontrade_cost_guard`, `build54c_sale_trace`, `build54d_ai_analysis_request`, `build54e_lifecycle_review`, `build54f_one_month_inputs`, `build54g_weight_share_constraint`, `build54h_mixed_source_guard`. Migrations preserve original broker payloads, observations and transactions. Edge Function must be deployed with JWT verification and frontend after it.
+- Migration order: `build54_realized_sales`, `build54b_realized_nontrade_cost_guard`, `build54c_sale_trace`, `build54d_ai_analysis_request`, `build54e_lifecycle_review`, `build54f_one_month_inputs`, `build54g_weight_share_constraint`, `build54h_mixed_source_guard`, `build54i_isa_correction`. Migrations preserve original broker payloads, observations and transactions. Edge Function must be deployed with JWT verification and frontend after it.
 
 ## Validation and open input
 
@@ -18,7 +18,7 @@
 - Recent month NAV still needs a verified opening balance, opening cash, and missing security prices. Match external flow reflection dates and settlement links before publishing account TWR or month P/L.
 - Actual owner model success, persisted user thesis, uploaded evidence round trip, and real iPhone rendering need an authenticated owner session and user authored input. A configured secret or a mocked response is not proof of a live model answer.
 - Historical FX market estimates should be compared with broker official KRW basis if it becomes available; never label them official or tax results.
-- A misentered uploaded observation still needs an append only owner correction flow. Do not mutate original images or silently overwrite an observation.
+- An uploaded observation can be corrected by its owner through an append-only record; original image, capture time and amount are immutable. Same request ID is idempotent. New evidence on a later day should be registered as a new observation. The production owner has not yet executed an actual uploaded-image correction.
 
 ## Restore
 

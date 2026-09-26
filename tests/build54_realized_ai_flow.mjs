@@ -15,7 +15,7 @@ assert.match(sql,/if v_trade.type='sell' and v_day.d between/);
 assert.match(sql,/v_seen_mixed:=v_day.d/);
 assert.match(cycle,/v_opening and v_ending/);
 assert.match(reqSql,/primary key\(user_id,id\)/);
-assert.match(html,/realized-sales-ui\.js\?v=54/);
+assert.match(html,/realized-sales-ui\.js\?v=54a/);
 const scope=vm.createContext({window:{}});vm.runInContext(ui,scope);
 const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',currency:'USD',
   trade_date:'2026-09-18',date_basis:'broker_order_date_no_intraday_time',status:'calculated',

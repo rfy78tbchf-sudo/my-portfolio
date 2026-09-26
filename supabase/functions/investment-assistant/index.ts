@@ -290,7 +290,7 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
       ['snapshot_at','app_display_total','current_display_total','current_primary_value',
         'current_primary_observed_at','current_isa_value','current_isa_capture_at',
         'current_isa_source',
-        'current_isa_balance_effective_at','current_isa_observation_id',
+        'current_isa_balance_effective_at','current_isa_observation_id','current_isa_correction_id',
         'isa_unexplained_change','account_identity_verified','isa_total_only','kb_response_total','overlay_logged',
         'manual_current_total','overlay_matches_manual','broker_account_overlap_verified',
         'manual_observed_at','manual_snapshot_stale','broker_scope_capture_at',
@@ -371,7 +371,7 @@ Deno.serve(async(req:Request)=>{
     const reservation=await scopedRequest(token,query('reserve_ai_analysis_request',{}),{p_id:requestId});
     if(!reservation.reserved){
       if(reservation.state==='saved'&&reservation.analysis_id){
-        const cached=await scopedRequest(token,'ai_analysis_history?select=id,answer,confidence,model,observation_at,isa_observation_id,isa_capture_at,calculation_version,thesis_version,response_kind,account_scope_state&id=eq.'+reservation.analysis_id+'&limit=1');
+        const cached=await scopedRequest(token,'ai_analysis_history?select=id,answer,confidence,model,observation_at,isa_observation_id,isa_correction_id,isa_capture_at,calculation_version,thesis_version,response_kind,account_scope_state&id=eq.'+reservation.analysis_id+'&limit=1');
         if(cached?.[0])return respond(req,{ok:true,answer:cached[0].answer,
           ...cached[0],analysis_id:cached[0].id,request_id:requestId,history_saved:true,
           reused_saved_analysis:true});
@@ -456,6 +456,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
         ...(symbol?['trades','investment_thesis','thesis_versions']:[])],model:MODEL,
       observation_at:m?.observation_at||context.account_scope?.snapshot_at||null,
       isa_observation_id:m?.denominator?.isa_observation_id||null,
+      isa_correction_id:m?.denominator?.isa_correction_id||null,
       isa_capture_at:m?.denominator?.isa_captured_at||null,
       account_scope_state:m?.account_scope_state||'not_verified',
       calculation_version:focus==='realized'?context.realized_sales?.calculation_version||'realized-sales-v2':
@@ -471,6 +472,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       analysis_id:saved[0].id,request_id:requestId,history_saved:true,
       observation_at:m?.observation_at||context.account_scope?.snapshot_at||null,
       isa_observation_id:m?.denominator?.isa_observation_id||null,
+      isa_correction_id:m?.denominator?.isa_correction_id||null,
       isa_capture_at:m?.denominator?.isa_captured_at||null,
       calculation_version:focus==='realized'?context.realized_sales?.calculation_version||'realized-sales-v2':
         m?.calculation_version||'legacy-period-v1',
@@ -479,7 +481,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
   }catch(error){
     const reason=String((error as Error)?.message||'UNKNOWN');
     if(stage==='history'&&generatedAnswer){
-      const existing=await scopedRequest(token,'ai_analysis_history?select=id,answer,confidence,model,observation_at,isa_observation_id,isa_capture_at,calculation_version,thesis_version,response_kind,account_scope_state&request_id=eq.'+requestId+'&limit=1').catch(()=>[]);
+      const existing=await scopedRequest(token,'ai_analysis_history?select=id,answer,confidence,model,observation_at,isa_observation_id,isa_correction_id,isa_capture_at,calculation_version,thesis_version,response_kind,account_scope_state&request_id=eq.'+requestId+'&limit=1').catch(()=>[]);
       if(existing?.[0]){await finishAnalysis(token,requestId,'saved',existing[0].id,existing[0].response_kind);
         return respond(req,{ok:true,...existing[0],analysis_id:existing[0].id,
           request_id:requestId,history_saved:true,reused_saved_analysis:true})}
