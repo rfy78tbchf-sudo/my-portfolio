@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,mkdirSync} from 'node:fs';
 import {chromium} from 'playwright';
 
 // The same production detail component runs against an isolated owner-scoped fixture.
@@ -7,11 +7,12 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const styles=html.slice(html.indexOf('<style>')+7,html.indexOf('</style>'));
 const start=html.indexOf('  function comparisonHtml('),end=html.indexOf('  function empty(',start);
 assert.ok(start>0&&end>start);
+mkdirSync('mobile-artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true});
 try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});
-    await page.setContent(`<meta name="viewport" content="width=device-width,initial-scale=1"><style>${styles}</style><main class="shell"><div id="detailModal" class="detail-modal hidden"><div id="detailBody" class="detail-body"></div></div></main>`);
+    await page.setContent(`<meta name="viewport" content="width=device-width,initial-scale=1"><style>${styles}</style><main class="shell"><div id="detailModal" class="detail-modal hidden"><div class="detail-sheet"><div class="detail-head"><b>종목 상세</b></div><div id="detailBody"></div></div></div></main>`);
     await page.evaluate(source=>{
       const fake=`
         var live={securityMap:{held:{id:'held',symbol:'TEST',name:'First issuer',currency:'USD'},other:{id:'other',symbol:'NEXT',name:'Second issuer',currency:'USD'}},
@@ -48,6 +49,7 @@ try{
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
     await page.locator('#detailWeightTarget').fill('10');
     await page.locator('#detailWeightRun').click();
+    await page.screenshot({path:`mobile-artifacts/choice-detail-${width}.png`});
     assert.ok(await page.getByText('+1,000원').isVisible());
     assert.ok(await page.getByText('-500원').isVisible());
     await page.locator('#detailReason').fill('I can absorb this exposure');
