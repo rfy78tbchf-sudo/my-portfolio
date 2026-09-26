@@ -32,12 +32,18 @@ try{
       await page.evaluate(z=>document.documentElement.style.zoom=String(z),zoom);
       const state=await page.evaluate(()=>{
         window.scrollTo(0,document.body.scrollHeight);
+        const total=document.querySelector('.realized-total-row strong');
+        const totalRect=total.getBoundingClientRect();
+        const totalRow=total.closest('.realized-total-row').getBoundingClientRect();
         return {overflow:document.documentElement.scrollWidth>innerWidth,
+          totalUnbroken:getComputedStyle(total).whiteSpace==='nowrap',
+          totalFits:total.scrollWidth<=total.clientWidth&&totalRect.left>=totalRow.left&&totalRect.right<=totalRow.right,
           last:document.querySelector('.sold-ledger-row:last-of-type')?.getBoundingClientRect().bottom,
           nav:document.querySelector('.nav').getBoundingClientRect().top,
           pageHeight:document.documentElement.scrollHeight};
       });
       assert.equal(state.overflow,false,`${width}px ${zoom}x horizontal overflow`);
+      assert.ok(state.totalUnbroken&&state.totalFits,`${width}px ${zoom}x total amount and unit fit unbroken`);
       assert.ok(state.pageHeight>844,`${width}px ${zoom}x scroll available`);
       await page.screenshot({path:`mobile-artifacts/realized-sales-${width}-${zoom}.png`,fullPage:true});
     }

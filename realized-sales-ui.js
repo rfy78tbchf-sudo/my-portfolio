@@ -30,11 +30,11 @@
       v.pnl+=Number(x.realized_local);v.n++;
     });
     var totals=Object.keys(sums).sort().map(function(cur){var v=sums[cur];
-      return '<div class="row"><span>주문일 근거가 있는 '+escape(cur)+' 원장 매도손익 · '+v.n+'건만</span>'+
+      return '<div class="row realized-total-row"><span>주문일 근거가 있는 '+escape(cur)+' 원장 매도손익 · '+v.n+'건만</span>'+
         '<strong>'+fmt(v.pnl,' '+escape(cur),2)+'</strong></div>';
     }).join('')||'<div class="notice">이 기간에 계산을 마친 매도는 없습니다.</div>';
     totals+=Object.keys(provisional).sort().map(function(cur){var v=provisional[cur];
-      return '<div class="row"><span>원장 기록일 기준 '+escape(cur)+' 원가 산출 · '+v.n+'건 · 기간 포함 미확정</span>'+
+      return '<div class="row realized-total-row"><span>원장 기록일 기준 '+escape(cur)+' 원가 산출 · '+v.n+'건 · 기간 포함 미확정</span>'+
         '<strong>'+fmt(v.pnl,' '+escape(cur),2)+'</strong></div>';
     }).join('');
     var groupsHtml=Object.keys(groups).sort().map(function(symbol){

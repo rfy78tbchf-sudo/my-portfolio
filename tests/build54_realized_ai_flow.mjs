@@ -20,7 +20,7 @@ assert.match(provenance,/'direct_order_count',v_direct_order/);
 assert.match(provenance,/'carried_order_count',v_carried_order/);
 assert.match(cycle,/v_opening and v_ending/);
 assert.match(reqSql,/primary key\(user_id,id\)/);
-assert.match(html,/realized-sales-ui\.js\?v=55b/);
+assert.match(html,/realized-sales-ui\.js\?v=55c/);
 const scope=vm.createContext({window:{}});vm.runInContext(ui,scope);
 const sale={transaction_id:'sale',symbol:'TEST',name:'Very long security name',currency:'USD',
   trade_date:'2026-09-18',date_basis:'broker_order_date_no_intraday_time',status:'calculated',
