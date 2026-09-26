@@ -7,6 +7,10 @@ const backend=readFileSync(new URL('../supabase/functions/investment-assistant/i
 const scope=vm.createContext({Deno:{env:{get:()=>''}}});
 vm.runInContext(stripTypeScriptTypes(backend.slice(backend.indexOf('\n')+1,backend.indexOf('\nDeno.serve('))),scope);
 const focus=vm.runInContext('answerFocus',scope),select=vm.runInContext('questionContext',scope);
+const target=vm.runInContext('requestedWeightTarget',scope);
+assert.equal(target('현재 24%에서 10%로 줄이고 현금 보유'),10);
+assert.equal(target('현재 24%, 목표 비중은 10%'),10);
+assert.equal(target('현재 24%, 10%로 바꾸고 현금 보유'),null,'ambiguous targets cannot silently select the first percentage');
 assert.equal(focus('내 포트폴리오에서 지금 확인할 위험은 무엇인가?'),'risk');
 assert.equal(focus('최근 한 달 왜 벌었어?'),'performance');
 assert.equal(focus('SOXX 매도 실현손익은?'),'realized');

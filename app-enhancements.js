@@ -171,7 +171,7 @@
   }
   async function analysisRequestId(question,symbol){
     var accountScope=context.live&&context.live.accountScope||{},
-      scope=(accountScope.current_isa_observation_id||'')+'|'+(accountScope.current_isa_correction_id||''),
+      scope=(accountScope.current_primary_observed_at||'')+'|'+(accountScope.current_isa_observation_id||'')+'|'+(accountScope.current_isa_correction_id||''),
       bucket=Math.floor(Date.now()/120000);
     var bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(
       [question,symbol,scope,bucket].join('|')))).slice(0,16);

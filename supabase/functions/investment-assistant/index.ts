@@ -132,6 +132,14 @@ function answerFocus(question:string){
   if(/성과|수익|손익|기여|이번\s*달|한\s*달/.test(question))return 'performance';
   return 'general';
 }
+function requestedWeightTarget(question:string){
+  const labeled=question.match(/목표\s*(?:비중)?[^\d\n%]{0,12}(\d{1,3}(?:\.\d+)?)\s*%/);
+  if(labeled)return Number(labeled[1]);
+  const directed=[...question.matchAll(/(\d{1,3}(?:\.\d+)?)\s*%\s*(?:까지|로)\s*(?:줄이|줄여|축소)/g)];
+  if(directed.length===1)return Number(directed[0][1]);
+  const all=[...question.matchAll(/(\d{1,3}(?:\.\d+)?)\s*%/g)];
+  return all.length===1?Number(all[0][1]):null;
+}
 function questionContext(context:any,focus:string){
   const common={as_of:context.as_of,account_scope:context.account_scope,confidence:context.confidence};
   const holdings=(context.holdings||[]).map((h:any)=>({
@@ -393,8 +401,8 @@ Deno.serve(async(req:Request)=>{
   const focus=answerFocus(question);
   if(focus==='thesis'&&!symbol)return respond(req,{ok:false,code:'SELECT_SECURITY',
     message:'보유 논리를 점검할 종목을 먼저 선택해 주세요.'},400);
-  const requestedWeight=question.match(/(?:목표\s*비중|비중|줄이|축소)[^\n]{0,30}?(\d{1,3}(?:\.\d+)?)\s*%/);
-  if(focus==='weight'&&(!symbol||!requestedWeight))return respond(req,{ok:false,code:'TARGET_WEIGHT_REQUIRED',
+  const requestedWeight=focus==='weight'?requestedWeightTarget(question):null;
+  if(focus==='weight'&&(!symbol||requestedWeight===null))return respond(req,{ok:false,code:'TARGET_WEIGHT_REQUIRED',
     message:'보유 종목과 원하는 목표 비중(%)을 함께 알려 주세요.'},400);
   const key=await openAiKey(userId).catch(()=>'');
   if(!key)return respond(req,{ok:false,code:'AI_SECRET_MISSING',
@@ -422,7 +430,7 @@ Deno.serve(async(req:Request)=>{
     }
     const context=await buildContext(token,userId,symbol,questionPeriod(question),question);
     const weightScenario=focus==='weight'?await scopedRequest(token,query('get_live_weight_reduction_scenario',{}),{
-      p_symbol:symbol,p_target_pct:Number(requestedWeight?.[1])}):null;
+      p_symbol:symbol,p_target_pct:requestedWeight}):null;
     if(focus==='weight'&&!weightScenario?.ok)return respond(req,{ok:false,code:'WEIGHT_SCENARIO_UNAVAILABLE',
       message:weightScenario?.reason==='TARGET_EXCEEDS_CURRENT_WEIGHT'?'목표 비중은 현재 비중보다 낮아야 합니다.':'현재 평가액과 계좌 합계를 대조한 뒤 계산할 수 있습니다.'},409);
     const relevant=focus==='weight'?{as_of:weightScenario.observation_at,account_scope_state:weightScenario.account_scope_state,

@@ -163,6 +163,9 @@ result=await weightAsk('이 종목을 일부 줄이고 현금으로 보유하면
 assert.equal(result.code,400);
 assert.equal(result.body.code,'TARGET_WEIGHT_REQUIRED');
 assert.equal(modelCalls,beforeWeight);
+result=await weightAsk('TEST 현재 24%와 10%를 비교해 현금으로 보유하면?');
+assert.equal(result.body.code,'TARGET_WEIGHT_REQUIRED');
+assert.equal(modelCalls,beforeWeight);
 result=await weightAsk('TEST 비중을 10%까지 줄이고 현금으로 보유하면 어떻게 달라져?');
 assert.equal(result.code,200);
 assert.equal(modelCalls,beforeWeight+1);

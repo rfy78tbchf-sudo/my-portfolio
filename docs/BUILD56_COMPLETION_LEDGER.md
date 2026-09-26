@@ -38,3 +38,7 @@ Historical sale exceptions remain in the data detail and preserve their original
 limitations; this flow does not promote them to current portfolio performance.
 Rollback of Build 57 restores the prior frontend and investment-assistant v32;
 no database schema or broker source was changed.
+The Build 57b follow-up rejects ambiguous multiple-percentage questions instead
+of treating the current share as a target, and changes the request ID when the
+primary account observation changes. The owner must still submit the first
+authenticated model question to verify production history.
