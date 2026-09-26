@@ -18,6 +18,7 @@ jobs:
       - run: node tests/build49_ai_cache.mjs
       - run: node tests/build49c_ai_error.mjs
       - run: node tests/build49d_ai_readability.mjs
+      - run: node tests/build57c_ai_history.mjs
       - run: node tests/build49_mobile_visual.mjs
       - run: node tests/build49d_ai_mobile.mjs
       - run: node tests/build50_decision_metrics.mjs

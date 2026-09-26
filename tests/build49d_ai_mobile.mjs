@@ -7,10 +7,10 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const styles=html.slice(html.indexOf('<style>')+7,html.indexOf('</style>'));
 const client=readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8');
 const start=client.indexOf('  function aiCard(){'),end=client.indexOf('  async function ask(',start);
-const sandbox=vm.createContext({context:{live:{holdings:[]}}});
+const sandbox=vm.createContext({context:{live:{holdings:[]}},window:{}});
 vm.runInContext(client.slice(start,end),sandbox);
 const card=vm.runInContext('aiCard()',sandbox);
-const answer='가장 큰 위험: 한 종목에 자산이 집중되어 있습니다.\n근거: KB 조회 총자산 대비 25%를 차지합니다.\n다음 확인: 목표 비중을 점검하세요.\n자료 상태: 일부 종목의 분류가 확인되지 않았습니다.';
+const answer='핵심 의견: 한 종목의 비중을 먼저 점검하세요.\n내 계좌 근거: KB 조회 총자산 대비 25%를 차지합니다.\n선택지 비교: 유지하거나 목표 비중을 정해 현금 보유와 비교하세요.\n다음 점검 조건: 내 목표 비중을 정하세요.\n자료 상태: 일부 종목의 분류가 확인되지 않았습니다.';
 const documentHtml=`<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${styles}</style></head><body><main class="shell"><section class="content"><section class="grid settings">${card}</section></section></main><nav class="nav" aria-label="하단 탐색"><button>더보기</button></nav></body></html>`;
 mkdirSync('mobile-artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true});
@@ -35,8 +35,28 @@ try{
     assert.equal(size.overflow,false,`${width}px horizontal overflow`);
     assert.ok(size.fontsize>=15,`${width}px answer text should remain readable`);
     assert.ok(size.text.includes('KB 조회 총자산 대비 25%'));
+    assert.equal((size.text.match(/한 종목의 비중을 먼저 점검하세요/g)||[]).length,1,`${width}px answer conclusion must appear only once`);
+    assert.ok(await page.getByText('선택지 비교').isVisible(),`${width}px choices must be visible`);
+    assert.ok(await page.getByText('다음 점검 조건').isVisible(),`${width}px next condition must be visible`);
+    assert.equal(await page.getByText('자료 상태').isVisible(),false,`${width}px long provenance starts collapsed`);
     assert.ok(size.bottom<=size.navTop,`${width}px answer covered by nav`);
     await page.screenshot({path:`mobile-artifacts/ai-answer-${width}.png`,fullPage:true});
+    await page.locator('details.more-list').filter({hasText:'지난 분석 보기'}).evaluate(node=>node.open=true);
+    await page.evaluate(async source=>{
+      (0,eval)(source+'\nwindow.__loadPrevious=loadPrevious');
+      await window.__loadPrevious({publicKey:'public-test-key',live:{},supabaseUrl:'https://example.invalid',
+        authFetch:async()=>({ok:true,json:async()=>[{
+          id:'synthetic-history-id',created_at:'2026-09-26T10:00:00Z',
+          question:'현재 집중 위험은?',answer:window.__answer,
+          response_kind:'model_interpretation_server_metrics'}]})});
+    },client.slice(client.indexOf('  async function loadPrevious('),client.indexOf('  window.portfolioEnhance=')));
+    assert.equal(await page.locator('.ai-history-item').count(),1);
+    assert.equal(await page.getByText('synthetic-history-id').count(),0,'internal ID must not appear in the history list');
+    await page.locator('.ai-history-item').evaluate(node=>node.open=true);
+    assert.equal(await page.locator('.ai-history-item .ai-history-meta').evaluate(node=>node.open),false);
+    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+    await page.screenshot({path:`mobile-artifacts/ai-history-${width}.png`,fullPage:true});
     await page.locator('details.more-list').filter({hasText:'목표 비중까지 축소'}).evaluate(node=>node.open=true);
     await page.locator('#weightResult').evaluate(node=>node.textContent=
       'ARM 평가액 15,154,956원 → 목표 10.00% · 가정상 매도 8,686,077원\n'+

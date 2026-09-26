@@ -141,34 +141,36 @@
       (old?'KB 과거 내역 '+old.month+'부터 확인':'KB 과거 내역 확인 대기')+' · '+
       (ai?(ai.status==='configured'?'AI 서버 설정 확인 · 실제 모델 응답은 질문 후 확인':ai.status==='missing'?'AI 서버 API 키 미설정':'AI 서버 설정 확인 불가'):'AI 서버 연결 확인 필요');
   }
-  function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3><button id="aiConnectionCheck" type="button" class="btn secondary full" style="margin-bottom:12px">AI 연결 설정 확인</button>'+
-    '<div class="notice">현재 보유, 최근 거래, 수량 차이, 포트폴리오 위험, 저장한 투자 논리를 서버에서 질문에 맞게 읽습니다. 확인되지 않은 숫자는 확정 성과처럼 쓰지 않습니다.</div>'+
-    '<div id="aiKeySetup" class="notice" style="margin-top:12px">AI 실행환경 설정을 확인해 주세요.</div><div id="aiConnectionState" class="sub" role="status" aria-live="polite">설정 확인은 모델을 호출하지 않습니다. 실제 응답은 아래 질문을 보내 확인합니다.</div>'+
+  function aiCard(){return '<details class="card-group"><summary>투자 AI 분석</summary><section class="card"><h3>내 데이터로 질문하기</h3><div class="sub">현재 보유와 내 보유 이유를 바탕으로 의견과 선택지를 비교합니다.</div>'+
     '<div class="tool-row" style="margin-top:12px"><button type="button" class="btn secondary" data-ai-question="지금 내 포트폴리오에서 먼저 점검할 것은 무엇이야?">먼저 점검할 것</button><button type="button" class="btn secondary" data-ai-question="이번 달 투자손익에 기여한 종목과 아직 확인되지 않은 자료를 알려줘.">이번 달 성과</button></div>'+
     '<select id="aiStock" class="select" style="margin-top:10px"><option value="">전체 포트폴리오</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return h.quantity>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return '<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select>'+
     '<textarea id="aiQuestion" class="input" rows="3" maxlength="800" style="margin-top:10px" placeholder="예: 이 종목을 계속 보유하는 논리가 유효한가?"></textarea>'+
-    '<button id="aiAsk" type="button" class="btn full" style="margin-top:8px">내 데이터로 분석</button><div id="aiAnswer" class="ai-answer" role="status" aria-live="polite">질문을 입력하거나 바로가기 질문을 눌러 주세요.</div><div id="aiBasis" class="sub" aria-live="polite"></div><button id="aiRetrySave" type="button" class="btn secondary full" style="margin-top:8px" hidden>모델 재호출 없이 이력 저장 재시도</button>'+
+    '<button id="aiAsk" type="button" class="btn full" style="margin-top:8px">내 데이터로 분석</button><div id="aiAnswer" class="ai-answer" role="status" aria-live="polite">질문을 입력하거나 바로가기 질문을 눌러 주세요.</div><div id="aiBasis" class="sub ai-basis" aria-live="polite"></div><details id="aiBasisDetails" class="more-list" hidden><summary>이 답변의 자료 기준</summary><div id="aiBasisTechnical" class="sub"></div></details><button id="aiRetrySave" type="button" class="btn secondary full" style="margin-top:8px" hidden>답변은 유지하고 저장 다시 시도</button>'+
     '<details class="more-list"><summary>종목 하락 가정 계산 · 주문 아님</summary><div class="tool-row"><label>종목 <select id="scenarioSymbol" class="select"><option value="ARM">ARM</option>'+((context.live&&context.live.holdings)||[]).filter(function(h){return Number(h.quantity)>0}).map(function(h){var s=context.live.securityMap[h.security_id]||{};return s.symbol==='ARM'?'':'<option value="'+escapeHtml(s.symbol||'')+'">'+escapeHtml(s.name||s.symbol||'종목')+'</option>'}).join('')+'</select></label><label>평가액 변화 (%) <input id="scenarioChange" class="input" type="number" value="-10" min="-90" max="100" step="1"></label></div><button id="scenarioRun" type="button" class="btn secondary full">가정 계산</button><div id="scenarioResult" class="ai-answer" role="status" aria-live="polite"></div></details>'+
     '<details class="more-list"><summary>목표 비중까지 축소 · 대금은 현금 보유</summary><div class="tool-row"><label>종목 <select id="weightSymbol" class="select">'+((context.live&&context.live.holdings)||[]).filter(function(h){return Number(h.quantity)>0}).map(function(h){var x=context.live.securityMap[h.security_id]||{};return '<option value="'+escapeHtml(x.symbol||'')+'">'+escapeHtml(x.name||x.symbol||'종목')+'</option>'}).join('')+'</select></label><label>목표 비중 (%) <input id="weightTarget" class="input" type="number" value="10" min="0" max="100" step="0.1"></label></div><button id="weightRun" type="button" class="btn secondary full">현금 보유 가정 계산</button><div id="weightResult" class="ai-answer" role="status" aria-live="polite"></div></details>'+
-    '<details class="more-list"><summary>지난 분석 보기</summary><div id="aiPrevious" class="ai-answer">기록을 불러오는 중…</div></details></section></details>'}
+    '<details class="more-list"><summary>지난 분석 보기</summary><div id="aiPrevious" class="ai-history">기록을 불러오는 중…</div></details>'+
+    '<details class="more-list"><summary>AI 연결 상태 확인</summary><button id="aiConnectionCheck" type="button" class="btn secondary full">서버 설정 확인</button><div id="aiKeySetup" class="notice" style="margin-top:12px">AI 실행환경 설정을 확인해 주세요.</div><div id="aiConnectionState" class="sub" role="status" aria-live="polite">설정 확인만으로는 모델을 호출하지 않습니다.</div></details></section></details>'}
   function renderAiAnswer(el,value){
     el.textContent='';
     var lines=String(value||'').trim().split(/\n+/).map(function(line){return line.trim()}).filter(Boolean);
     function addLines(parent,items){items.forEach(function(line,index){
       var p=document.createElement('p'),head=line.match(/^(가장 큰 위험|기간 성과|매도 손익|보유 논리|핵심 의견|내 계좌 근거|선택지 비교|다음 점검 조건|판단|지지|약화|선택지|핵심|근거|다음 확인|자료 상태):\s*(.*)$/);
-      p.className=index===0?'ai-answer-lead':'ai-answer-line';
-      if(head){var label=document.createElement('strong');label.textContent=head[1]+'  ';p.appendChild(label);p.appendChild(document.createTextNode(head[2]))}
+      p.className=parent===el&&index===0?'ai-answer-lead':'ai-answer-line';
+      if(head){var label=document.createElement('strong');label.textContent=head[1];p.appendChild(label);p.appendChild(document.createTextNode(head[2]))}
       else p.textContent=line;
       parent.appendChild(p);
     })}
-    if(lines.length>4||String(value||'').length>550){
-      var first=lines.slice(0,3).map(function(line){return line.length>240?line.slice(0,240).replace(/\s+\S*$/,'')+'…':line});
-      addLines(el,first);
+    var visible=lines.findIndex(function(line){return /^자료 상태:/.test(line)});
+    visible=visible<0?Math.min(lines.length,4):Math.min(visible,4);
+    if(!visible)visible=Math.min(lines.length,1);
+    addLines(el,lines.slice(0,visible));
+    if(visible<lines.length){
       var details=document.createElement('details'),summary=document.createElement('summary');
-      summary.textContent='전체 답변 펼쳐보기';details.appendChild(summary);addLines(details,lines);
+      summary.textContent=/^자료 상태:/.test(lines[visible])?'자료 상태와 추가 근거':'나머지 답변 보기';details.appendChild(summary);addLines(details,lines.slice(visible));
       el.appendChild(details);
-    }else addLines(el,lines);
+    }
   }
+  window.portfolioRenderAiAnswer=renderAiAnswer;
   async function analysisRequestId(question,symbol){
     var accountScope=context.live&&context.live.accountScope||{},
       scope=(accountScope.current_primary_observed_at||'')+'|'+(accountScope.current_isa_observation_id||'')+'|'+(accountScope.current_isa_correction_id||''),
@@ -189,13 +191,15 @@
       body:JSON.stringify({question:question,symbol:symbol||null,request_id:requestId})},60000,false),data=await res.json();
       if(!res.ok)throw Error(data.message||data.code||'분석 서버 응답 실패');
       renderAiAnswer(answer,data.answer||'응답이 없습니다.');
-      var basis=document.getElementById('aiBasis');if(basis)basis.textContent='분석 '+(data.analysis_id||data.request_id||'ID 확인 필요')+
-        (data.history_saved===false?(data.save_retry_available?' · 답변 보관됨 / 이력 저장 재시도 가능':' · 답변 생성 성공 / 보관 실패'):data.reused_saved_analysis?' · 저장된 분석 다시 표시':' · 이력 저장 확인')+
-        ' · 기준 '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'관측 미확인')+
-        ' · '+(data.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':data.response_kind==='model'?'모델 응답':'서버 검증 답변')+
+      var basis=document.getElementById('aiBasis'),basisDetails=document.getElementById('aiBasisDetails'),technical=document.getElementById('aiBasisTechnical');
+      if(basis)basis.textContent=(data.history_saved===false?(data.save_retry_available?'답변 보관됨 · 저장 다시 시도 가능':'답변 생성됨 · 저장 확인 필요'):data.reused_saved_analysis?'저장된 답변 다시 표시':'답변 저장됨')+
+        ' · '+(data.observation_at?new Date(data.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'})+' 기준':'자료 시각 확인 필요');
+      if(basisDetails&&technical){basisDetails.hidden=false;technical.textContent=
+        (data.response_kind==='model_interpretation_server_metrics'?'실제 AI 해석 · 계좌 숫자는 서버 계산':data.response_kind==='model'?'실제 AI 답변':'서버 검증 답변')+
+        ' · 분석 기록 '+(data.analysis_id||data.request_id||'ID 확인 필요')+
         ' · 계산 '+(data.calculation_version||'기준 확인 필요')+
         (data.isa_capture_at?' · ISA 화면 '+new Date(data.isa_capture_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'')+
-        (data.account_scope_state==='isa_overlap_unverified'?' · 계좌 범위 확인 필요':data.account_scope_state==='verified'?' · 계좌별 금액 확인 · 계좌 식별자/ISA 평가시각 미대조':'');
+        (data.account_scope_state==='isa_overlap_unverified'?' · 계좌 범위 확인 필요':data.account_scope_state==='verified'?' · 계좌별 금액 확인 · ISA 평가시각 별도':'')}
       if(data.history_saved===false&&data.save_retry_available){pendingSaveId=data.request_id;if(retry)retry.hidden=false}
       if(data.history_saved!==false)loadPrevious(context);
     }catch(e){answer.textContent='분석을 완료하지 못했습니다 · '+(e.message||'다시 시도해 주세요.')}
@@ -208,7 +212,7 @@
       method:'POST',headers:{'content-type':'application/json',apikey:context.publicKey},
       body:JSON.stringify({action:'retry-save',request_id:pendingSaveId})},15000,false),data=await res.json();
       if(!res.ok||!data.history_saved)throw Error(data.message||'저장에 실패했습니다.');
-      pendingSaveId='';btn.hidden=true;if(basis)basis.textContent='기존 모델 답변의 이력 저장 완료 · '+data.analysis_id;
+      pendingSaveId='';btn.hidden=true;if(basis)basis.textContent='기존 답변 저장 완료 · 지난 분석에서 다시 볼 수 있습니다.';
       loadPrevious(context);
     }catch(e){if(basis)basis.textContent='이력 저장 재시도 실패 · '+(e.message||'다시 시도해 주세요.')}
     finally{btn.disabled=false}
@@ -278,12 +282,15 @@
       headers:{apikey:ctx.publicKey}},12000,false);
       if(!r.ok)throw Error('HISTORY_READ_FAILED');var rows=await r.json();
       if(!el.isConnected)return;if(!rows||!rows.length){el.textContent='아직 저장된 분석이 없습니다.';return}
-      el.textContent='';rows.forEach(function(h,index){
+      el.textContent='';rows.forEach(function(h){
         var detail=document.createElement('details'),head=document.createElement('summary'),
           body=document.createElement('div');
-        if(index===0)detail.open=true;
-        head.textContent=new Date(h.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+
-          ' · '+String(h.question||'질문').slice(0,32);
+        detail.className='ai-history-item';body.className='ai-history-body';
+        var title=document.createElement('span'),excerpt=document.createElement('small');
+        title.textContent=String(h.question||'저장된 질문').slice(0,65);
+        excerpt.className='ai-history-excerpt';excerpt.textContent=new Date(h.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'})+
+          ' · '+String(h.answer||'').split(/\n/)[0].replace(/^(핵심 의견|핵심|가장 큰 위험):\s*/,'').slice(0,74);
+        head.appendChild(title);head.appendChild(excerpt);
         var currentMetrics=ctx.live&&ctx.live.decisionMetrics,
           isRealized=/실현|매도\s*손익|매매\s*손익/.test(h.question||''),
           latestVersion=isRealized?ctx.live&&ctx.live.realizedSales&&ctx.live.realizedSales.calculation_version:
@@ -293,14 +300,18 @@
               h.isa_observation_id!==currentMetrics.denominator.isa_observation_id)||
             !!(currentMetrics&&currentMetrics.ok&&
               (h.isa_correction_id||null)!==(currentMetrics.denominator.isa_correction_id||null));
-        body.textContent='분석 '+h.id+' · '+(h.response_kind==='model'?'실제 모델 응답':
-          h.response_kind==='model_interpretation_server_metrics'?'모델 해석 · 서버 계산 숫자':'서버 검증 답변')+
-          '\n질문: '+h.question+'\n답변: '+h.answer+
-          '\n관측 '+(h.observation_at?new Date(h.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'시각 미확인')+
+        renderAiAnswer(body,h.answer||'저장된 답변이 없습니다.');
+        var status=document.createElement('p');status.className='ai-history-status';
+        status.textContent=changed?'이전 자료 기준 · 현재 자료로 다시 질문할 수 있습니다.':'저장 당시의 자료 기준';body.appendChild(status);
+        var meta=document.createElement('details'),metaHead=document.createElement('summary'),metaBody=document.createElement('div');
+        meta.className='ai-history-meta';metaHead.textContent='자료 기준과 기록 정보';
+        metaBody.textContent=(h.response_kind==='model'||h.response_kind==='model_interpretation_server_metrics'?'실제 AI 답변':'서버 검증 답변')+
+          ' · 관측 '+(h.observation_at?new Date(h.observation_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'시각 미확인')+
           ' · 계산 '+(h.calculation_version||'기존 버전')+' · 논리 '+(h.thesis_version||'입력 없음')+
           (h.isa_capture_at?' · ISA 화면 '+new Date(h.isa_capture_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'')+
-          (changed?' · 이전 기준: 새 데이터로 다시 분석 가능':' · 당시 기록 (현재 값으로 갱신하지 않음)');
-        body.style.whiteSpace='pre-wrap';detail.appendChild(head);detail.appendChild(body);el.appendChild(detail)
+          ' · 기록 '+h.id;
+        meta.appendChild(metaHead);meta.appendChild(metaBody);body.appendChild(meta);
+        detail.appendChild(head);detail.appendChild(body);el.appendChild(detail)
       });
     }catch(_){if(el.isConnected)el.textContent='지난 분석을 불러오지 못했습니다.'}
   }

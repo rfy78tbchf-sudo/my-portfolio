@@ -59,7 +59,7 @@ function element(tag){return {tag,children:[],style:{},_text:'',
   appendChild(child){this.children.push(child);return child},
   set textContent(value){this._text=String(value);this.children=[]},
   get textContent(){return this._text+this.children.map(x=>x.textContent).join('')}}}
-const dom=vm.createContext({document:{createElement:element,createTextNode:text=>({textContent:text})}});
+const dom=vm.createContext({window:{},document:{createElement:element,createTextNode:text=>({textContent:text})}});
 vm.runInContext(frontend.slice(start,end),dom);
 const render=vm.runInContext('renderAiAnswer',dom);
 let output=element('div');render(output,'가장 큰 위험: ARM 비중이 높습니다.\n근거: KB 조회 총자산 대비 25%.\n다음 확인: 비중 목표를 점검하세요.');
@@ -67,11 +67,13 @@ assert.equal(output.children.length,3);
 assert.equal(output.children[0].children[0].tag,'strong');
 assert.match(output.textContent,/KB 조회 총자산 대비 25%/);
 output=element('div');render(output,'핵심: '+('긴 설명 '.repeat(150))+'\n근거: <script>alert(1)</script>');
-assert.equal(output.children[2].tag,'details','a long answer should be expandable, not dominate the phone');
-assert.match(output.children[2].textContent,/<script>/,'full answer remains available as text');
+assert.match(output.children[1].textContent,/<script>/,'full answer remains available as text');
 assert.ok(!output.children.some(x=>x.tag==='script'),'model text never becomes HTML');
 output=element('div');render(output,'핵심 의견: 먼저 점검\n내 계좌 근거: 평가액 확인\n선택지 비교: 유지 또는 현금\n다음 점검 조건: 목표 비중\n자료 상태: 서로 다른 시각');
 assert.equal(output.children[0].tag,'p');
 assert.match(output.children[2].textContent,/유지 또는 현금/,'choices must be visible without expanding');
-assert.equal(output.children[3].tag,'details');
+assert.equal(output.children[3].textContent.includes('목표 비중'),true,'next condition stays visible');
+assert.equal(output.children[4].tag,'details');
+assert.match(output.children[4].textContent,/서로 다른 시각/);
+assert.equal(output.textContent.match(/먼저 점검/g)?.length,1,'expanding must never repeat the conclusion');
 console.log('AI focus, account-scope evidence, mobile concise layout and safe expansion passed');
