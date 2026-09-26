@@ -65,8 +65,8 @@ try{
     await page.locator('#detailWeightTarget').fill('10');
     await page.locator('#detailWeightRun').click();
     await page.screenshot({path:`mobile-artifacts/choice-detail-${width}.png`});
-    assert.ok(await page.getByText('+1,000원').isVisible());
-    assert.ok(await page.getByText('-500원').isVisible());
+    assert.ok(await page.locator('#detailWeightResult').getByText('+1,000원').isVisible());
+    assert.ok(await page.locator('#detailWeightResult').getByText('-500원').isVisible());
     await page.locator('#detailReason').fill('I can absorb this exposure');
     await page.locator('#detailReview').fill('Recheck the reported operating result');
     await page.locator('#detailDecisionForm button[type=submit]').click();
