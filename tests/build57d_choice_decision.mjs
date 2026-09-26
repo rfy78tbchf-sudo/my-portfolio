@@ -10,7 +10,7 @@ const from=html.indexOf('  function comparisonHtml('),to=html.indexOf('  functio
 assert.ok(from>0&&to>from);
 const context=vm.createContext({money:n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원',
   signedMoney:n=>(Number(n)>0?'+':'')+Math.round(Number(n)).toLocaleString('ko-KR')+'원',
-  num:(n,d)=>Number(n).toFixed(d),esc:String,kstStamp:x=>String(x)});
+  num:(n,d)=>Number(n).toFixed(d),esc:String,kstStamp:x=>String(x),finiteMetric:n=>n==null?NaN:Number(n),cls:n=>Number(n)>=0?'up':'down'});
 vm.runInContext(html.slice(from,to),context);
 const report={ok:true,hold:{value_krw:10000,quantity:10,weight_pct:20,
   down_impact_krw:-1000,up_impact_krw:1000},
@@ -27,6 +27,18 @@ assert.match(rendered,/\-500원/);
 assert.match(rendered,/\+500원/);
 assert.match(rendered,/현재 현금 잔액은 확인되지 않아 증가분만 표시/);
 assert.match(rendered,/매도 대금은 새 수익이나 외부 입금이 아닙니다/);
+const down={ok:true,observation_at:'same-account-cut',position:{symbol:'TEST',value:10000},scenario:{assumption_pct:-10,impact_krw:-1000}},
+  up={ok:true,observation_at:'same-account-cut',position:{symbol:'TEST',value:10000},scenario:{assumption_pct:10,impact_krw:1000}};
+const impact=vm.runInContext('decisionImpactHtml(down,up,"TEST")',Object.assign(context,{down,up}));
+assert.match(impact,/−10%라면.*-1,000원/s);
+assert.match(impact,/\+10%라면.*\+1,000원/s);
+assert.match(impact,/다른 자산·환율 고정/);
+assert.equal(vm.runInContext('decisionImpactHtml(down,up,"OTHER")',context),'',
+  'a different holding cannot inherit this security’s sensitivity');
+assert.equal(vm.runInContext('decisionImpactHtml(down,{...up,observation_at:"old"},"TEST")',context),'',
+  'different observation times cannot form a single comparison');
+assert.equal(vm.runInContext('decisionImpactHtml(down,{...up,scenario:{assumption_pct:10,impact_krw:5000}},"TEST")',context),'',
+  'miscalculated impacts must not be presented as account evidence');
 assert.match(html,/rpc\('get_live_choice_comparison'/);
 assert.match(html,/detailDecisionForm/);
 assert.match(html,/rpc\('save_investment_decision'/);

@@ -27,7 +27,10 @@ try{
         var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstStamp=String;
         var metric=(name,value)=>'<div class="metric"><span>'+name+'</span><b>'+value+'</b></div>';
         var securityChart=()=>'',interpretTechnical=()=>'',thesisEditor=()=>'<form id="thesisForm"><textarea data-thesis-field="rationale"></textarea><button type="submit">저장</button><span id="thesisStatus"></span></form>';
-        var authFetch=async()=>({ok:true,json:async()=>[]});
+        var authFetch=async(_url,options)=>({ok:true,json:async()=>options&&options.method==='POST'?{
+          answer:'판단: 내 조건과 비교해야 합니다.\\n근거: 기록된 종가만 검증했습니다.\\n선택지: 목표 비중을 선택합니다.\\n다음 확인: 내 기준을 적습니다.',
+          analysis_id:'analysis-for-'+JSON.parse(options.body).symbol,history_saved:true,
+          response_kind:'validated_fallback',observation_at:'2026-09-26T12:10:00Z',external_sources:[]}:[]});
         if(!crypto.randomUUID)Object.defineProperty(crypto,'randomUUID',{value:()=> '12345678-1234-4234-8234-123456789abc'});
         var rpc=async function(name,p){
           if(name==='get_live_security_detail')throw Error('security not found');
@@ -35,6 +38,9 @@ try{
           if(name==='get_investment_thesis')return {thesis:{version:1,rationale:p.p_security_id==='held'?'My TEST reason':'My NEXT reason'}};
           if(name==='get_investment_decisions')return stored.filter(x=>x.security_id===p.p_security_id);
           if(name==='save_investment_decision'){stored.unshift({...p,security_id:p.p_security_id,reason:p.p_reason,review_condition:p.p_review_condition,choice:p.p_choice,created_at:'2026-09-26'});return {ok:true,id:'fixture-id'}};
+          if(name==='get_live_decision_metrics'){var value=p.p_symbol==='TEST'?10000:4000;return {
+            ok:true,observation_at:'2026-09-26T12:10:00Z',position:{symbol:p.p_symbol,value:value},
+            scenario:{assumption_pct:p.p_change_pct,impact_krw:value*p.p_change_pct/100}}};
           if(name==='get_live_choice_comparison')return {ok:true,observation_at:'2026-09-26',assets_before_krw:50000,current_cash_kb_krw:null,
             price_assumptions:{down_pct:p.p_down_pct,up_pct:p.p_up_pct},
             hold:{quantity:10,value_krw:10000,weight_pct:20,down_impact_krw:-1000,up_impact_krw:1000},
@@ -48,6 +54,13 @@ try{
     await page.getByText('My TEST reason').first().waitFor();
     await page.getByText('가격 차트와 기술지표').click();
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
+    await page.locator('#thesisAnalyze').click();
+    await page.getByText('−10%라면').waitFor();
+    assert.match(await page.locator('#thesisAnalysis').textContent(),/−10%라면.*-1,000원.*\+10%라면.*\+1,000원/s);
+    assert.match(await page.locator('#thesisAnalysis').textContent(),/서버 검증 답변 · 저장됨 · 계좌 관측/);
+    assert.match(await page.locator('#thesisAnalysis').textContent(),/공식 기업 실적·공시는 이번 답변의 근거에 포함되지 않았습니다/);
+    await page.getByRole('button',{name:'목표 비중으로 비교'}).click();
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
     await page.locator('#detailWeightTarget').fill('10');
     await page.locator('#detailWeightRun').click();
     await page.screenshot({path:`mobile-artifacts/choice-detail-${width}.png`});
@@ -59,8 +72,11 @@ try{
     await page.waitForFunction(()=>/저장 완료|저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     const saveMessage=await page.locator('#detailDecisionStatus').textContent();
     assert.match(saveMessage,/내 판단 저장 완료/,saveMessage);
+    assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-TEST',
+      'the user decision links to the saved analysis for the selected security');
     await page.evaluate(()=>window.openTestDetail('held'));
     await page.getByText('I can absorb this exposure').waitFor({state:'attached'});
+    assert.match(await page.locator('#detailDecisionSummary').textContent(),/지난 판단.*Recheck the reported operating result/);
     await page.evaluate(()=>window.openTestDetail('other'));
     await page.getByText('My NEXT reason').first().waitFor();
     assert.equal(await page.getByText('My TEST reason').count(),0);

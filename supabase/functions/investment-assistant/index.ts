@@ -290,7 +290,9 @@ function thesisReviewFallback(context:any){
   const priceThesis=/추세|돌파|거래량|이동평균|차트|가격/.test(rationale);
   const observed=verifiedPriceThesis(context);
   if(observed)return observed.join('\n')+'\n'+
-    '선택지: 이 비교를 내 기준으로 삼았다면 충족 여부에 따라 유지·변경을 검토하고, 다른 기준이라면 먼저 명시하세요.\n'+
+    (context.price_evidence.above_prior_20_closing_high?
+      '선택지: 이 비교를 내 보유 조건으로 정했다면 가격 근거를 더 살피고, 다른 기준이라면 그 조건부터 적으세요.\n':
+      '선택지: 이 비교를 내 보유 조건으로 정했다면 지금은 미충족입니다. 유지·축소에 따른 계좌 영향도 함께 비교하세요.\n')+
     '다음 확인: 내 돌파 기간·기준 가격과 후속 종가를 비교하고, 기업 근거가 필요한지도 점검하세요.';
   return '판단: 저장한 보유 이유는 이번 분석 자료만으로 아직 확인되지 않았습니다.\n'+
     (priceThesis?'근거: 추세 판단에 필요한 가격·거래량 시계열을 이번 분석에 사용하지 않았습니다.\n':

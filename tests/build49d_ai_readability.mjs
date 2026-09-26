@@ -80,6 +80,9 @@ assert.equal(review.price_evidence.latest_close,110);
 assert.equal(review.price_evidence.source_label,'KB 가격 원본');
 assert.equal(review.evidence_scope.price_comparison_is_user_rule,false);
 assert.match(fallback(withPrice),/110달러.*120달러/);
+assert.match(fallback(withPrice),/지금은 미충족입니다/,'reference threshold has a concrete conditional result');
+assert.match(fallback({...withPrice,price_evidence:{...verified,latest_close:130,above_prior_20_closing_high:true}}),
+  /가격 근거를 더 살피고/,'a reference breakout still does not become the user’s trading rule');
 assert.doesNotMatch(fallback(withPrice),/가격·거래량 시계열을 이번 분석에 사용하지/);
 const poor='판단: 최근 추세 돌파를 확인한다 — 한 문장.\n'+
   '지지: ARM 비중 23.43%가 상승 논리의 근거입니다.\n'+
