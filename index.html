@@ -447,7 +447,12 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
               d.appendChild(summary);d.appendChild(b);el.appendChild(d)})})
           .catch(function(){if(el.isConnected)el.textContent='지난 분석을 불러오지 못했습니다.'})};
       loadThesisPrior();
-      var choiceLabels={hold:'현재 유지',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류',revisit:'추가 확인 후 판단'},lastDetailAnalysisId=null,decisionRequestId=null,decisionRequestKey=null,lastComparison=null;
+      var choiceLabels={hold:'현재 유지',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류',revisit:'추가 확인 후 판단'},lastDetailAnalysisId=null,decisionRequestId=null,decisionRequestKey=null,lastComparison=null,lastComparisonDirty=false;
+      ['detailWeightTarget','detailDown','detailUp'].forEach(function(inputId){
+        document.getElementById(inputId).addEventListener('input',function(){if(lastComparison){
+          lastComparisonDirty=true;
+          document.getElementById('detailWeightResult').textContent='조건이 바뀌었습니다. 다시 비교해 주세요.';
+        }})});
       var reviewAnalyses=[];
       function renderDecisionHistory(rows){var node=document.getElementById('detailDecisionHistory');if(!node)return;
         node.textContent='';var latest=document.getElementById('detailDecisionSummary');if(latest)latest.remove();
@@ -490,7 +495,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
         ev.preventDefault();var submit=decisionForm.querySelector('button[type="submit"]'),status=document.getElementById('detailDecisionStatus'),reason=document.getElementById('detailReason').value.trim(),review=document.getElementById('detailReview').value.trim();
         if(!reason||!review){status.textContent='내 이유와 다시 볼 조건을 적어 주세요.';return}
         submit.disabled=true;status.textContent='내 판단 저장 중…';
-        try{if(lastComparison&&(Number(document.getElementById('detailWeightTarget').value)!==lastComparison.targetPct||
+        try{if(lastComparison&&(lastComparisonDirty||Number(document.getElementById('detailWeightTarget').value)!==lastComparison.targetPct||
           Number(document.getElementById('detailDown').value)!==lastComparison.downPct||
           Number(document.getElementById('detailUp').value)!==lastComparison.upPct))
           throw Error('비교 조건을 바꿨습니다. 변경된 조건으로 다시 계산해 주세요.');
@@ -512,13 +517,14 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
           field=document.getElementById(kind==='price'?'detailPriceChange':'detailWeightTarget'),value=Number(field.value);
         if(!field.value||!Number.isFinite(value)||(kind==='price'?(value< -90||value>100):(value<0||value>100))){output.textContent='입력 범위를 확인해 주세요.';return}
         button.disabled=true;output.textContent='현재 관측으로 계산 중…';
-        try{if(kind==='weight')lastComparison=null;
+        try{if(kind==='weight'){lastComparison=null;lastComparisonDirty=false}
           var down=Number(document.getElementById('detailDown').value),up=Number(document.getElementById('detailUp').value);
           if(kind==='weight'&&(!Number.isFinite(down)||!Number.isFinite(up)||down>=0||down< -90||up<=0||up>100))throw Error('하락·상승 가정 범위를 확인해 주세요.');
           var data=await rpc(kind==='price'?'get_live_decision_metrics':'get_live_choice_comparison',kind==='price'?{p_symbol:s.symbol,p_change_pct:value}:{p_symbol:s.symbol,p_target_pct:value,p_down_pct:down,p_up_pct:up});
           if(!data.ok)throw Error(['TARGET_EXCEEDS_CURRENT_WEIGHT','TARGET_MUST_BE_BELOW_CURRENT'].includes(data.reason)?'목표 비중은 현재 비중보다 낮아야 합니다.':data.reason||'평가시각을 확인할 수 없습니다.');
           if(kind==='price')output.textContent=s.symbol+' 평가액 '+money(data.position.value)+'이 '+value+'% 바뀌면 앱 합산 자산은 '+signedMoney(data.scenario.impact_krw)+' 변화 (나머지 자산·환율 고정).\nKB 보유 '+kstStamp(data.observation_at)+' · ISA 총액은 다른 시각의 관측입니다. 주문·확정 수익·예측이 아닙니다.';
-          else{output.innerHTML=comparisonHtml(data);lastComparison={targetPct:value,downPct:down,upPct:up,observationAt:data.observation_at}}
+          else{output.innerHTML=comparisonHtml(data);lastComparison={targetPct:value,downPct:down,upPct:up,observationAt:data.observation_at};
+            output.scrollIntoView({block:'start'})}
         }catch(e){output.textContent='계산 불가 · '+(e.message||'자료 확인 필요')}
         finally{button.disabled=false}
       };

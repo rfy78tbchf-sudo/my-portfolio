@@ -74,10 +74,16 @@ try{
     assert.ok(await page.locator('#detailWeightResult').getByText('현금으로 바뀌는 금액(참고)').isVisible());
     assert.equal(await page.locator('#detailWeightResult details').first().evaluate(node=>node.open),false,
       'quantity and calculation policy remain available but collapsed');
-    assert.ok(await page.locator('#detailWeightResult').getByText('+1,000원').isVisible());
-    assert.ok(await page.locator('#detailWeightResult').getByText('-500원').isVisible());
+    assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('+1,000원').isVisible());
+    assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('-500원').isVisible());
+    await page.locator('#detailWeightTarget').fill('9');
+    assert.match(await page.locator('#detailWeightResult').innerText(),/조건이 바뀌었습니다. 다시 비교해 주세요/);
+    await page.locator('#detailWeightTarget').fill('10');
     await page.locator('#detailReason').fill('I can absorb this exposure');
     await page.locator('#detailReview').fill('Recheck the reported operating result');
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건을 바꿨습니다/);
+    await page.locator('#detailWeightRun').click();
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.waitForFunction(()=>/저장 완료|저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     const saveMessage=await page.locator('#detailDecisionStatus').textContent();
