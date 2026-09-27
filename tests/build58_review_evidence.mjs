@@ -73,6 +73,10 @@ assert.equal(parsed.relation.status,'support');
 relationScope.json=JSON.stringify({...JSON.parse(json),source_phrase:'원문에 없는 실적 호조'});
 parsed=vm.runInContext('parseThesisReview(json,official,context)',relationScope);
 assert.equal(parsed.relation,null,'an invented supporting fact cannot enter the saved relation');
+relationScope.json=JSON.stringify({...JSON.parse(json),answer_ko:compact.replace('보유를 검토하되',
+  '저평가이므로 보유를 검토하되')});
+assert.equal(vm.runInContext('parseThesisReview(json,official,context)',relationScope).answer,null,
+  'an unsupported valuation conclusion is not a valid conditional opinion');
 const homeStart=html.indexOf('  function reviewHomeCard('),homeEnd=html.indexOf('  function benchmarkCard(',homeStart);
 assert.ok(homeStart>0&&homeEnd>homeStart);
 const homeScope=vm.createContext({esc:String,kstDate:()=> '2026-09-26',live:{

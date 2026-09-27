@@ -263,6 +263,7 @@ function readableThesisAnswer(raw:string,hasOfficialEvidence:boolean,priceEviden
   if(/비중|평가액|보유수량/.test(evidence)&&
     !/증거가 아니|근거가 아니|입증하지|별개|노출일 뿐/.test(evidence))return null;
   if(!hasOfficialEvidence&&/(최근|최신).{0,12}(실적|공시|가이던스|매출).{0,25}(증가|감소|상향|하향|확인됨)/.test(answer))return null;
+  if(/저평가|고평가|싸다|비싸다|상승 여력|내재가치|목표주가/.test(answer))return null;
   if(/추세.{0,12}(?:확인됐|확인됨|입증됐)|돌파가.{0,12}(?:확인됐|확인됨)|상승 추세.{0,12}(?:강|이어|유지)/.test(answer))return null;
   if(priceEvidenceReady&&/(?:가격|거래량|시계열).{0,18}(?:없|부재|제공되지|사용하지 않았)/.test(answer))return null;
   return answer;
