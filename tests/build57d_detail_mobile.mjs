@@ -26,7 +26,7 @@ try{
         var esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
         var num=(x,d)=>Number(x).toFixed(d),money=x=>Math.round(Number(x)).toLocaleString('ko-KR')+'원';
         var finiteMetric=x=>x==null||x===''?NaN:Number(x);
-        var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstStamp=String;
+        var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstStamp=String,weightPct=x=>Number(x).toFixed(1)+'%';
         var metric=(name,value)=>'<div class="metric"><span>'+name+'</span><b>'+value+'</b></div>';
         var securityChart=()=>'',interpretTechnical=()=>'',thesisEditor=()=>'<form id="thesisForm"><textarea data-thesis-field="rationale"></textarea><button type="submit">저장</button><span id="thesisStatus"></span></form>';
         var authFetch=async(_url,options)=>({ok:true,json:async()=>options&&options.method==='POST'?{
@@ -91,8 +91,9 @@ try{
     await page.waitForFunction(()=>/판단 저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
     assert.equal(await page.locator('#detailReview').inputValue(),'Recheck the reported operating result');
+    await page.evaluate(()=>document.getElementById('detailDecisionStatus').textContent='');
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    await page.waitForFunction(()=>/저장 완료/.test(document.getElementById('detailDecisionStatus').textContent));
+    await page.waitForFunction(()=>/저장 완료|저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     const saveMessage=await page.locator('#detailDecisionStatus').textContent();
     assert.match(saveMessage,/내 판단 저장 완료/,saveMessage);
     assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-TEST',
