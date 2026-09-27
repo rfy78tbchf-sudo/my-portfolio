@@ -7,13 +7,15 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const styles=html.slice(html.indexOf('<style>')+7,html.indexOf('</style>'));
 const start=html.indexOf('  function comparisonHtml('),end=html.indexOf('  function empty(',start);
 assert.ok(start>0&&end>start);
+const closeBinding=html.match(/var close=document\.getElementById\('detailClose'\);if\(close\)close\.onclick=function\(\)\{document\.getElementById\('detailModal'\)\.classList\.add\('hidden'\)\}/)?.[0];
+assert.ok(closeBinding,'test the close binding used by the real page');
 mkdirSync('mobile-artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true});
 try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});
-    await page.setContent(`<meta name="viewport" content="width=device-width,initial-scale=1"><style>${styles}</style><main class="shell"><div id="detailModal" class="detail-modal hidden"><div class="detail-sheet"><div class="detail-head"><b>종목 상세</b></div><div id="detailBody"></div></div></div></main>`);
-    await page.evaluate(source=>{
+    await page.setContent(`<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${styles}.detail-modal{--detail-safe-top:59px}.test-status-bar{position:fixed;inset:0 0 auto;height:59px;z-index:100;background:#ced5db;pointer-events:auto}</style><main class="shell"><div id="detailModal" class="detail-modal hidden"><div class="detail-sheet"><div class="detail-head"><div><b>종목 상세</b><div class="sub">보유 상태 · 내 논리 · 판단</div></div><button id="detailClose" class="close-btn" aria-label="닫기">×</button></div><div id="detailBody"></div></div></div></main><div class="test-status-bar" aria-hidden="true"></div>`);
+    await page.evaluate(({source,binding})=>{
       const fake=`
         var live={securityMap:{held:{id:'held',symbol:'TEST',name:'First issuer',currency:'USD'},other:{id:'other',symbol:'NEXT',name:'Second issuer',currency:'USD'}},
           holdings:[{security_id:'held',quantity:10,account_id:'own',as_of:'2026-09-26'},
@@ -51,9 +53,22 @@ try{
         };
       `;
       (0,eval)(fake+source+'\nwindow.openTestDetail=openSecurityDetail');
+      (0,eval)(binding);
       window.openTestDetail('held');
-    },html.slice(start,end));
+    },{source:html.slice(start,end),binding:closeBinding});
     await page.getByText('My TEST reason').first().waitFor();
+    const close=await page.locator('#detailClose').boundingBox();
+    const title=await page.locator('.detail-head b').boundingBox();
+    assert.ok(close.y>=59&&title.y>=59,`${width}px: title and X must clear the simulated iPhone status bar`);
+    assert.ok(close.width>=44&&close.height>=44,`${width}px: X must have a finger-sized hit target`);
+    await page.locator('.detail-head b').evaluate(node=>{node.textContent='에이알엠 홀딩스(ADR)';node.style.fontSize='24px'});
+    const enlargedClose=await page.locator('#detailClose').boundingBox();
+    assert.ok(enlargedClose.y>=59&&enlargedClose.x+enlargedClose.width<=width,
+      `${width}px: enlarged stock title must not push X into the status bar or off screen`);
+    await page.locator('#detailClose').click();
+    assert.ok(await page.locator('#detailModal').evaluate(node=>node.classList.contains('hidden')),
+      `${width}px: tapping the actual X binding must close the detail`);
+    await page.evaluate(()=>window.openTestDetail('held'));
     await page.getByText('가격 차트와 기술지표').click();
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
     await page.locator('#thesisAnalyze').click();
