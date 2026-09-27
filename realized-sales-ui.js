@@ -10,15 +10,19 @@
     function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function section(live,selectedPeriod,selectedAccount){
     var r=live&&live.realizedSales,accounts=live&&live.accounts||[];
+    if(live&&live.realizedSalesPeriod!==undefined&&
+      (live.realizedSalesPeriod!==selectedPeriod||live.realizedSalesAccount!==(selectedAccount||'')))r=null;
     var current=selectedAccount||(accounts.find(function(a){return a.provider==='kb_securities'})||{}).id;
     var opts=accounts.map(function(a){return '<option value="'+escape(a.id)+'"'+
       (current===a.id?' selected':'')+'>'+escape(a.name||'계좌')+'</option>'}).join('');
+    var choices=[['오늘','오늘'],['1W','최근 1주'],['1M','최근 1개월'],
+      ['THIS_MONTH','이번 달'],['3M','최근 3개월'],['6M','최근 6개월'],
+      ['YTD','올해'],['1Y','최근 1년'],['ALL','전체']];
     var controls='<div class="tool-row" style="margin:10px 0"><select id="realizedAccount" class="select" aria-label="매도손익 계좌">'+opts+
       '</select><select id="realizedPeriod" class="select" aria-label="매도손익 기간">'+
-      '<option value="1M"'+(selectedPeriod==='1M'?' selected':'')+'>최근 1개월</option>'+
-      '<option value="THIS_MONTH"'+(selectedPeriod==='THIS_MONTH'?' selected':'')+'>이번 달</option></select></div>';
+      choices.map(function(x){return '<option value="'+x[0]+'"'+(selectedPeriod===x[0]?' selected':'')+'>'+x[1]+'</option>'}).join('')+'</select></div>';
     if(!r||!r.ok)return '<section class="card" style="margin-top:12px"><h3>기간 중 매도손익</h3>'+
-      controls+'<div class="notice">매도별 계산을 불러오지 못했습니다. 계좌나 기간을 다시 선택해 주세요.</div></section>';
+      controls+'<div class="notice">'+(live&&live.realizedSalesLoading?'선택한 기간의 매도손익을 불러오는 중…':'매도별 계산을 불러오지 못했습니다. 계좌나 기간을 다시 선택해 주세요.')+'</div></section>';
     var items=r.items||[],names={calculated:'계산 완료',partial_date:'체결일 확인 필요',
       order_unverified:'거래 순서 확인 필요',cost_review:'원가 확인 필요',source_review:'원본 확인 필요'};
     var sums={},provisional={},groups={};

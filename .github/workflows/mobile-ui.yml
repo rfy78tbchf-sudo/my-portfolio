@@ -40,6 +40,7 @@ jobs:
       - run: node tests/build59_decision_flow.mjs
       - run: node tests/build59e_price_thesis_opinion.mjs
       - run: node tests/build60_reading_order_mobile.mjs
+      - run: node tests/build61_period_journey.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

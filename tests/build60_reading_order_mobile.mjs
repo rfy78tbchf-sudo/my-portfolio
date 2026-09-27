@@ -43,12 +43,21 @@ const scope={live,liveError:'',period:'1M',portfolioMarket:'ALL',portfolioAccoun
 vm.createContext(scope);
 function include(start,end){const a=source.indexOf('  function '+start+'('),b=source.indexOf('  function '+end+'(',a+10);assert.ok(a>0&&b>a);vm.runInContext(source.slice(a,b),scope)}
 include('periodLabel','chart');include('assetChart','securityChart');include('homeBrowseCard','cashFlowAuditCard');
+include('performanceScopeHeader','observedPerformanceCard');
 include('liveHome','demoPortfolio');include('livePortfolio','demoPerformance');include('livePerformance','analysis');
 const home=vm.runInContext('liveHome()',scope),holdings=vm.runInContext('livePortfolio()',scope),performance=vm.runInContext('livePerformance()',scope);
 assert.ok(home.indexOf('64,000,000원')<home.indexOf('보유 종목'));
 assert.ok(home.indexOf('보유 종목')<home.indexOf('자산 추이'));
 assert.ok(home.includes('자산 변화')&&home.includes('투자손익과 다릅니다'));
 assert.ok(!home.includes('원금 60,000,000원'));
+scope.period='6M';scope.live.performanceGate={ok:true,state:'unavailable'};
+scope.live.ledgerEstimate={ready:true,estimated_pnl_krw:987654321};
+const sixMonthHome=vm.runInContext('liveHome()',scope);
+assert.ok(!sixMonthHome.includes('987,654,321원')&&!sixMonthHome.includes('-90,000원'),
+  'an unavailable six-month result must not inherit the one-month summary or estimate');
+scope.period='1M';scope.live.performanceGate=live.performanceGate={ok:true,state:'estimated',partial:false,
+  reliable_start:'2026-08-27',observed_through:'2026-09-27',investment_pnl:-90000};
+scope.live.ledgerEstimate=null;
 assert.ok(holdings.includes('36주')&&holdings.includes('15,154,956원')&&holdings.includes('-600,000원'));
 assert.ok(!holdings.includes('원가단가'));
 assert.ok(performance.indexOf('종목별 확인된 실현손익')<performance.indexOf('실현손익·배당·비용과 계산 근거'));
