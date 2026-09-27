@@ -386,7 +386,7 @@ function priceThesisModelLines(raw:string){
 function priceThesisModelSelection(raw:string,context:any){
   const lines=priceThesisModelLines(raw);
   const unrelated=/공시|실적|가이던스|매출|라이선스|고객|회사 발표|기업 자료|사업 지표/;
-  const unsafe=/돌파.{0,12}(없었|실패|무너|붕괴)|매도.{0,8}(해야|확정)|적정 비중|목표 비중.{0,8}(적정|권고)/;
+  const unsafe=/돌파.{0,15}(없었|실패|무너|붕괴|확인됐|확인됨|입증됐|발생했|확인되지 않)|매도.{0,8}(해야|확정)|적정 비중|목표 비중.{0,8}(적정|권고)|(?:가격|거래량|시계열).{0,18}(?:없|부재|제공되지|사용하지 않았)/;
   const opinion=lines['판단']&&lines['판단'].length<=190&&
     /조건|다면|경우|전제|때는|때까지/.test(lines['판단'])&&
     /유보|축소|변경|매도|유지(?:를|할지|한다|하면| 검토)/.test(lines['판단'])&&

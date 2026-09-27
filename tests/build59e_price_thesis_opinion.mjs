@@ -55,6 +55,10 @@ assert.equal(vm.runInContext('priceThesisModelSelection(raw,context).usedModelFo
 scope.raw='판단: 돌파가 없었으므로 이 종목은 매도해야 합니다.\n다음 확인: 돌파 가격을 확인하세요.';
 assert.equal(vm.runInContext('priceThesisModelSelection(raw,context).usedModelForDecision',scope),false,
   'an invented historical failure and a sale command cannot become an opinion');
+scope.raw='판단: 과거 돌파가 확인됐으므로 내 유지 조건이 남아 있다면 계속 보유를 검토하세요.\n'+
+  '근거: 가격 시계열은 이번 분석에 없습니다.\n다음 확인: 돌파 기준 가격을 확인하세요.';
+assert.equal(vm.runInContext('priceThesisModelSelection(raw,context).usedModelForDecision',scope),false,
+  'independent extraction must still reject invented historical events');
 assert.match(edge,/answerStyle\(focus,priceOnlyThesis\)/);
 assert.match(edge,/priceOnlyThesis\?\(observed&&priceSelection\?\.opinion\)\|\|judgement/);
 assert.match(edge,/priceOnlyThesis\?priceSelection\?\.next/);
