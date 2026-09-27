@@ -81,7 +81,8 @@ try{
       'the decision must refer to the same observed comparison');
     await page.evaluate(()=>window.openTestDetail('held'));
     await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
-    assert.match(await page.locator('#detailDecisionSummary').textContent(),/I can absorb this exposure/);
+    await page.locator('#detailDecisionReview').waitFor({state:'attached'});
+    assert.match(await page.locator('#detailDecisionReview').textContent(),/I can absorb this exposure/);
     assert.match(await page.locator('#detailDecisionSummary').textContent(),/지난 판단.*Recheck the reported operating result/);
     await page.evaluate(()=>window.openTestDetail('other'));
     await page.getByText('My NEXT reason').first().waitFor();
