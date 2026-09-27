@@ -118,6 +118,18 @@ try{
       'a generic thesis answer cannot authorize a different comparison');
     await page.locator('#detailFreshReview').click();
     await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    // A broad dashboard read must not override the authenticated per-symbol
+    // calculation or falsely report that a holding disappeared.
+    await page.evaluate(()=>{
+      window.__loadLiveBeforeReadFailure=loadLive;
+      loadLive=async()=>{liveError='ONE_DASHBOARD_READ_FAILED';live={...live,holdings:[]}};
+    });
+    await page.locator('#detailFreshReview').click();
+    await page.getByText('전체 목록 조회에 실패했으나 종목별 비교는 서버의 새 계좌 관측으로 확인했습니다.').waitFor();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    assert.match(await page.locator('#detailWeightResult').innerText(),/5주 매도 가정.*5주 보유/);
+    assert.doesNotMatch(await page.locator('#detailWeightResult').innerText(),/보유되지 않습니다/);
+    await page.evaluate(()=>{loadLive=window.__loadLiveBeforeReadFailure;liveError=null});
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.waitForFunction(()=>/판단 저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
