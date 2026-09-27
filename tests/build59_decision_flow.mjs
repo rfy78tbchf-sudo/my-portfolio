@@ -61,6 +61,23 @@ assert.match(vm.runInContext('reviewHomeCard()',home),/저장한 종가 재검�
 assert.match(vm.runInContext('reviewHomeCard()',home),/자동 매도 신호는 아닙니다/);
 home.live.priceMeta['synthetic-arm'].latest.price_date='2026-09-25';
 assert.equal(vm.runInContext('reviewHomeCard()',home),'','a same-date reread is not a new trigger');
+const revisitStart=html.indexOf('  function decisionReviewHtml('),revisitEnd=html.indexOf('  function officialPeriodKo(',revisitStart);
+assert.ok(revisitStart>0&&revisitEnd>revisitStart);
+scope.kstDate=()=> '2026-09-27';
+scope.price=(n,c)=>`${n} ${c}`;
+scope.weightPct=n=>`${n}%`;
+scope.officialPeriodKo=()=> '분기';
+vm.runInContext(html.slice(revisitStart,revisitEnd),scope);
+scope.judgement={choice:'hold',reason:'synthetic reason',review_condition:'종가 300달러 이하',
+  created_at:'2026-09-25T12:00:00Z',price_snapshot:{price_date:'2026-09-25',close:310,currency:'USD'},
+  account_snapshot:{},scenario_snapshot:{},official_evidence_snapshot:{documents:[]}};
+scope.prices=[{price_date:'2026-09-25',close:299,currency:'USD'}];
+let review=vm.runInContext('decisionReviewHtml(judgement,prices,{items:[]},[])',scope);
+assert.match(review,/판단 이후 새 가격 변화는 아직 확인되지 않았습니다/);
+assert.doesNotMatch(review,/현재 상태 · 재검토 필요/);
+scope.prices=[{price_date:'2026-09-26',close:299,currency:'USD'}];
+review=vm.runInContext('decisionReviewHtml(judgement,prices,{items:[]},[])',scope);
+assert.match(review,/현재 상태 · 재검토 필요/);
 
 const trendStart=edge.indexOf('function priceTrendEvidence('),trendEnd=edge.indexOf('function questionContext(',trendStart);
 assert.ok(trendStart>0&&trendEnd>trendStart);
