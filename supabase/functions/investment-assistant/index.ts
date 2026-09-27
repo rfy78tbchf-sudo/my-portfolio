@@ -283,7 +283,7 @@ function decisionAccountBasis(context:any,metric:any){
     scope_state:metric.account_scope_state,quantity};
 }
 function answerStyle(focus:string,priceOnlyThesis=false){
-  if(focus==='thesis'&&priceOnlyThesis)return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 가격·추세 논리는 제공된 가격·거래량·기간과 사용자가 승인한 돌파 기준만으로 검토한다. 기업 공시나 실적의 유무를 돌파의 근거나 반증으로 쓰지 않는다. 판단은 당시 돌파 발생 여부, 현재 종가의 참고 고점 대비 상태, 사용자가 승인한 유지 조건을 구분해 조건부 의견을 제시한다. 당시 날짜나 기준이 없으면 과거 사건만 미확인으로 남긴다. 이전 20개 기록 최고 종가는 참고 비교이지 사용자 기준이 아니다. 거래량 배수만으로 돌파 확인을 단정하지 않는다. 선택지는 제공된 정수 수량 비교를 해석하되 목표 비중을 권고라 부르지 않는다. 다음 확인은 당시 돌파의 날짜·짧은 기준, 승인한 유지 조건과 후속 종가 중 필요한 것만 적는다. 실적·가이던스·기업 공시는 사업 논리를 따로 검토할 때만 사용한다. JSON의 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '가격 논리는 기업 공시로 판정하지 않음'으로 둔다. 가격 근거 외의 새로운 사실을 만들지 않는다. 내부 코드나 ISO 시각을 적지 않는다.`;
+  if(focus==='thesis'&&priceOnlyThesis)return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 판단 줄에는 계좌의 유지·축소·유보 중 무엇을 어떤 조건에서 검토할지 의견을 쓰고, 확인하라는 질문만 반복하지 않는다. 이 줄에는 수치나 기업 실적을 쓰지 않는다. 가격·추세 논리는 제공된 가격·거래량·기간과 사용자가 승인한 돌파 기준만으로 검토한다. 기업 공시나 실적의 유무를 돌파의 근거나 반증으로 쓰지 않는다. 당시 돌파 발생 여부, 현재 종가의 참고 고점 대비 상태, 사용자가 승인한 유지 조건을 분리한다. 당시 날짜나 기준이 없으면 과거 사건만 미확인으로 남긴다. 이전 20개 기록 최고 종가는 참고 비교이지 사용자 기준이 아니다. 거래량 배수만으로 돌파 확인을 단정하지 않는다. 선택지는 제공된 정수 수량 비교를 해석하되 목표 비중을 권고라 부르지 않는다. 다음 확인은 당시 돌파의 날짜·짧은 기준, 승인한 유지 조건과 후속 종가 중 필요한 것만 적는다. 실적·가이던스·기업 공시는 사업 논리를 따로 검토할 때만 사용한다. JSON의 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '가격 논리는 기업 공시로 판정하지 않음'으로 둔다. 가격 근거 외의 새로운 사실을 만들지 않는다. 내부 코드나 ISO 시각을 적지 않는다.`;
   if(focus==='thesis')return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 판단은 사용자 전제를 공식 사실과 계좌 비중에서 분리한 조건부 의견이어야 한다. 근거는 공식 문서에 실제로 있는 사실과 발표일·대상 기간을 짧게 연결하고 반대 해석 또는 미확인 부분을 숨기지 않는다. 비중·평가액은 투자 논리의 증거가 아니다. 선택지는 사업의 적절성과 보유 비중의 적절성을 구분하고 유지와 변경을 가르는 조건을 설명한다. 다음 확인은 실제 실적·사업 지표 또는 사용자가 쓴 기준이어야 한다.\nJSON의 relation은 support, weaken, mixed, unverified 중 하나다. 사용자 논리와 실제 공식 자료의 관계만 판단한다. premise_ko는 사용자 원문에서 확인되는 전제 하나만 짧게 인용한다. source_phrase는 제공된 public_company_evidence.summary에 실제 연속으로 등장하는 한국어 근거 구절을 그대로 5자 이상 복사한다. relation_ko는 그 구절이 전제를 왜 지지하거나 약화하는지 90자 이내로 설명한다. 공식 자료가 없거나 관계가 확인되지 않으면 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '이번 자료로는 판단할 수 없음'으로 한다. 서로 다른 보유 논리를 만들어내지 않는다.\nprior_user_decision은 실제 저장한 판단이지 매매가 아니다. since_decision.publication_after_decision=false면 자료를 다시 찾았더라도 새 변화라고 말하지 않는다. 이전 판단 때 공개되지 않았던 자료를 당시 알았던 근거로 쓰지 않는다. 가격 기록의 20일 비교는 사용자의 매매 규칙이 아니다. 내부 코드, ISO 시각, 원장 상태, 증거 없는 기업 사실은 적지 않는다.`;
   const headline=focus==='risk'?'가장 큰 위험':focus==='performance'?'기간 성과':
     focus==='realized'?'매도 손익':focus==='thesis'?'보유 논리':'핵심';
@@ -362,21 +362,48 @@ function verifiedPriceThesis(context:any){
       (ratio==null?'':' · 거래량 이전 평균 대비 '+amount(ratio)+'배 (판정 기준 미정)')+
       ' ('+sourceLabel+(userRule?', 저장 기준':', 참고 비교')+').'];
 }
-function priceThesisModelSelection(readable:string|null,context:any){
-  const lines=readable?.split('\n')||[];
+function priceThesisModelLines(raw:string){
+  // The observed price evidence and comparison are supplied by the server.
+  // A verbose or malformed evidence line must not discard an otherwise safe
+  // conditional model opinion. Extract labelled lines independently instead.
+  const content=String(raw||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+  let parsed:any=null;
+  try{parsed=JSON.parse(content)}catch{/* Plain four-line model answers also occur. */}
+  const answer=typeof parsed?.answer_ko==='string'?parsed.answer_ko:
+    Array.isArray(parsed?.answer_ko)?parsed.answer_ko.join('\n'):content;
+  const cleaned=String(answer).replace(/\*\*/g,'').trim();
+  const matches=Array.from(cleaned.matchAll(/(?:^|\n)\s*(?:[-*]\s*)?(판단|근거|선택지|다음 확인)\s*[:：]\s*/g));
+  const lines:Record<string,string>={};
+  for(let i=0;i<matches.length;i++){
+    const match=matches[i],label=match[1];
+    if(label in lines)continue;
+    const value=cleaned.slice(match.index!+match[0].length,
+      matches[i+1]?.index??cleaned.length).replace(/\s+/g,' ').trim();
+    if(value)lines[label]=label+': '+value;
+  }
+  return lines;
+}
+function priceThesisModelSelection(raw:string,context:any){
+  const lines=priceThesisModelLines(raw);
   const unrelated=/공시|실적|가이던스|매출|라이선스|고객|회사 발표|기업 자료|사업 지표/;
-  const unsafe=/돌파.{0,12}(없었|실패|무너|붕괴)|매도.{0,8}(해야|확정)|적정 비중/;
-  const opinion=lines[0]&&/조건|유지|확인|검토|미확인|유보/.test(lines[0])&&
-    !unrelated.test(lines[0])&&!unsafe.test(lines[0])?lines[0]:null;
-  const choice=lines[2]&&!unrelated.test(lines[2])&&!unsafe.test(lines[2])?lines[2]:null;
-  const next=lines[3]&&/기준|돌파|종가|가격|거래량|추세/.test(lines[3])&&
-    !unrelated.test(lines[3])&&!unsafe.test(lines[3])?lines[3]:null;
+  const unsafe=/돌파.{0,12}(없었|실패|무너|붕괴)|매도.{0,8}(해야|확정)|적정 비중|목표 비중.{0,8}(적정|권고)/;
+  const opinion=lines['판단']&&lines['판단'].length<=190&&
+    /조건|다면|경우|전제|때는|때까지/.test(lines['판단'])&&
+    /유보|축소|변경|매도|유지(?:를|할지|한다|하면| 검토)/.test(lines['판단'])&&
+    !/\d/.test(lines['판단'])&&!unrelated.test(lines['판단'])&&
+    !unsafe.test(lines['판단'])?lines['판단']:null;
+  const choice=lines['선택지']&&lines['선택지'].length<=190&&
+    !unrelated.test(lines['선택지'])&&!unsafe.test(lines['선택지'])?lines['선택지']:null;
+  const next=lines['다음 확인']&&lines['다음 확인'].length<=190&&
+    /기준|돌파|종가|가격|거래량|추세/.test(lines['다음 확인'])&&
+    !unrelated.test(lines['다음 확인'])&&!unsafe.test(lines['다음 확인'])?
+    lines['다음 확인']:null;
   const approved=!!context.price_evidence?.approved_rule;
   return {opinion,choice:choice||'선택지: 내 기준의 유지 여부와 계좌 영향을 확인한 뒤 유지 또는 변경을 판단하세요.',
     next:next||(approved?
     '다음 확인: 승인한 돌파 기준의 이후 종가와 저장한 재검토 조건을 대조하세요.':
     '다음 확인: 당시 돌파 날짜와 내 기준을 확인한 뒤 후속 종가와 비교하세요.'),
-    usedModel:!!(opinion||choice||next),usedModelForDecision:!!(opinion||next)};
+    usedModel:!!(choice||next),usedModelForDecision:!!opinion};
 }
 function thesisReviewFallback(context:any){
   const rationale=String(context.thesis?.rationale||'');
@@ -805,7 +832,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       const observed=verifiedPriceThesis(context);
       const review=parseThesisReview(modelAnswer,publicEvidence,context);
       const readable=review.answer;
-      const priceSelection=priceOnlyThesis?priceThesisModelSelection(readable,context):null;
+      const priceSelection=priceOnlyThesis?priceThesisModelSelection(modelAnswer,context):null;
       thesisRelation=review.relation;
       answer=readable||thesisReviewFallback(context);
       if(decisionReview&&reviewComparison?.ok){
@@ -815,7 +842,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
         const judgement=observed?.[0]||'판단: 당시 돌파 기준과 발생 시점은 아직 확인되지 않았습니다.';
         // Keep the actual model's conditional opinion, but do not let a
         // reference comparison deny a past event or invent a sale signal.
-        const modelOpinion=priceOnlyThesis?priceSelection?.opinion||judgement:
+        const modelOpinion=priceOnlyThesis?(observed&&priceSelection?.opinion)||judgement:
           readable&&/조건|유지|확인|검토/.test(lines[0])&&
           !/돌파.{0,12}(없었|실패|무너|붕괴)|매도.{0,8}(해야|확정)/.test(lines[0])?
           lines[0]:judgement;
@@ -834,8 +861,9 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       }else if(priceOnlyThesis&&!observed){
         answer=thesisReviewFallback(context);
       }
-      responseKind=priceOnlyThesis&&(!observed||!(decisionReview?
-        priceSelection?.usedModelForDecision:priceSelection?.usedModel))?'validated_fallback':
+      responseKind=priceOnlyThesis?
+        (observed&&(decisionReview?priceSelection?.usedModelForDecision:
+          readable&&priceSelection?.usedModel)?'model_interpretation_server_metrics':'validated_fallback'):
         readable?(observed?'model_interpretation_server_metrics':'model'):'validated_fallback';
     }else if(focus==='weight'&&weightScenario?.ok){
       const s=weightScenario.reduce,p=weightScenario.hold,a=weightScenario.price_assumptions;

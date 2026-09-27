@@ -279,6 +279,44 @@ const countAfterPrice=modelCalls;
 result=await thesisAsk('42345678-1234-4234-8234-123456789abc');
 assert.equal(result.body.reused_saved_analysis,true);
 assert.equal(modelCalls,countAfterPrice,'reopening a saved analysis never calls the model');
+// A real decision review uses the independently checked model opinion with
+// server price evidence and integer-share comparison, even when the model's
+// discarded evidence line is too long to pass the full prose validator.
+state='unused';history=[];
+const scopedBeforeReview=runtime.scopedRequest;
+runtime.scopedRequest=async(token,path,post)=>path==='rpc/get_live_choice_comparison'?
+  {ok:true,position_currency:'USD',price_assumptions:{down_pct:-10,up_pct:10},
+    hold:{down_impact_krw:-1515496,up_impact_krw:1515496},
+    reduce:{mode:'integer_shares',shares_to_sell:13,quantity_reference:23,weight_pct:14.97,
+      down_impact_krw:-968233,up_impact_krw:968233,cash_increase_krw:5472623}}:
+  scopedBeforeReview(token,path,post);
+vm.runInContext('scopedRequest=globalThis.scopedRequest',runtime);
+modelReply={id:'conditional-price-opinion',status:'completed',output_text:JSON.stringify({
+  answer_ko:'판단: 내 유지 조건이 확인되기 전에는 매도 결론을 유보하고, 조건에서 이탈했다면 축소를 검토하세요.\n'+
+    '근거: 종가 비교에 개인이 정한 추세선과 계좌 비중이 뒤섞여 있어 근거로 쓸 수 없습니다. '.repeat(4)+'\n'+
+    '선택지: 정수 주식과 원화 상당액은 서버 계산을 사용하세요.\n'+
+    '다음 확인: 당시 돌파 날짜와 내가 정한 기준 가격을 확인해 후속 종가와 대조하세요.'}),
+  usage:{total_tokens:84}};
+const reviewId='62345678-1234-4234-8234-123456789abc';
+const reviewAsk=()=>handler(new Request('https://example.test/functions/v1/investment-assistant',{
+  method:'POST',headers:{origin:'https://rfy78tbchf-sudo.github.io',authorization:'Bearer mock-user-token',
+    'content-type':'application/json'},body:JSON.stringify({action:'decision-review',request_id:reviewId,
+    symbol:'TEST',question:'저장된 보유 논리를 검토해 줘',target_pct:15,down_pct:-10,up_pct:10})
+})).then(async r=>({code:r.status,body:await r.json()}));
+result=await reviewAsk();
+assert.equal(result.code,200);
+assert.equal(result.body.response_kind,'model_interpretation_server_metrics');
+assert.match(result.body.answer,/판단: 내 유지 조건이 확인되기 전에는/);
+assert.match(result.body.answer,/13주 축소 시 23주·14\.97%/);
+assert.match(result.body.answer,/USD 현금 5,472,623원 상당/);
+assert.doesNotMatch(result.body.answer,/계좌 비중이 뒤섞여/);
+assert.equal(history[0].comparison_evidence.reduce.shares_to_sell,13);
+const reviewModelCalls=modelCalls;
+result=await reviewAsk();
+assert.equal(result.body.reused_saved_analysis,true);
+assert.equal(modelCalls,reviewModelCalls,'reopening a verified model opinion does not call it again');
+runtime.scopedRequest=scopedBeforeReview;
+vm.runInContext('scopedRequest=globalThis.scopedRequest',runtime);
 state='unused';history=[];
 modelReply={id:'incorrect-missing-price',status:'completed',output:[{type:'message',content:[{
   type:'output_text',text:'판단: 추세는 아직 알 수 없습니다.\n'+

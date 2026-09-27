@@ -4,7 +4,7 @@ import {stripTypeScriptTypes} from 'node:module';
 import vm from 'node:vm';
 
 const edge=readFileSync(new URL('../supabase/functions/investment-assistant/index.ts',import.meta.url),'utf8');
-const from=edge.indexOf('function verifiedPriceThesis(');
+const from=edge.indexOf('function readableThesisAnswer(');
 const to=edge.indexOf('function thesisReviewFallback(',from);
 assert.ok(from>0&&to>from);
 const scope=vm.createContext({String,Number,Math});
@@ -32,10 +32,30 @@ scope.readable='판단: 당시 돌파는 기준과 날짜가 없어 미확인이
   '선택지: 가격 기준과 하락 영향, 상승 참여를 함께 비교하세요.\n'+
   '다음 확인: 돌파 당시 날짜와 기준 가격을 확인한 뒤 이후 종가를 비교하세요.';
 selected=vm.runInContext('priceThesisModelSelection(readable,context)',scope);
-assert.equal(selected.usedModelForDecision,true);
-assert.match(selected.opinion,/당시.*미확인/);
+assert.equal(selected.usedModelForDecision,false,'a checklist alone is not an investment opinion');
 assert.match(selected.next,/이후 종가/);
+// The full four-line validator correctly rejects this long and misleading
+// evidence line, but the independently validated conditional opinion can be
+// retained while the server replaces the evidence and all scenario numbers.
+const verbose=JSON.stringify({answer_ko:'판단: 사용자 유지 조건을 아직 확인하지 못했다면 매도 판단은 유보하고, 조건을 확인한 뒤에만 축소를 검토하세요.\n'+
+  '근거: 현재 종가와 참고 고점, 계좌 비중, 보유 평가액은 모두 다른 뜻입니다. '.repeat(5)+'\n'+
+  '선택지: 모델이 계산한 수량은 표시하지 않습니다.\n'+
+  '다음 확인: 과거 돌파 날짜와 기준 가격을 확인하고 이후 종가와 대조하세요.'});
+scope.raw=verbose;
+scope.evidence=null;
+assert.equal(vm.runInContext('parseThesisReview(raw,evidence,context).answer',scope),null);
+selected=vm.runInContext('priceThesisModelSelection(raw,context)',scope);
+assert.equal(selected.usedModelForDecision,true);
+assert.match(selected.opinion,/매도 판단은 유보/);
+scope.raw='```json\n'+verbose+'\n```';
+assert.match(vm.runInContext('priceThesisModelSelection(raw,context).opinion',scope),/매도 판단은 유보/);
+scope.raw='판단: 기준 미확정이므로 확인하세요.\n다음 확인: 돌파 기준을 확인하세요.';
+assert.equal(vm.runInContext('priceThesisModelSelection(raw,context).usedModelForDecision',scope),false,
+  'a model checklist is not a conditional model opinion');
+scope.raw='판단: 돌파가 없었으므로 이 종목은 매도해야 합니다.\n다음 확인: 돌파 가격을 확인하세요.';
+assert.equal(vm.runInContext('priceThesisModelSelection(raw,context).usedModelForDecision',scope),false,
+  'an invented historical failure and a sale command cannot become an opinion');
 assert.match(edge,/answerStyle\(focus,priceOnlyThesis\)/);
-assert.match(edge,/priceOnlyThesis\?priceSelection\?\.opinion\|\|judgement/);
+assert.match(edge,/priceOnlyThesis\?\(observed&&priceSelection\?\.opinion\)\|\|judgement/);
 assert.match(edge,/priceOnlyThesis\?priceSelection\?\.next/);
 console.log('Price-only opinion preserves historical uncertainty and filters unrelated filings and follow-up');
