@@ -22,7 +22,7 @@ let summary={return_ready:true,return_exact:true,period_start:'2026-09-24',
   start_snapshot_date:'2026-09-24',end_snapshot_date:'2026-09-25',
   investment_pnl:1_865_286,return_pct:3.064};
 testScope.scopedRequest=async(_token,path)=>{
-  if(path.startsWith('accounts?'))return [{id:'synthetic-account'}];
+  if(path.startsWith('accounts?'))return [{id:'00000000-0000-4000-8000-000000000001'}];
   if(path.startsWith('live_cash_observation_bridges?'))return bridgeResult;
   if(path.startsWith('rpc/get_live_performance_summary'))return summary;
   if(path.startsWith('rpc/get_live_reliable_performance'))return observedResult;

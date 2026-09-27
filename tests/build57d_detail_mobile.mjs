@@ -22,6 +22,7 @@ try{
             {security_id:'other',account_id:'own',valuation_krw:4000,pnl_krw:-100}],accounts:[{id:'own',name:'Fixture only'}],settlementBasis:[],
           decisionMetrics:{ok:true,position:{symbol:'TEST',weight_pct:20}}};
         var detailLoading=false,stored=[],SUPABASE_URL='https://example.invalid',SUPABASE_KEY='test-only';
+        var edgeSync=async()=>({ok:true}),loadLive=async()=>live;
         var esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
         var num=(x,d)=>Number(x).toFixed(d),money=x=>Math.round(Number(x)).toLocaleString('ko-KR')+'원';
         var finiteMetric=x=>x==null||x===''?NaN:Number(x);
@@ -42,10 +43,10 @@ try{
           if(name==='get_live_decision_metrics'){var value=p.p_symbol==='TEST'?10000:4000;return {
             ok:true,observation_at:'2026-09-26T12:10:00Z',position:{symbol:p.p_symbol,value:value},
             scenario:{assumption_pct:p.p_change_pct,impact_krw:value*p.p_change_pct/100}}};
-          if(name==='get_live_choice_comparison')return {ok:true,observation_at:'2026-09-26',assets_before_krw:50000,current_cash_kb_krw:null,
+          if(name==='get_live_choice_comparison')return {ok:true,observation_at:'2026-09-26',denominator:{value:50000},assets_before_krw:50000,current_cash_kb_krw:null,
             price_assumptions:{down_pct:p.p_down_pct,up_pct:p.p_up_pct},
             hold:{quantity:10,value_krw:10000,weight_pct:20,down_impact_krw:-1000,up_impact_krw:1000},
-            reduce:{quantity_reference:5,value_krw:5000,weight_pct:10,cash_increase_krw:5000,down_impact_krw:-500,up_impact_krw:500}};
+            reduce:{mode:'integer_shares',shares_to_sell:5,quantity_reference:5,value_krw:5000,weight_pct:10,cash_increase_krw:5000,down_impact_krw:-500,up_impact_krw:500}};
           throw Error('unexpected '+name)
         };
       `;
@@ -71,7 +72,7 @@ try{
     await page.screenshot({path:`mobile-artifacts/choice-detail-${width}.png`});
     assert.match(await page.locator('#detailWeightResult').innerText(),
       /줄이면 하락 영향은 500원 작아지고, 상승 참여도 500원 줄어듭니다/);
-    assert.ok(await page.locator('#detailWeightResult').getByText('매도대금의 원화 환산액(참고)').isVisible());
+    assert.ok(await page.locator('#detailWeightResult').getByText(/매도대금 원화 현금/).isVisible());
     assert.equal(await page.locator('#detailWeightResult details').first().evaluate(node=>node.open),false,
       'quantity and calculation policy remain available but collapsed');
     assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('+1,000원').isVisible());
@@ -82,8 +83,9 @@ try{
     await page.locator('#detailReason').fill('I can absorb this exposure');
     await page.locator('#detailReview').fill('Recheck the reported operating result');
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건을 바꿨습니다/);
-    await page.locator('#detailWeightRun').click();
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/최신 자료로 다시 점검/);
+    await page.locator('#detailFreshReview').click();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.waitForFunction(()=>/저장 완료|저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     const saveMessage=await page.locator('#detailDecisionStatus').textContent();

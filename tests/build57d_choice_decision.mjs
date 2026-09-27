@@ -15,7 +15,7 @@ const context=vm.createContext({money:n=>Math.round(Number(n)).toLocaleString('k
 vm.runInContext(html.slice(from,to),context);
 const report={ok:true,hold:{value_krw:10000,quantity:10,weight_pct:20,
   down_impact_krw:-1000,up_impact_krw:1000},
-  reduce:{value_krw:5000,quantity_reference:5,weight_pct:10,cash_increase_krw:5000,
+  reduce:{value_krw:5000,quantity_reference:5,shares_to_sell:5,mode:'integer_shares',weight_pct:10,cash_increase_krw:5000,
     down_impact_krw:-500,up_impact_krw:500},
   price_assumptions:{down_pct:-10,up_pct:10},current_cash_kb_krw:null,
   assets_before_krw:50000,observation_at:'test-basis'};
@@ -27,7 +27,8 @@ assert.match(rendered,/\+1,000원/);
 assert.match(rendered,/\-500원/);
 assert.match(rendered,/\+500원/);
 assert.match(rendered,/줄이면 하락 영향은 500원 작아지고, 상승 참여도 500원 줄어듭니다/);
-assert.match(rendered,/매도대금의 원화 환산액\(참고\)/);
+assert.match(rendered,/5주 매도 가정 · 5주 보유/);
+assert.match(rendered,/매도대금 원화 현금 · 원화 상당액/);
 context.report={...report,position_currency:'USD',current_cash_kb_krw:400};
 const dollarCash=vm.runInContext('comparisonHtml(report)',context);
 assert.match(dollarCash,/USD 현금 보유 가정/);
