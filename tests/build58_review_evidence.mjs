@@ -6,6 +6,25 @@ import vm from 'node:vm';
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const sql=readFileSync(new URL('../supabase/build58_review_evidence.sql',import.meta.url),'utf8');
 const edge=readFileSync(new URL('../supabase/functions/investment-assistant/index.ts',import.meta.url),'utf8');
+const basisSql=readFileSync(new URL('../supabase/build58e_decision_basis.sql',import.meta.url),'utf8');
+const basisStart=edge.indexOf('function decisionAccountBasis('),basisEnd=edge.indexOf('function answerStyle(',basisStart);
+assert.ok(basisStart>0&&basisEnd>basisStart);
+const basisScope=vm.createContext({Number});
+vm.runInContext(stripTypeScriptTypes(edge.slice(basisStart,basisEnd)),basisScope);
+const metric={ok:true,observation_at:'old-fetch',position:{symbol:'ARM',value:15154956},
+  denominator:{value:64688793,kb_response_value:55538715,manual_overlay:9150078},account_scope_state:'verified'};
+const account={selected_security:{id:'arm-id',symbol:'ARM'},holdings:[{security_id:'arm-id',quantity:20},
+  {security_id:'other-id',quantity:99},{security_id:'arm-id',quantity:16}]};
+const first=basisScope.decisionAccountBasis(account,metric);
+assert.equal(first.quantity,36);
+assert.deepEqual(basisScope.decisionAccountBasis(account,{...metric,observation_at:'new-fetch'}),first,
+  'a refresh of the same facts must not invalidate the evidence basis');
+assert.notDeepEqual(basisScope.decisionAccountBasis(account,{...metric,position:{...metric.position,value:15154957}}),first);
+assert.notDeepEqual(basisScope.decisionAccountBasis({...account,holdings:[{security_id:'arm-id',quantity:35}]},metric),first);
+assert.equal(basisScope.decisionAccountBasis(account,{...metric,position:{...metric.position,symbol:'OTHER'}}),null);
+assert.match(basisSql,/v_history\.account_basis is distinct from v_current_basis/);
+assert.match(basisSql,/v_history\.thesis_version is distinct from v_current_version/);
+assert.match(basisSql,/account observation changed; refresh analysis/);
 const start=html.indexOf('  function decisionReviewHtml('),end=html.indexOf('  function aiSourceLinks(',start);
 assert.ok(start>0&&end>start);
 const scope=vm.createContext({esc:s=>String(s),kstStamp:s=>String(s),price:(n,c)=>`${n} ${c}`,
@@ -72,7 +91,14 @@ let parsed=vm.runInContext('parseThesisReview(json,official,context)',relationSc
 assert.equal(parsed.relation.status,'support');
 relationScope.json=JSON.stringify({...JSON.parse(json),source_phrase:'원문에 없는 실적 호조'});
 parsed=vm.runInContext('parseThesisReview(json,official,context)',relationScope);
-assert.equal(parsed.relation,null,'an invented supporting fact cannot enter the saved relation');
+assert.equal(parsed.relation.status,'unverified','an invented supporting fact cannot enter the saved relation');
+assert.equal(parsed.answer,null,'an unsupported official claim must not reach the model answer');
+relationScope.context={...context,thesis:{rationale:'최근 추세돌파(상승추세)',version:2}};
+relationScope.json=json;
+parsed=vm.runInContext('parseThesisReview(json,official,context)',relationScope);
+assert.equal(parsed.relation.status,'unverified','a company filing is not proof of a price breakout');
+assert.match(parsed.relation.interpretation_ko,/가격·거래량 전제는 기업 공시로 직접 검증할 수 없습니다/);
+relationScope.context=context;
 relationScope.json=JSON.stringify({...JSON.parse(json),answer_ko:compact.replace('보유를 검토하되',
   '저평가이므로 보유를 검토하되')});
 assert.equal(vm.runInContext('parseThesisReview(json,official,context)',relationScope).answer,null,

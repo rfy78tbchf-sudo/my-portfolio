@@ -31,6 +31,10 @@ assert.doesNotMatch(view,/data-decision-detail="unheld-duplicate"/);
 assert.match(view,/AI 의견 받기/);
 assert.match(view,/내 목표 비중/);
 assert.doesNotMatch(view,/수익률 20%|원장 사건/);
+account.reviewDecisions=[{security_id:'synthetic-security',choice:'hold'}];
+assert.equal(vm.runInContext('decisionHomeCard()',scope),'',
+  'a saved judgment must not resurface the same concentration as a new urgent issue');
+account.reviewDecisions=[];
 account.risk.valuation_time_aligned=false;
 view=vm.runInContext('decisionHomeCard()',scope);
 assert.match(view,/평가시각 대조 필요/);

@@ -245,6 +245,18 @@ function questionContext(context:any,focus:string){
     period_evidence:context.period_evidence,
     affected_security:context.affected_security};
 }
+function decisionAccountBasis(context:any,metric:any){
+  const selected=context.selected_security;
+  if(!metric?.ok||!selected?.id||metric.position?.symbol!==selected.symbol)return null;
+  const quantity=context.holdings.filter((h:any)=>h.security_id===selected.id)
+    .reduce((total:number,h:any)=>total+Number(h.quantity||0),0);
+  if(!Number.isFinite(quantity))return null;
+  return {symbol:selected.symbol,position_value_krw:metric.position.value,
+    denominator_value_krw:metric.denominator.value,
+    kb_response_value:metric.denominator.kb_response_value,
+    isa_total_value:metric.denominator.manual_overlay,
+    scope_state:metric.account_scope_state,quantity};
+}
 function answerStyle(focus:string){
   if(focus==='thesis')return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 판단은 사용자 전제를 공식 사실과 계좌 비중에서 분리한 조건부 의견이어야 한다. 근거는 공식 문서에 실제로 있는 사실과 발표일·대상 기간을 짧게 연결하고 반대 해석 또는 미확인 부분을 숨기지 않는다. 비중·평가액은 투자 논리의 증거가 아니다. 선택지는 사업의 적절성과 보유 비중의 적절성을 구분하고 유지와 변경을 가르는 조건을 설명한다. 다음 확인은 실제 실적·사업 지표 또는 사용자가 쓴 기준이어야 한다.\nJSON의 relation은 support, weaken, mixed, unverified 중 하나다. 사용자 논리와 실제 공식 자료의 관계만 판단한다. premise_ko는 사용자 원문에서 확인되는 전제 하나만 짧게 인용한다. source_phrase는 제공된 public_company_evidence.summary에 실제 연속으로 등장하는 한국어 근거 구절을 그대로 5자 이상 복사한다. relation_ko는 그 구절이 전제를 왜 지지하거나 약화하는지 90자 이내로 설명한다. 공식 자료가 없거나 관계가 확인되지 않으면 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '이번 자료로는 판단할 수 없음'으로 한다. 서로 다른 보유 논리를 만들어내지 않는다.\nprior_user_decision은 실제 저장한 판단이지 매매가 아니다. since_decision.publication_after_decision=false면 자료를 다시 찾았더라도 새 변화라고 말하지 않는다. 이전 판단 때 공개되지 않았던 자료를 당시 알았던 근거로 쓰지 않는다. 가격 기록의 20일 비교는 사용자의 매매 규칙이 아니다. 내부 코드, ISO 시각, 원장 상태, 증거 없는 기업 사실은 적지 않는다.`;
   const headline=focus==='risk'?'가장 큰 위험':focus==='performance'?'기간 성과':
@@ -274,13 +286,21 @@ function parseThesisReview(raw:string,evidence:any,context:any){
   const answer=readableThesisAnswer(String(parsed?.answer_ko||raw),!!evidence,!!context.price_evidence?.ready);
   if(!answer)return {answer:null,relation:null};
   if(!parsed||!evidence?.summary||!String(context.thesis?.rationale||'').trim())return {answer,relation:null};
+  const rationale=String(context.thesis.rationale||'');
+  const priceOnly=/추세|돌파|거래량|이동평균|차트|가격/.test(rationale)&&
+    !/매출|이익|실적|사업|수요|성장|제품|고객|현금|라이선스/.test(rationale);
+  const unverified={status:'unverified',premise_ko:rationale.slice(0,90),
+    interpretation_ko:priceOnly?'가격·거래량 전제는 기업 공시로 직접 검증할 수 없습니다. 가격 기록과 본인이 정한 조건을 비교하세요.':
+      '이번 공식 자료에서 보유 이유를 직접 지지하거나 약화하는 근거를 확인하지 못했습니다.',
+    thesis_version:context.thesis.version||null,kind:'evidence_link_unverified'};
+  if(priceOnly)return {answer:null,relation:unverified};
   const state=String(parsed.relation||''),phrase=String(parsed.source_phrase||'').trim();
   const summary=String(evidence.summary||'');
   const valid=['support','weaken','mixed'].includes(state)&&phrase.length>=5&&
     summary.includes(phrase)&&String(parsed.relation_ko||'').trim().length>=12;
-  if(!valid)return {answer,relation:null};
-  const premise=String(parsed.premise_ko||'').trim(),rationale=String(context.thesis.rationale||'');
-  if(premise.length<4||!rationale.includes(premise))return {answer,relation:null};
+  if(!valid)return {answer:state==='unverified'?answer:null,relation:unverified};
+  const premise=String(parsed.premise_ko||'').trim();
+  if(premise.length<4||!rationale.includes(premise))return {answer:null,relation:unverified};
   return {answer,relation:{status:state,premise_ko:premise.slice(0,90),
     source_phrase:phrase.slice(0,140),interpretation_ko:String(parsed.relation_ko).trim().slice(0,90),
     thesis_version:context.thesis.version||null,kind:'model_interpretation'}};
@@ -525,7 +545,7 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
       ['buy_events','sell_events','traded_symbols','lifecycle_eligible_symbols',
         'additional_buys','partial_sells','full_sells','reentries',
         'invalid_lifecycle_events','return_based_patterns_available']):null,
-    selected_security:selected?limitObject(selected,['symbol','name','currency','country','market','sector']):null,
+    selected_security:selected?limitObject(selected,['id','symbol','name','currency','country','market','sector']):null,
     latest_decision:decisions?.[0]||null,
     recent_trades:history,price_evidence:thesisReview?
       (priceRows?priceTrendEvidence(priceRows,selected.symbol,selected.currency):
@@ -773,6 +793,9 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
     generatedAnswer=answer;generatedKind=responseKind;stage='history';
     const historyPayload={
       user_id:userId,request_id:requestId,question,symbol:symbol||null,answer,
+      // Values used by this answer; a later refresh with identical values does not
+      // invalidate the decision, while a changed position or account mix does.
+      account_basis:decisionAccountBasis(context,m),
       external_sources:publicEvidence?.sources||[],
       official_evidence:publicEvidence?{documents:publicEvidence.documents,
         summary:publicEvidence.summary,interpretation:'AI summary of linked official source',
