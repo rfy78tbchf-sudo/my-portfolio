@@ -75,8 +75,13 @@ try{
     assert.match(saveMessage,/내 판단 저장 완료/,saveMessage);
     assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-TEST',
       'the user decision links to the saved analysis for the selected security');
+    assert.equal(await page.evaluate(()=>stored[0].p_target_pct),10,
+      'the compared target is stored with the decision');
+    assert.equal(await page.evaluate(()=>stored[0].p_observation_at),'2026-09-26',
+      'the decision must refer to the same observed comparison');
     await page.evaluate(()=>window.openTestDetail('held'));
-    await page.getByText('I can absorb this exposure').waitFor({state:'attached'});
+    await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
+    assert.match(await page.locator('#detailDecisionSummary').textContent(),/I can absorb this exposure/);
     assert.match(await page.locator('#detailDecisionSummary').textContent(),/지난 판단.*Recheck the reported operating result/);
     await page.evaluate(()=>window.openTestDetail('other'));
     await page.getByText('My NEXT reason').first().waitFor();
