@@ -62,9 +62,18 @@ try{
     assert.match(await page.locator('#thesisAnalysis').textContent(),/공식 기업 실적·공시는 이번 답변의 근거에 포함되지 않았습니다/);
     await page.getByRole('button',{name:'목표 비중으로 비교'}).click();
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
+    assert.equal(await page.locator('#detailWeightResult').isVisible(),false,
+      'do not show an empty result panel before the comparison');
+    assert.equal(await page.locator('#detailDown').isVisible(),false,
+      'advanced price assumptions stay out of the first reading path');
     await page.locator('#detailWeightTarget').fill('10');
     await page.locator('#detailWeightRun').click();
     await page.screenshot({path:`mobile-artifacts/choice-detail-${width}.png`});
+    assert.match(await page.locator('#detailWeightResult').innerText(),
+      /줄이면 하락 영향은 500원 작아지고, 상승 참여도 500원 줄어듭니다/);
+    assert.ok(await page.locator('#detailWeightResult').getByText('현금으로 바뀌는 금액(참고)').isVisible());
+    assert.equal(await page.locator('#detailWeightResult details').first().evaluate(node=>node.open),false,
+      'quantity and calculation policy remain available but collapsed');
     assert.ok(await page.locator('#detailWeightResult').getByText('+1,000원').isVisible());
     assert.ok(await page.locator('#detailWeightResult').getByText('-500원').isVisible());
     await page.locator('#detailReason').fill('I can absorb this exposure');

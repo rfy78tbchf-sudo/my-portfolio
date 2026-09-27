@@ -112,3 +112,15 @@ distinct from an owner-authenticated iPhone run. The owner must make an actual
 new thesis review and save a target comparison to verify these new production
 paths; until then, existing owner decisions stay unchanged and no current
 company conclusion is promoted from a synthetic fixture.
+
+## Build 58d choice readability
+
+The existing server-calculated hold/reduce comparison now leads with the
+downside avoided, upside participation foregone, and cash moved under the
+user's target weight. Both price directions and their exact amounts remain
+visible together. Quantities, raw figures, observation time, and cost/account
+assumptions remain in an expandable basis. The default price assumptions and
+standalone price tool are optional controls; a blank result no longer occupies
+the initial screen. The same calculation and owner-authenticated decision RPCs
+remain in place. Isolated 390/402/430px tests check the reading order; an owner
+iPhone comparison is a separate verification step.

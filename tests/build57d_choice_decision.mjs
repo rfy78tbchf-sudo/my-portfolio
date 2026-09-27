@@ -26,8 +26,13 @@ assert.match(rendered,/-1,000원/);
 assert.match(rendered,/\+1,000원/);
 assert.match(rendered,/\-500원/);
 assert.match(rendered,/\+500원/);
+assert.match(rendered,/줄이면 하락 영향은 500원 작아지고, 상승 참여도 500원 줄어듭니다/);
+assert.match(rendered,/현금으로 바뀌는 금액\(참고\)/);
+assert.match(rendered,/<details><summary>수량·금액과 계산 기준 보기<\/summary>/);
 assert.match(rendered,/현재 현금 잔액은 확인되지 않아 증가분만 표시/);
 assert.match(rendered,/매도 대금은 새 수익이나 외부 입금이 아닙니다/);
+assert.match(vm.runInContext('comparisonHtml({...report,reduce:{...report.reduce,up_impact_krw:null}})',context),/다시 계산해 주세요/,
+  'incomplete gains cannot be displayed as a finished choice comparison');
 const down={ok:true,observation_at:'same-account-cut',position:{symbol:'TEST',value:10000},scenario:{assumption_pct:-10,impact_krw:-1000}},
   up={ok:true,observation_at:'same-account-cut',position:{symbol:'TEST',value:10000},scenario:{assumption_pct:10,impact_krw:1000}};
 const impact=vm.runInContext('decisionImpactHtml(down,up,"TEST")',Object.assign(context,{down,up}));
