@@ -47,6 +47,21 @@ assert.match(view,/환율 노출은 남습니다/);
 assert.match(view,/총자산은 64,688,793원으로 같습니다/);
 assert.ok(view.indexOf('13주 매도')<view.indexOf('정확히 맞춘 이론값'));
 
+const homeStart=html.indexOf('  function reviewHomeCard('),homeEnd=html.indexOf('  function benchmarkCard(',homeStart);
+assert.ok(homeStart>0&&homeEnd>homeStart);
+const home=vm.createContext({live:{reviewDecisions:[{
+  security_id:'synthetic-arm',created_at:'2026-09-26T12:00:00Z',
+  review_condition:'종가 300달러 이하',price_snapshot:{price_date:'2026-09-25'}}],
+  reviewAnalyses:[],securityMap:{'synthetic-arm':{name:'Synthetic ARM',symbol:'ARM',id:'synthetic-arm'}},
+  holdings:[{security_id:'synthetic-arm',quantity:36}],
+  priceMeta:{'synthetic-arm':{latest:{price_date:'2026-09-27',close:299,currency:'USD'}}}},
+  esc:String,kstDate:()=> '2026-09-27'});
+vm.runInContext(html.slice(homeStart,homeEnd),home);
+assert.match(vm.runInContext('reviewHomeCard()',home),/저장한 종가 재검토 조건/);
+assert.match(vm.runInContext('reviewHomeCard()',home),/자동 매도 신호는 아닙니다/);
+home.live.priceMeta['synthetic-arm'].latest.price_date='2026-09-25';
+assert.equal(vm.runInContext('reviewHomeCard()',home),'','a same-date reread is not a new trigger');
+
 const trendStart=edge.indexOf('function priceTrendEvidence('),trendEnd=edge.indexOf('function questionContext(',trendStart);
 assert.ok(trendStart>0&&trendEnd>trendStart);
 const ts=vm.createContext({Set,Number,Math});
