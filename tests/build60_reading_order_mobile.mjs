@@ -44,7 +44,7 @@ vm.createContext(scope);
 function include(start,end){const a=source.indexOf('  function '+start+'('),b=source.indexOf('  function '+end+'(',a+10);assert.ok(a>0&&b>a);vm.runInContext(source.slice(a,b),scope)}
 include('periodLabel','chart');include('assetChart','securityChart');include('homeBrowseCard','cashFlowAuditCard');
 include('performanceScopeHeader','observedPerformanceCard');
-include('liveHome','demoPortfolio');include('livePortfolio','demoPerformance');include('livePerformance','analysis');
+include('liveHome','demoPortfolio');include('livePortfolio','demoPerformance');include('performanceExplanationHtml','analysis');
 const home=vm.runInContext('liveHome()',scope),holdings=vm.runInContext('livePortfolio()',scope),performance=vm.runInContext('livePerformance()',scope);
 assert.ok(home.indexOf('64,000,000원')<home.indexOf('보유 종목'));
 assert.ok(home.indexOf('보유 종목')<home.indexOf('자산 추이'));

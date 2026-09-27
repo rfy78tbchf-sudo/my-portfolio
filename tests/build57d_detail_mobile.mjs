@@ -7,7 +7,7 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const styles=html.slice(html.indexOf('<style>')+7,html.indexOf('</style>'));
 const start=html.indexOf('  function comparisonHtml('),end=html.indexOf('  function empty(',start);
 assert.ok(start>0&&end>start);
-const closeBinding=html.match(/var close=document\.getElementById\('detailClose'\);if\(close\)close\.onclick=function\(\)\{document\.getElementById\('detailModal'\)\.classList\.add\('hidden'\)\}/)?.[0];
+const closeBinding=html.match(/var close=document\.getElementById\('detailClose'\);if\(close\)close\.onclick=function\(\)\{detailEpoch\+\+;document\.getElementById\('detailModal'\)\.classList\.add\('hidden'\)\}/)?.[0];
 assert.ok(closeBinding,'test the close binding used by the real page');
 mkdirSync('mobile-artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true});
@@ -24,7 +24,7 @@ try{
           holdingBasis:[{security_id:'held',account_id:'own',valuation_krw:10000,pnl_krw:500},
             {security_id:'other',account_id:'own',valuation_krw:4000,pnl_krw:-100}],accounts:[{id:'own',name:'Fixture only'}],settlementBasis:[],
           decisionMetrics:{ok:true,position:{symbol:'TEST',weight_pct:20}}};
-        var detailLoading=false,stored=[],readbackIncomplete=true,SUPABASE_URL='https://example.invalid',SUPABASE_KEY='test-only';
+        var detailEpoch=0,stored=[],readbackIncomplete=true,SUPABASE_URL='https://example.invalid',SUPABASE_KEY='test-only';
         var edgeSync=async()=>({ok:true}),loadLive=async()=>live;
         var esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
         var num=(x,d)=>Number(x).toFixed(d),money=x=>Math.round(Number(x)).toLocaleString('ko-KR')+'원',pct=x=>Number(x).toFixed(2)+'%';
@@ -42,9 +42,10 @@ try{
           if(name==='get_live_security_activity')return {items:[]};
           if(name==='get_investment_thesis')return {thesis:{version:1,rationale:p.p_security_id==='held'?'My TEST reason':'My NEXT reason'}};
           if(name==='get_investment_decisions'){var rows=stored.filter(x=>x.security_id===p.p_security_id);if(rows.length&&readbackIncomplete){readbackIncomplete=false;return rows.map(x=>({...x,scenario_snapshot:{}}))}return rows}
+          if(name==='save_investment_decision'&&p.p_security_id==='other'){stored.unshift({...p,id:'other-fixture',security_id:'other',reason:p.p_reason,review_condition:p.p_review_condition,choice:p.p_choice,analysis_id:p.p_analysis_id,created_at:'2026-09-27',scenario_snapshot:{}});return {ok:true,id:'other-fixture'}}
           if(name==='save_investment_decision'){if(!stored.length)stored.unshift({...p,id:'fixture-id',security_id:p.p_security_id,reason:p.p_reason,review_condition:p.p_review_condition,choice:p.p_choice,analysis_id:p.p_analysis_id,created_at:'2026-09-26',scenario_snapshot:{choice_comparison:{target_pct:p.p_target_pct,price_assumptions:{down_pct:p.p_down_pct,up_pct:p.p_up_pct},observation_at:p.p_observation_at,hold:{value_krw:10000},reduce:{mode:'integer_shares',shares_to_sell:5,cash_increase_krw:5000}}}});else if(stored[0].p_request_id!==p.p_request_id)throw Error('retry created a new decision');return {ok:true,id:'fixture-id'}};
           if(name==='get_live_decision_metrics'){var value=p.p_symbol==='TEST'?10000:4000;return {
-            ok:true,observation_at:'2026-09-26T12:10:00Z',position:{symbol:p.p_symbol,value:value},
+            ok:true,observation_at:'2026-09-26T12:10:00Z',denominator:{value:50000},position:{symbol:p.p_symbol,value:value},
             scenario:{assumption_pct:p.p_change_pct,impact_krw:value*p.p_change_pct/100}}};
           if(name==='get_live_choice_comparison')return {ok:true,observation_at:'2026-09-26',denominator:{value:50000},assets_before_krw:50000,current_cash_kb_krw:null,
             price_assumptions:{down_pct:p.p_down_pct,up_pct:p.p_up_pct},
@@ -108,7 +109,7 @@ try{
     await page.locator('#detailReason').fill('I can absorb this exposure');
     await page.locator('#detailReview').fill('Recheck the reported operating result');
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    assert.match(await page.locator('#detailDecisionStatus').innerText(),/최신 자료로 다시 점검/);
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건으로 AI 의견/);
     await page.locator('#detailFreshReview').click();
     await page.getByText('저장됨 · 계좌 관측').last().waitFor();
     await page.locator('#detailDecisionForm button[type=submit]').click();
@@ -135,6 +136,45 @@ try{
     await page.getByText('My NEXT reason').first().waitFor();
     assert.equal(await page.getByText('My TEST reason').count(),0);
     assert.equal(await page.getByText('I can absorb this exposure').count(),0);
+    await page.locator('#detailFreshReview').click();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    assert.match(await page.locator('#detailWeightResult').innerText(),/목표 비중 없이 기록/);
+    await page.locator('#detailDecisionAction').click();
+    await page.locator('#detailReason').fill('Second stock hold, no target');
+    await page.locator('#detailReview').fill('Review source evidence again');
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await page.waitForFunction(()=>/내 판단 저장 완료/.test(document.getElementById('detailDecisionStatus').textContent));
+    assert.equal(await page.evaluate(()=>stored[0].p_target_pct),undefined,'hold can be saved without a comparison target');
+    assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-NEXT');
+    await page.evaluate(()=>window.openTestDetail('other'));
+    await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/비교 없이 기록한 판단/);
+    await page.evaluate(()=>{
+      const original=window.rpc;
+      window.rpc=(name,args)=>name==='get_live_security_detail'&&args.p_security_id==='held'
+        ?new Promise(resolve=>setTimeout(()=>resolve({ok:false,detailWarning:'Delayed first stock'}),160))
+        :original(name,args);
+      window.openTestDetail('held');window.openTestDetail('other');
+    });
+    await page.getByText('My NEXT reason').first().waitFor();
+    await page.waitForTimeout(200);
+    assert.equal(await page.getByText('My TEST reason').count(),0,
+      'an old detail response must not replace the newly selected stock');
+    await page.evaluate(()=>{
+      const original=window.authFetch;
+      window.authFetch=(url,options)=>options?.method==='POST'&&JSON.parse(options.body).symbol==='TEST'
+        ?new Promise(resolve=>setTimeout(()=>resolve({ok:true,json:async()=>({answer:'OLD STOCK ANSWER',
+          analysis_id:'stale-id',history_saved:true,response_kind:'model',external_sources:[]})}),160))
+        :original(url,options);
+      window.openTestDetail('held');
+    });
+    await page.getByText('My TEST reason').first().waitFor();
+    await page.locator('#thesisAnalyze').click();
+    await page.evaluate(()=>window.openTestDetail('other'));
+    await page.getByText('My NEXT reason').first().waitFor();
+    await page.waitForTimeout(200);
+    assert.equal(await page.getByText('OLD STOCK ANSWER').count(),0,
+      'a late model answer must not appear under a different security');
     const over=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
     assert.equal(over,false,`${width}px stock detail should not overflow`);
     await page.evaluate(()=>document.documentElement.style.zoom='1.25');
