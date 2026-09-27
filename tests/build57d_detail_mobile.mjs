@@ -14,6 +14,7 @@ const browser=await chromium.launch({headless:true});
 try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});
+    const pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));
     await page.setContent(`<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${styles}.detail-modal{--detail-safe-top:59px}.test-status-bar{position:fixed;inset:0 0 auto;height:59px;z-index:100;background:#ced5db;pointer-events:auto}</style><main class="shell"><div id="detailModal" class="detail-modal hidden"><div class="detail-sheet"><div class="detail-head"><div><b>종목 상세</b><div class="sub">보유 상태 · 내 논리 · 판단</div></div><button id="detailClose" class="close-btn" aria-label="닫기">×</button></div><div id="detailBody"></div></div></div></main><div class="test-status-bar" aria-hidden="true"></div>`);
     await page.evaluate(({source,binding})=>{
       const fake=`
@@ -26,7 +27,7 @@ try{
         var detailLoading=false,stored=[],readbackIncomplete=true,SUPABASE_URL='https://example.invalid',SUPABASE_KEY='test-only';
         var edgeSync=async()=>({ok:true}),loadLive=async()=>live;
         var esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
-        var num=(x,d)=>Number(x).toFixed(d),money=x=>Math.round(Number(x)).toLocaleString('ko-KR')+'원';
+        var num=(x,d)=>Number(x).toFixed(d),money=x=>Math.round(Number(x)).toLocaleString('ko-KR')+'원',pct=x=>Number(x).toFixed(2)+'%';
         var finiteMetric=x=>x==null||x===''?NaN:Number(x);
         var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstStamp=String,weightPct=x=>Number(x).toFixed(1)+'%';
         var metric=(name,value)=>'<div class="metric"><span>'+name+'</span><b>'+value+'</b></div>';
@@ -56,7 +57,8 @@ try{
       (0,eval)(binding);
       window.openTestDetail('held');
     },{source:html.slice(start,end),binding:closeBinding});
-    await page.getByText('My TEST reason').first().waitFor();
+    await page.getByText('My TEST reason').first().waitFor({timeout:8000}).catch(()=>{
+      throw Error(`${width}px stock detail did not render: ${pageErrors.join('; ')||'no browser error'}`)});
     const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
     const position=label=>sections.findIndex(x=>x.includes(label));
     assert.ok(position('현재 상태')<position('내 보유 이유')&&position('내 보유 이유')<position('내 논리 점검')&&
