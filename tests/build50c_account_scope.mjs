@@ -33,7 +33,7 @@ const live={accounts:[{}],snapshots:[{snapshot_at:date,total_assets:64_667_705,
 const empty=()=>'',money=n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원';
 const ctx=vm.createContext({live,liveError:null,period:'1W',latestManualRows:()=>[],
   completeSnapshotPeriod:()=>false,ledgerHeadlineReady:()=>false,
-  esc:String,money,cls:empty,kstStamp:()=> '9. 26. 11:42 KST',periods:()=>'',
+  esc:String,money,cls:empty,kstStamp:()=> '9. 26. 11:42 KST',periods:()=>'',periodLabel:x=>x,
   reconciliationHomeStatus:empty,assetChart:empty,metric:empty,
   homeBrowseCard:empty,riskOverviewCard:empty,decisionHomeCard:empty,reviewHomeCard:empty,cashFlowAuditCard:empty,
   annualGoalCard:empty,tradeTargetCard:empty,dividendCard:empty,

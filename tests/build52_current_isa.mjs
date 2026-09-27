@@ -24,7 +24,7 @@ const live={accounts:[{}],snapshots:[{snapshot_at:oldNav,total_assets:64_667_705
 const empty=()=>'',money=n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원';
 const ctx=vm.createContext({live,liveError:null,period:'1W',latestManualRows:()=>[],
   completeSnapshotPeriod:()=>false,ledgerHeadlineReady:()=>false,
-  esc:String,money,cls:empty,kstStamp:x=>String(x).slice(0,10),periods:empty,
+  esc:String,money,cls:empty,kstStamp:x=>String(x).slice(0,10),periods:empty,periodLabel:x=>x,
   reconciliationHomeStatus:empty,assetChart:empty,metric:empty,
   homeBrowseCard:empty,riskOverviewCard:empty,decisionHomeCard:empty,reviewHomeCard:empty,cashFlowAuditCard:empty,
   annualGoalCard:empty,tradeTargetCard:empty,dividendCard:empty,
