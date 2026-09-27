@@ -110,6 +110,12 @@ try{
     await page.locator('#detailReview').fill('Recheck the reported operating result');
     await page.locator('#detailDecisionForm button[type=submit]').click();
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건으로 AI 의견/);
+    await page.locator('#detailWeightRun').click();
+    await page.locator('#thesisAnalyze').click();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건으로 AI 의견/,
+      'a generic thesis answer cannot authorize a different comparison');
     await page.locator('#detailFreshReview').click();
     await page.getByText('저장됨 · 계좌 관측').last().waitFor();
     await page.locator('#detailDecisionForm button[type=submit]').click();
