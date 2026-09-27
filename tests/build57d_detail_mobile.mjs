@@ -57,6 +57,13 @@ try{
       window.openTestDetail('held');
     },{source:html.slice(start,end),binding:closeBinding});
     await page.getByText('My TEST reason').first().waitFor();
+    const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
+    const position=label=>sections.findIndex(x=>x.includes(label));
+    assert.ok(position('현재 상태')<position('내 보유 이유')&&position('내 보유 이유')<position('내 논리 점검')&&
+      position('내 논리 점검')<position('비중을 줄이면')&&position('비중을 줄이면')<position('내 판단')&&
+      position('내 판단')<position('가격 차트'),`${width}px: reason, AI opinion, comparison, decision precede detailed evidence`);
+    assert.ok(await page.locator('.detail-overview').getByText('10,000원').isVisible());
+    await page.screenshot({path:`mobile-artifacts/build62-detail-overview-${width}.png`});
     const close=await page.locator('#detailClose').boundingBox();
     const title=await page.locator('.detail-head b').boundingBox();
     assert.ok(close.y>=59&&title.y>=59,`${width}px: title and X must clear the simulated iPhone status bar`);
@@ -128,6 +135,9 @@ try{
     assert.equal(await page.getByText('I can absorb this exposure').count(),0);
     const over=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
     assert.equal(over,false,`${width}px stock detail should not overflow`);
+    await page.evaluate(()=>document.documentElement.style.zoom='1.25');
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,
+      `${width}px stock detail must stay within the viewport at 125% zoom`);
     await page.close();
   }
 }finally{await browser.close()}
