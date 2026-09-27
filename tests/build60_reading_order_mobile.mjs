@@ -37,7 +37,8 @@ const scope={live,liveError:'',period:'1M',portfolioMarket:'ALL',portfolioAccoun
   priceAlertCard:()=>'',upcomingAgenda:()=>'',dataStatusCard:()=>'',cashCaseAssessmentCard:()=>'',
   verifiedMovementCard:()=>'',cashAccountingCard:()=>'',analysisCoverageCard:()=>'',ledgerEstimateHtml:()=>'',
   periodAttributionHtml:()=>'',actualPerformanceRange:()=>'',observedPerformanceCard:()=>
-    '<section class="card performance-hero"><h3>기간 투자손익 · 2026-08-27 ~ 2026-09-27</h3><div class="asset">-90,000원</div></section>',
+    scope.period==='6M'?'<section class="card performance-hero">전체 기간손익 계산 대기</section>':
+      '<section class="card performance-hero"><h3>기간 투자손익 · 2026-08-27 ~ 2026-09-27</h3><div class="asset">-90,000원</div></section>',
   heatmapHtml:()=>'',metric:(label,value)=>'<div class="metric"><span>'+label+'</span><b>'+value+'</b></div>',
   empty:()=>''};
 vm.createContext(scope);
