@@ -165,7 +165,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
     </form>
     <div id="loginMsg" class="msg"></div>
     <button id="demoBtn" class="btn secondary full" type="button">Demo Mode 보기</button>
-    <div class="boot-ok">화면 초기화 정상 · build 63c</div>
+    <div class="boot-ok">화면 초기화 정상 · build 64</div>
   </div>
 </section>
 
@@ -565,12 +565,40 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
         }})});
       var reviewAnalyses=[];
       var reviewRefreshFailed=!!(d.detailWarning||!p.length||activity.unavailable||results[3]&&results[3].unavailable),latestDecisionRows=results[3];
+      function savedComparisonAssumption(rows){
+        if(!Array.isArray(rows))return null;
+        for(var i=0;i<rows.length;i++){
+          var c=rows[i]&&rows[i].scenario_snapshot&&rows[i].scenario_snapshot.choice_comparison,
+            target=Number(c&&c.target_pct),down=Number(c&&c.price_assumptions&&c.price_assumptions.down_pct),
+            up=Number(c&&c.price_assumptions&&c.price_assumptions.up_pct);
+          if(c&&c.reduce&&c.reduce.mode==='integer_shares'&&Number.isFinite(target)&&target>=0&&target<100&&
+            Number.isFinite(down)&&down<0&&down>=-90&&Number.isFinite(up)&&up>0&&up<=100)
+            return {targetPct:target,downPct:down,upPct:up,savedAt:rows[i].created_at};
+        }
+        return null;
+      }
       function renderDecisionHistory(rows){var node=document.getElementById('detailDecisionHistory');if(!node||!active())return;latestDecisionRows=rows;
         node.textContent='';var latest=document.getElementById('detailDecisionSummary');if(latest)latest.remove();
         var previousReview=document.getElementById('detailDecisionReview');if(previousReview)previousReview.remove();
         var oldAction=document.getElementById('detailDecisionAction');if(oldAction)oldAction.remove();
+        var oldComparison=document.getElementById('detailPreviousComparison');if(oldComparison)oldComparison.remove();
         var form=document.getElementById('detailDecisionForm');if(!form)return;
         var hasLatest=Array.isArray(rows)&&rows.length>0;
+        var assumption=savedComparisonAssumption(rows),targetRow=document.querySelector('#detailBody .choice-target');
+        if(assumption&&targetRow){
+          var prior=document.createElement('div');prior.id='detailPreviousComparison';prior.className='choice-short-note';
+          var description=document.createElement('div');
+          description.textContent='지난 판단에 연결된 '+assumption.targetPct.toLocaleString('ko-KR',{maximumFractionDigits:2})+'% 비교 가정 · '+kstStamp(assumption.savedAt)+' 저장. 내 적정 비중이나 승인된 투자 원칙은 아닙니다.';
+          prior.appendChild(description);
+          var again=document.createElement('button');again.type='button';again.className='btn secondary full';
+          again.style.marginTop='8px';again.textContent='지난 가정으로 최신 자료 다시 비교 → AI 의견';
+          again.onclick=function(){var fresh=document.getElementById('detailFreshReview');if(!fresh||fresh.disabled)return;
+            var target=document.getElementById('detailWeightTarget');target.value=String(assumption.targetPct);
+            document.getElementById('detailDown').value=String(assumption.downPct);
+            document.getElementById('detailUp').value=String(assumption.upPct);
+            target.dispatchEvent(new Event('input',{bubbles:true}));fresh.click()};
+          prior.appendChild(again);targetRow.insertAdjacentElement('afterend',prior);
+        }
         latest=document.createElement('div');latest.id='detailDecisionSummary';latest.className='decision-latest';
         if(hasLatest){var lastSaved=rows[0],comparison=lastSaved.scenario_snapshot&&lastSaved.scenario_snapshot.choice_comparison;
           latest.innerHTML='<b>'+esc(choiceLabels[lastSaved.choice]||'판단')+'</b><div class="sub">이유: '+esc(lastSaved.reason||'')+'</div><div class="sub">다시 볼 조건: '+esc(lastSaved.review_condition||'')+'</div><div class="sub">'+esc(kstStamp(lastSaved.created_at))+' 저장 · '+(comparison&&comparison.reduce&&comparison.reduce.mode==='integer_shares'?'정수 수량 비교 연결':'비교 없이 기록한 판단')+'</div>';

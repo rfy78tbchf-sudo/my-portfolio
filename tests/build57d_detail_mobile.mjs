@@ -32,10 +32,12 @@ try{
         var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstStamp=String,weightPct=x=>Number(x).toFixed(1)+'%';
         var metric=(name,value)=>'<div class="metric"><span>'+name+'</span><b>'+value+'</b></div>';
         var securityChart=()=>'',interpretTechnical=()=>'',thesisEditor=()=>'<form id="thesisForm"><textarea data-thesis-field="rationale"></textarea><button type="submit">저장</button><span id="thesisStatus"></span></form>';
-        var authFetch=async(_url,options)=>({ok:true,json:async()=>options&&options.method==='POST'?{
+        var lastAiRequest=null,analysisCallCount=0;
+        var authFetch=async(_url,options)=>{if(options&&options.method==='POST'){
+          lastAiRequest=JSON.parse(options.body);analysisCallCount++}return {ok:true,json:async()=>options&&options.method==='POST'?{
           answer:'판단: 내 조건과 비교해야 합니다.\\n근거: 기록된 종가만 검증했습니다.\\n선택지: 목표 비중을 선택합니다.\\n다음 확인: 내 기준을 적습니다.',
           analysis_id:'analysis-for-'+JSON.parse(options.body).symbol,history_saved:true,
-          response_kind:'validated_fallback',observation_at:'2026-09-26T12:10:00Z',external_sources:[]}:[]});
+          response_kind:'validated_fallback',observation_at:'2026-09-26T12:10:00Z',external_sources:[]}:[]}};
         if(!crypto.randomUUID)Object.defineProperty(crypto,'randomUUID',{value:()=> '12345678-1234-4234-8234-123456789abc'});
         var rpc=async function(name,p){
           if(name==='get_live_security_detail')throw Error('security not found');
@@ -150,10 +152,24 @@ try{
     await page.locator('#detailDecisionReview').waitFor({state:'attached'});
     assert.match(await page.locator('#detailDecisionReview').textContent(),/I can absorb this exposure/);
     assert.match(await page.locator('#detailDecisionSummary').textContent(),/현재 유지.*Recheck the reported operating result/);
+    assert.equal(await page.locator('#detailWeightTarget').inputValue(),'',
+      'a prior comparison is an optional assumption, not an automatically approved target');
+    assert.match(await page.locator('#detailPreviousComparison').innerText(),/지난 판단에 연결된 10% 비교 가정.*적정 비중이나 승인된 투자 원칙은 아닙니다/s);
+    const callsBeforeReuse=await page.evaluate(()=>analysisCallCount);
+    await page.locator('#detailPreviousComparison button').click();
+    await page.waitForFunction(previous=>analysisCallCount>previous,callsBeforeReuse);
+    assert.equal(await page.locator('#detailWeightTarget').inputValue(),'10');
+    assert.match(await page.locator('#detailWeightResult').innerText(),/5주 매도 가정/);
+    assert.deepEqual(await page.evaluate(()=>({action:lastAiRequest.action,target:lastAiRequest.target_pct,
+      down:lastAiRequest.down_pct,up:lastAiRequest.up_pct})),
+      {action:'decision-review',target:10,down:-10,up:10},
+      'a deliberate tap recomputes and requests a new AI review with the same saved assumption');
     await page.evaluate(()=>window.openTestDetail('other'));
     await page.getByText('My NEXT reason').first().waitFor();
     assert.equal(await page.getByText('My TEST reason').count(),0);
     assert.equal(await page.getByText('I can absorb this exposure').count(),0);
+    assert.equal(await page.locator('#detailPreviousComparison').count(),0,
+      'a saved assumption must never spill into another security');
     await page.locator('#detailFreshReview').click();
     await page.getByText('저장됨 · 계좌 관측').last().waitFor();
     assert.match(await page.locator('#detailWeightResult').innerText(),/목표 비중 없이 기록/);
