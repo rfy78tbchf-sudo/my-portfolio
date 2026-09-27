@@ -37,7 +37,8 @@ try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,locale:'ko-KR'});
     await page.setContent(doc);
-    await page.locator('details.more-list').evaluate(el=>el.open=true);
+    await page.locator('details.card-group').first().evaluate(el=>el.open=true);
+    await page.locator('details.more-list').filter({has:page.locator('#isaTotalForm')}).evaluate(el=>el.open=true);
     const state=await page.evaluate(()=>{window.scrollTo(0,document.body.scrollHeight);
       const form=document.getElementById('isaTotalForm');
       return {overflow:document.documentElement.scrollWidth>innerWidth,
