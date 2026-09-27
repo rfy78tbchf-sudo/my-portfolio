@@ -683,8 +683,9 @@ Deno.serve(async(req:Request)=>{
       message:weightScenario?.reason==='TARGET_MUST_BE_BELOW_CURRENT'?'목표 비중은 현재 비중보다 낮아야 합니다.':'현재 평가액과 계좌 합계를 대조한 뒤 계산할 수 있습니다.'},409);
     const relevant=focus==='weight'?{as_of:weightScenario.observation_at,account_scope_state:weightScenario.account_scope_state,
       denominator:weightScenario.denominator,hold:weightScenario.hold,reduce:weightScenario.reduce,
+      position_currency:weightScenario.position_currency,
       price_assumptions:weightScenario.price_assumptions,calculation_version:weightScenario.calculation_version,
-      note:'Hold and reduce both show downside AND upside; proceeds are cash before costs, not new profit. No trade is executed.'}:questionContext(context,focus);
+      note:'Hold and reduce both show downside AND upside. Proceeds are cash before costs, not new profit. If the position is USD, the KRW proceeds are a conversion reference only; USD cash still has FX exposure. No FX trade or stock trade is executed.'}:questionContext(context,focus);
     if(publicEvidence)(relevant as any).public_company_evidence={summary:publicEvidence.summary,
       documents:publicEvidence.documents,notice:'An AI summary of a linked official document. Distinguish verified publication date from retrieval time.'};
     if(focus==='thesis'&&context.latest_decision){
@@ -744,7 +745,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
         !/\d|원|달러|%|확정|예측|수익률|매수|매도|보장/.test(x));
       answer='핵심 의견: '+(clean?clean.slice(0,115):'감당할 수 있는 가격 하락과 상승 참여를 함께 비교한 뒤 비중을 정하세요.')+'\n'+
         '내 계좌 근거: 현재 참고 비중 '+Number(p.weight_pct).toFixed(2)+'% · 평가액 '+won(p.value_krw)+'\n'+
-        '선택지 비교: 유지 '+Number(p.weight_pct).toFixed(2)+'%는 '+a.down_pct+'% 가정 '+won(p.down_impact_krw)+', +'+a.up_pct+'% 가정 +'+won(p.up_impact_krw)+'. 축소 '+Number(s.weight_pct).toFixed(2)+'%는 각각 '+won(s.down_impact_krw)+', +'+won(s.up_impact_krw)+'이며 현금 '+won(s.cash_increase_krw)+' 증가(비용 전).\n'+
+        '선택지 비교: 유지 '+Number(p.weight_pct).toFixed(2)+'%는 '+a.down_pct+'% 가정 '+won(p.down_impact_krw)+', +'+a.up_pct+'% 가정 +'+won(p.up_impact_krw)+'. 축소 '+Number(s.weight_pct).toFixed(2)+'%는 각각 '+won(s.down_impact_krw)+', +'+won(s.up_impact_krw)+'이며 매도대금 원화 환산액 '+won(s.cash_increase_krw)+'(비용 전).'+(weightScenario.position_currency==='USD'?' 환전하지 않는 USD 현금 가정으로 환율 노출은 남습니다.':'')+'\n'+
         '다음 점검 조건: 손실 허용과 보유 근거가 달라지는 실적·사업 지표를 확인해 목표 비중을 다시 정하세요.\n'+
         '자료 상태: 비용 전 총자산은 같습니다. ISA 총액은 KB 보유 평가와 시각이 달라 참고 비중입니다. ±변화는 가정이며 주문이나 확정 손익이 아닙니다.';
       responseKind=clean?'model_interpretation_server_metrics':'server_metrics_fallback';
