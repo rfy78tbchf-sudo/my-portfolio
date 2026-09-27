@@ -79,3 +79,36 @@ used as a new earnings event on the home or in the decision review. Original
 English summaries, answers, source URLs, original transaction data, and saved
 owner decisions remain intact. These annotations do not assert that the
 owner's thesis or later trades have been validated.
+
+## Build 58c conditional opinion and judgment continuity
+
+The issuer lookup still searches only public company identity and validates the
+original source. A private, authenticated model call now evaluates one phrase
+from the owner-authored thesis against a phrase copied exactly from the verified
+Korean official summary. The model's relation (support, weaken, or mixed) is
+stored beside the source with the thesis version and explicitly labeled **AI
+해석**. Invalid or unrelated phrases remain unverified; an official filing
+alone does not prove an investment premise. An AGM voting exhibit with a
+fabricated earnings summary fails source validation. Historical analysis answers
+and later supplemental corrections keep their original creation timestamps.
+
+The existing choice comparison is still calculated by the owner-scoped server
+RPC. When the owner saves a decision after comparing a chosen target share, the
+additive ten-argument overload recalculates the same assumptions on the server,
+rejects a changed observation time, and stores the actual compared hold/reduce
+impacts in the decision snapshot. The six-argument RPC is retained for older
+clients and decisions made without a target. The snapshot is a hypothetical
+comparison, not an executed sale, deposit, or realized return.
+
+Reopening the security now shows the owner's earlier choice and reason, a
+short conditional interpretation only for a *later verified publication* tied
+to the same thesis version, and the user's saved price or calendar review
+condition. A repeated download, old publication, unrelated analysis, changed
+thesis version, or formerly misidentified filing cannot become a new premise
+alert. Existing data remains readable when a fresh source or model call fails.
+
+Automated isolated evidence, logic, mobile and compatibility tests are
+distinct from an owner-authenticated iPhone run. The owner must make an actual
+new thesis review and save a target comparison to verify these new production
+paths; until then, existing owner decisions stay unchanged and no current
+company conclusion is promoted from a synthetic fixture.

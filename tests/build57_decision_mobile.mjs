@@ -20,7 +20,22 @@ const scope=vm.createContext({live,esc:x=>String(x),money:n=>Math.round(Number(n
   num:(n,d)=>Number(n).toFixed(d),kstStamp:x=>x,Date,Number,String});
 vm.runInContext(source.slice(start,finish),scope);
 const card=vm.runInContext('decisionHomeCard()',scope);
-const pageHtml=`<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body><main class="shell"><div class="content"><section class="hero"><div class="asset">511,345,671원</div></section>${card}</div></main><nav class="nav"><button>홈</button><button>포트폴리오</button><button>성과</button><button>분석</button><button>더보기</button></nav></body></html>`;
+const reviewStart=source.indexOf('  function comparisonHtml('),reviewFinish=source.indexOf('  function aiSourceLinks(',reviewStart);
+vm.runInContext(source.slice(reviewStart,reviewFinish),scope);
+scope.reviewDecision={created_at:'2026-08-25T12:00:00Z',choice:'hold',reason:'사업 성장 근거를 다시 보면서 보유',
+  review_condition:'종가 300달러 이하',thesis_version:2,
+  price_snapshot:{price_date:'2026-08-25',close:310,currency:'USD'},
+  scenario_snapshot:{choice_comparison:{target_pct:12,hold:{down_impact_krw:-12345678,up_impact_krw:12345678},
+    reduce:{down_impact_krw:-6100000,up_impact_krw:6100000}}},official_evidence_snapshot:{documents:[]}};
+scope.reviewAnalysis=[{created_at:'2026-09-20T00:00:00Z',official_evidence:{documents:[
+  {url:'https://www.sec.gov/Archives/edgar/data/123/exhibit.htm',published_on:'2026-09-15',date_verified:true}],
+  thesis_relation:{status:'mixed',thesis_version:2,
+    interpretation_ko:'신제품 성장 관련 사실은 보유 이유를 일부 지지하지만, 후속 분기 지속성은 아직 확인되지 않아 이후 실적을 다시 봐야 합니다.'}}}];
+scope.esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;');
+scope.weightPct=n=>`${n}%`;scope.kstStamp=x=>String(x);scope.price=(n,c)=>`${n} ${c}`;
+scope.officialPeriodKo=()=> '2026년 2분기';
+const review=vm.runInContext('decisionReviewHtml(reviewDecision,[],{items:[]},reviewAnalysis)',scope);
+const pageHtml=`<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body><main class="shell"><div class="content"><section class="hero"><div class="asset">511,345,671원</div></section>${card}<section class="card">${review}<a href="https://www.sec.gov/Archives/edgar/data/123/exhibit.htm">공식 자료 원문 보기</a></section></div></main><nav class="nav"><button>홈</button><button>포트폴리오</button><button>성과</button><button>분석</button><button>더보기</button></nav></body></html>`;
 const browser=await chromium.launch({headless:true});
 try{
   for(const width of [390,402,430]){
@@ -38,10 +53,13 @@ try{
       await page.locator('#homeWeightTarget').fill('10');
       assert.equal(await page.locator('#homeWeightTarget').inputValue(),'10');
       assert.ok(await page.getByText('AI 의견 받기').isVisible());
+      assert.ok(await page.getByText('근거가 엇갈림').isVisible());
+      assert.ok(await page.getByText('공식 자료 원문 보기').isVisible());
       await page.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));
       const end=await page.evaluate(()=>({card:document.querySelector('.decision-card').getBoundingClientRect().bottom,
+        review:document.querySelector('.decision-review').getBoundingClientRect().bottom,
         nav:document.querySelector('.nav').getBoundingClientRect().top}));
-      assert.ok(end.card<=end.nav,`${width}px ${zoom} last decision content remains above navigation`);
+      assert.ok(end.card<=end.nav&&end.review<=end.nav,`${width}px ${zoom} decision content remains above navigation`);
     }
     await page.close();
   }

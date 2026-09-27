@@ -246,7 +246,7 @@ function questionContext(context:any,focus:string){
     affected_security:context.affected_security};
 }
 function answerStyle(focus:string){
-  if(focus==='thesis')return `투자자가 이해할 수 있는 한국어 네 줄로 답한다. 각 줄은 한 문장, 110자 내외로 쓰고 아래 제목만 사용한다.\n판단: 저장한 이유 중 이번 자료로 확인되는 부분과 아직 결정할 수 없는 부분을 조건부로 설명한다. 질문 반복 금지. 지난 판단이 있다면 이후 새로 확인된 사실이 그 판단을 바꾸는지 구분한다.\n근거: 공식 기업 문서가 제공되면 발표일이 검증된 경우에만 그 날짜를 쓰고, 실적 대상 기간과 확인된 내용 및 반대 해석을 짧게 연결한다. 가격 근거는 기업 실적과 구분한다. 공식 문서가 없으면 기업 검증을 주장하지 않는다. 비중·평가액은 투자 논리의 증거가 아니다.\n선택지: 사업 논리와 보유 비중을 구분해 유지·변경을 가르는 사용자의 조건을 제시한다. 기업 근거가 없으면 기업 전망으로 결론내리지 않는다.\n다음 확인: 내 기준에 맞는 가격 조건 또는 관련 공식 실적 지표 중 판단을 바꿀 조건을 제시한다.\nprior_user_decision은 사용자의 실제 저장 내용이지 당시 매매가 아니다. since_decision.publication_after_decision=false면 공식 문서를 다시 찾았더라도 새 변화라고 말하지 않는다. 직전 20개 가격 기록 비교는 사용자의 매매 규칙이 아니다. price_evidence.ready=true면 가격 자료가 없다고 말하지 않는다. 내부 코드, ISO 시각, 원장 상태, 증거 없는 기업 사실은 적지 않는다.`;
+  if(focus==='thesis')return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 판단은 사용자 전제를 공식 사실과 계좌 비중에서 분리한 조건부 의견이어야 한다. 근거는 공식 문서에 실제로 있는 사실과 발표일·대상 기간을 짧게 연결하고 반대 해석 또는 미확인 부분을 숨기지 않는다. 비중·평가액은 투자 논리의 증거가 아니다. 선택지는 사업의 적절성과 보유 비중의 적절성을 구분하고 유지와 변경을 가르는 조건을 설명한다. 다음 확인은 실제 실적·사업 지표 또는 사용자가 쓴 기준이어야 한다.\nJSON의 relation은 support, weaken, mixed, unverified 중 하나다. 사용자 논리와 실제 공식 자료의 관계만 판단한다. premise_ko는 사용자 원문에서 확인되는 전제 하나만 짧게 인용한다. source_phrase는 제공된 public_company_evidence.summary에 실제 연속으로 등장하는 한국어 근거 구절을 그대로 5자 이상 복사한다. relation_ko는 그 구절이 전제를 왜 지지하거나 약화하는지 90자 이내로 설명한다. 공식 자료가 없거나 관계가 확인되지 않으면 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '이번 자료로는 판단할 수 없음'으로 한다. 서로 다른 보유 논리를 만들어내지 않는다.\nprior_user_decision은 실제 저장한 판단이지 매매가 아니다. since_decision.publication_after_decision=false면 자료를 다시 찾았더라도 새 변화라고 말하지 않는다. 이전 판단 때 공개되지 않았던 자료를 당시 알았던 근거로 쓰지 않는다. 가격 기록의 20일 비교는 사용자의 매매 규칙이 아니다. 내부 코드, ISO 시각, 원장 상태, 증거 없는 기업 사실은 적지 않는다.`;
   const headline=focus==='risk'?'가장 큰 위험':focus==='performance'?'기간 성과':
     focus==='realized'?'매도 손익':focus==='thesis'?'보유 논리':'핵심';
   return `자연스러운 한국어, 500자 이내, 최대 네 줄이다. 질문을 되풀이하지 말고 다음 형식만 사용한다:\n${headline}: 현재의 조건부 의견과 그 이유. 투자자의 손실 허용·목표 비중을 임의로 가정하지 않는다.\n근거: 확인된 계좌 숫자 및 실제 공식 기업 자료가 있으면 문서의 날짜·내용. 기업 전망과 비중 적정성을 구분한다.\n선택지: 유지·변경 시 하락 영향뿐 아니라 상승 참여도 설명. 실제 계산 값이 없다면 숫자를 만들지 않는다.\n다음 확인: 보유 논리·실적·사업 지표나 사용자의 위험 기준 중 판단을 바꿀 조건. 시가·잔고 재확인으로 끝내지 않는다.\n목차, 서론, 마크다운, 확정되지 않은 전망이나 발생확률을 쓰지 않는다.`;
@@ -266,6 +266,23 @@ function readableThesisAnswer(raw:string,hasOfficialEvidence:boolean,priceEviden
   if(/추세.{0,12}(?:확인됐|확인됨|입증됐)|돌파가.{0,12}(?:확인됐|확인됨)|상승 추세.{0,12}(?:강|이어|유지)/.test(answer))return null;
   if(priceEvidenceReady&&/(?:가격|거래량|시계열).{0,18}(?:없|부재|제공되지|사용하지 않았)/.test(answer))return null;
   return answer;
+}
+function parseThesisReview(raw:string,evidence:any,context:any){
+  let parsed:any=null;
+  try{parsed=JSON.parse(raw)}catch{/* Older model responses used four lines. */}
+  const answer=readableThesisAnswer(String(parsed?.answer_ko||raw),!!evidence,!!context.price_evidence?.ready);
+  if(!answer)return {answer:null,relation:null};
+  if(!parsed||!evidence?.summary||!String(context.thesis?.rationale||'').trim())return {answer,relation:null};
+  const state=String(parsed.relation||''),phrase=String(parsed.source_phrase||'').trim();
+  const summary=String(evidence.summary||'');
+  const valid=['support','weaken','mixed'].includes(state)&&phrase.length>=5&&
+    summary.includes(phrase)&&String(parsed.relation_ko||'').trim().length>=12;
+  if(!valid)return {answer,relation:null};
+  const premise=String(parsed.premise_ko||'').trim(),rationale=String(context.thesis.rationale||'');
+  if(premise.length<4||!rationale.includes(premise))return {answer,relation:null};
+  return {answer,relation:{status:state,premise_ko:premise.slice(0,90),
+    source_phrase:phrase.slice(0,140),interpretation_ko:String(parsed.relation_ko).trim().slice(0,90),
+    thesis_version:context.thesis.version||null,kind:'model_interpretation'}};
 }
 function verifiedPriceThesis(context:any){
   const rationale=String(context.thesis?.rationale||'');
@@ -394,8 +411,13 @@ async function publicCompanyEvidence(key:string,security:any){
     // body. A press-release stub cannot supply figures that live elsewhere.
     const normalize=(value:string)=>value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
     if(!korea&&(!sourceBody||!normalize(sourceBody).includes(normalize(excerpt))))return null;
+    // A voting-result exhibit is a valid filing, but it cannot establish quarterly earnings.
+    const meeting=/annual general meeting|annual meeting of shareholders|주주총회|의결권 행사/i.test(sourceBody)&&
+      /voting results|votes cast|결의 결과|의결 결과/i.test(sourceBody);
+    if(meeting&&/매출|영업이익|순이익|실적 발표|가이던스 상향/i.test(summary))return null;
     return {summary:summary.slice(0,400),sources:[linked],
-      documents:[{url:linked,title:name+' 공식 자료',published_on:publishedOn,
+      documents:[{url:linked,title:name+(meeting?' 주주총회 의결 결과':' 공식 자료'),
+        document_kind:meeting?'주주총회 의결 결과':'공식 자료',published_on:publishedOn,
         period:typeof parsed.period_ko==='string'&&/[가-힣]/.test(parsed.period_ko)?parsed.period_ko.slice(0,80):
           (korea&&typeof parsed.period==='string'&&/[가-힣]/.test(parsed.period)?parsed.period.slice(0,80):null),
         retrieved_at:new Date().toISOString(),date_verified:!!publishedOn}]};
@@ -681,13 +703,15 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       return respond(req,{ok:false,code,request_id:requestId,
         message:refused?'이 요청에는 AI 답변을 제공할 수 없습니다. 질문을 바꿔 주세요.':
           'AI가 답변을 끝내지 못했습니다. 다시 누르면 새 요청으로 시도합니다.'},502)}
-    let answer=modelAnswer,responseKind='model';
+    let answer=modelAnswer,responseKind='model',thesisRelation:any=null;
     // In a risk answer only the server formats figures. Reject model arithmetic,
     // category changes (volatility/forecast), and unverified account scope claims.
     const m=context.decision_metrics;
     if(focus==='thesis'){
       const observed=verifiedPriceThesis(context);
-      const readable=readableThesisAnswer(modelAnswer,!!publicEvidence,!!observed);
+      const review=parseThesisReview(modelAnswer,publicEvidence,context);
+      const readable=review.answer;
+      thesisRelation=review.relation;
       answer=readable&&observed&&!publicEvidence?
         [...observed,...readable.split('\n').slice(2)].join('\n'):
         readable||thesisReviewFallback(context);
@@ -750,7 +774,8 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       user_id:userId,request_id:requestId,question,symbol:symbol||null,answer,
       external_sources:publicEvidence?.sources||[],
       official_evidence:publicEvidence?{documents:publicEvidence.documents,
-        summary:publicEvidence.summary,interpretation:'AI summary of linked official source'}:{},
+        summary:publicEvidence.summary,interpretation:'AI summary of linked official source',
+        ...(thesisRelation?{thesis_relation:thesisRelation}:{})}:{},
       price_evidence:focus==='thesis'&&context.price_evidence?.ready?context.price_evidence:{},
       confidence:context.confidence==='confirmed'?'confirmed':
         context.confidence==='estimated'?'estimated':'unresolved',
@@ -788,7 +813,8 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       thesis_version:context.thesis?.version||null,response_kind:responseKind,
       external_sources:publicEvidence?.sources||[],
       official_evidence:publicEvidence?{documents:publicEvidence.documents,
-        summary:publicEvidence.summary,interpretation:'AI summary of linked official source'}:{},
+        summary:publicEvidence.summary,interpretation:'AI summary of linked official source',
+        ...(thesisRelation?{thesis_relation:thesisRelation}:{})}:{},
       account_scope_state:m?.account_scope_state||'not_verified'});
   }catch(error){
     const reason=String((error as Error)?.message||'UNKNOWN');

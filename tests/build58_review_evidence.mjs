@@ -9,7 +9,7 @@ const edge=readFileSync(new URL('../supabase/functions/investment-assistant/inde
 const start=html.indexOf('  function decisionReviewHtml('),end=html.indexOf('  function aiSourceLinks(',start);
 assert.ok(start>0&&end>start);
 const scope=vm.createContext({esc:s=>String(s),kstStamp:s=>String(s),price:(n,c)=>`${n} ${c}`,
-  signedMoney:n=>`${n}원`,Set});
+  signedMoney:n=>`${n}원`,weightPct:n=>`${n}%`,Set});
 vm.runInContext(html.slice(start,end),scope);
 const judgement={created_at:'2026-09-01T12:00:00Z',thesis_version:2,
   review_condition:'종가 300달러 이하',price_snapshot:{price_date:'2026-09-01',close:310,currency:'USD'},
@@ -22,21 +22,29 @@ const articles=[{created_at:'2026-09-03T09:00:00Z',official_evidence:{documents:
   {url:'https://www.sec.gov/old',published_on:'2026-07-29',period:'Q1 FY27'}]}}];
 scope.judgement=judgement;scope.prices=prices;scope.activity=activity;scope.articles=articles;
 let text=vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope);
-assert.match(text,/새 공식 발표는 아직 확인되지 않았습니다/,'an old publication fetched again is not a new event');
+assert.match(text,/새롭게 확인된 공식 변화가 없습니다/,'an old publication fetched again is not a new event');
 assert.match(text,/현재 종가가 저장한 기준에 해당/);
 assert.match(text,/원장에 기록된 매매 매도/);
 assert.match(text,/종목 가격만 비교/);
 assert.match(text,/실제 거래 아님/);
 scope.articles=[...articles,{created_at:'2026-09-12T09:00:00Z',official_evidence:{documents:[
-  {url:'https://www.sec.gov/new',published_on:'2026-09-10',period:'Q2 FY27'}]}}];
+  {url:'https://www.sec.gov/new',published_on:'2026-09-10',date_verified:true,period:'Q2 FY27'}],
+  thesis_relation:{status:'weaken',thesis_version:2,interpretation_ko:'사용자가 기대한 성장 지표에 미치지 못했습니다.'}}}];
 text=vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope);
-assert.match(text,/판단 이후 발표된 공식 자료 1건/);
+assert.match(text,/보유 전제 약화.*AI 해석.*성장 지표에 미치지 못했습니다/s);
+scope.articles[1].official_evidence.thesis_relation.thesis_version=3;
+assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),
+  /당시 보유 이유에 미치는 영향은 아직 확인되지 않았습니다/,'a revised thesis is not the old premise');
+scope.articles[1].official_evidence.thesis_relation.thesis_version=2;
 scope.articles[1].official_evidence.source_mismatch=true;
-assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),/새 공식 발표는 아직 확인되지 않았습니다/,
+assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),/새롭게 확인된 공식 변화가 없습니다/,
   'a filing that was misidentified as earnings cannot trigger a new thesis review');
 scope.articles=[{created_at:'2026-09-12T09:00:00Z',official_evidence:{documents:[
   {url:'https://www.sec.gov/unverified',published_on:null}]}}];
-assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),/새 공식 발표는 아직 확인되지 않았습니다/);
+assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),/새롭게 확인된 공식 변화가 없습니다/);
+scope.judgement.scenario_snapshot.choice_comparison={target_pct:10,hold:{down_impact_krw:-1000,up_impact_krw:1000},
+  reduce:{down_impact_krw:-500,up_impact_krw:500}};
+assert.match(vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope),/내가 비교한 목표 비중 10%.*축소 시 하락 -500원 \/ 상승 500원/s);
 scope.activity={items:[]};scope.prices=[{price_date:'2026-09-02',close:299,currency:'KRW'}];
 text=vm.runInContext('decisionReviewHtml(judgement,prices,activity,articles)',scope);
 assert.match(text,/같은 통화의 날짜별 가격이 없습니다/);
@@ -48,6 +56,23 @@ assert.match(sql,/security invoker/);
 assert.match(sql,/a\.user_id=v_user/);
 assert.match(edge,/date_verified:!!publishedOn/);
 assert.match(edge,/external_sources:publicEvidence\?\.sources\|\|\[\]/);
+const reviewFrom=edge.indexOf('function readableThesisAnswer('),reviewTo=edge.indexOf('function verifiedPriceThesis(',reviewFrom);
+const relationScope=vm.createContext({});
+vm.runInContext(stripTypeScriptTypes(edge.slice(reviewFrom,reviewTo)),relationScope);
+const compact='판단: 신제품 매출이 기대에 부합하면 보유를 검토하되 가격과 비중은 따로 판단하세요.\n'+
+  '근거: 회사 발표에는 신제품 매출이 증가했다고 적혀 있으나 후속 성장 지속성은 아직 확인되지 않았습니다.\n'+
+  '선택지: 사업 근거가 유지되면 보유를, 달라지면 목표 비중을 다시 계산해 비교하세요.\n'+
+  '다음 확인: 다음 발표에서 신제품 매출 증가가 이어지는지 확인하세요.';
+const context={thesis:{rationale:'신제품 매출 성장',version:2},price_evidence:{ready:false}};
+const official={summary:'이번 분기 신제품 매출이 증가했습니다. 다음 분기 성장은 확인되지 않았습니다.'};
+const json=JSON.stringify({answer_ko:compact,relation:'support',premise_ko:'신제품 매출 성장',
+  source_phrase:'신제품 매출이 증가했습니다',relation_ko:'이번 분기 매출 증가는 기대를 지지하지만 지속성은 모릅니다.'});
+relationScope.json=json;relationScope.official=official;relationScope.context=context;
+let parsed=vm.runInContext('parseThesisReview(json,official,context)',relationScope);
+assert.equal(parsed.relation.status,'support');
+relationScope.json=JSON.stringify({...JSON.parse(json),source_phrase:'원문에 없는 실적 호조'});
+parsed=vm.runInContext('parseThesisReview(json,official,context)',relationScope);
+assert.equal(parsed.relation,null,'an invented supporting fact cannot enter the saved relation');
 const homeStart=html.indexOf('  function reviewHomeCard('),homeEnd=html.indexOf('  function benchmarkCard(',homeStart);
 assert.ok(homeStart>0&&homeEnd>homeStart);
 const homeScope=vm.createContext({esc:String,kstDate:()=> '2026-09-26',live:{
@@ -57,10 +82,14 @@ const homeScope=vm.createContext({esc:String,kstDate:()=> '2026-09-26',live:{
 vm.runInContext(html.slice(homeStart,homeEnd),homeScope);
 assert.equal(vm.runInContext('reviewHomeCard()',homeScope),'','a future date is not due');
 homeScope.live.reviewAnalyses=[{symbol:'OTHER',created_at:'2026-09-05',official_evidence:{documents:[
-  {url:'https://www.sec.gov/new',published_on:'2026-09-04'}]}}];
+  {url:'https://www.sec.gov/new',published_on:'2026-09-04',date_verified:true}],
+  thesis_relation:{status:'weaken',thesis_version:2}}}];
+homeScope.live.reviewDecisions[0].thesis_version=2;
 assert.equal(vm.runInContext('reviewHomeCard()',homeScope),'','another holding’s filing is not reused');
 homeScope.live.reviewAnalyses[0].symbol='TEST';
 assert.match(vm.runInContext('reviewHomeCard()',homeScope),/지난 판단 이후 보기/);
+homeScope.live.reviewAnalyses[0].official_evidence.thesis_relation=null;
+assert.equal(vm.runInContext('reviewHomeCard()',homeScope),'','a generic filing cannot be a premise-change alert');
 homeScope.live.reviewAnalyses=[];
 homeScope.live.reviewDecisions[0].review_condition='2026-09-22 확인';
 assert.match(vm.runInContext('reviewHomeCard()',homeScope),/점검 날짜/);
@@ -132,4 +161,25 @@ evidenceScope.fetch=async()=>new Response(JSON.stringify({status:'completed',out
 assert.equal(await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope),null,
   'a filing index must never be cited as the body of an earnings release');
 assert.equal(await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"SOXL",name:"Leveraged ETF"})',evidenceScope),null);
+const meetingUrl='https://www.sec.gov/Archives/edgar/data/123456/meeting-vote.htm';
+evidenceScope.fetch=async(url)=>url===meetingUrl?
+  new Response('<html>September 10, 2026. Annual General Meeting voting results. Votes cast by shareholders.</html>',
+    {headers:{'content-type':'text/html'}}):
+  new Response(JSON.stringify({status:'completed',output:[
+    {type:'web_search_call',action:{sources:[{url:meetingUrl}]}},
+    {content:[{type:'output_text',text:JSON.stringify({summary_ko:'회사는 분기 실적 발표에서 매출 증가를 확인했습니다.',
+      source_excerpt:'Annual General Meeting voting results',published_on:'2026-09-10',
+      period_ko:'2026년 9월',source_url:meetingUrl})}]}]}));
+assert.equal(await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope),null,
+  'AGM voting cannot be cited as a quarterly earnings release');
+evidenceScope.fetch=async(url)=>url===meetingUrl?
+  new Response('<html>September 10, 2026. Annual General Meeting voting results. Votes cast by shareholders.</html>',
+    {headers:{'content-type':'text/html'}}):
+  new Response(JSON.stringify({status:'completed',output:[
+    {type:'web_search_call',action:{sources:[{url:meetingUrl}]}},
+    {content:[{type:'output_text',text:JSON.stringify({summary_ko:'회사는 주주총회 안건의 투표 결과를 발표했습니다. 사업 실적 근거는 아닙니다.',
+      source_excerpt:'Annual General Meeting voting results',published_on:'2026-09-10',
+      period_ko:'2026년 9월',source_url:meetingUrl})}]}]}));
+const meeting=await vm.runInContext('publicCompanyEvidence("dummy",{symbol:"ARM",name:"Arm Holdings",country:"US",market:"NASDAQ"})',evidenceScope);
+assert.equal(meeting.documents[0].document_kind,'주주총회 의결 결과');
 console.log('Official publication versus retrieval, same-currency price, actual ledger events and saved evidence separated');
