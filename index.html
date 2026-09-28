@@ -531,7 +531,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
             recentAnalyses=rows;showComparisonNext();
             if(!rows.length){el.textContent='저장된 종목 분석이 없습니다.';return}
             var currentOpinion=document.getElementById('thesisAnalysis'),lastAnswer=rows[0];
-            if(currentOpinion&&!currentOpinion.textContent.trim()&&lastAnswer.answer){
+            if(currentOpinion&&!lastComparison&&!currentOpinion.textContent.trim()&&lastAnswer.answer){
               currentOpinion.innerHTML=lastAnswer.price_evidence&&lastAnswer.price_evidence.review_status==='unconfirmed_market_close'?
                 '<div class="notice">지난 분석은 당시 확정되지 않은 종가를 근거로 사용했습니다. 당시 답변은 아래 기록에 보존하며, 최신 자료로 다시 점검해 주세요.</div>':
                 '<div class="sub">지난 '+(lastAnswer.response_kind==='model'||lastAnswer.response_kind==='model_interpretation_server_metrics'?'실제 AI 의견':'서버 검증 답변')+' · '+esc(kstStamp(lastAnswer.created_at))+' · 당시 자료 기준</div><p class="ai-answer-lead">'+esc(String(lastAnswer.answer).split(/\n/)[0].replace(/^(핵심 의견|핵심|판단):\s*/,''))+'</p><div class="sub">아래에서 최신 자료로 다시 점검하거나 지난 AI 분석 전체를 열어 보세요.</div>';

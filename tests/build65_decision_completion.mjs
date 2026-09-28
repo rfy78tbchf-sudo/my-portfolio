@@ -35,4 +35,6 @@ assert.match(sql,/d\.scenario_snapshot \? 'choice_comparison'/);
 assert.match(sql,/v_history\.comparison_evidence->>'target_pct'\)::numeric is distinct from p_target_pct/);
 assert.match(sql,/d\.id,d\.security_id,d\.choice/);
 assert.match(edge,/code:'REQUEST_CONTEXT_CHANGED'/);
+assert.match(html,/if\(currentOpinion&&!lastComparison&&!currentOpinion\.textContent\.trim\(\)&&lastAnswer\.answer\)/,
+  'an asynchronous history read must not display an unrelated answer over the active comparison');
 console.log('Exact comparison AI reuse, old assumption isolation, and optional atomic save verified');
