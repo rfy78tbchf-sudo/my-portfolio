@@ -750,10 +750,19 @@ Deno.serve(async(req:Request)=>{
     const reservation=await scopedRequest(token,query('reserve_ai_analysis_request',{}),{p_id:requestId});
     if(!reservation.reserved){
       if(reservation.state==='saved'&&reservation.analysis_id){
-        const cached=await scopedRequest(token,'ai_analysis_history?select=id,answer,confidence,model,observation_at,isa_observation_id,isa_correction_id,isa_capture_at,calculation_version,thesis_version,response_kind,account_scope_state,external_sources,official_evidence,price_evidence&id=eq.'+reservation.analysis_id+'&limit=1');
-        if(cached?.[0])return respond(req,{ok:true,answer:cached[0].answer,
+        const cached=await scopedRequest(token,'ai_analysis_history?select=id,symbol,answer,confidence,model,observation_at,isa_observation_id,isa_correction_id,isa_capture_at,calculation_version,thesis_version,response_kind,account_scope_state,external_sources,official_evidence,price_evidence,comparison_evidence&id=eq.'+reservation.analysis_id+'&limit=1');
+        if(cached?.[0]){
+          const prior=cached[0].comparison_evidence||null;
+          if(cached[0].symbol!==symbol||!!prior!==decisionReview||
+            decisionReview&&(Number(prior.target_pct)!==Number(body.target_pct)||
+              Number(prior.price_assumptions?.down_pct)!==Number(body.down_pct)||
+              Number(prior.price_assumptions?.up_pct)!==Number(body.up_pct)))
+            return respond(req,{ok:false,code:'REQUEST_CONTEXT_CHANGED',
+              message:'다른 비교 조건의 이전 분석 요청입니다. 현재 조건으로 다시 분석해 주세요.'},409);
+          return respond(req,{ok:true,answer:cached[0].answer,
           ...cached[0],analysis_id:cached[0].id,request_id:requestId,history_saved:true,
           reused_saved_analysis:true});
+        }
       }
       if(reservation.state==='history_failed')return retryHistory(req,token,userId,requestId);
       return respond(req,{ok:false,code:reservation.state==='processing'?'ANALYSIS_RUNNING':'ANALYSIS_PREVIOUSLY_FAILED',

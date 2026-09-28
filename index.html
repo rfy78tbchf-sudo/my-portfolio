@@ -285,7 +285,9 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       '<b class="choice-amount up">'+signedMoney(up)+'</b></div></div>'};
     var foreign=x.position_currency&&x.position_currency!=='KRW';
     var actual=r.mode==='integer_shares'&&Number.isInteger(Number(r.shares_to_sell))&&Number.isInteger(Number(r.quantity_reference));
-    return '<div class="choice-result-head">현재 '+num(h.weight_pct,2)+'% → <strong>'+(actual?num(r.shares_to_sell,0)+'주 매도 가정 · '+num(r.quantity_reference,0)+'주 보유 · ':'')+num(r.weight_pct,2)+'%</strong> <span>(참고 비중)</span></div>'+
+    return '<div class="sub">'+(x.exact_target?'목표 비중 '+esc(num(x.exact_target.target_pct,2))+'% · ':'')+
+      '주가 '+esc(num(a.down_pct,1))+'% / +'+esc(num(a.up_pct,1))+'% 가정</div>'+
+      '<div class="choice-result-head">현재 '+num(h.weight_pct,2)+'% → <strong>'+(actual?num(r.shares_to_sell,0)+'주 매도 가정 · '+num(r.quantity_reference,0)+'주 보유 · ':'')+num(r.weight_pct,2)+'%</strong> <span>(참고 비중)</span></div>'+
       '<p class="choice-takeaway">줄이면 하락 영향은 '+money(defense)+' 작아지고, 상승 참여도 '+money(participation)+' 줄어듭니다.</p>'+
       '<div class="choice-cards">'+option('현재 유지',h.weight_pct,h.down_impact_krw,h.up_impact_krw)+
       option('일부 축소',r.weight_pct,r.down_impact_krw,r.up_impact_krw)+'</div>'+
@@ -346,7 +348,8 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       '<p>'+(refreshFailed?'새 자료 조회에 실패했습니다. 공식 자료의 변화 여부를 확인하지 못했습니다.':'새롭게 확인된 공식 변화가 없습니다. 같은 자료의 재조회는 새 발표로 세지 않습니다.')+'</p>';
     var priceLine=laterPrice?'종가 '+esc(price(prior.close,prior.currency))+' → '+esc(price(recent.close,recent.currency))+
       ' ('+esc(prior.price_date)+' → '+esc(recent.price_date)+', 종목 가격만 비교)':'이후 종가 비교에 필요한 같은 통화의 날짜별 가격이 없습니다.';
-    var condition='재검토 조건은 사용자 원문입니다. 충족 여부를 자동으로 단정하지 않습니다.',reviewState='자료 부족';
+    var condition='재검토 조건은 사용자 원문입니다. 충족 여부를 자동으로 단정하지 않습니다.',
+      reviewState=refreshFailed?'확인 자료 부족':'확인된 변화 없음';
     if(refreshFailed)condition='일부 새 자료 조회에 실패했습니다. 조건 충족 여부를 확인하지 못했습니다. 사용자 원문: '+esc(decision.review_condition||'');
     var match=String(decision.review_condition||'').match(/^(?:종가|가격)\s*([\d,.]+)\s*(달러|원)\s*(이하|이상)$/);
     if(!refreshFailed&&match&&recent&&recent.currency===(match[2]==='달러'?'USD':'KRW')&&Number.isFinite(Number(match[1].replace(/,/g,'')))){
@@ -357,16 +360,27 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       }else{
         condition=(hit?'현재 종가가 저장한 기준에 해당합니다.':'현재 종가는 저장한 기준에 해당하지 않습니다.')+
           ' '+esc(recent.price_date)+' 종가 기준이며, 그 사이 한번이라도 닿았는지는 확인하지 않았습니다.';
-        reviewState=hit?'재검토 필요':'조건 유지';
+        reviewState=hit?'재검토할 변화 있음':'확인된 변화 없음';
       }
     }
     var due=String(decision.review_condition||'').match(/\b20\d\d-\d\d-\d\d\b/);
     if(due&&due[0]>String(decision.created_at||'').slice(0,10)){
-      reviewState=due[0]<=kstDate()?'재검토 필요':'조건 유지';
-      condition='직접 적은 점검 날짜 '+esc(due[0])+(reviewState==='재검토 필요'?'가 지났습니다.':'까지 기다릴 수 있습니다.')+
+      reviewState=due[0]<=kstDate()?'재검토할 변화 있음':'확인된 변화 없음';
+      condition='직접 적은 점검 날짜 '+esc(due[0])+(reviewState==='재검토할 변화 있음'?'가 지났습니다.':'까지 기다릴 수 있습니다.')+
         ' 날짜 외 조건이 있으면 따로 확인해 주세요.';
     }
-    if(meaningful.some(function(x){return x.relation.status==='weaken'||x.relation.status==='mixed'}))reviewState='재검토 필요';
+    if(meaningful.length)reviewState='재검토할 변화 있음';
+    if(fresh.length&&!meaningful.length&&!refreshFailed)reviewState='확인 자료 부족';
+    if(!(analyses||[]).some(function(x){return x.created_at>saved&&
+      (x.official_evidence&&x.official_evidence.documents||[]).some(function(doc){return doc.date_verified&&doc.published_on})})&&
+      reviewState==='확인된 변화 없음')reviewState='확인 자료 부족';
+    var priorQuantity=Number(scenario.choice_comparison&&scenario.choice_comparison.hold&&scenario.choice_comparison.hold.quantity),
+      nowQuantity=Number(activity&&activity.current_quantity);
+    if(Number.isFinite(priorQuantity)&&Number.isFinite(nowQuantity)&&priorQuantity!==nowQuantity&&
+      scenario.choice_comparison&&scenario.choice_comparison.hold){
+      reviewState='재검토할 변화 있음';
+      condition='당시 '+esc(num(priorQuantity,3))+'주와 현재 '+esc(num(nowQuantity,3))+'주의 확인된 보유 수량이 다릅니다. 가격 변동을 매매로 해석하지 않습니다. '+condition;
+    }
     var detail='<details class="more-list"><summary>당시 근거와 이후 자료 자세히</summary>'+
       '<div class="sub">당시 계좌 관측 '+esc(account.observation_at?kstStamp(account.observation_at):'기록 부족')+
       ' · 보유 논리 버전 '+esc(decision.thesis_version||'없음')+'</div>'+
@@ -386,7 +400,9 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
     var labels={hold:'현재 유지',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류',revisit:'추가 확인 후 판단'};
     return '<section class="decision-review"><h3>지난 판단 이후</h3><p>지난 판단 · '+esc(labels[decision.choice]||'판단 기록')+
       ' · '+esc(String(decision.reason||'').slice(0,130))+'</p>'+summary+
-      '<p><b>현재 상태 · '+reviewState+'</b> · '+condition+'</p>'+detail+'</section>';
+      '<p><b>현재 상태 · '+reviewState+'</b> · '+condition+'</p>'+
+      (reviewState==='확인 자료 부족'?'<p class="sub">공식 새 자료 확인이 끝나지 않았습니다. 저장된 자료의 재조회만으로 변화 없음을 단정하지 않습니다.</p>':'')+
+      detail+'</section>';
   }
   function officialPeriodKo(doc){
     var value=String(doc&&((doc.period_ko||doc.period))||'');
@@ -458,6 +474,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       var d=results[0],activity=results[1];
       if(!d||d.ok===false)d={security:known,holding:{quantity:owned.reduce(function(n,x){return n+Number(x.quantity||0)},0)},prices:[],technical:{},detailWarning:d&&d.detailWarning||'추가 가격 자료를 확인할 수 없습니다.'};
       var s=d.security||known,h=d.holding||{},t=d.technical||{},p=d.prices||[];
+      activity.current_quantity=owned.reduce(function(total,row){return total+Number(row.quantity||0)},0);
       var history=(activity.items||[]).map(function(x){
         var label=x.kind==='buy'?'매수':x.kind==='sell'?'매도':'배당 입금';
         var line=x.kind==='dividend'?'순입금 '+price(x.amount,x.currency):
@@ -508,9 +525,10 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       var thesisVersion=Number(results[2]&&results[2].thesis&&results[2].thesis.version||0),
         thesisSaved=thesisVersion>0,analyze=document.getElementById('thesisAnalyze');
       var loadThesisPrior=function(){var el=document.getElementById('thesisPrevious');if(!el)return;
-        authFetch(SUPABASE_URL+'/rest/v1/ai_analysis_history?select=id,question,answer,created_at,thesis_version,response_kind,external_sources,official_evidence,price_evidence&symbol=eq.'+encodeURIComponent(s.symbol)+'&order=created_at.desc&limit=5',{},12000,false)
+        authFetch(SUPABASE_URL+'/rest/v1/ai_analysis_history?select=id,question,answer,created_at,thesis_version,response_kind,external_sources,official_evidence,price_evidence,comparison_evidence,account_basis&symbol=eq.'+encodeURIComponent(s.symbol)+'&order=created_at.desc&limit=10',{},12000,false)
           .then(function(r){if(!r.ok)throw Error('읽기 실패');return r.json()}).then(function(rows){
             if(!el.isConnected)return;el.textContent='';
+            recentAnalyses=rows;showComparisonNext();
             if(!rows.length){el.textContent='저장된 종목 분석이 없습니다.';return}
             var currentOpinion=document.getElementById('thesisAnalysis'),lastAnswer=rows[0];
             if(currentOpinion&&!currentOpinion.textContent.trim()&&lastAnswer.answer){
@@ -539,14 +557,16 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
               d.appendChild(summary);d.appendChild(b);el.appendChild(d)})})
           .catch(function(){if(el.isConnected)el.textContent='지난 분석을 불러오지 못했습니다.'})};
       loadThesisPrior();
+      var breakoutReady=false;
       authFetch(SUPABASE_URL+'/rest/v1/investment_breakout_rules?select=kind,threshold,currency,event_date,created_at&security_id=eq.'+
         encodeURIComponent(id)+'&order=created_at.desc&limit=1',{},12000,false)
         .then(function(r){return r.ok?r.json():[]}).then(function(rows){var node=document.getElementById('detailBreakoutStatus');
-          if(node&&rows.length)node.textContent='내가 저장한 기준 · '+
+          if(node&&rows.length){node.dataset.confirmedAt=rows[0].created_at;node.textContent='내가 저장한 기준 · '+
             (rows[0].kind==='price_close'?price(rows[0].threshold,rows[0].currency):'직전 20거래일 최고 종가')+
             ' · 저장 '+kstStamp(rows[0].created_at)+
-            (rows[0].event_date?' · 돌파를 본 날짜 '+rows[0].event_date:' · 당시 돌파 날짜 미입력')})
-        .catch(function(){});
+            (rows[0].event_date?' · 돌파를 본 날짜 '+rows[0].event_date:' · 당시 돌파 날짜 미입력')}
+          breakoutReady=true;showComparisonNext()})
+        .catch(function(){breakoutReady=false});
       document.getElementById('detailBreakoutSave').onclick=async function(){
         var kind=document.getElementById('detailBreakoutKind').value,
           threshold=document.getElementById('detailBreakoutPrice').value,
@@ -558,22 +578,46 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
         try{var saved=await rpc('save_investment_breakout_rule',{p_security_id:id,p_kind:kind,
           p_threshold:kind==='price_close'?Number(threshold):null,p_event_date:eventDate||null});
           analysisEpoch++;lastDetailAnalysisId=null;lastComparison=null;lastComparisonDirty=true;
+          status.dataset.confirmedAt=saved.created_at;
           status.textContent='내 기준 저장 '+kstStamp(saved.created_at)+' · 이후 분석은 다시 실행해 주세요.';
         }catch(e){status.textContent='기준 저장 실패 · '+(e.message||'다시 시도해 주세요.')}
         finally{this.disabled=false}
       };
-      var choiceLabels={hold:'현재 유지',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류',revisit:'추가 확인 후 판단'},lastDetailAnalysisId=null,lastAnalysisComparison=false,decisionRequestId=null,decisionRequestKey=null,lastComparison=null,lastComparisonDirty=false,analysisEpoch=0,comparisonEpoch=0;
+      var choiceLabels={hold:'현재 유지',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류',revisit:'추가 확인 후 판단'},lastDetailAnalysisId=null,lastAnalysisComparison=false,decisionRequestId=null,decisionRequestKey=null,lastComparison=null,lastComparisonDirty=false,analysisEpoch=0,comparisonEpoch=0,recentAnalyses=[];
       function openDecisionForm(){var action=document.getElementById('detailDecisionAction');
         if(action){action.click();return}
         var form=document.getElementById('detailDecisionForm');if(!form)return;
         form.hidden=false;form.scrollIntoView({block:'center'});document.getElementById('detailChoice').focus()}
-      function showComparisonNext(){var output=document.getElementById('detailWeightResult');
+      function matchingAnalysis(){if(!active()||!breakoutReady||!lastComparison||!lastComparison.result||lastComparisonDirty)return null;
+        var c=lastComparison.result;
+        return recentAnalyses.find(function(a){var e=a.comparison_evidence||{},r=e.reduce||{},basis=a.account_basis||{},rule=a.price_evidence&&a.price_evidence.approved_rule;
+          return /^model/.test(a.response_kind||'')&&a.thesis_version===thesisVersion&&
+            a.price_evidence&&a.price_evidence.review_status!=='unconfirmed_market_close'&&
+            Number(e.target_pct)===lastComparison.targetPct&&
+            Number(e.price_assumptions&&e.price_assumptions.down_pct)===lastComparison.downPct&&
+            Number(e.price_assumptions&&e.price_assumptions.up_pct)===lastComparison.upPct&&
+            Number(r.shares_to_sell)===Number(c.reduce.shares_to_sell)&&
+            Number(r.cash_increase_krw)===Number(c.reduce.cash_increase_krw)&&
+            Number(basis.position_value_krw)===Number(c.hold.value_krw)&&
+            Number(basis.denominator_value_krw)===Number(c.denominator.value)&&
+            Number(basis.quantity)===Number(c.hold.quantity)&&
+            (!rule||rule.confirmed_at===null||rule.confirmed_at===undefined||
+              rule.confirmed_at===document.getElementById('detailBreakoutStatus').dataset.confirmedAt)&&
+            (!a.price_evidence.price_date||p.some(function(row){return (row.date||row.price_date)===a.price_evidence.price_date&&
+              Number(row.close)===Number(a.price_evidence.latest_close)}));
+        })||null}
+      function showComparisonNext(){if(!active())return;var output=document.getElementById('detailWeightResult');
         if(!output||!output.querySelector('.choice-result-head')||!lastComparison||lastComparisonDirty)return;
+        var existing=matchingAnalysis();if(existing&&!lastDetailAnalysisId){lastDetailAnalysisId=existing.id;lastAnalysisComparison=true;
+          var opinion=document.getElementById('thesisAnalysis');if(opinion&&!opinion.textContent.trim()){
+            if(window.portfolioRenderAiAnswer)window.portfolioRenderAiAnswer(opinion,existing.answer);else opinion.textContent=existing.answer;
+            opinion.insertAdjacentHTML('afterbegin','<div class="sub">이 조건의 이전 AI 의견 · '+esc(kstStamp(existing.created_at))+' 기준</div>');
+            aiOfficialEvidence(opinion,existing.official_evidence);aiSourceLinks(opinion,existing.external_sources)}}
         var button=output.querySelector('#detailComparisonNext');
         if(!button){button=document.createElement('button');button.id='detailComparisonNext';
           button.type='button';button.className='btn full choice-next';output.appendChild(button)}
         button.textContent=lastDetailAnalysisId&&lastAnalysisComparison?
-          '다음: 이 비교를 보고 내 판단 작성':'다음: 이 비교로 AI 의견 받고 판단 작성';
+          '이 의견으로 내 판단 남기기':'이 조건으로 AI 의견 받기';
         button.onclick=function(){if(!active()||!lastComparison||lastComparisonDirty)return;
           if(lastDetailAnalysisId&&lastAnalysisComparison)openDecisionForm();
           else{var fresh=document.getElementById('detailFreshReview');if(fresh&&!fresh.disabled)fresh.click()}}}
@@ -581,6 +625,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
         document.getElementById(inputId).addEventListener('input',function(){comparisonEpoch++;if(lastComparison){
           analysisEpoch++;lastComparisonDirty=true;lastDetailAnalysisId=null;
           document.getElementById('detailWeightResult').textContent='조건이 바뀌었습니다. 다시 비교해 주세요.';
+          document.getElementById('thesisAnalysis').textContent='변경 전 AI 의견은 현재 조건의 근거로 사용하지 않습니다.';
         }})});
       var reviewAnalyses=[];
       var reviewRefreshFailed=!!(d.detailWarning||!p.length||activity.unavailable||results[3]&&results[3].unavailable),latestDecisionRows=results[3];
@@ -621,14 +666,17 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
         }
         latest=document.createElement('div');latest.id='detailDecisionSummary';latest.className='decision-latest';
         if(hasLatest){var lastSaved=rows[0],comparison=lastSaved.scenario_snapshot&&lastSaved.scenario_snapshot.choice_comparison;
-          latest.innerHTML='<b>'+esc(choiceLabels[lastSaved.choice]||'판단')+'</b><div class="sub">이유: '+esc(lastSaved.reason||'')+'</div><div class="sub">다시 볼 조건: '+esc(lastSaved.review_condition||'')+'</div><div class="sub">'+esc(kstStamp(lastSaved.created_at))+' 저장 · '+(comparison&&comparison.reduce&&comparison.reduce.mode==='integer_shares'?'정수 수량 비교 연결':'비교 없이 기록한 판단')+'</div>';
+          latest.innerHTML='<b>'+esc(choiceLabels[lastSaved.choice]||'판단')+'</b><div class="sub">이유: '+esc(lastSaved.reason||'')+'</div><div class="sub">다시 볼 조건: '+esc(lastSaved.review_condition||'')+'</div><div class="sub">'+(comparison&&comparison.reduce&&comparison.reduce.mode==='integer_shares'?
+            '검토한 비교: 목표 비중 '+esc(weightPct(comparison.target_pct))+' · '+esc(comparison.reduce.shares_to_sell)+'주 매도 가정 · 주가 '+
+              esc(comparison.price_assumptions.down_pct)+'% / +'+esc(comparison.price_assumptions.up_pct)+'% 가정':'비교 없이 기록한 판단')+
+            '</div><div class="sub">'+esc(kstStamp(lastSaved.created_at))+' 저장 · 분석 기준 '+esc(lastSaved.basis_at?kstStamp(lastSaved.basis_at):'자료 확인 필요')+' · 실제 주문은 증권사에서 따로 합니다.</div>';
         }else latest.textContent='아직 저장한 판단이 없습니다.';
         form.insertAdjacentElement('beforebegin',latest);
         var action=document.createElement('button');action.id='detailDecisionAction';action.type='button';action.className='btn secondary full decision-action';action.textContent=hasLatest?'판단 변경':'판단 작성';
         form.insertAdjacentElement('beforebegin',action);
         action.onclick=function(){form.hidden=false;form.scrollIntoView({block:'nearest'});document.getElementById('detailChoice').focus()};
-        if(hasLatest){var review=document.createElement('details');review.id='detailDecisionReview';review.className='more-list';
-          review.innerHTML='<summary>지난 판단 이후 변화 보기</summary>'+decisionReviewHtml(rows[0],p,activity,reviewAnalyses,reviewRefreshFailed);
+        if(hasLatest){var review=document.createElement('div');review.id='detailDecisionReview';
+          review.innerHTML=decisionReviewHtml(rows[0],p,activity,reviewAnalyses,reviewRefreshFailed);
           var sourceUrls=(rows[0].official_evidence_snapshot&&rows[0].official_evidence_snapshot.documents||[])
             .concat(reviewAnalyses.filter(function(x){return x.created_at>rows[0].created_at})
               .flatMap(function(x){return x.official_evidence&&x.official_evidence.documents||[]}))
@@ -636,7 +684,13 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
           aiSourceLinks(review,sourceUrls);
           var refresh=document.createElement('button');refresh.type='button';refresh.className='btn secondary';
           refresh.textContent='공식 자료 다시 확인';refresh.onclick=function(){runDetailAnalysis(thesisSaved,true)};
-          review.appendChild(refresh);form.insertAdjacentElement('beforebegin',review)}
+          review.appendChild(refresh);
+          var confirm=document.createElement('button');confirm.type='button';confirm.className='btn secondary';
+          confirm.textContent='기존 판단 유지 확인';confirm.onclick=function(){openDecisionForm();document.getElementById('detailChoice').value='hold'};
+          review.appendChild(confirm);
+          var revise=document.createElement('button');revise.type='button';revise.className='btn secondary';
+          revise.textContent='새 조건으로 비교';revise.onclick=function(){var target=document.getElementById('detailWeightTarget');target.scrollIntoView({block:'center'});target.focus()};
+          review.appendChild(revise);form.insertAdjacentElement('beforebegin',review)}
         if(!hasLatest){node.textContent='아직 저장한 이전 판단이 없습니다.';return}
         rows.forEach(function(d){var item=document.createElement('div');item.className='decision-history-row';
           var inner=document.createElement('div'),head=document.createElement('b'),explain=document.createElement('div'),basis=document.createElement('div');
@@ -661,7 +715,8 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       var decisionForm=document.getElementById('detailDecisionForm');if(decisionForm)decisionForm.onsubmit=async function(ev){
         ev.preventDefault();var submit=decisionForm.querySelector('button[type="submit"]'),status=document.getElementById('detailDecisionStatus'),reason=document.getElementById('detailReason').value.trim(),review=document.getElementById('detailReview').value.trim();
         if(!reason||!review){status.textContent='내 이유와 다시 볼 조건을 적어 주세요.';return}
-        var choice=document.getElementById('detailChoice').value,withComparison=!!lastComparison;
+        var choice=document.getElementById('detailChoice').value,withComparison=!!lastComparison&&!lastComparisonDirty;
+        if(lastComparisonDirty&&document.getElementById('detailWeightTarget').value){status.textContent='목표 비중 또는 가격 가정을 바꿨습니다. 다시 비교하거나 목표 비중을 지워 주세요.';return}
         if(choice==='consider_reduction'&&!withComparison){status.textContent='일부 축소 검토에는 실행 가능한 수량 비교가 필요합니다.';return}
         if(withComparison&&(!lastDetailAnalysisId||!lastAnalysisComparison)){status.textContent='이 비교 조건으로 AI 의견을 새로 받아 주세요.';return}
         submit.disabled=true;status.textContent='내 판단 저장 중…';
@@ -669,9 +724,12 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
           Number(document.getElementById('detailDown').value)!==lastComparison.downPct||
           Number(document.getElementById('detailUp').value)!==lastComparison.upPct))
           throw Error('비교 조건을 바꿨습니다. 변경된 조건으로 다시 계산해 주세요.');
-          var key=JSON.stringify([id,choice,reason,review,lastDetailAnalysisId,lastComparison&&lastComparison.targetPct,lastComparison&&lastComparison.observationAt]);
+          var key=JSON.stringify([id,choice,reason,review,lastDetailAnalysisId,withComparison&&lastComparison.targetPct,
+            withComparison&&lastComparison.downPct,withComparison&&lastComparison.upPct,withComparison&&lastComparison.observationAt]);
           if(key!==decisionRequestKey){decisionRequestId=crypto.randomUUID();decisionRequestKey=key}
-          var args={p_security_id:id,p_choice:choice,p_reason:reason,p_review_condition:review,p_analysis_id:lastDetailAnalysisId,p_request_id:decisionRequestId};
+          var args={p_security_id:id,p_choice:choice,p_reason:reason,p_review_condition:review,
+            p_analysis_id:lastDetailAnalysisId,p_request_id:decisionRequestId,
+            p_target_pct:null,p_down_pct:null,p_up_pct:null,p_observation_at:null};
           if(withComparison)Object.assign(args,{p_target_pct:lastComparison.targetPct,p_down_pct:lastComparison.downPct,
             p_up_pct:lastComparison.upPct,p_observation_at:lastComparison.observationAt});
           var saved=await rpc('save_investment_decision',args);
@@ -679,12 +737,13 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
           var recorded=await rpc('get_investment_decisions',{p_security_id:id}),verified=Array.isArray(recorded)&&recorded.find(function(row){return row.id===saved.id});
           if(!active())return;
           var linked=verified&&verified.scenario_snapshot&&verified.scenario_snapshot.choice_comparison;
-          if(!verified||verified.analysis_id!==lastDetailAnalysisId||verified.choice!==choice||verified.reason!==reason||
+          if(!verified||verified.security_id!==id||verified.analysis_id!==lastDetailAnalysisId||verified.choice!==choice||verified.reason!==reason||
             verified.review_condition!==review||(withComparison&&(!linked||linked.reduce&&linked.reduce.mode!=='integer_shares'||
             !linked.hold||!linked.reduce||Number(linked.target_pct)!==lastComparison.targetPct||
             Number(linked.price_assumptions&&linked.price_assumptions.down_pct)!==lastComparison.downPct||
             Number(linked.price_assumptions&&linked.price_assumptions.up_pct)!==lastComparison.upPct||
-            Date.parse(linked.observation_at)!==Date.parse(lastComparison.observationAt))))
+            Date.parse(linked.observation_at)!==Date.parse(lastComparison.observationAt)))||
+            (!withComparison&&linked))
             throw Error('판단 본문 또는 비교 연결을 재조회해 확인하지 못했습니다. 입력을 보존했습니다. 같은 요청으로 다시 시도해 주세요.');
           decisionRequestId=null;decisionRequestKey=null;renderDecisionHistory(recorded);decisionForm.hidden=true;
           document.getElementById('detailDecisionSummary').insertAdjacentHTML('beforeend','<div class="sub" role="status">'+(withComparison?'판단과 정수 수량 비교 연결을':'판단 본문을')+' 재조회해 확인했습니다.</div>');
@@ -707,7 +766,9 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
           if(!data.ok)throw Error(['TARGET_EXCEEDS_CURRENT_WEIGHT','TARGET_MUST_BE_BELOW_CURRENT'].includes(data.reason)?'목표 비중은 현재 비중보다 낮아야 합니다.':data.reason||'평가시각을 확인할 수 없습니다.');
           if(!active()||kind==='weight'&&calculation!==comparisonEpoch)return;
           if(kind==='price')output.textContent=s.symbol+' 평가액 '+money(data.position.value)+'이 '+value+'% 바뀌면 앱 합산 자산은 '+signedMoney(data.scenario.impact_krw)+' 변화 (나머지 자산·환율 고정).\nKB 보유 '+kstStamp(data.observation_at)+' · ISA 총액은 다른 시각의 관측입니다. 주문·확정 수익·예측이 아닙니다.';
-          else{analysisEpoch++;output.innerHTML=comparisonHtml(data);lastDetailAnalysisId=null;lastComparison={targetPct:value,downPct:down,upPct:up,observationAt:data.observation_at};showComparisonNext();
+          else{analysisEpoch++;output.innerHTML=comparisonHtml(data);lastDetailAnalysisId=null;
+            document.getElementById('thesisAnalysis').textContent='';
+            lastComparison={targetPct:value,downPct:down,upPct:up,observationAt:data.observation_at,result:data};showComparisonNext();
             output.scrollIntoView({block:'start'})}
         }catch(e){if(active())output.textContent='계산 불가 · '+(e.message||'자료 확인 필요')}
         finally{button.disabled=false}
@@ -738,13 +799,15 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
           ['AI_EMPTY','AI_OUTPUT_LIMIT','AI_MODEL_UNAVAILABLE','ANALYSIS_PREVIOUSLY_FAILED'].includes(x.code))
           window.portfolioAdvanceAnalysisRequestId(question,s.symbol,revision);
           throw Error(x.message||x.code)}
-        if(!active()||analysisRequest!==analysisEpoch||!out.isConnected||document.getElementById('thesisAnalysis')!==out)return;
-        if(window.portfolioRenderAiAnswer)window.portfolioRenderAiAnswer(out,x.answer);
-        else out.textContent=x.answer;
+          if(!active()||analysisRequest!==analysisEpoch||!out.isConnected||document.getElementById('thesisAnalysis')!==out)return;
+          if(window.portfolioRenderAiAnswer)window.portfolioRenderAiAnswer(out,x.answer);
+          else out.textContent=x.answer;
+          if(reviewInputs)out.insertAdjacentHTML('afterbegin','<div class="sub">'+esc(s.symbol)+' · 목표 비중 '+esc(num(reviewInputs.targetPct,2))+
+            '% · '+esc(reviewInputs.result.reduce.shares_to_sell)+'주 매도 가정 · 주가 '+esc(reviewInputs.downPct)+'% / +'+esc(reviewInputs.upPct)+'% 가정</div>');
         aiOfficialEvidence(out,x.official_evidence);
         if(!(x.official_evidence&&x.official_evidence.followup_url))aiSourceLinks(out,x.external_sources);
         var closeUnconfirmed=x.price_evidence&&x.price_evidence.review_status==='unconfirmed_market_close';
-        if(x.history_saved!==false&&x.analysis_id&&!x.reused_saved_analysis&&!closeUnconfirmed){lastDetailAnalysisId=x.analysis_id;lastAnalysisComparison=!!reviewInputs}
+        if(x.history_saved!==false&&x.analysis_id&&!closeUnconfirmed){lastDetailAnalysisId=x.analysis_id;lastAnalysisComparison=!!reviewInputs}
         showComparisonNext();
         var status=document.createElement('p');status.className='ai-history-status';
         status.textContent=(closeUnconfirmed?'기존 답변 · 가격 근거 재점검 필요':x.reused_saved_analysis?'이전 저장 답변':String(x.response_kind||'').startsWith('model')?'새 AI 답변':'서버 검증 답변')+
@@ -820,7 +883,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
           catch(_){fullListRefreshed=false;live=previousLive}
           if(!active()||calculation!==comparisonEpoch)return;
           output.innerHTML=wantsComparison?comparisonHtml(current):'<div class="notice">현재 보유 상태를 확인했습니다. 유지·판단 유보는 목표 비중 없이 기록할 수 있습니다. 변경 비교가 필요하면 아래 목표 비중을 입력해 주세요.</div>';
-          if(wantsComparison){lastComparison={targetPct:target,downPct:down,upPct:up,observationAt:current.observation_at};showComparisonNext()}
+          if(wantsComparison){lastComparison={targetPct:target,downPct:down,upPct:up,observationAt:current.observation_at,result:current};showComparisonNext()}
           var old=document.getElementById('detailFreshBasis');if(old)old.remove();
           var basis=document.createElement('p');basis.id='detailFreshBasis';basis.className='choice-short-note';
           basis.textContent='계좌별 최신 기록 기준 · 총자산 '+money(current.denominator.value)+

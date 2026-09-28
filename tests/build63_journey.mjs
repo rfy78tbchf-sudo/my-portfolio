@@ -32,7 +32,7 @@ scope.decision={choice:'hold',reason:'Check next report',review_condition:'차�
 let review=vm.runInContext('decisionReviewHtml(decision,[],{unavailable:true},[],true)',scope);
 assert.match(review,/새 자료 조회에 실패했습니다/);
 assert.match(review,/조건 충족 여부를 확인하지 못했습니다/);
-assert.match(review,/현재 상태 · 자료 부족/);
+assert.match(review,/현재 상태 · 확인 자료 부족/);
 review=vm.runInContext('decisionReviewHtml(decision,[],{items:[]},[],false)',scope);
 assert.match(review,/같은 자료의 재조회는 새 발표로 세지 않습니다/);
 assert.doesNotMatch(review,/새 자료 조회에 실패했습니다/);

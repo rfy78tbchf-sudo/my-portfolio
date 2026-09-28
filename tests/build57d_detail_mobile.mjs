@@ -94,6 +94,13 @@ try{
     await page.getByRole('button',{name:'내 판단 남기기'}).click();
     assert.ok(await page.locator('#detailDecisionForm').isVisible(),
       `${width}px: the AI answer's decision shortcut must open the collapsed form`);
+    await page.setViewportSize({width,height:560});
+    await page.locator('#detailReview').focus();
+    await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();
+    const saveButton=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();
+    assert.ok(saveButton&&saveButton.y>=0&&saveButton.y+saveButton.height<=560,
+      `${width}px: decision save must remain reachable when the visible viewport shrinks for the keyboard`);
+    await page.setViewportSize({width,height:844});
     await page.getByRole('button',{name:'목표 비중으로 비교'}).click();
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
     assert.equal(await page.locator('#detailWeightResult').isVisible(),false,
@@ -110,7 +117,7 @@ try{
       'quantity and calculation policy remain available but collapsed');
     assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('+1,000원').isVisible());
     assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('-500원').isVisible());
-    assert.match(await page.locator('#detailComparisonNext').innerText(),/이 비교로 AI 의견 받고 판단 작성/);
+    assert.match(await page.locator('#detailComparisonNext').innerText(),/이 조건으로 AI 의견 받기/);
     await page.locator('#detailWeightTarget').fill('9');
     assert.match(await page.locator('#detailWeightResult').innerText(),/조건이 바뀌었습니다. 다시 비교해 주세요/);
     await page.locator('#detailWeightTarget').fill('10');
@@ -118,7 +125,7 @@ try{
     await page.locator('#detailReason').fill('I can absorb this exposure');
     await page.locator('#detailReview').fill('Recheck the reported operating result');
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건으로 AI 의견/);
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/다시 비교하거나 목표 비중을 지워/);
     await page.locator('#detailWeightRun').click();
     await page.locator('#thesisAnalyze').click();
     await page.getByText('저장됨 · 계좌 관측').last().waitFor();
@@ -129,7 +136,7 @@ try{
     await page.getByText('저장됨 · 계좌 관측').last().waitFor();
     assert.deepEqual(await page.evaluate(()=>({action:lastAiRequest.action,target:lastAiRequest.target_pct})),
       {action:'decision-review',target:10},'the next step must review the current comparison, not an old target');
-    assert.match(await page.locator('#detailComparisonNext').innerText(),/이 비교를 보고 내 판단 작성/);
+    assert.match(await page.locator('#detailComparisonNext').innerText(),/이 의견으로 내 판단 남기기/);
     // A broad dashboard read must not override the authenticated per-symbol
     // calculation or falsely report that a holding disappeared.
     await page.evaluate(()=>{
@@ -195,7 +202,7 @@ try{
     await page.locator('#detailReview').fill('Review source evidence again');
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.waitForFunction(()=>/내 판단 저장 완료/.test(document.getElementById('detailDecisionStatus').textContent));
-    assert.equal(await page.evaluate(()=>stored[0].p_target_pct),undefined,'hold can be saved without a comparison target');
+    assert.equal(await page.evaluate(()=>stored[0].p_target_pct),null,'hold can be saved without a comparison target');
     assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-NEXT');
     await page.evaluate(()=>window.openTestDetail('other'));
     await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
