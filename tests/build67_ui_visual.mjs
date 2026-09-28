@@ -8,6 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
+const denseUi=source.includes('readable-lists-68');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
  const fn=source.slice(source.indexOf('  function refreshLive('),source.indexOf('  (function bindPullToRefresh'));
@@ -72,7 +73,23 @@ try{
       if(tab==='home'&&!baseline){const rows=await page.locator('#homeHoldings .portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[2]<760,`${width}px at least three home rows visible`)}
       if(tab==='portfolio'&&!baseline){const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[4]<770,`${width}px five portfolio rows visible`)}
       await page.screenshot({path:`${out}/${tab}-${width}.png`});
+      if(denseUi&&tab==='performance'){
+        assert.equal(await page.locator('.performance-breakdown').first().isVisible(),false);
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
+        assert.ok(await page.locator('.performance-breakdown').first().isVisible());
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).uncheck();
+      }
+      if(denseUi&&tab==='portfolio'){
+        await page.locator('#portfolioAccount').selectOption('isa');assert.equal(await page.locator('.portfolio-row').count(),1);
+        await page.locator('#portfolioAccount').selectOption('ALL');await page.locator('#search').fill('ARM');
+        assert.equal(await page.locator('.portfolio-row:visible').count(),1);await page.locator('#search').fill('');
+      }
+
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} 125% overflow`);await page.screenshot({path:`${out}/${tab}-390-large.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
+    }
+    if(denseUi){
+      await page.evaluate(()=>{window.__uiRender('portfolio');document.querySelector('.position-name').textContent='아주 긴 국내 상장 종목 이름을 확인하는 화면';document.querySelector('.position-value').textContent='1,234,567,890원'});
+      await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'long names / billion amount / enlarged text');await page.screenshot({path:`${out}/stress-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
     }
     await page.evaluate(()=>window.__uiRender('home'));
     if(await page.locator('#homeTrend').count()){await page.locator('#homeTrend').scrollIntoViewIfNeeded();await page.evaluate(()=>document.getElementById('homeTrend').scrollIntoView({block:'start'}))}
