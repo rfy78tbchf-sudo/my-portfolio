@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import vm from 'node:vm';
 import {readFileSync,mkdirSync,writeFileSync,existsSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
 import {chromium} from 'playwright';
@@ -7,6 +8,18 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
+// Exercise the real refresh lifecycle, which the previous static fixture missed.
+if(!process.env.UI_BASELINE){
+ const fn=source.slice(source.indexOf('  function refreshLive('),source.indexOf('  (function bindPullToRefresh'));
+ for(const fail of [false,true]){
+  const labels=[],button={set textContent(v){labels.push(v)},setAttribute(){},disabled:false};
+  const indicator={classList:{add(){},remove(){}}};
+  const ctx={mode:'live',document:{visibilityState:'visible',getElementById:id=>id==='refreshBtn'?button:indicator},liveRefreshPromise:null,lastLiveLoadAt:0,currentTab:'home',window:{scrollY:0,scrollTo(){}},edgeSync:()=>Promise.resolve(),syncRecentHistory:()=>Promise.resolve(),loadLive:()=>fail?Promise.reject(new Error('isolated failure')):Promise.resolve(),live:{},render(){},setTimeout(){}};
+  vm.createContext(ctx);vm.runInContext(fn,ctx);await ctx.refreshLive(true,true).catch(()=>{});
+  assert.ok(labels.length>=2);assert.ok(labels.every(x=>x==='↻'),'refresh must stay an icon during load and after success/failure');assert.equal(button.disabled,false);
+ }
+}
+
 const out=process.env.UI_OUTPUT||'mobile-artifacts/build67';mkdirSync(out,{recursive:true});
 const names=[['ARM','에이알엠 홀딩스(ADR)',32,12472000,-534000],['RXRX','리커전 파머슈티컬스',2100,10812500,426000],['MRNA','모더나',40,9627400,672000],['LLY','일라이 릴리',3,5138000,218000],['MU','마이크론 테크놀로지',3,4437100,-67000],['META','메타 플랫폼스',4,4146000,114000],['385560','RISE KIS국고채30년Enhanced',110,7822100,322100]];
 const now='2026-09-28T22:10:00Z';
