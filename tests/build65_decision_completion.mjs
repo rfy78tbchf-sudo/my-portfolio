@@ -16,7 +16,7 @@ const history={id:'saved-10',response_kind:'model_interpretation_server_metrics'
     reduce:{shares_to_sell:5,cash_increase_krw:5000}},
   account_basis:{position_value_krw:10000,denominator_value_krw:50000,quantity:10},
   price_evidence:{price_date:'2026-09-25',latest_close:300}};
-const scope={breakoutReady:true,lastComparison:{targetPct:10,downPct:-10,upPct:10,result:current},
+const scope={active:()=>true,breakoutReady:true,lastComparison:{targetPct:10,downPct:-10,upPct:10,result:current},
   lastComparisonDirty:false,recentAnalyses:[history],thesisVersion:2,
   document:{getElementById:()=>({dataset:{}})},p:[{date:'2026-09-25',close:300}]};
 vm.createContext(scope);vm.runInContext(html.slice(start,end),scope);

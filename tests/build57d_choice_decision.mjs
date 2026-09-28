@@ -66,7 +66,7 @@ assert.match(comparisonSave,/observation_at'\)::timestamptz is distinct from p_o
 assert.match(comparisonSave,/d\.user_id=v_user/);
 assert.doesNotMatch(comparisonSave,/insert into public\.(?:transactions|cash_flows)/i);
 assert.match(html,/p_target_pct:lastComparison\.targetPct/);
-assert.match(html,/lastComparison=\{targetPct:value,downPct:down,upPct:up,observationAt:data\.observation_at\}/);
+assert.match(html,/lastComparison=\{targetPct:value,downPct:down,upPct:up,observationAt:data\.observation_at,result:data\}/);
 assert.match(backend,/get_live_choice_comparison/);
 assert.match(backend,/publicEvidence\?\.sources\|\|\[\]/);
 console.log('Choice comparison shows both price directions, stable assets, and owner-only judgment storage');
