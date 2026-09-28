@@ -290,7 +290,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       option('일부 축소',r.weight_pct,r.down_impact_krw,r.up_impact_krw)+'</div>'+
       '<p class="choice-cash">매도대금 '+(foreign?esc(x.position_currency)+' 현금 가정':'원화 현금')+
       (foreign&&r.cash_native_estimate!=null?' <b>'+esc(price(r.cash_native_estimate,x.position_currency))+'</b> (과거 저장 종가 '+esc(r.cash_native_price_date)+' 기준 별도 참고)':'')+
-      ' · 계좌 평가액 기준 원화 상당액 <b>'+money(r.cash_increase_krw)+'</b>'+(foreign?' (환전 아님)':'')+'</p>'+
+      ' · '+(foreign?'계좌 평가액 기준 원화 상당액':'원화 상당액')+' <b>'+money(r.cash_increase_krw)+'</b>'+(foreign?' (환전 아님)':'')+'</p>'+
       (foreign?'<p class="choice-short-note">매도 후 '+esc(x.position_currency)+' 현금 보유 가정입니다. 환전하지 않으므로 환율 노출은 남습니다.</p>':'')+
       '<p class="choice-short-note">'+(actual?'평가액 ÷ 수량 단가의 정수 주식 가정입니다. 체결 가격·세금·비용에 따라 달라집니다.':'정수 수량 자료가 없어 소수 주식 금액 참고값입니다.')+' 주문이나 예측이 아닙니다.</p>'+
       '<details><summary>수량·금액과 계산 기준 보기</summary><table class="choice-comparison"><thead><tr><th>비교</th><th>현재 유지</th><th>일부 축소</th></tr></thead><tbody>'+
