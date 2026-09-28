@@ -864,11 +864,25 @@ function isoDate8(v:any){
   if(s.length!==8) return "";
   return s.slice(0,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8);
 }
+// KB may return a dated, moving quote in the daily-chart close field before
+// the exchange's regular session has finished. A daily close needs a completed
+// local market day; never promote that quote into historical close evidence.
+function completedChartDate(kind:"domestic"|"overseas",observedAt=new Date()){
+  const zone=kind==="domestic"?"Asia/Seoul":"America/New_York";
+  const parts=Object.fromEntries(new Intl.DateTimeFormat("en-US",{
+    timeZone:zone,year:"numeric",month:"2-digit",day:"2-digit",
+    hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+  }).formatToParts(observedAt).filter(x=>x.type!=="literal").map(x=>[x.type,x.value]));
+  const day=parts.year+"-"+parts.month+"-"+parts.day;
+  const clock=Number(parts.hour)*60+Number(parts.minute);
+  return {day,complete:clock>=(kind==="domestic"?15*60+45:16*60+15)};
+}
 function normalizeChartRows(securityId:string,currencyCode:string,rows:any[],kind:"domestic"|"overseas"){
   const out:any[]=[];
+  const cutoff=completedChartDate(kind);
   for(const r of rows||[]){
     const d=isoDate8(r?.dt);
-    if(!d) continue;
+    if(!d||d>cutoff.day||d===cutoff.day&&!cutoff.complete) continue;
     const open=kind==="domestic"?nOrNull(r?.opn_prc_p2):nOrNull(r?.opn_prc_p4);
     const high=kind==="domestic"?nOrNull(r?.hgh_prc_p2):nOrNull(r?.hgh_prc_p4);
     const low=kind==="domestic"?nOrNull(r?.lw_prc_p2):nOrNull(r?.lw_prc_p4);

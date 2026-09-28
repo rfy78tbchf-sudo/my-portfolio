@@ -165,7 +165,7 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
     </form>
     <div id="loginMsg" class="msg"></div>
     <button id="demoBtn" class="btn secondary full" type="button">Demo Mode 보기</button>
-    <div class="boot-ok">화면 초기화 정상 · build 64</div>
+    <div class="boot-ok">화면 초기화 정상 · build 64a</div>
   </div>
 </section>
 
@@ -289,8 +289,8 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       '<div class="choice-cards">'+option('현재 유지',h.weight_pct,h.down_impact_krw,h.up_impact_krw)+
       option('일부 축소',r.weight_pct,r.down_impact_krw,r.up_impact_krw)+'</div>'+
       '<p class="choice-cash">매도대금 '+(foreign?esc(x.position_currency)+' 현금 가정':'원화 현금')+
-      (foreign&&r.cash_native_estimate!=null?' <b>'+esc(price(r.cash_native_estimate,x.position_currency))+'</b> (저장 종가 '+esc(r.cash_native_price_date)+' 기준)':'')+
-      ' · 원화 상당액 <b>'+money(r.cash_increase_krw)+'</b>'+(foreign?' (환전 아님)':'')+'</p>'+
+      (foreign&&r.cash_native_estimate!=null?' <b>'+esc(price(r.cash_native_estimate,x.position_currency))+'</b> (과거 저장 종가 '+esc(r.cash_native_price_date)+' 기준 별도 참고)':'')+
+      ' · 계좌 평가액 기준 원화 상당액 <b>'+money(r.cash_increase_krw)+'</b>'+(foreign?' (환전 아님)':'')+'</p>'+
       (foreign?'<p class="choice-short-note">매도 후 '+esc(x.position_currency)+' 현금 보유 가정입니다. 환전하지 않으므로 환율 노출은 남습니다.</p>':'')+
       '<p class="choice-short-note">'+(actual?'평가액 ÷ 수량 단가의 정수 주식 가정입니다. 체결 가격·세금·비용에 따라 달라집니다.':'정수 수량 자료가 없어 소수 주식 금액 참고값입니다.')+' 주문이나 예측이 아닙니다.</p>'+
       '<details><summary>수량·금액과 계산 기준 보기</summary><table class="choice-comparison"><thead><tr><th>비교</th><th>현재 유지</th><th>일부 축소</th></tr></thead><tbody>'+
@@ -507,22 +507,26 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
       var thesisVersion=Number(results[2]&&results[2].thesis&&results[2].thesis.version||0),
         thesisSaved=thesisVersion>0,analyze=document.getElementById('thesisAnalyze');
       var loadThesisPrior=function(){var el=document.getElementById('thesisPrevious');if(!el)return;
-        authFetch(SUPABASE_URL+'/rest/v1/ai_analysis_history?select=id,question,answer,created_at,thesis_version,response_kind,external_sources,official_evidence&symbol=eq.'+encodeURIComponent(s.symbol)+'&order=created_at.desc&limit=5',{},12000,false)
+        authFetch(SUPABASE_URL+'/rest/v1/ai_analysis_history?select=id,question,answer,created_at,thesis_version,response_kind,external_sources,official_evidence,price_evidence&symbol=eq.'+encodeURIComponent(s.symbol)+'&order=created_at.desc&limit=5',{},12000,false)
           .then(function(r){if(!r.ok)throw Error('읽기 실패');return r.json()}).then(function(rows){
             if(!el.isConnected)return;el.textContent='';
             if(!rows.length){el.textContent='저장된 종목 분석이 없습니다.';return}
             var currentOpinion=document.getElementById('thesisAnalysis'),lastAnswer=rows[0];
             if(currentOpinion&&!currentOpinion.textContent.trim()&&lastAnswer.answer){
-              currentOpinion.innerHTML='<div class="sub">지난 '+(lastAnswer.response_kind==='model'||lastAnswer.response_kind==='model_interpretation_server_metrics'?'실제 AI 의견':'서버 검증 답변')+' · '+esc(kstStamp(lastAnswer.created_at))+' · 당시 자료 기준</div><p class="ai-answer-lead">'+esc(String(lastAnswer.answer).split(/\n/)[0].replace(/^(핵심 의견|핵심|판단):\s*/,''))+'</p><div class="sub">아래에서 최신 자료로 다시 점검하거나 지난 AI 분석 전체를 열어 보세요.</div>';
+              currentOpinion.innerHTML=lastAnswer.price_evidence&&lastAnswer.price_evidence.review_status==='unconfirmed_market_close'?
+                '<div class="notice">지난 분석은 당시 확정되지 않은 종가를 근거로 사용했습니다. 당시 답변은 아래 기록에 보존하며, 최신 자료로 다시 점검해 주세요.</div>':
+                '<div class="sub">지난 '+(lastAnswer.response_kind==='model'||lastAnswer.response_kind==='model_interpretation_server_metrics'?'실제 AI 의견':'서버 검증 답변')+' · '+esc(kstStamp(lastAnswer.created_at))+' · 당시 자료 기준</div><p class="ai-answer-lead">'+esc(String(lastAnswer.answer).split(/\n/)[0].replace(/^(핵심 의견|핵심|판단):\s*/,''))+'</p><div class="sub">아래에서 최신 자료로 다시 점검하거나 지난 AI 분석 전체를 열어 보세요.</div>';
             }
             rows.forEach(function(h){var d=document.createElement('details'),summary=document.createElement('summary'),b=document.createElement('div');
               d.className='ai-history-item';b.className='ai-history-body';
               var title=document.createElement('span'),excerpt=document.createElement('small');
               title.textContent=h.question||'저장된 종목 분석';excerpt.className='ai-history-excerpt';
-              excerpt.textContent=kstStamp(h.created_at)+' · '+String(h.answer||'').split(/\n/)[0].replace(/^(핵심 의견|핵심|가장 큰 위험):\s*/,'').slice(0,74);
+              var closeUnconfirmed=h.price_evidence&&h.price_evidence.review_status==='unconfirmed_market_close';
+              excerpt.textContent=kstStamp(h.created_at)+(closeUnconfirmed?' · 가격 근거 재점검 필요 · ':' · ')+String(h.answer||'').split(/\n/)[0].replace(/^(핵심 의견|핵심|가장 큰 위험):\s*/,'').slice(0,74);
               summary.appendChild(title);summary.appendChild(excerpt);
               if(window.portfolioRenderAiAnswer)window.portfolioRenderAiAnswer(b,h.answer);
               else b.textContent=h.answer||'저장된 답변이 없습니다.';
+              if(closeUnconfirmed)b.insertAdjacentHTML('afterbegin','<div class="notice">분석 당시 확정되지 않은 종가를 사용했습니다. 답변은 당시 기록이며 새 판단의 근거로 쓰려면 다시 점검해 주세요.</div>');
               aiOfficialEvidence(b,h.official_evidence);
               if(!(h.official_evidence&&h.official_evidence.followup_url))aiSourceLinks(b,h.external_sources);
               var meta=document.createElement('details'),metaSummary=document.createElement('summary'),info=document.createElement('div');
@@ -723,13 +727,15 @@ html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
         else out.textContent=x.answer;
         aiOfficialEvidence(out,x.official_evidence);
         if(!(x.official_evidence&&x.official_evidence.followup_url))aiSourceLinks(out,x.external_sources);
-        if(x.history_saved!==false&&x.analysis_id&&!x.reused_saved_analysis){lastDetailAnalysisId=x.analysis_id;lastAnalysisComparison=!!reviewInputs}
+        var closeUnconfirmed=x.price_evidence&&x.price_evidence.review_status==='unconfirmed_market_close';
+        if(x.history_saved!==false&&x.analysis_id&&!x.reused_saved_analysis&&!closeUnconfirmed){lastDetailAnalysisId=x.analysis_id;lastAnalysisComparison=!!reviewInputs}
         var status=document.createElement('p');status.className='ai-history-status';
-        status.textContent=(x.reused_saved_analysis?'이전 저장 답변':String(x.response_kind||'').startsWith('model')?'새 AI 답변':'서버 검증 답변')+
+        status.textContent=(closeUnconfirmed?'기존 답변 · 가격 근거 재점검 필요':x.reused_saved_analysis?'이전 저장 답변':String(x.response_kind||'').startsWith('model')?'새 AI 답변':'서버 검증 답변')+
           (x.history_saved===false?' · 이력 저장 확인 필요':' · 저장됨')+
           ' · '+(x.observation_at?'계좌 관측 '+kstStamp(x.observation_at):'계좌 관측 시각 확인 필요')+
-          (x.price_evidence&&x.price_evidence.price_date?' · 시장 종가 '+x.price_evidence.price_date:' · 시세 기준일 미확인');
+          (closeUnconfirmed?' · 당시 종가 미확정':x.price_evidence&&x.price_evidence.price_date?' · 시장 종가 '+x.price_evidence.price_date:' · 시세 기준일 미확인');
         out.appendChild(status);
+        if(closeUnconfirmed){var warning=document.createElement('p');warning.className='notice';warning.textContent='분석 당시 종가가 확정되지 않았습니다. 새 판단의 근거로 사용하지 말고 최신 자료로 다시 점검해 주세요.';out.insertBefore(warning,out.firstChild)}
         if(x.history_saved===false&&x.save_retry_available&&x.request_id){
           var retry=document.createElement('button');retry.type='button';retry.className='btn secondary';
           retry.textContent='생성된 답변의 이력 저장 재시도';out.appendChild(retry);
