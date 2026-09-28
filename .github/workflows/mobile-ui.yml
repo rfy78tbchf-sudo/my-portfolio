@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.55.1
+      - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium
       - run: node tests/build49_ai_cache.mjs
       - run: node tests/build49c_ai_error.mjs
@@ -44,9 +44,10 @@ jobs:
       - run: node tests/build63_journey.mjs
       - run: node tests/build64a_unconfirmed_close.mjs
       - run: node tests/build65_decision_completion.mjs
+      - run: node tests/build67_ui_visual.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: mobile-portfolio-screenshots
-          path: mobile-artifacts/*.png
+          path: mobile-artifacts/**/*.png
           if-no-files-found: ignore
