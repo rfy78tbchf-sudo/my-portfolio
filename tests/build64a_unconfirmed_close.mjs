@@ -33,4 +33,27 @@ assert.match(sql,/analysis used an unconfirmed close/);
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert.match(html,/지난 분석은 당시 확정되지 않은 종가를 근거로 사용했습니다/);
 assert.match(html,/계좌 평가액 기준 원화 상당액/);
+const comparison=readFileSync(new URL('../supabase/build64b_choice_cash_same_account_quote.sql',import.meta.url),'utf8');
+assert.match(comparison,/h\.account_id=b\.account_id and h\.security_id=b\.security_id and h\.as_of=b\.as_of/);
+assert.match(comparison,/where a\.id=v_account and b\.quantity>0/);
+assert.match(comparison,/v_native_total\*v_sold\/v_quantity/);
+assert.match(comparison,/v_before-v_after/);
+assert.doesNotMatch(comparison,/from public\.daily_security_prices/i,
+  'the native cash estimate must not use a differently dated closing price');
+const from=html.indexOf('  function comparisonHtml('),to=html.indexOf('  function aiSourceLinks(',from);
+const display=vm.createContext({money:n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원',
+  signedMoney:n=>(Number(n)>0?'+':'')+Math.round(Number(n)).toLocaleString('ko-KR')+'원',
+  num:(n,d)=>Number(n).toFixed(d),esc:String,kstStamp:x=>String(x),
+  price:(n,c)=>Number(n).toLocaleString('en-US')+' '+c});
+vm.runInContext(html.slice(from,to),display);
+display.result={ok:true,position_currency:'USD',observation_at:'same-account-observation',
+  hold:{value_krw:10000,quantity:10,weight_pct:20,down_impact_krw:-1000,up_impact_krw:1000},
+  reduce:{value_krw:5000,shares_to_sell:5,quantity_reference:5,mode:'integer_shares',weight_pct:10,
+    cash_increase_krw:5000,cash_native_estimate:500,cash_native_basis:'kb_account_valuation',
+    cash_native_observation_at:'same-account-observation',down_impact_krw:-500,up_impact_krw:500},
+  price_assumptions:{down_pct:-10,up_pct:10}};
+const rendered=vm.runInContext('comparisonHtml(result)',display);
+assert.match(rendered,/500 USD.*계좌 평가액·환율 기준 · 관측 same-account-observation/);
+assert.match(rendered,/원화 상당액.*5,000원/);
+assert.doesNotMatch(rendered,/과거 저장 종가/);
 console.log('Unconfirmed KB daily rows remain out of market prices, AI history is marked, and past answers cannot anchor decisions');
