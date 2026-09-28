@@ -83,11 +83,17 @@ try{
     await page.evaluate(()=>window.openTestDetail('held'));
     await page.getByText('가격 차트와 기술지표').click();
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
+    assert.equal(await page.locator('#thesisAnalyze').isVisible(),false,
+      'the secondary AI paths stay folded away from the main decision flow');
+    await page.getByText('다른 방식으로 AI 검토 (선택)').click();
     await page.locator('#thesisAnalyze').click();
     await page.getByText('−10%라면').waitFor();
     assert.match(await page.locator('#thesisAnalysis').textContent(),/−10%라면.*-1,000원.*\+10%라면.*\+1,000원/s);
     assert.match(await page.locator('#thesisAnalysis').textContent(),/서버 검증 답변 · 저장됨 · 계좌 관측/);
     assert.match(await page.locator('#thesisAnalysis').textContent(),/공식 기업 실적·공시는 이번 답변의 근거에 포함되지 않았습니다/);
+    await page.getByRole('button',{name:'내 판단 남기기'}).click();
+    assert.ok(await page.locator('#detailDecisionForm').isVisible(),
+      `${width}px: the AI answer's decision shortcut must open the collapsed form`);
     await page.getByRole('button',{name:'목표 비중으로 비교'}).click();
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
     assert.equal(await page.locator('#detailWeightResult').isVisible(),false,
@@ -104,6 +110,7 @@ try{
       'quantity and calculation policy remain available but collapsed');
     assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('+1,000원').isVisible());
     assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('-500원').isVisible());
+    assert.match(await page.locator('#detailComparisonNext').innerText(),/이 비교로 AI 의견 받고 판단 작성/);
     await page.locator('#detailWeightTarget').fill('9');
     assert.match(await page.locator('#detailWeightResult').innerText(),/조건이 바뀌었습니다. 다시 비교해 주세요/);
     await page.locator('#detailWeightTarget').fill('10');
@@ -118,8 +125,11 @@ try{
     await page.locator('#detailDecisionForm button[type=submit]').click();
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건으로 AI 의견/,
       'a generic thesis answer cannot authorize a different comparison');
-    await page.locator('#detailFreshReview').click();
+    await page.locator('#detailComparisonNext').click();
     await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    assert.deepEqual(await page.evaluate(()=>({action:lastAiRequest.action,target:lastAiRequest.target_pct})),
+      {action:'decision-review',target:10},'the next step must review the current comparison, not an old target');
+    assert.match(await page.locator('#detailComparisonNext').innerText(),/이 비교를 보고 내 판단 작성/);
     // A broad dashboard read must not override the authenticated per-symbol
     // calculation or falsely report that a holding disappeared.
     await page.evaluate(()=>{
@@ -132,6 +142,10 @@ try{
     assert.match(await page.locator('#detailWeightResult').innerText(),/5주 매도 가정.*5주 보유/);
     assert.doesNotMatch(await page.locator('#detailWeightResult').innerText(),/보유되지 않습니다/);
     await page.evaluate(()=>{loadLive=window.__loadLiveBeforeReadFailure;liveError=null});
+    await page.evaluate(()=>{document.getElementById('detailDecisionForm').hidden=true});
+    await page.locator('#detailComparisonNext').click();
+    assert.ok(await page.locator('#detailDecisionForm').isVisible(),
+      'after the linked AI opinion, one tap opens the decision form');
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.waitForFunction(()=>/판단 저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
@@ -154,6 +168,9 @@ try{
     assert.match(await page.locator('#detailDecisionSummary').textContent(),/현재 유지.*Recheck the reported operating result/);
     assert.equal(await page.locator('#detailWeightTarget').inputValue(),'',
       'a prior comparison is an optional assumption, not an automatically approved target');
+    assert.equal(await page.locator('#detailPreviousComparison').evaluate(node=>node.open),false,
+      'the old target assumption stays folded away from the current decision path');
+    await page.locator('#detailPreviousComparison summary').click();
     assert.match(await page.locator('#detailPreviousComparison').innerText(),/지난 판단에 연결된 10% 비교 가정.*적정 비중이나 승인된 투자 원칙은 아닙니다/s);
     const callsBeforeReuse=await page.evaluate(()=>analysisCallCount);
     await page.locator('#detailPreviousComparison button').click();
@@ -203,6 +220,7 @@ try{
       window.openTestDetail('held');
     });
     await page.getByText('My TEST reason').first().waitFor();
+    await page.getByText('다른 방식으로 AI 검토 (선택)').click();
     await page.locator('#thesisAnalyze').click();
     await page.evaluate(()=>window.openTestDetail('other'));
     await page.getByText('My NEXT reason').first().waitFor();
