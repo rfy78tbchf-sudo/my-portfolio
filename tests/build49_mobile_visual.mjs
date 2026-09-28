@@ -28,6 +28,7 @@ const ctx=vm.createContext({live:sample,hideZeroHoldings:false,portfolioMarket:'
   signedMoney:n=>(n>0?'+':'')+Math.round(Number(n)).toLocaleString('ko-KR')+'원',
   pct:n=>(n>0?'+':'')+Number(n).toFixed(2)+'%',weightPct:n=>Number(n).toFixed(1)+'%',
   num:(n,d)=>Number(n).toLocaleString('ko-KR',{maximumFractionDigits:d}),cls:n=>n>=0?'up':'down',esc:String,Set});
+vm.runInContext(source.slice(source.indexOf('  function stockMark('),source.indexOf('  function homeBrowseCard(')),ctx);
 vm.runInContext(source.slice(start,end),ctx);
 const portfolio=vm.runInContext('livePortfolio()',ctx);
 assert.equal((portfolio.match(/class="row holding portfolio-row clickable"/g)||[]).length,6);
