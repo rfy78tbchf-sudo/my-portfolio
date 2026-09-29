@@ -91,6 +91,17 @@ try{
     assert.match(await page.locator('#thesisAnalysis').textContent(),/−10%라면.*-1,000원.*\+10%라면.*\+1,000원/s);
     assert.match(await page.locator('#thesisAnalysis').textContent(),/서버 검증 답변 · 저장됨 · 계좌 관측/);
     assert.match(await page.locator('#thesisAnalysis').textContent(),/공식 기업 실적·공시는 이번 답변의 근거에 포함되지 않았습니다/);
+    if(html.includes('compactDetailAnswer')){
+      assert.equal(await page.locator('.detail-answer-evidence').getAttribute('open'),null);
+      assert.match(await page.locator('.detail-answer-kind').innerText(),/AI 해석 아님/);
+      await page.locator('#thesisAnalysis').scrollIntoViewIfNeeded();
+      await page.screenshot({path:`mobile-artifacts/build84-answer-${width}.png`});
+      const action=await page.getByRole('button',{name:'이 의견을 읽고 내 결정 기록'}).boundingBox();
+      const impact=await page.getByText('−10%라면').boundingBox();assert.ok(action.y<impact.y);
+      await page.locator('.detail-answer-evidence summary').first().click();
+      assert.ok(await page.getByText('공식 기업 실적·공시는 이번 답변의 근거에 포함되지 않았습니다.').isVisible());
+      await page.locator('.detail-answer-evidence summary').first().click();
+    }
     await page.getByRole('button',{name:'이 의견을 읽고 내 결정 기록'}).click();
     assert.ok(await page.locator('#detailDecisionForm').isVisible(),
       `${width}px: the AI answer's decision shortcut must open the collapsed form`);
@@ -128,12 +139,12 @@ try{
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/다시 비교하거나 목표 비중을 지워/);
     await page.locator('#detailWeightRun').click();
     await page.locator('#thesisAnalyze').click();
-    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor({state:'attached'});
     await page.locator('#detailDecisionForm button[type=submit]').click();
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건으로 AI 의견/,
       'a generic thesis answer cannot authorize a different comparison');
     await page.locator('#detailComparisonNext').click();
-    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor({state:'attached'});
     assert.deepEqual(await page.evaluate(()=>({action:lastAiRequest.action,target:lastAiRequest.target_pct})),
       {action:'decision-review',target:10},'the next step must review the current comparison, not an old target');
     assert.match(await page.locator('#detailComparisonNext').innerText(),/이 의견으로 내 판단 남기기/);
@@ -145,7 +156,7 @@ try{
     });
     await page.locator('#detailFreshReview').click();
     await page.getByText('전체 목록 조회에 실패했으나 종목별 비교는 서버의 새 계좌 관측으로 확인했습니다.').waitFor();
-    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor({state:'attached'});
     assert.match(await page.locator('#detailWeightResult').innerText(),/5주 매도 가정.*5주 보유/);
     assert.doesNotMatch(await page.locator('#detailWeightResult').innerText(),/보유되지 않습니다/);
     await page.evaluate(()=>{loadLive=window.__loadLiveBeforeReadFailure;liveError=null});
@@ -195,7 +206,7 @@ try{
     assert.equal(await page.locator('#detailPreviousComparison').count(),0,
       'a saved assumption must never spill into another security');
     await page.locator('#detailFreshReview').click();
-    await page.getByText('저장됨 · 계좌 관측').last().waitFor();
+    await page.getByText('저장됨 · 계좌 관측').last().waitFor({state:'attached'});
     assert.match(await page.locator('#detailWeightResult').innerText(),/목표 비중 없이 기록/);
     await page.locator('#detailDecisionAction').click();
     await page.locator('#detailReason').fill('Second stock hold, no target');
