@@ -167,6 +167,7 @@ try{
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.waitForFunction(()=>/판단 저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
+    assert.equal(await page.locator('#detailDecisionDone').count(),0,'unverified save must not show completion');
     assert.equal(await page.locator('#detailReview').inputValue(),'Recheck the reported operating result');
     await page.evaluate(()=>document.getElementById('detailDecisionStatus').textContent='');
     await page.locator('#detailDecisionForm button[type=submit]').click();
@@ -179,6 +180,10 @@ try{
       'the compared target is stored with the decision');
     assert.equal(await page.evaluate(()=>stored[0].p_observation_at),'2026-09-26',
       'the decision must refer to the same observed comparison');
+    if(html.includes('detailDecisionDone')){
+      await page.getByRole('button',{name:'목록으로 돌아가기',exact:true}).click();
+      assert.ok(await page.locator('#detailModal').evaluate(el=>el.classList.contains('hidden')));
+    }
     await page.evaluate(()=>window.openTestDetail('held'));
     await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
     await page.locator('#detailDecisionReview').waitFor({state:'attached'});

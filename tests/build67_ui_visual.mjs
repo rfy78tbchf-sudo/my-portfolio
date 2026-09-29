@@ -128,10 +128,15 @@ try{
       if(source.includes('detailDirectDecision')){
         await page.locator('#detailDirectDecision').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
         await page.locator('#detailChoice').selectOption('hold');assert.match(await page.locator('#detailChoiceGuide').innerText(),/목표 비중 없이/);
+        if(source.includes('decision-finish-85')){
+          assert.match(await page.locator('#detailReview').getAttribute('placeholder'),/실적/);
+          assert.match(await page.locator('#detailDecisionForm button[type=submit]').innerText(),/현재 유지/);
+        }
         await page.locator('#detailReason').fill('비교 후에도 보존할 작성 이유');
         await page.locator('#detailChoice').selectOption('consider_reduction');await page.getByRole('button',{name:'매도 수량 비교하기',exact:true}).click();
         assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
         assert.equal(await page.locator('#detailReason').inputValue(),'비교 후에도 보존할 작성 이유');
+        if(source.includes('decision-finish-85'))assert.match(await page.locator('#detailDecisionForm button[type=submit]').innerText(),/일부 축소 검토/);
         await page.locator('#detailDecisionAction').click();await page.screenshot({path:`${out}/decision-guide-${width}.png`});
       }
       const noReason={...live,testThesis:{version:0,rationale:''}};
