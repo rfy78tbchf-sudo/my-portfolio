@@ -7,10 +7,10 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const styles=html.slice(html.indexOf('<style>')+7,html.indexOf('</style>'));
 const start=html.indexOf('  function comparisonHtml('),end=html.indexOf('  function empty(',start);
 assert.ok(start>0&&end>start);
-const closeBinding=html.match(/var close=document\.getElementById\('detailClose'\);if\(close\)close\.onclick=function\(\)\{detailEpoch\+\+;document\.getElementById\('detailModal'\)\.classList\.add\('hidden'\)\}/)?.[0];
+const closeBinding=html.match(/var close=document\.getElementById\('detailClose'\);if\(close\)close\.onclick=closeSecurityDetail/)?.[0];
 assert.ok(closeBinding,'test the close binding used by the real page');
 mkdirSync('mobile-artifacts',{recursive:true});
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||undefined});
 try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});
