@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
-if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');}
+if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');}
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -40,6 +40,7 @@ const injected=`
   window.__uiFixture=function(data,record,opinion,comparison){
     live=data;liveError=null;mode='live';period='1M';session=null;
     rpc=async function(name,p){
+      if(name==='get_live_realized_sales'&&data.closedRealizedFixture)return data.closedRealizedFixture;
       if(name==='get_live_realized_sales')return {ok:true,period:p.p_period,period_start:p.p_period==='1W'?'2026-09-23':'2026-09-01',period_end:'2026-09-29',items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',realized_local:100,historical_krw_estimate:140000,status:'calculated'},{symbol:'SOXS',name:'SOXS',currency:'USD',realized_local:null,historical_krw_estimate:null,status:'cost_review'}]};
       if(name==='get_live_period_stock_pnl')return {...live.stockPnl,period:p.p_period,period_start:p.p_period==='1M'?'2026-08-29':'2026-09-01'};
       if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
@@ -167,6 +168,10 @@ try{
         if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/realized-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
         await page.locator('[data-stock-period="1W"]').click();await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/2026-09-23/);
         await page.locator('[data-stock-period="THIS_MONTH"]').click();await page.locator('[data-stock-view="total"]').click();
+      }
+      if(source.includes('stockRealizedItems')){
+        const closedData={...stockData,stockRealizedPeriod:null,stockRealized:null,closedRealizedFixture:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',items:[{symbol:'TEST',currency:'USD',realized_local:null},{symbol:'TEST',currency:'USD',realized_local:10,historical_krw_estimate:14000}],closed_cycles:[{symbol:'TEST',name:'기간 내 전량 매도 종목',currency:'USD',aliases:['TEST'],closed_realized:{method:'flat_to_flat_net_cash',sale_count:2,realized_local:-100,realized_krw:-140000,provisional_date_count:0}}]}};
+        await page.evaluate(args=>window.__uiFixture(...args),[closedData,decision,analysis,comparison]);await page.locator('[data-stock-view="realized"]').click();await page.getByText(/매도 2건 · 기간 합계 계산/).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/-140,000/);assert.equal(await page.locator('.performance-position').count(),1);await page.screenshot({path:`${out}/closed-realized-${width}.png`});await page.locator('[data-stock-view="total"]').click();
       }
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
