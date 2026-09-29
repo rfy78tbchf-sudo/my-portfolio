@@ -9,7 +9,8 @@ import {chromium} from 'playwright';
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
 if(!baseline){if(source.includes('performanceReviewContext'))await import('./build82_performance_review.mjs');await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');if(source.includes('stockRealizedEvidenceHtml'))await import('./build80_pnl_clarity.mjs');}
-if(!baseline&&source.includes('review-return-86'))await import('./build86_review_home.mjs');
+if(!baseline&&source.includes('review-home-item'))await import('./build86_review_home.mjs');
+if(!baseline&&source.includes('function allocationData'))await import('./build87_allocation.mjs');
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -105,7 +106,23 @@ try{
       await page.evaluate(()=>{window.__uiRender('portfolio');document.querySelector('.position-name').textContent='아주 긴 국내 상장 종목 이름을 확인하는 화면';document.querySelector('.position-value').textContent='1,234,567,890원'});
       await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'long names / billion amount / enlarged text');await page.screenshot({path:`${out}/stress-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
     }
-    if(source.includes('review-return-86')){
+    if(source.includes('function allocationData')){
+      const allocationFixture={...live,risk:{ok:true,official_assets_krw:63842170,as_of:now,largest_symbol:'ARM',largest_krw:12472000,top_three_krw:32911900,foreign_currency_krw:46633000,leveraged_etf_krw:0,known_positions_krw:54455100}};
+      await page.evaluate(args=>window.__uiFixture(...args),[allocationFixture,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('analysis'));
+      const allocation=page.locator('.allocation-card');await allocation.waitFor();
+      assert.equal(await allocation.locator('button.allocation-row').count(),7);
+      assert.match(await allocation.locator('button.allocation-row').first().innerText(),/19.5%/);
+      assert.ok(await allocation.locator('.allocation-residual').isVisible());
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'allocation overflow');
+      await page.screenshot({path:`${out}/allocation-assets-${width}.png`,fullPage:true});
+      await page.locator('[data-allocation-scope="stocks"]').click();
+      assert.equal(await page.locator('.allocation-residual').count(),0);assert.match(await allocation.innerText(),/확인된 종목 평가액 합계 = 100%/);
+      if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'allocation enlarged text overflow');await page.screenshot({path:`${out}/allocation-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
+      await allocation.locator('[data-decision-detail="s0"]').click();await page.locator('#detailDecisionSummary').waitFor();await page.locator('#detailClose').click();assert.ok(await allocation.isVisible());
+      await page.locator('[data-allocation-scope="assets"]').click();
+      await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    }
+    if(source.includes('review-home-item')){
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
       await page.evaluate(()=>window.__uiRender('home'));

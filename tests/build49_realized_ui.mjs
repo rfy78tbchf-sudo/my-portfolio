@@ -27,7 +27,7 @@ assert.match(result,/원화 관리손익 추정/);
 assert.match(result,/당시 원화 투자손익과 다름/);
 assert.match(result,/data-realized-sale="sale-1"/);
 assert.doesNotMatch(result,/\bNaN\b/);
-const riskStart=html.indexOf('  function riskOverviewCard(home){');
+const riskStart=html.indexOf('  var allocationScope=');
 const riskEnd=html.indexOf('  function benchmarkCard(){',riskStart);
 const risk=vm.createContext({live:{risk:{ok:true,official_assets_krw:65844164,
   largest_symbol:'ARM',largest_krw:15794237,top_three_krw:34901272,
