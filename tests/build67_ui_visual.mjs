@@ -46,6 +46,7 @@ const injected=`
       if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
       if(name==='get_pending_kb_position_events')return [{symbol:'TEST',type:'sell',order_date:kstDaysAgo(1),settlement_date:kstDate(),quantity:7}];
       if(name==='get_live_security_activity')return {items:[]};
+      if(name==='save_investment_thesis'){data.testThesis={...p.p_fields,version:2};return {ok:true,version:2}};
       if(name==='get_investment_thesis')return {ok:true,thesis:data.testThesis||{version:1,rationale:'최근 추세돌파와 상승 흐름을 확인하며 보유',updated_at:record?record.created_at:'2026-09-28T22:10:00Z'}};
       if(name==='get_investment_decisions')return record?[record]:[];
       if(name==='get_investment_breakout_rule')return null;
@@ -136,6 +137,18 @@ try{
       const noReason={...live,testThesis:{version:0,rationale:''}};
       await page.evaluate(args=>window.__uiFixture(...args),[noReason,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
       await page.getByRole('button',{name:'먼저 보유 이유 적기'}).waitFor();await page.locator('#detailStartAction').click();assert.ok(await page.locator('[data-thesis-field="rationale"]').isVisible());assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-thesis-field')),'rationale');
+      if(source.includes('function openReasonEditor')){
+        assert.equal(await page.locator('#detailStart #thesisGroup').count(),1);
+        await page.locator('#thesisForm button[type=submit]').click();assert.match(await page.locator('#thesisStatus').innerText(),/한 줄/);
+        await page.locator('[data-thesis-field="rationale"]').fill('실적 개선을 기대하며 보유');
+        await page.locator('#thesisForm button[type=submit]').click();
+        await page.getByRole('button',{name:'AI로 보유 이유 점검',exact:true}).waitFor();
+        assert.match(await page.locator('#detailThesisSummary').innerText(),/실적 개선/);
+        assert.equal(await page.locator('#thesisGroup').getAttribute('open'),null);
+        await page.waitForFunction(()=>{const r=document.getElementById('detailStartAction').getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight});
+        await page.screenshot({path:`${out}/reason-saved-${width}.png`});
+      }
+
     }
     if(source.includes('stockPeriodPerformance')){
       await page.locator('#detailClose').click();await page.setViewportSize({width,height:844});
