@@ -11,6 +11,7 @@ const baseline=!!process.env.UI_BASELINE;
 if(!baseline){if(source.includes('performanceReviewContext'))await import('./build82_performance_review.mjs');await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');if(source.includes('stockRealizedEvidenceHtml'))await import('./build80_pnl_clarity.mjs');}
 if(!baseline&&source.includes('review-home-item'))await import('./build86_review_home.mjs');
 if(!baseline&&source.includes('function allocationData'))await import('./build87_allocation.mjs');
+if(!baseline&&source.includes('function requestDetailOpinion'))await import('./build88_recovery.mjs');
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -59,6 +60,21 @@ const injected=`
     authFetch=async function(url,options){if(options&&options.method==='POST')throw Error('No model generation or writes allowed in UI capture');return {ok:true,json:async()=>[opinion]}};
     loadLive=async()=>{};edgeSync=async(action)=>{if(action==='overseas-day-pnl')return {ok:true,available:false,items:[]};throw Error('No account sync during UI capture')};
     document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('refreshBtn').classList.remove('hidden');
+    window.__uiAiTest=function(testMode){
+      window.__aiMode=testMode;window.__aiIds=[];window.__syncCount=0;
+      let idCount=0;window.portfolioAnalysisRequestId=async()=> '00000000-0000-4000-8000-'+String(++idCount).padStart(12,'0');
+      const originalRpc=rpc;
+      rpc=async function(name,p){if(name==='get_live_decision_metrics')return {ok:true,denominator:{value:63842170},observation_at:'2026-09-28T22:10:00Z'};return originalRpc(name,p)};
+      edgeSync=async()=>{window.__syncCount++;return {ok:true}};
+      authFetch=async function(url,options){
+        if(options&&options.method==='POST'){
+          window.__aiIds.push(JSON.parse(options.body).request_id);
+          if(window.__aiMode==='failure'||window.__aiMode==='recovery')throw Error('Load failed');
+          return {ok:true,json:async()=>({...opinion,comparison_evidence:null,history_saved:true,analysis_id:opinion.id})};
+        }
+        return {ok:true,json:async()=>window.__aiMode==='recovery'&&url.includes('request_id=eq.')?[{...opinion,comparison_evidence:null}]:[]};
+      };
+    };
     window.__uiRender=function(tab){currentTab=tab;render()};window.__uiDetail=openSecurityDetail;
     render();
   };
@@ -245,6 +261,27 @@ try{
         await page.evaluate(args=>window.__uiFixture(...args),[closedData,decision,analysis,comparison]);await page.locator('[data-stock-view="realized"]').click();await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();await page.getByText(/매도 2건 · 기간 합계 계산/).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/-140,000/);assert.equal(await page.locator('.performance-position').count(),1);await page.screenshot({path:`${out}/closed-realized-${width}.png`});await page.locator('[data-stock-view="total"]').click();
       }
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    }
+    if(!baseline&&source.includes('function requestDetailOpinion')){
+      await page.evaluate(args=>{window.__uiFixture(...args);window.__uiAiTest('failure');window.__uiDetail('s0')},[live,decision,analysis,comparison]);
+      await page.locator('#detailFreshReview').waitFor();
+      await page.evaluate(()=>{document.getElementById('detailReason').value='보유 이유 유지';document.getElementById('detailReview').value='다음 종가 확인';document.getElementById('detailWeightTarget').value=''});
+      await page.locator('#detailFreshReview').click();
+      await page.waitForFunction(()=>document.getElementById('thesisAnalysis').textContent.includes('AI 응답을 받지 못했습니다'));
+      assert.equal(await page.locator('#detailFreshReview').isEnabled(),true);
+      assert.equal(await page.locator('#detailFreshStatus').innerText(),'');
+      assert.equal(await page.locator('#detailReason').inputValue(),'보유 이유 유지');
+      assert.equal(await page.locator('#detailReview').inputValue(),'다음 종가 확인');
+      await page.screenshot({path:`${out}/ai-retry-${width}.png`});
+      await page.evaluate(()=>window.__aiMode='recovery');
+      await page.locator('#detailFreshReview').click();
+      await page.waitForFunction(()=>document.getElementById('thesisAnalysis').textContent.includes('이전 저장 답변'));
+      assert.equal(await page.locator('#detailFreshReview').isEnabled(),true);
+      const requestState=await page.evaluate(()=>({ids:window.__aiIds,syncs:window.__syncCount}));
+      assert.equal(requestState.ids.length,2);assert.equal(requestState.ids[0],requestState.ids[1]);assert.equal(requestState.syncs,2,'uncertain response retry preserves original snapshot');
+      assert.doesNotMatch(await page.locator('#detailWeightResult').innerText(),/갱신하는 중/);
+      await page.screenshot({path:`${out}/ai-recovered-${width}.png`});
+      await page.locator('#detailClose').click();
     }
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
   }
