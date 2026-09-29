@@ -1,4 +1,4 @@
-const CACHE='my-portfolio-shell-20260929-71';
+const CACHE='my-portfolio-shell-20260929-72';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon.png','./passkey.js','./app-enhancements.js?v=58c','./realized-sales-ui.js?v=56','./vendor/jszip.min.js'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
@@ -11,8 +11,9 @@ self.addEventListener('fetch',event=>{
   if(req.method!=='GET') return;
   const url=new URL(req.url);
   if(url.origin!==self.location.origin) return;
+  if(url.searchParams.has('check_build')){event.respondWith(fetch(req,{cache:'no-store'}));return;}
   if(req.mode==='navigate'){
-    event.respondWith(fetch(req).then(res=>{
+    event.respondWith(fetch(req,{cache:'no-cache'}).then(res=>{
       const copy=res.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return res;
     }).catch(()=>caches.match('./index.html')));
     return;

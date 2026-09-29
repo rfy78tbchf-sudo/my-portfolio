@@ -8,6 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
+if(!baseline)await import('./build72_app_update.mjs');
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -105,14 +106,14 @@ try{
     await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
     await page.screenshot({path:`${out}/detail-${width}.png`});
-    if(source.includes('decision-guide-70')){
+    if(source.includes("startPanel.id='detailStart'")){
       if(width===390){await page.locator('.detail-usage').evaluate(x=>x.open=true);await page.screenshot({path:`${out}/detail-guide-${width}.png`});await page.locator('.detail-usage').evaluate(x=>x.open=false)}
       await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionSummary');
     }
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
     await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
     await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
-    if(source.includes('decision-guide-70')&&width===390){
+    if(source.includes("startPanel.id='detailStart'")&&width===390){
       await page.setViewportSize({width,height:844});
       await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
       await page.getByRole('button',{name:'AI 의견부터 확인하기'}).waitFor();await page.screenshot({path:`${out}/detail-first-review-${width}.png`});
