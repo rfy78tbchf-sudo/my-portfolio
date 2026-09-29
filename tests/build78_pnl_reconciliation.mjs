@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const html=fs.readFileSync('index.html','utf8');
+const body=html.slice(html.indexOf('  function stockCalculationHtml('),html.indexOf('  function stockTotalPartsHtml('));
+const context=vm.createContext({signedMoney:x=>String(x)});vm.runInContext(body,context);
+assert.equal(context.stockCalculationHtml({}), '');
+assert.equal(context.stockCalculationHtml({calculation:{opening_krw:null}}), '');
+const rendered=context.stockCalculationHtml({calculation:{opening_krw:100,ending_krw:120,net_trade_cash_krw:-10,dividend_krw:2}});
+for(const label of ['시작 주식평가액','종료 주식평가액','매도대금 − 매수대금','순배당'])assert.ok(rendered.includes(label));
+assert.ok(!rendered.includes('검증 완료'));
+const sql=fs.readFileSync('supabase/build78_pnl_fx_reconciliation.sql','utf8');
+assert.equal((sql.match(/LANGUAGE/g)||[]).length,2);
+assert.ok(sql.includes('f.rate_date between v_date-7 and v_date'));
+assert.ok(!sql.includes('v_date-4'));
+assert.ok(sql.includes("(f.source='kb_account_snapshot') desc nulls last"));
+assert.ok(sql.includes("(x.source='kb_account_snapshot') desc nulls last"));
+assert.ok(sql.includes('SECURITY INVOKER')||!sql.includes('SECURITY DEFINER'));
+console.log('Build78: actual calculation inputs, missing data and shared historical FX policy passed');
+
+const partsBody=html.slice(html.indexOf('  function stockTotalParts('),html.indexOf('  function stockCalculationHtml('));
+vm.runInContext(partsBody,context);
+const dates={period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29'};
+const aliases=context.stockTotalParts({...dates,pnl_krw:100,items:[{symbol:'ISIN_FIXTURE',aliases:['TICKER_FIXTURE'],pnl_krw:100}]},{...dates,ok:true,items:[{symbol:'TICKER_FIXTURE',currency:'KRW',realized_local:25}]});
+assert.equal(aliases.realized,25);assert.equal(aliases.excluded,0);

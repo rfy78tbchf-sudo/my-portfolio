@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
-if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');}
+if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');}
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -138,13 +138,14 @@ try{
     }
     if(source.includes('stockPeriodPerformance')){
       await page.locator('#detailClose').click();await page.setViewportSize({width,height:844});
-      const stockData={...live,stockPnl:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',basis_at:now,complete:true,pnl_krw:-1500000,included_count:2,krw_included_count:2,candidate_count:2,items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',pnl_local:-1500,pnl_krw:-2000000,start_quantity:0,end_quantity:32,start_value_local:0,end_value_local:10000,trade_cash_local:-11500,dividend_local:0,pending_count:2},{symbol:'MRNA',name:'모더나',currency:'USD',pnl_local:400,pnl_krw:500000,start_quantity:10,end_quantity:20,start_value_local:1000,end_value_local:2500,trade_cash_local:-1100,dividend_local:0,pending_count:1}]}};
+      const stockData={...live,stockPnl:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',basis_at:now,complete:true,pnl_krw:-1500000,calculation:{opening_krw:20000000,ending_krw:23000000,net_trade_cash_krw:-4510000,dividend_krw:10000,difference_krw:0},included_count:2,krw_included_count:2,candidate_count:2,items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',pnl_local:-1500,pnl_krw:-2000000,start_quantity:0,end_quantity:32,start_value_local:0,end_value_local:10000,trade_cash_local:-11500,dividend_local:0,pending_count:2},{symbol:'MRNA',name:'모더나',currency:'USD',pnl_local:400,pnl_krw:500000,start_quantity:10,end_quantity:20,start_value_local:1000,end_value_local:2500,trade_cash_local:-1100,dividend_local:0,pending_count:1}]}};
       await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
       await page.getByRole('heading',{name:'어디서 벌고 잃었나'}).waitFor();
       assert.match(await page.locator('.performance-hero').first().innerText(),/-1,500,000/);
       assert.equal(await page.locator('.performance-position').count(),2);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
       if(source.includes('stockTotalPartsHtml')){await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,640,000/)}
+      if(source.includes('stockCalculationHtml')){await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();await page.evaluate(()=>scrollTo(0,0));}
       await page.screenshot({path:`${out}/period-stock-${width}.png`});
       await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/period-stock-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
