@@ -9,6 +9,7 @@ import {chromium} from 'playwright';
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
 if(!baseline){if(source.includes('performanceReviewContext'))await import('./build82_performance_review.mjs');await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');if(source.includes('stockRealizedEvidenceHtml'))await import('./build80_pnl_clarity.mjs');}
+if(!baseline&&source.includes('review-return-86'))await import('./build86_review_home.mjs');
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -104,6 +105,21 @@ try{
       await page.evaluate(()=>{window.__uiRender('portfolio');document.querySelector('.position-name').textContent='아주 긴 국내 상장 종목 이름을 확인하는 화면';document.querySelector('.position-value').textContent='1,234,567,890원'});
       await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'long names / billion amount / enlarged text');await page.screenshot({path:`${out}/stress-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
     }
+    if(source.includes('review-return-86')){
+      const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
+      await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
+      await page.evaluate(()=>window.__uiRender('home'));
+      const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
+      assert.match(await card.innerText(),/다시 점검할 판단 1개/);
+      assert.equal(await card.locator('[data-decision-detail]').first().getAttribute('data-decision-detail'),'s1');
+      assert.equal(await card.locator('[data-decision-detail="s0"]').isVisible(),false);
+      await card.getByText('다른 종목 판단 1개 보기',{exact:true}).click();
+      await page.screenshot({path:`${out}/review-home-${width}.png`});
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'review list overflow');
+      await card.locator('[data-decision-detail="s0"]').click();await page.locator('#detailDecisionSummary').waitFor();
+      await page.locator('#detailClose').click();assert.ok(await card.locator('[data-decision-detail="s0"]').isVisible());
+      await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    }
     await page.evaluate(()=>window.__uiRender('home'));
     if(await page.locator('#homeTrend').count()){await page.locator('#homeTrend').scrollIntoViewIfNeeded();await page.evaluate(()=>document.getElementById('homeTrend').scrollIntoView({block:'start'}))}
     else{await page.getByRole('heading',{name:/자산 추이/}).scrollIntoViewIfNeeded();await page.getByRole('heading',{name:/자산 추이/}).evaluate(el=>el.closest('section').scrollIntoView({block:'start'}))}
@@ -128,7 +144,7 @@ try{
       if(source.includes('detailDirectDecision')){
         await page.locator('#detailDirectDecision').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
         await page.locator('#detailChoice').selectOption('hold');assert.match(await page.locator('#detailChoiceGuide').innerText(),/목표 비중 없이/);
-        if(source.includes('decision-finish-85')){
+        if(source.includes('function updateDecisionGuide')){
           assert.match(await page.locator('#detailReview').getAttribute('placeholder'),/실적/);
           assert.match(await page.locator('#detailDecisionForm button[type=submit]').innerText(),/현재 유지/);
         }
@@ -136,7 +152,7 @@ try{
         await page.locator('#detailChoice').selectOption('consider_reduction');await page.getByRole('button',{name:'매도 수량 비교하기',exact:true}).click();
         assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
         assert.equal(await page.locator('#detailReason').inputValue(),'비교 후에도 보존할 작성 이유');
-        if(source.includes('decision-finish-85'))assert.match(await page.locator('#detailDecisionForm button[type=submit]').innerText(),/일부 축소 검토/);
+        if(source.includes('function updateDecisionGuide'))assert.match(await page.locator('#detailDecisionForm button[type=submit]').innerText(),/일부 축소 검토/);
         await page.locator('#detailDecisionAction').click();await page.screenshot({path:`${out}/decision-guide-${width}.png`});
       }
       const noReason={...live,testThesis:{version:0,rationale:''}};

@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import fs from 'node:fs';
+const source=fs.readFileSync('index.html','utf8');
+const c={live:{securityMap:{a:{id:'a',symbol:'A',name:'Alpha'},b:{id:'b',symbol:'B',name:'Beta'}},holdings:[{security_id:'a',quantity:1},{security_id:'b',quantity:2}],reviewDecisions:[],reviewAnalyses:[],priceMeta:{}},esc:String,kstStamp:String,kstDate:()=> '2026-09-30'};
+vm.createContext(c);vm.runInContext(source.slice(source.indexOf('  function reviewHomeCard('),source.indexOf('  function benchmarkCard(')),c);
+const d={security_id:'a',choice:'hold',created_at:'2026-09-29T00:00:00Z',review_condition:'실적 확인',thesis_version:1,price_snapshot:{price_date:'2026-09-28'}};
+assert.equal(c.reviewHomeCard(),'');c.live.reviewDecisions=[d];assert.match(c.reviewHomeCard(),/저장한 판단 다시 보기/);
+c.live.reviewDecisions=[{...d,created_at:'2026-09-27',review_condition:'2026-09-28'},d];assert.doesNotMatch(c.reviewHomeCard(),/점검 날짜 도래/,'superseded condition stays retired');
+c.live.reviewDecisions.push({...d,security_id:'b',created_at:'2026-09-28',review_condition:'2026-09-30'});
+let html=c.reviewHomeCard();assert.match(html,/다시 점검할 판단 1개/);assert.ok(html.indexOf('Beta')<html.indexOf('Alpha'));assert.match(html,/다른 종목 판단 1개/);
+c.live.reviewDecisions=[{...d,review_condition:'종가 100 달러 이하'}];c.live.priceMeta.a={latest:{price_date:'2026-09-29',currency:'USD',close:null}};
+assert.doesNotMatch(c.reviewHomeCard(),/저장한 가격 조건에 해당/);c.live.priceMeta.a.latest.close=90;assert.match(c.reviewHomeCard(),/저장한 가격 조건에 해당/);
+c.live.reviewDecisions[0].price_snapshot=null;assert.doesNotMatch(c.reviewHomeCard(),/저장한 가격 조건에 해당/,'missing baseline is not a later quote');
+c.live.reviewDecisions=[d];c.live.reviewAnalyses=[{symbol:'A',created_at:'2026-09-30',official_evidence:{thesis_relation:{thesis_version:1,status:'weaken'},documents:[{url:'https://example.test/doc',date_verified:true,published_on:'2026-09-30'}]}}];assert.match(c.reviewHomeCard(),/관련된 새 공식 자료/);
+c.live.reviewAnalyses[0].official_evidence.thesis_relation.thesis_version=2;assert.doesNotMatch(c.reviewHomeCard(),/관련된 새 공식 자료/);
+assert.match(source,/select=security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot/);
+console.log('Build86: latest-per-security, priority, manual access, missing prices and evidence version passed');
