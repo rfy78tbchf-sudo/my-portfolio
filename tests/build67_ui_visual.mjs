@@ -109,6 +109,8 @@ try{
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
       await page.evaluate(()=>window.__uiRender('home'));
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      await page.locator('.home-reviews>summary').click();
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
       assert.match(await card.innerText(),/다시 점검할 판단 1개/);
       assert.equal(await card.locator('[data-decision-detail]').first().getAttribute('data-decision-detail'),'s1');
