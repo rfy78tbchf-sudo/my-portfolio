@@ -22,7 +22,7 @@ for(let i=0;i<6;i++){
 sample.holdings.push({account_id:'sample-manual',security_id:'sample-0',quantity:3,as_of:'2026-09-23T03:35:38Z'});
 sample.holdingBasis.push({account_id:'sample-manual',security_id:'sample-0',quantity:3,
   valuation_krw:900_000,cost_krw:850_000,pnl_krw:50_000});
-const ctx=vm.createContext({live:sample,hideZeroHoldings:false,portfolioMarket:'ALL',portfolioAccount:'ALL',portfolioSort:'value',
+const ctx=vm.createContext({live:sample,hideZeroHoldings:false,portfolioMarket:'ALL',portfolioAccount:'ALL',portfolioSort:'value',portfolioQuery:'',
   kstDate:()=> '2026-09-25',kstStamp:x=>String(x).slice(0,10),marketGroup:()=> 'OVERSEAS',
   money:n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원',
   signedMoney:n=>(n>0?'+':'')+Math.round(Number(n)).toLocaleString('ko-KR')+'원',

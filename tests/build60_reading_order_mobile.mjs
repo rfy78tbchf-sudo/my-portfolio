@@ -41,6 +41,7 @@ const scope={live,liveError:'',period:'1M',portfolioMarket:'ALL',portfolioAccoun
       '<section class="card performance-hero"><h3>기간 투자손익 · 2026-08-27 ~ 2026-09-27</h3><div class="asset">-90,000원</div></section>',
   heatmapHtml:()=>'',metric:(label,value)=>'<div class="metric"><span>'+label+'</span><b>'+value+'</b></div>',
   empty:()=>''};
+scope.portfolioQuery='';
 vm.createContext(scope);
 function include(start,end){const a=source.indexOf('  function '+start+'('),b=source.indexOf('  function '+end+'(',a+10);assert.ok(a>0&&b>a);vm.runInContext(source.slice(a,b),scope)}
 include('periodLabel','chart');include('assetChart','securityChart');include('stockMark','cashFlowAuditCard');

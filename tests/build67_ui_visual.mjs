@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
-const denseUi=source.includes('readable-lists-68');
+const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
  const fn=source.slice(source.indexOf('  function refreshLive('),source.indexOf('  (function bindPullToRefresh'));
@@ -82,7 +82,13 @@ try{
       if(denseUi&&tab==='portfolio'){
         await page.locator('#portfolioAccount').selectOption('isa');assert.equal(await page.locator('.portfolio-row').count(),1);
         await page.locator('#portfolioAccount').selectOption('ALL');await page.locator('#search').fill('ARM');
-        assert.equal(await page.locator('.portfolio-row:visible').count(),1);await page.locator('#search').fill('');
+        assert.equal(await page.locator('.portfolio-row:visible').count(),1);
+        if(source.includes('holdings-ux-69')){
+          await page.locator('#portfolioSort').selectOption('name');assert.equal(await page.locator('#search').inputValue(),'ARM');assert.equal(await page.locator('.portfolio-row:visible').count(),1);
+          await page.locator('#search').fill('없는종목XYZ');assert.ok(await page.locator('#portfolioSearchEmpty').isVisible());
+          await page.locator('#portfolioSort').selectOption('value');
+        }
+        await page.locator('#search').fill('');
       }
 
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} 125% overflow`);await page.screenshot({path:`${out}/${tab}-390-large.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
