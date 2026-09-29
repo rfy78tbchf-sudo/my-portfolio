@@ -105,21 +105,21 @@ assert.equal(vm.runInContext('parseThesisReview(json,official,context)',relation
   'an unsupported valuation conclusion is not a valid conditional opinion');
 const homeStart=html.indexOf('  function reviewHomeCard('),homeEnd=html.indexOf('  function benchmarkCard(',homeStart);
 assert.ok(homeStart>0&&homeEnd>homeStart);
-const homeScope=vm.createContext({esc:String,kstDate:()=> '2026-09-26',live:{
+const homeScope=vm.createContext({esc:String,kstStamp:String,kstDate:()=> '2026-09-26',live:{
   securityMap:{held:{id:'held',symbol:'TEST',name:'Test Holding'}},holdings:[{security_id:'held',quantity:10}],
   reviewDecisions:[{security_id:'held',created_at:'2026-09-01',review_condition:'2026-10-02 확인',
     official_evidence_snapshot:{documents:[{url:'https://www.sec.gov/old'}]}}],reviewAnalyses:[]}});
 vm.runInContext(html.slice(homeStart,homeEnd),homeScope);
-assert.equal(vm.runInContext('reviewHomeCard()',homeScope),'','a future date is not due');
+assert.doesNotMatch(vm.runInContext('reviewHomeCard()',homeScope),/다시 점검할 판단/,'a future date is not due');
 homeScope.live.reviewAnalyses=[{symbol:'OTHER',created_at:'2026-09-05',official_evidence:{documents:[
   {url:'https://www.sec.gov/new',published_on:'2026-09-04',date_verified:true}],
   thesis_relation:{status:'weaken',thesis_version:2}}}];
 homeScope.live.reviewDecisions[0].thesis_version=2;
-assert.equal(vm.runInContext('reviewHomeCard()',homeScope),'','another holding’s filing is not reused');
+assert.doesNotMatch(vm.runInContext('reviewHomeCard()',homeScope),/다시 점검할 판단/,'another holding’s filing is not reused');
 homeScope.live.reviewAnalyses[0].symbol='TEST';
-assert.match(vm.runInContext('reviewHomeCard()',homeScope),/지난 판단 이후 보기/);
+assert.match(vm.runInContext('reviewHomeCard()',homeScope),/보유 전제와 관련된 새 공식 자료/);
 homeScope.live.reviewAnalyses[0].official_evidence.thesis_relation=null;
-assert.equal(vm.runInContext('reviewHomeCard()',homeScope),'','a generic filing cannot be a premise-change alert');
+assert.doesNotMatch(vm.runInContext('reviewHomeCard()',homeScope),/다시 점검할 판단/,'a generic filing cannot be a premise-change alert');
 homeScope.live.reviewAnalyses=[];
 homeScope.live.reviewDecisions[0].review_condition='2026-09-22 확인';
 assert.match(vm.runInContext('reviewHomeCard()',homeScope),/점검 날짜/);

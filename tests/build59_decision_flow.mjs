@@ -55,12 +55,12 @@ const home=vm.createContext({live:{reviewDecisions:[{
   reviewAnalyses:[],securityMap:{'synthetic-arm':{name:'Synthetic ARM',symbol:'ARM',id:'synthetic-arm'}},
   holdings:[{security_id:'synthetic-arm',quantity:36}],
   priceMeta:{'synthetic-arm':{latest:{price_date:'2026-09-27',close:299,currency:'USD'}}}},
-  esc:String,kstDate:()=> '2026-09-27'});
+  esc:String,kstStamp:String,kstDate:()=> '2026-09-27'});
 vm.runInContext(html.slice(homeStart,homeEnd),home);
-assert.match(vm.runInContext('reviewHomeCard()',home),/저장한 종가 재검토 조건/);
-assert.match(vm.runInContext('reviewHomeCard()',home),/자동 매도 신호는 아닙니다/);
+assert.match(vm.runInContext('reviewHomeCard()',home),/저장한 가격 조건에 해당/);
+assert.match(vm.runInContext('reviewHomeCard()',home),/자동 매매 신호가 아닙니다/);
 home.live.priceMeta['synthetic-arm'].latest.price_date='2026-09-25';
-assert.equal(vm.runInContext('reviewHomeCard()',home),'','a same-date reread is not a new trigger');
+assert.doesNotMatch(vm.runInContext('reviewHomeCard()',home),/저장한 가격 조건에 해당/,'a same-date reread is not a new trigger');
 const revisitStart=html.indexOf('  function decisionReviewHtml('),revisitEnd=html.indexOf('  function officialPeriodKo(',revisitStart);
 assert.ok(revisitStart>0&&revisitEnd>revisitStart);
 scope.kstDate=()=> '2026-09-27';
