@@ -41,8 +41,8 @@ const injected=`
     rpc=async function(name,p){
       if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
       if(name==='get_live_security_activity')return {items:[]};
-      if(name==='get_investment_thesis')return {thesis:{version:1,rationale:'최근 추세돌파와 상승 흐름을 확인하며 보유',updated_at:record.created_at}};
-      if(name==='get_investment_decisions')return [record];
+      if(name==='get_investment_thesis')return {ok:true,thesis:data.testThesis||{version:1,rationale:'최근 추세돌파와 상승 흐름을 확인하며 보유',updated_at:record?record.created_at:'2026-09-28T22:10:00Z'}};
+      if(name==='get_investment_decisions')return record?[record]:[];
       if(name==='get_investment_breakout_rule')return null;
       if(name==='get_live_choice_comparison')return {...comparison,ok:true};
       if(name==='get_live_decision_metrics')return {ok:false};
@@ -105,9 +105,22 @@ try{
     await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
     await page.screenshot({path:`${out}/detail-${width}.png`});
+    if(source.includes('decision-guide-70')){
+      if(width===390){await page.locator('.detail-usage').evaluate(x=>x.open=true);await page.screenshot({path:`${out}/detail-guide-${width}.png`});await page.locator('.detail-usage').evaluate(x=>x.open=false)}
+      await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionSummary');
+    }
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
     await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
     await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
+    if(source.includes('decision-guide-70')&&width===390){
+      await page.setViewportSize({width,height:844});
+      await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
+      await page.getByRole('button',{name:'AI 의견부터 확인하기'}).waitFor();await page.screenshot({path:`${out}/detail-first-review-${width}.png`});
+      await page.locator('#detailStartAction').click();assert.ok(await page.locator('#detailFreshReview').isVisible());
+      const noReason={...live,testThesis:{version:0,rationale:''}};
+      await page.evaluate(args=>window.__uiFixture(...args),[noReason,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
+      await page.getByRole('button',{name:'먼저 보유 이유 적기'}).waitFor();await page.locator('#detailStartAction').click();assert.ok(await page.locator('[data-thesis-field="rationale"]').isVisible());assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-thesis-field')),'rationale');
+    }
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
   }
 }finally{await browser.close()}

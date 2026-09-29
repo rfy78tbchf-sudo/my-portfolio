@@ -46,7 +46,7 @@ assert.doesNotMatch(view,/homeWeightForm/);
 account.decisionMetrics={...account.decisionMetrics,ok:false};
 
 assert.match(html,/thesisEditor\(results\[2\]\)/);
-assert.match(html,/<h3>내 논리 점검/);
+assert.match(html,/<h3>AI 의견/);
 assert.match(html,/get_investment_decisions/);
 assert.match(html,/save_investment_decision/);
 assert.match(html,/거래 기록과 결제 상세/);

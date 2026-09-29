@@ -62,11 +62,11 @@ try{
     },{source:html.slice(start,end),binding:closeBinding});
     await page.getByText('My TEST reason').first().waitFor({timeout:8000}).catch(()=>{
       throw Error(`${width}px stock detail did not render: ${pageErrors.join('; ')||'no browser error'}`)});
-    const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
+    const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).filter(x=>x.id!=='detailStart').map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
     const position=label=>sections.findIndex(x=>x.includes(label));
-    assert.ok(position('현재 상태')<position('내 보유 이유')&&position('내 보유 이유')<position('내 논리 점검')&&
-      position('내 논리 점검')<position('비중을 줄이면')&&position('비중을 줄이면')<position('내 판단')&&
-      position('내 판단')<position('가격 차트'),`${width}px: reason, AI opinion, comparison, decision precede detailed evidence`);
+    assert.ok(position('현재 상태')<position('내 보유 이유')&&position('내 보유 이유')<position('AI 의견')&&
+      position('AI 의견')<position('일부 팔면')&&position('일부 팔면')<position('내 결정 기록')&&
+      position('내 결정 기록')<position('가격 차트'),`${width}px: reason, AI opinion, comparison, decision precede detailed evidence`);
     assert.ok(await page.locator('.detail-overview').getByText('10,000원').isVisible());
     await page.screenshot({path:`mobile-artifacts/build62-detail-overview-${width}.png`});
     const close=await page.locator('#detailClose').boundingBox();
@@ -85,13 +85,13 @@ try{
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
     assert.equal(await page.locator('#thesisAnalyze').isVisible(),false,
       'the secondary AI paths stay folded away from the main decision flow');
-    await page.getByText('다른 방식으로 AI 검토 (선택)').click();
+    await page.getByText('다른 질문으로 AI 의견 받기 (선택)').click();
     await page.locator('#thesisAnalyze').click();
     await page.getByText('−10%라면').waitFor();
     assert.match(await page.locator('#thesisAnalysis').textContent(),/−10%라면.*-1,000원.*\+10%라면.*\+1,000원/s);
     assert.match(await page.locator('#thesisAnalysis').textContent(),/서버 검증 답변 · 저장됨 · 계좌 관측/);
     assert.match(await page.locator('#thesisAnalysis').textContent(),/공식 기업 실적·공시는 이번 답변의 근거에 포함되지 않았습니다/);
-    await page.getByRole('button',{name:'내 판단 남기기'}).click();
+    await page.getByRole('button',{name:'이 의견을 읽고 내 결정 기록'}).click();
     assert.ok(await page.locator('#detailDecisionForm').isVisible(),
       `${width}px: the AI answer's decision shortcut must open the collapsed form`);
     await page.setViewportSize({width,height:560});
@@ -101,7 +101,7 @@ try{
     assert.ok(saveButton&&saveButton.y>=0&&saveButton.y+saveButton.height<=560,
       `${width}px: decision save must remain reachable when the visible viewport shrinks for the keyboard`);
     await page.setViewportSize({width,height:844});
-    await page.getByRole('button',{name:'목표 비중으로 비교'}).click();
+    await page.getByRole('button',{name:'일부 매도 시 금액 계산'}).click();
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
     assert.equal(await page.locator('#detailWeightResult').isVisible(),false,
       'do not show an empty result panel before the comparison');
@@ -227,7 +227,7 @@ try{
       window.openTestDetail('held');
     });
     await page.getByText('My TEST reason').first().waitFor();
-    await page.getByText('다른 방식으로 AI 검토 (선택)').click();
+    await page.getByText('다른 질문으로 AI 의견 받기 (선택)').click();
     await page.locator('#thesisAnalyze').click();
     await page.evaluate(()=>window.openTestDetail('other'));
     await page.getByText('My NEXT reason').first().waitFor();
