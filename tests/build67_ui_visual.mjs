@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
-if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');if(source.includes('stockRealizedEvidenceHtml'))await import('./build80_pnl_clarity.mjs');}
+if(!baseline){if(source.includes('performanceReviewContext'))await import('./build82_performance_review.mjs');await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');if(source.includes('stockRealizedEvidenceHtml'))await import('./build80_pnl_clarity.mjs');}
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -169,10 +169,11 @@ try{
             assert.equal(await page.locator('.stock-component-detail').first().isVisible(),false);
             assert.equal(await page.locator('#brokerDayDate').isVisible(),false);
             await page.screenshot({path:`${out}/quiet-realized-${width}.png`});
-            await page.locator('.quiet-realized [data-performance-detail="ARM"]').click();
+            var reviewScroll=await page.evaluate(()=>scrollY);await page.locator('.quiet-realized [data-performance-detail="ARM"]').click();
             await page.locator('#detailClose').waitFor();
             assert.match(await page.locator('#detailBody').innerText(),/ARM|에이알엠/);
-            await page.locator('#detailClose').click();
+            if(source.includes('performanceReviewContext')){await page.locator('.performance-review-context').waitFor();assert.match(await page.locator('.performance-review-context').innerText(),/이번 달 실현손익/);assert.match(await page.locator('.performance-review-context').innerText(),/140,000/);await page.screenshot({path:`${out}/performance-review-${width}.png`});}
+            await page.locator('#detailClose').click();if(source.includes('performanceReviewContext'))assert.ok(Math.abs((await page.evaluate(()=>scrollY))-reviewScroll)<3);
             await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();
             await page.locator('#brokerDayCard>summary').click();
           }

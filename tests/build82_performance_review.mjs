@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';import vm from 'node:vm';import fs from 'node:fs';
+const s=fs.readFileSync('index.html','utf8');
+const c={live:{stockPnl:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',items:[{symbol:'A',pnl_krw:-100}]}},stockView:'total',stockPeriod:'THIS_MONTH',stockPeriodLabel:()=> '이번 달',stockRealizedRows:r=>r.items,stockUnrealizedRows:()=>[{symbol:'A',amount:0}],esc:String,cls:n=>n<0?'down':'up',signedMoney:n=>String(n)};vm.createContext(c);
+vm.runInContext(s.slice(s.indexOf('  function performanceReviewContext('),s.indexOf('  function openSecurityDetail(')),c);
+let a=c.performanceReviewContext('A');assert.equal(a.amount,-100);assert.equal(a.label,'이번 달 기간손익');assert.equal(c.performanceReviewContext('B'),null);
+c.live.stockPnl.period='1W';assert.equal(c.performanceReviewContext('A'),null);c.live.stockPnl.period='THIS_MONTH';c.live.stockPnl.items[0].pnl_krw=null;assert.equal(c.performanceReviewContext('A').amount,null);
+assert.equal(c.performanceReviewHtml(a,'B'),'');assert.match(c.performanceReviewHtml(a,'A'),/-100/);
+c.stockView='unrealized';a=c.performanceReviewContext('A');assert.equal(a.amount,0);assert.equal(a.range,'');assert.equal(a.label,'현재 평가손익');
+c.stockView='realized';c.live.stockRealizedPeriod='THIS_MONTH';c.live.stockRealized={ok:true,period:'THIS_MONTH',items:[{symbol:'A',amount:35,known:1,count:2}],period_start:'2026-09-01',period_end:'2026-09-29'};
+assert.equal(c.performanceReviewContext('A').partial,true);c.live.stockRealizedLoading=true;assert.equal(c.performanceReviewContext('A'),null);
+console.log('Build82: period/type provenance, partial, unknown/zero and cross-security isolation passed');
