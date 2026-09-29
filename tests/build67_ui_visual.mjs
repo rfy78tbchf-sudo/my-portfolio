@@ -75,7 +75,7 @@ try{
       if(tab==='home'&&!baseline){const rows=await page.locator('#homeHoldings .portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[2]<760,`${width}px at least three home rows visible`)}
       if(tab==='portfolio'&&!baseline){const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[4]<770,`${width}px five portfolio rows visible`)}
       await page.screenshot({path:`${out}/${tab}-${width}.png`});
-      if(tab==='performance'&&source.includes('review-sales-73')){await page.locator('#brokerDayResult').getByText('TEST',{exact:true}).waitFor();await page.locator('#brokerDayCard').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/sales-${width}.png`});}
+      if(tab==='performance'&&source.includes('brokerDayCard')){await page.locator('#brokerDayResult').getByText('TEST',{exact:true}).waitFor();await page.locator('#brokerDayCard').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/sales-${width}.png`});}
       if(denseUi&&tab==='performance'){
         assert.equal(await page.locator('.performance-breakdown').first().isVisible(),false);
         await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
@@ -113,7 +113,7 @@ try{
       await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionSummary');
     }
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
-    if(source.includes('review-sales-73')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
+    if(source.includes('brokerDayCard')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
     await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
     await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
     if(source.includes("startPanel.id='detailStart'")&&width===390){
@@ -121,6 +121,15 @@ try{
       await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
       await page.getByRole('button',{name:'AI 의견부터 확인하기'}).waitFor();await page.screenshot({path:`${out}/detail-first-review-${width}.png`});
       await page.locator('#detailStartAction').click();assert.ok(await page.locator('#detailFreshReview').isVisible());
+      if(source.includes('detailDirectDecision')){
+        await page.locator('#detailDirectDecision').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
+        await page.locator('#detailChoice').selectOption('hold');assert.match(await page.locator('#detailChoiceGuide').innerText(),/목표 비중 없이/);
+        await page.locator('#detailReason').fill('비교 후에도 보존할 작성 이유');
+        await page.locator('#detailChoice').selectOption('consider_reduction');await page.getByRole('button',{name:'매도 수량 비교하기',exact:true}).click();
+        assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
+        assert.equal(await page.locator('#detailReason').inputValue(),'비교 후에도 보존할 작성 이유');
+        await page.locator('#detailDecisionAction').click();await page.screenshot({path:`${out}/decision-guide-${width}.png`});
+      }
       const noReason={...live,testThesis:{version:0,rationale:''}};
       await page.evaluate(args=>window.__uiFixture(...args),[noReason,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
       await page.getByRole('button',{name:'먼저 보유 이유 적기'}).waitFor();await page.locator('#detailStartAction').click();assert.ok(await page.locator('[data-thesis-field="rationale"]').isVisible());assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-thesis-field')),'rationale');
