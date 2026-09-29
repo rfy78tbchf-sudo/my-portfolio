@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
-if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');}
+if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');if(source.includes('stockRealizedEvidenceHtml'))await import('./build80_pnl_clarity.mjs');}
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -145,7 +145,7 @@ try{
       assert.match(await page.locator('.performance-hero').first().innerText(),/-1,500,000/);
       assert.equal(await page.locator('.performance-position').count(),2);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
-      if(source.includes('stockTotalPartsHtml')){await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,640,000/)}
+      if(source.includes('stockTotalPartsHtml')){await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,650,000/)}
       if(source.includes('stockCalculationHtml')){await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();await page.evaluate(()=>scrollTo(0,0));}
       await page.screenshot({path:`${out}/period-stock-${width}.png`});
       await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
@@ -164,6 +164,12 @@ try{
         assert.match(await page.locator('.performance-hero').innerText(),/140,000/);
         assert.match(await page.locator('.performance-hero').innerText(),/1건 확인 중/);
         assert.equal(await page.locator('.performance-position').count(),2);
+        if(source.includes('stockRealizedEvidenceHtml')){
+          await page.locator('.stock-row-evidence').last().locator('summary').click();
+          assert.match(await page.locator('.stock-row-evidence').last().innerText(),/매수원가 확인 필요/);
+          const boxes=await page.locator('#brokerDayCard .tool-row').evaluate(el=>{const a=el.querySelector('input').getBoundingClientRect(),b=el.querySelector('button').getBoundingClientRect();return {inputRight:a.right,buttonLeft:b.left,inputBottom:a.bottom,buttonTop:b.top}});
+          assert.ok(boxes.inputRight<=boxes.buttonLeft||boxes.inputBottom<=boxes.buttonTop,'date and button must not overlap');
+        }
         await page.screenshot({path:`${out}/realized-${width}.png`});
         if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/realized-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
         await page.locator('[data-stock-period="1W"]').click();await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/2026-09-23/);

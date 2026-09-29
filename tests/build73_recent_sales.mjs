@@ -14,7 +14,7 @@ for(const rows of [[],[{shrt_is_cd:'TEST',shrt_is_nm:'Synthetic',ccls_q_p6:'7',b
 const renderer=html.slice(html.indexOf('  function brokerDayResultHtml('),html.indexOf('  function bindBrokerDay('));
 const c={esc:x=>String(x),num:x=>String(x),cls:x=>x<0?'down':'up',signedMoney:x=>x+'원'};vm.createContext(c);vm.runInContext(renderer,c);
 const result=c.brokerDayResultHtml({items:[]},[{symbol:'TEST',type:'sell',quantity:7,settlement_date:'2026-09-30'}],false);
-assert.match(result,/7주 매도/);assert.match(result,/손익 대기/);assert.doesNotMatch(result,/<strong[^>]*>0원/);
+assert.match(result,/7주 매도/);assert.match(result,/금액 미제공/);assert.doesNotMatch(result,/<strong[^>]*>0원/);
 assert.match(c.brokerDayResultHtml(null,[],true),/조회 실패/);
 assert.match(html,/owner.brokerDayRequest!==request/);assert.match(html,/live!==owner/);
 console.log('Build73: broker day request, absent versus zero, pending sales and stale-response guards passed');
