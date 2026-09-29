@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
-if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');}
+if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');}
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -25,7 +25,7 @@ if(!process.env.UI_BASELINE){
 const out=process.env.UI_OUTPUT||'mobile-artifacts/build67';mkdirSync(out,{recursive:true});
 const names=[['ARM','에이알엠 홀딩스(ADR)',32,12472000,-534000],['RXRX','리커전 파머슈티컬스',2100,10812500,426000],['MRNA','모더나',40,9627400,672000],['LLY','일라이 릴리',3,5138000,218000],['MU','마이크론 테크놀로지',3,4437100,-67000],['META','메타 플랫폼스',4,4146000,114000],['385560','RISE KIS국고채30년Enhanced',110,7822100,322100]];
 const now='2026-09-28T22:10:00Z';
-const live={accounts:[{id:'broker',name:'KB 종합위탁',mode:'live'},{id:'isa',name:'ISA',mode:'live'}],securityMap:{},securities:[],holdings:[],holdingBasis:[],settings:{},manualSnapshots:[],settlementBasis:[],transactions:[],reviewDecisions:[],reviewAnalyses:[],
+const live={accounts:[{id:'broker',name:'KB 종합위탁',mode:'live',provider:'kb_securities'},{id:'isa',name:'ISA',mode:'live'}],securityMap:{},securities:[],holdings:[],holdingBasis:[],settings:{},manualSnapshots:[],settlementBasis:[],transactions:[],reviewDecisions:[],reviewAnalyses:[],
   snapshots:[{snapshot_at:now,snapshot_date:'2026-09-29',total_assets:63842170,securities_value:54455100,unrealized_pnl:1151100}],
   accountScope:{ok:true,current_display_total:63842170,snapshot_at:now,overlay_matches_manual:true,broker_account_overlap_verified:true,current_primary_value:56020070,current_isa_value:7822100,current_primary_observed_at:now,current_isa_capture_at:'2026-09-26T02:42:00Z',current_isa_source:'kb_account_breakdown_screenshot'},
   performancePeriod:'1M',performance:{ok:true,return_ready:true,investment_pnl:326840,return_pct:.52,period_start:'2026-08-29',period_end:'2026-09-29',realized_pnl:251200,dividends_net:42000},
@@ -40,6 +40,7 @@ const injected=`
   window.__uiFixture=function(data,record,opinion,comparison){
     live=data;liveError=null;mode='live';period='1M';session=null;
     rpc=async function(name,p){
+      if(name==='get_live_realized_sales')return {ok:true,period:p.p_period,period_start:p.p_period==='1W'?'2026-09-23':'2026-09-01',period_end:'2026-09-29',items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',realized_local:100,historical_krw_estimate:140000,status:'calculated'},{symbol:'SOXS',name:'SOXS',currency:'USD',realized_local:null,historical_krw_estimate:null,status:'cost_review'}]};
       if(name==='get_live_period_stock_pnl')return {...live.stockPnl,period:p.p_period,period_start:p.p_period==='1M'?'2026-08-29':'2026-09-01'};
       if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
       if(name==='get_pending_kb_position_events')return [{symbol:'TEST',type:'sell',order_date:kstDaysAgo(1),settlement_date:kstDate(),quantity:7}];
@@ -148,6 +149,23 @@ try{
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/period-stock-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
       await page.locator('[data-stock-period="1M"]').click();assert.match(await page.locator('.performance-hero').first().innerText(),/2026-08-29/);
       await page.locator('[data-stock-period="THIS_MONTH"]').click();assert.match(await page.locator('.performance-hero').first().innerText(),/2026-09-01/);
+      if(source.includes('stockSeparatedHtml')){
+        await page.locator('[data-stock-view="unrealized"]').click();
+        assert.match(await page.locator('.performance-hero').innerText(),/현재 보유분/);
+        assert.equal(await page.locator('[data-stock-period]').count(),0);
+        assert.equal(await page.locator('#brokerDayCard').count(),0);
+        assert.equal(await page.locator('.performance-position').count(),6,'ISA excluded');
+        await page.screenshot({path:`${out}/unrealized-${width}.png`});
+        await page.locator('[data-stock-view="realized"]').click();
+        await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();
+        assert.match(await page.locator('.performance-hero').innerText(),/140,000/);
+        assert.match(await page.locator('.performance-hero').innerText(),/1건 확인 중/);
+        assert.equal(await page.locator('.performance-position').count(),2);
+        await page.screenshot({path:`${out}/realized-${width}.png`});
+        if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/realized-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
+        await page.locator('[data-stock-period="1W"]').click();await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/2026-09-23/);
+        await page.locator('[data-stock-period="THIS_MONTH"]').click();await page.locator('[data-stock-view="total"]').click();
+      }
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
