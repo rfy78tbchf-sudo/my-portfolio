@@ -383,6 +383,25 @@ async function previewHistory(userId:string){
   };
 }
 
+// KB SPQM2206: selected order-day broker P&L, independent of settlement ledger.
+async function overseasDayPnl(userId:string,day:string){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||day>todaySeoul())throw Error("INVALID_ORDER_DATE");
+  const {appKey,appSecret}=await credentials(userId),token=await issueToken(appKey,appSecret);
+  const result=await pagedTr(appKey,token,"/api/v1/spqm2206",{
+    ordr_dt:ymd(day),stnd_is_cd:"",std_crncy_f:"2",exch_r_aplc_f:"2",frgn_stk_mgn_ccd:"",dl_clsf:"0"
+  },"Record2",100);
+  if(result.truncated)throw Error("OVERSEAS_PNL_TRUNCATED");
+  const items=result.rows.filter((r:any)=>String(r?.shrt_is_cd||"").trim()).map((r:any)=>({
+    symbol:String(r.shrt_is_cd).trim(),name:String(r.shrt_is_nm||"").trim(),
+    quantity:nOrNull(r.ccls_q_p6),buy_price:nOrNull(r.byng_avr_prc_p6),sell_price:nOrNull(r.frgn_ccls_prc_p6),
+    gross_pnl:nOrNull(r.fcrncy_pl_amt_p2)
+  }));
+  const summary=result.summary||{};
+  return {ok:true,date:day,currency:"KRW",source:"KB SPQM2206",fx_basis:"매매기준율",
+    items,available:items.length>0,provider_message:String(summary.o_msg||""),
+    fetched_at:new Date().toISOString()};
+}
+
 // Read-only source audit: report field names and position-related fields only.
 // Never return account references, names of people, credentials or tokens.
 async function inspectPositionSources(userId:string, month:string, wanted:unknown){
@@ -1213,6 +1232,7 @@ Deno.serve(async (req:Request) => {
   if (!userId) return json(req,{ok:false,code:"AUTH_REQUIRED"},401);
   const action = String(body?.action || "preview");
   try {
+    if(action === "overseas-day-pnl")return json(req,await overseasDayPnl(userId,String(body.date||todaySeoul())));
     if (action === "preview") {
       const p = await previewUser(userId);
       return json(req,{ok:true,mode:"read_only_preview",orderEndpointsEnabled:false,...p});

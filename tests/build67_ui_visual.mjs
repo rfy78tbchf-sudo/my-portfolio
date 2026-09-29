@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 // No owner login, network or records are used or changed by this visual test.
 const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
 const baseline=!!process.env.UI_BASELINE;
-if(!baseline)await import('./build72_app_update.mjs');
+if(!baseline){await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');}
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -41,6 +41,7 @@ const injected=`
     live=data;liveError=null;mode='live';period='1M';session=null;
     rpc=async function(name,p){
       if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
+      if(name==='get_pending_kb_position_events')return [{symbol:'TEST',type:'sell',order_date:kstDaysAgo(1),settlement_date:kstDate(),quantity:7}];
       if(name==='get_live_security_activity')return {items:[]};
       if(name==='get_investment_thesis')return {ok:true,thesis:data.testThesis||{version:1,rationale:'최근 추세돌파와 상승 흐름을 확인하며 보유',updated_at:record?record.created_at:'2026-09-28T22:10:00Z'}};
       if(name==='get_investment_decisions')return record?[record]:[];
@@ -50,7 +51,7 @@ const injected=`
       return {ok:false,items:[]};
     };
     authFetch=async function(url,options){if(options&&options.method==='POST')throw Error('No model generation or writes allowed in UI capture');return {ok:true,json:async()=>[opinion]}};
-    loadLive=async()=>{};edgeSync=async()=>{throw Error('No account sync during UI capture')};
+    loadLive=async()=>{};edgeSync=async(action)=>{if(action==='overseas-day-pnl')return {ok:true,available:false,items:[]};throw Error('No account sync during UI capture')};
     document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('refreshBtn').classList.remove('hidden');
     window.__uiRender=function(tab){currentTab=tab;render()};window.__uiDetail=openSecurityDetail;
     render();
@@ -74,6 +75,7 @@ try{
       if(tab==='home'&&!baseline){const rows=await page.locator('#homeHoldings .portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[2]<760,`${width}px at least three home rows visible`)}
       if(tab==='portfolio'&&!baseline){const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[4]<770,`${width}px five portfolio rows visible`)}
       await page.screenshot({path:`${out}/${tab}-${width}.png`});
+      if(tab==='performance'&&source.includes('review-sales-73')){await page.locator('#brokerDayResult').getByText('TEST',{exact:true}).waitFor();await page.locator('#brokerDayCard').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/sales-${width}.png`});}
       if(denseUi&&tab==='performance'){
         assert.equal(await page.locator('.performance-breakdown').first().isVisible(),false);
         await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
@@ -111,6 +113,7 @@ try{
       await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionSummary');
     }
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
+    if(source.includes('review-sales-73')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
     await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
     await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
     if(source.includes("startPanel.id='detailStart'")&&width===390){

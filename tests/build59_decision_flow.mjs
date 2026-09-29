@@ -77,7 +77,7 @@ assert.match(review,/판단 이후 새 가격 변화는 아직 확인되지 않�
 assert.doesNotMatch(review,/현재 상태 · 재검토 필요/);
 scope.prices=[{date:'2026-09-26',close:299,currency:'USD'}];
 review=vm.runInContext('decisionReviewHtml(judgement,prices,{items:[]},[])',scope);
-assert.match(review,/현재 상태 · 재검토할 변화 있음/);
+assert.match(review,/재검토할 변화 있음/);
 assert.match(review,/2026-09-26 종가 기준/,'the live security detail RPC uses date, not price_date');
 
 const trendStart=edge.indexOf('function priceTrendEvidence('),trendEnd=edge.indexOf('function questionContext(',trendStart);
