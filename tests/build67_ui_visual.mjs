@@ -78,7 +78,7 @@ try{
       if(tab==='home'&&!baseline){const rows=await page.locator('#homeHoldings .portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[2]<760,`${width}px at least three home rows visible`)}
       if(tab==='portfolio'&&!baseline){const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[4]<770,`${width}px five portfolio rows visible`)}
       await page.screenshot({path:`${out}/${tab}-${width}.png`});
-      if(tab==='performance'&&source.includes('brokerDayCard')){await page.locator('#brokerDayResult').getByText('TEST',{exact:true}).waitFor();await page.locator('#brokerDayCard').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/sales-${width}.png`});}
+      if(tab==='performance'&&source.includes('brokerDayCard')){if(source.includes('quiet-realized'))await page.locator('#brokerDayCard>summary').click();await page.locator('#brokerDayResult').getByText('TEST',{exact:true}).waitFor();await page.locator('#brokerDayCard').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/sales-${width}.png`});}
       if(denseUi&&tab==='performance'){
         assert.equal(await page.locator('.performance-breakdown').first().isVisible(),false);
         await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
@@ -146,7 +146,7 @@ try{
       assert.equal(await page.locator('.performance-position').count(),2);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
       if(source.includes('stockTotalPartsHtml')){await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,650,000/)}
-      if(source.includes('stockCalculationHtml')){await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();await page.evaluate(()=>scrollTo(0,0));}
+      if(source.includes('stockCalculationHtml')){if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.evaluate(()=>scrollTo(0,0));}
       await page.screenshot({path:`${out}/period-stock-${width}.png`});
       await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/period-stock-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
@@ -162,9 +162,20 @@ try{
         await page.locator('[data-stock-view="realized"]').click();
         await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();
         assert.match(await page.locator('.performance-hero').innerText(),/140,000/);
-        assert.match(await page.locator('.performance-hero').innerText(),/1건 확인 중/);
+        assert.match(await page.locator('.performance-hero').innerText(),/일부 계산/);
         assert.equal(await page.locator('.performance-position').count(),2);
         if(source.includes('stockRealizedEvidenceHtml')){
+          if(source.includes('quiet-realized')){
+            assert.equal(await page.locator('.stock-component-detail').first().isVisible(),false);
+            assert.equal(await page.locator('#brokerDayDate').isVisible(),false);
+            await page.screenshot({path:`${out}/quiet-realized-${width}.png`});
+            await page.locator('.quiet-realized [data-performance-detail="ARM"]').click();
+            await page.locator('#detailClose').waitFor();
+            assert.match(await page.locator('#detailBody').innerText(),/ARM|에이알엠/);
+            await page.locator('#detailClose').click();
+            await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();
+            await page.locator('#brokerDayCard>summary').click();
+          }
           await page.locator('.stock-row-evidence').last().locator('summary').click();
           assert.match(await page.locator('.stock-row-evidence').last().innerText(),/매수원가 확인 필요/);
           const boxes=await page.locator('#brokerDayCard .tool-row').evaluate(el=>{const a=el.querySelector('input').getBoundingClientRect(),b=el.querySelector('button').getBoundingClientRect();return {inputRight:a.right,buttonLeft:b.left,inputBottom:a.bottom,buttonTop:b.top}});
@@ -177,7 +188,7 @@ try{
       }
       if(source.includes('stockRealizedItems')){
         const closedData={...stockData,stockRealizedPeriod:null,stockRealized:null,closedRealizedFixture:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',items:[{symbol:'TEST',currency:'USD',realized_local:null},{symbol:'TEST',currency:'USD',realized_local:10,historical_krw_estimate:14000}],closed_cycles:[{symbol:'TEST',name:'기간 내 전량 매도 종목',currency:'USD',aliases:['TEST'],closed_realized:{method:'flat_to_flat_net_cash',sale_count:2,realized_local:-100,realized_krw:-140000,provisional_date_count:0}}]}};
-        await page.evaluate(args=>window.__uiFixture(...args),[closedData,decision,analysis,comparison]);await page.locator('[data-stock-view="realized"]').click();await page.getByText(/매도 2건 · 기간 합계 계산/).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/-140,000/);assert.equal(await page.locator('.performance-position').count(),1);await page.screenshot({path:`${out}/closed-realized-${width}.png`});await page.locator('[data-stock-view="total"]').click();
+        await page.evaluate(args=>window.__uiFixture(...args),[closedData,decision,analysis,comparison]);await page.locator('[data-stock-view="realized"]').click();await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();await page.getByText(/매도 2건 · 기간 합계 계산/).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/-140,000/);assert.equal(await page.locator('.performance-position').count(),1);await page.screenshot({path:`${out}/closed-realized-${width}.png`});await page.locator('[data-stock-view="total"]').click();
       }
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
