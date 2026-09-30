@@ -1,4 +1,15 @@
 import assert from 'node:assert/strict';
+async function openOptionalTools(page){
+ if(!await page.locator('#detailExtras').count())await page.locator('#detailExtras').waitFor({state:'attached'});
+ const group=page.locator('#detailExtras');
+ if(!await group.evaluate(el=>el.open)){
+  if(await page.locator('.detail-price-chart').count())assert.ok(await page.locator('.detail-price-chart').isVisible());
+  assert.equal(await page.locator('#detailFreshReview').isVisible(),false,'AI input is optional on initial screen');
+  await page.screenshot({path:'mobile-artifacts/simple-detail-'+page.viewportSize().width+'.png'});
+  await group.locator(':scope > summary').click();
+ }
+}
+
 import vm from 'node:vm';
 import {readFileSync,mkdirSync,writeFileSync,existsSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
@@ -135,7 +146,7 @@ try{
       await page.locator('[data-allocation-scope="stocks"]').click();
       assert.equal(await page.locator('.allocation-residual').count(),0);assert.match(await allocation.innerText(),/확인된 종목 평가액 합계 = 100%/);
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'allocation enlarged text overflow');await page.screenshot({path:`${out}/allocation-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
-      await allocation.locator('[data-decision-detail="s0"]').click();await page.locator('#detailDecisionSummary').waitFor();await page.locator('#detailClose').click();assert.ok(await allocation.isVisible());
+      await allocation.locator('[data-decision-detail="s0"]').click();await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.locator('#detailClose').click();assert.ok(await allocation.isVisible());
       await page.locator('[data-allocation-scope="assets"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
@@ -152,7 +163,7 @@ try{
       await card.getByText('다른 종목 판단 1개 보기',{exact:true}).click();
       await page.screenshot({path:`${out}/review-home-${width}.png`});
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'review list overflow');
-      await card.locator('[data-decision-detail="s0"]').click();await page.locator('#detailDecisionSummary').waitFor();
+      await card.locator('[data-decision-detail="s0"]').click();await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();
       await page.locator('#detailClose').click();assert.ok(await card.locator('[data-decision-detail="s0"]').isVisible());
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
@@ -161,7 +172,7 @@ try{
     else{await page.getByRole('heading',{name:/자산 추이/}).scrollIntoViewIfNeeded();await page.getByRole('heading',{name:/자산 추이/}).evaluate(el=>el.closest('section').scrollIntoView({block:'start'}))}
     await page.screenshot({path:`${out}/trend-${width}.png`});
     await page.locator('#assetChartHit').tap();assert.ok(await page.locator('#assetChartTip').isVisible(),'chart observation is touch-readable');
-    await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
+    await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
     await page.screenshot({path:`${out}/detail-${width}.png`});
     if(source.includes('detail-price-chart')){
@@ -209,7 +220,7 @@ try{
     await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
     if(source.includes("startPanel.id='detailStart'")&&width===390){
       await page.setViewportSize({width,height:844});
-      await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
+      await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
       await page.getByRole('button',{name:'AI 의견부터 확인하기'}).waitFor();await page.screenshot({path:`${out}/detail-first-review-${width}.png`});
       await page.locator('#detailStartAction').click();assert.ok(await page.locator('#detailFreshReview').isVisible());
       if(source.includes('detailDirectDecision')){
@@ -227,7 +238,7 @@ try{
         await page.locator('#detailDecisionAction').click();await page.screenshot({path:`${out}/decision-guide-${width}.png`});
       }
       const noReason={...live,testThesis:{version:0,rationale:''}};
-      await page.evaluate(args=>window.__uiFixture(...args),[noReason,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));
+      await page.evaluate(args=>window.__uiFixture(...args),[noReason,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
       await page.getByRole('button',{name:'먼저 보유 이유 적기'}).waitFor();await page.locator('#detailStartAction').click();assert.ok(await page.locator('[data-thesis-field="rationale"]').isVisible());assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-thesis-field')),'rationale');
       if(source.includes('function openReasonEditor')){
         assert.equal(await page.locator('#detailStart #thesisGroup').count(),1);
@@ -311,7 +322,7 @@ try{
     if(!baseline&&source.includes('function requestDetailOpinion')){
       const maOpinion=source.includes('detail-thesis-check')?{...analysis,price_evidence:{...analysis.price_evidence,moving_averages:{ready:true,periods:[20,60,120],basis:'reference_periods',order:'bullish'}}}:analysis;
       const maLive=source.includes('detail-thesis-check')?{...live,testThesis:{version:1,rationale:'이평선 정배열'}}:live;
-      await page.evaluate(args=>{window.__uiFixture(...args);window.__uiAiTest('failure');window.__uiDetail('s0')},[maLive,decision,maOpinion,comparison]);
+      await page.evaluate(args=>{window.__uiFixture(...args);window.__uiAiTest('failure');window.__uiDetail('s0')},[maLive,decision,maOpinion,comparison]);await openOptionalTools(page);
       await page.locator('#detailFreshReview').waitFor();
       await page.evaluate(()=>{document.getElementById('detailReason').value='보유 이유 유지';document.getElementById('detailReview').value='다음 종가 확인';document.getElementById('detailWeightTarget').value=''});
       await page.locator('#detailFreshReview').click();

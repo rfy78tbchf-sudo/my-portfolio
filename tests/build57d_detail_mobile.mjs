@@ -1,4 +1,14 @@
 import assert from 'node:assert/strict';
+async function openOptionalTools(page){
+ if(!await page.locator('#detailExtras').count())await page.locator('#detailExtras').waitFor({state:'attached'});
+ const group=page.locator('#detailExtras');
+ if(!await group.evaluate(el=>el.open)){
+  if(await page.locator('.detail-price-chart').count())assert.ok(await page.locator('.detail-price-chart').isVisible());
+  assert.equal(await page.locator('#detailFreshReview').isVisible(),false,'AI input is optional on initial screen');
+  await group.locator(':scope > summary').click();
+ }
+}
+
 import {readFileSync,mkdirSync} from 'node:fs';
 import {chromium} from 'playwright';
 
@@ -60,7 +70,7 @@ try{
       (0,eval)(binding);
       window.openTestDetail('held');
     },{source:html.slice(html.indexOf('  function bindSecurityChart('),html.indexOf('  function heatmapHtml('))+html.slice(start,end)+html.slice(html.indexOf('  function opinionDeadline('),html.indexOf('  function fetchTimeout(')),binding:closeBinding});
-    await page.getByText('My TEST reason').first().waitFor({timeout:8000}).catch(()=>{
+    await openOptionalTools(page);await page.getByText('My TEST reason').first().waitFor({timeout:8000}).catch(()=>{
       throw Error(`${width}px stock detail did not render: ${pageErrors.join('; ')||'no browser error'}`)});
     const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).filter(x=>x.id!=='detailStart').map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
     const position=label=>sections.findIndex(x=>x.includes(label));
@@ -80,7 +90,7 @@ try{
     await page.locator('#detailClose').click();
     assert.ok(await page.locator('#detailModal').evaluate(node=>node.classList.contains('hidden')),
       `${width}px: tapping the actual X binding must close the detail`);
-    await page.evaluate(()=>window.openTestDetail('held'));
+    await page.evaluate(()=>window.openTestDetail('held'));await openOptionalTools(page);
     await page.getByText('기술지표와 평가 기준').click();
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
     assert.equal(await page.locator('#thesisAnalyze').isVisible(),false,
@@ -184,7 +194,7 @@ try{
       await page.getByRole('button',{name:'목록으로 돌아가기',exact:true}).click();
       assert.ok(await page.locator('#detailModal').evaluate(el=>el.classList.contains('hidden')));
     }
-    await page.evaluate(()=>window.openTestDetail('held'));
+    await page.evaluate(()=>window.openTestDetail('held'));await openOptionalTools(page);
     await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
     await page.locator('#detailDecisionReview').waitFor({state:'attached'});
     assert.match(await page.locator('#detailDecisionReview').textContent(),/I can absorb this exposure/);
@@ -204,8 +214,8 @@ try{
       down:lastAiRequest.down_pct,up:lastAiRequest.up_pct})),
       {action:'decision-review',target:10,down:-10,up:10},
       'a deliberate tap recomputes and requests a new AI review with the same saved assumption');
-    await page.evaluate(()=>window.openTestDetail('other'));
-    await page.getByText('My NEXT reason').first().waitFor();
+    await page.evaluate(()=>window.openTestDetail('other'));await openOptionalTools(page);
+    await openOptionalTools(page);await page.getByText('My NEXT reason').first().waitFor();
     assert.equal(await page.getByText('My TEST reason').count(),0);
     assert.equal(await page.getByText('I can absorb this exposure').count(),0);
     assert.equal(await page.locator('#detailPreviousComparison').count(),0,
@@ -220,7 +230,7 @@ try{
     await page.waitForFunction(()=>/내 판단 저장 완료/.test(document.getElementById('detailDecisionStatus').textContent));
     assert.equal(await page.evaluate(()=>stored[0].p_target_pct),null,'hold can be saved without a comparison target');
     assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-NEXT');
-    await page.evaluate(()=>window.openTestDetail('other'));
+    await page.evaluate(()=>window.openTestDetail('other'));await openOptionalTools(page);
     await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/비교 없이 기록한 판단/);
     await page.evaluate(()=>{
@@ -230,7 +240,7 @@ try{
         :original(name,args);
       window.openTestDetail('held');window.openTestDetail('other');
     });
-    await page.getByText('My NEXT reason').first().waitFor();
+    await openOptionalTools(page);await page.getByText('My NEXT reason').first().waitFor();
     await page.waitForTimeout(200);
     assert.equal(await page.getByText('My TEST reason').count(),0,
       'an old detail response must not replace the newly selected stock');
@@ -242,11 +252,11 @@ try{
         :original(url,options);
       window.openTestDetail('held');
     });
-    await page.getByText('My TEST reason').first().waitFor();
+    await openOptionalTools(page);await page.getByText('My TEST reason').first().waitFor();
     await page.getByText('다른 질문으로 AI 의견 받기 (선택)').click();
     await page.locator('#thesisAnalyze').click();
-    await page.evaluate(()=>window.openTestDetail('other'));
-    await page.getByText('My NEXT reason').first().waitFor();
+    await page.evaluate(()=>window.openTestDetail('other'));await openOptionalTools(page);
+    await openOptionalTools(page);await page.getByText('My NEXT reason').first().waitFor();
     await page.waitForTimeout(200);
     assert.equal(await page.getByText('OLD STOCK ANSWER').count(),0,
       'a late model answer must not appear under a different security');
