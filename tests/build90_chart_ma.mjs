@@ -64,6 +64,16 @@ if(process.argv.includes('--browser')){
   assert.equal(plotted.split(' ').length,count-19,'MA uses full history before cropping');
   await root.locator('[data-chart-zoom="reset"]').click();
   assert.equal(await root.getAttribute('data-chart-count'),'140');
+  await root.locator('[data-chart-period="1"]').click();
+  assert.equal(await root.getAttribute('data-chart-count'),'31','one calendar month from latest available close');
+  assert.equal(await root.locator('[data-chart-period="1"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await root.locator('.chart-labels span').first().innerText(),'2026-04-20');
+  assert.equal(await latest.innerText(),latestText);
+  assert.equal(await chart.locator('[data-ma-line="120"] polyline').count(),1,'long MA still uses history before selected period');
+  await root.locator('[data-chart-zoom="in"]').click();
+  assert.equal(await root.locator('[data-chart-period][aria-pressed="true"]').count(),0,'manual zoom clears preset');
+  await root.locator('[data-chart-period="all"]').click();
+  assert.equal(await root.getAttribute('data-chart-count'),'140');
   // Use real browser touch input for pinch and two-finger translation.
   const cdp=await page.context().newCDPSession(page),touchBox=await hit.boundingBox();
   const cy=touchBox.y+touchBox.height/2,cx=touchBox.x+touchBox.width/2;
