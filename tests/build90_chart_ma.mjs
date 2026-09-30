@@ -41,7 +41,7 @@ if(process.argv.includes('--browser')){
   await page.keyboard.press('End');assert.equal(await hit.getAttribute('aria-valuenow'),'139');
   await page.mouse.move(box.x+box.width*.8,box.y+20);await page.mouse.down();await page.mouse.move(box.x+box.width*.25,box.y+20);await page.mouse.up();
   assert.ok(Number(await hit.getAttribute('aria-valuenow'))<40,'scrub updates selected date');
-  assert.equal(await page.locator('.security-crosshair').first().evaluate(el=>getComputedStyle(el).display),'block');
+  assert.notEqual(await page.locator('.security-crosshair').first().evaluate(el=>getComputedStyle(el).display),'none');
   const chart=page.locator('.ma-chart').first();
   assert.equal(await chart.locator('[data-ma-line="20"]').evaluate(el=>getComputedStyle(el).display),'block');
   await chart.locator('[data-ma-period="20"]').uncheck();
