@@ -72,7 +72,7 @@ try{
     },{source:html.slice(html.indexOf('  function bindSecurityChart('),html.indexOf('  function heatmapHtml('))+html.slice(start,end)+html.slice(html.indexOf('  function opinionDeadline('),html.indexOf('  function fetchTimeout(')),binding:closeBinding});
     await openOptionalTools(page);await page.getByText('My TEST reason').first().waitFor({timeout:8000}).catch(()=>{
       throw Error(`${width}px stock detail did not render: ${pageErrors.join('; ')||'no browser error'}`)});
-    const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).filter(x=>x.id!=='detailStart').map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
+    const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).flatMap(x=>x.id==='detailExtras'?Array.from(x.children).filter(y=>y.tagName!=='SUMMARY'):x).filter(x=>x.id!=='detailStart').map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
     const position=label=>sections.findIndex(x=>x.includes(label));
     assert.ok(position('현재 상태')<position('내 보유 이유')&&position('내 보유 이유')<position('AI 의견')&&
       position('AI 의견')<position('일부 팔면')&&position('일부 팔면')<position('내 결정 기록')&&
