@@ -22,7 +22,7 @@ const empty=()=>'';
 const ctx=vm.createContext({live,liveError:null,period:'1M',isaNotice:'',
   latestManualRows:()=>[],completeSnapshotPeriod:()=>false,ledgerHeadlineReady:()=>false,
   esc:String,money,signedMoney:money,cls:empty,kstStamp:x=>String(x).slice(0,10),periods:empty,periodLabel:x=>x,
-  reconciliationHomeStatus:empty,assetChart:empty,metric:empty,homeBrowseCard:empty,
+  reconciliationHomeStatus:empty,assetChart:empty,metric:empty,homeBrowseCard:empty,kstDate:()=>"2026-10-01",
   riskOverviewCard:empty,decisionHomeCard:empty,reviewHomeCard:empty,cashFlowAuditCard:empty,annualGoalCard:empty,tradeTargetCard:empty,
   dividendCard:empty,priceAlertCard:empty,upcomingAgenda:empty,dataStatusCard:empty});
 vm.runInContext(source.slice(start,end),ctx);
