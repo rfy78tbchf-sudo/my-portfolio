@@ -140,7 +140,7 @@ function requestedWeightTarget(question:string){
   const all=[...question.matchAll(/(\d{1,3}(?:\.\d+)?)\s*%/g)];
   return all.length===1?Number(all[0][1]):null;
 }
-function priceTrendEvidence(rows:any[],symbol:string,currency:string,rule:any=null){
+function priceTrendEvidence(rows:any[],symbol:string,currency:string,rule:any=null,rationale:string=''){
   const seen=new Set<string>();
   const dated=(Array.isArray(rows)?rows:[]).filter(row=>
     /^\d{4}-\d\d-\d\d$/.test(String(row.price_date||''))&&
@@ -149,6 +149,22 @@ function priceTrendEvidence(rows:any[],symbol:string,currency:string,rule:any=nu
     .sort((a,b)=>String(b.price_date).localeCompare(String(a.price_date))||
       String(b.observed_at||'').localeCompare(String(a.observed_at||'')))
     .filter(row=>{if(seen.has(row.price_date))return false;seen.add(row.price_date);return true});
+  // A reference period is never silently promoted to the owner's rule.
+  const isMA=/이동평균|이평선|정배열|역배열/.test(rationale);
+  const periodText=rationale.match(/(?:\d{1,3}\s*(?:일(?:선)?\s*)?[/·,、\s]+)+\d{1,3}\s*일(?:선)?/);
+  const explicit=periodText?[...new Set((periodText[0].match(/\d+/g)||[]).map(Number))].sort((a,b)=>a-b):null;
+  const periods=explicit&&explicit.length>=2&&explicit.length<=4&&explicit.every(n=>n>=2&&n<=200)?explicit:[20,60,120];
+  const basis=explicit&&periods===explicit?'user_periods':'reference_periods';
+  const sample=dated.slice(0,Math.max(...periods));
+  const invalidInWindow=(Array.isArray(rows)?rows:[]).some(row=>String(row.price_date)>=String(sample[sample.length-1]?.price_date||'')&&(!Number.isFinite(Number(row.close))||Number(row.close)<=0||String(row.currency)!==currency));
+  const compatible=!invalidInWindow&&sample.length===Math.max(...periods)&&sample.every(row=>row.source&&row.source===sample[0]?.source);
+  const averages=compatible?periods.map(n=>({period:n,value:sample.slice(0,n).reduce((sum,row)=>sum+Number(row.close),0)/n})):[];
+  const ma={ready:compatible&&!/EMA|지수\s*(?:이동)?평균/i.test(rationale),basis,periods,averages,
+    order:averages.length&&averages.every((x,i)=>!i||averages[i-1].value>x.value)?'bullish':
+      averages.length&&averages.every((x,i)=>!i||averages[i-1].value<x.value)?'bearish':'mixed',
+    method:'simple_mean_of_stored_closes',available_days:dated.length,
+    reason:/EMA|지수\s*(?:이동)?평균/i.test(rationale)?'EMA_NOT_VERIFIED':compatible?null:'INSUFFICIENT_OR_MIXED_RECORDS',
+    limitation:'저장 종가 기준 단순평균. 거래일 누락·조정주가 여부 미확인. 정배열은 상승 보장이나 자동 매매 기준이 아님.'};
   if(dated.length<21)return {ready:false,reason:'LESS_THAN_21_TRADING_DAYS',available_days:dated.length};
   const window=dated.slice(0,21),sources=[...new Set(window.map(row=>String(row.source||'')))];
   if(sources.length!==1||!sources[0])return {ready:false,reason:'MIXED_PRICE_SOURCES',available_days:dated.length};
@@ -177,7 +193,7 @@ function priceTrendEvidence(rows:any[],symbol:string,currency:string,rule:any=nu
       note:'당시 사건은 지정 날짜의 종가로만 비교. 기준 승인 시점과 사건 날짜는 다름.'};
   }
   return {ready:true,symbol,currency,price_date:latest.price_date,
-    latest_close:Number(latest.close),prior_20_closing_high:high,
+    latest_close:Number(latest.close),moving_averages:isMA?ma:null,prior_20_closing_high:high,
     above_prior_20_closing_high:Number(latest.close)>high,
     volume_vs_prior_20_average:volumeRatio==null?null:Math.round(volumeRatio*100)/100,
     approved_rule:approved,
@@ -232,7 +248,7 @@ function questionContext(context:any,focus:string){
     price_evidence:context.price_evidence?.ready?{
       ...limitObject(context.price_evidence,['ready','symbol','currency','price_date','latest_close',
         'prior_20_closing_high','above_prior_20_closing_high','volume_vs_prior_20_average',
-        'comparison','limitation','approved_rule']),
+        'comparison','limitation','approved_rule','moving_averages']),
       source_label:context.price_evidence.source==='kb_openapi'?'KB 가격 원본':'저장된 가격 원본'
     }:(context.price_evidence||{ready:false,reason:'PRICE_QUERY_UNAVAILABLE'}),
     evidence_scope:{price_comparison_is_user_rule:!!context.price_evidence?.approved_rule,
@@ -283,7 +299,7 @@ function decisionAccountBasis(context:any,metric:any){
     scope_state:metric.account_scope_state,quantity};
 }
 function answerStyle(focus:string,priceOnlyThesis=false){
-  if(focus==='thesis'&&priceOnlyThesis)return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 판단 줄에는 계좌의 유지·축소·유보 중 무엇을 어떤 조건에서 검토할지 의견을 쓰고, 확인하라는 질문만 반복하지 않는다. 이 줄에는 수치나 기업 실적을 쓰지 않는다. 가격·추세 논리는 제공된 가격·거래량·기간과 사용자가 승인한 돌파 기준만으로 검토한다. 기업 공시나 실적의 유무를 돌파의 근거나 반증으로 쓰지 않는다. 당시 돌파 발생 여부, 현재 종가의 참고 고점 대비 상태, 사용자가 승인한 유지 조건을 분리한다. 당시 날짜나 기준이 없으면 과거 사건만 미확인으로 남긴다. 이전 20개 기록 최고 종가는 참고 비교이지 사용자 기준이 아니다. 거래량 배수만으로 돌파 확인을 단정하지 않는다. 선택지는 제공된 정수 수량 비교를 해석하되 목표 비중을 권고라 부르지 않는다. 다음 확인은 당시 돌파의 날짜·짧은 기준, 승인한 유지 조건과 후속 종가 중 필요한 것만 적는다. 실적·가이던스·기업 공시는 사업 논리를 따로 검토할 때만 사용한다. JSON의 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '가격 논리는 기업 공시로 판정하지 않음'으로 둔다. 가격 근거 외의 새로운 사실을 만들지 않는다. 내부 코드나 ISO 시각을 적지 않는다.`;
+  if(focus==='thesis'&&priceOnlyThesis)return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 판단 줄에는 계좌의 유지·축소·유보 중 무엇을 어떤 조건에서 검토할지 의견을 쓰고, 확인하라는 질문만 반복하지 않는다. 이 줄에는 수치나 기업 실적을 쓰지 않는다. 가격·추세 논리는 제공된 가격·거래량·기간과 사용자가 승인한 돌파 기준만으로 검토한다. 기업 공시나 실적의 유무를 돌파의 근거나 반증으로 쓰지 않는다. 당시 돌파 발생 여부, 현재 종가의 참고 고점 대비 상태, 사용자가 승인한 유지 조건을 분리한다. 당시 날짜나 기준이 없으면 과거 사건만 미확인으로 남긴다. 이전 20개 기록 최고 종가는 참고 비교이지 사용자 기준이 아니다. 거래량 배수만으로 돌파 확인을 단정하지 않는다. 선택지는 제공된 정수 수량 비교를 해석하되 목표 비중을 권고라 부르지 않는다. 다음 확인은 당시 돌파의 날짜·짧은 기준, 승인한 유지 조건과 후속 종가 중 필요한 것만 적는다. 실적·가이던스·기업 공시는 사업 논리를 따로 검토할 때만 사용한다. JSON의 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '가격 논리는 기업 공시로 판정하지 않음'으로 둔다. 가격 근거 외의 새로운 사실을 만들지 않는다. 이동평균 논리이면 돌파·고점과 혼동하지 않는다. moving_averages의 서버 계산만 사용하고 basis=reference_periods는 사용자 기간 미지정이다. 정배열 여부를 모델이 새로 판정하거나 지속 상승을 예측하지 않는다. 판단은 사용자가 정한 기간·방식과 유지 조건이 확인되면 유지 검토, 조건이 약해지면 변경 검토처럼 조건부로 쓴다. 다음 확인은 이동평균 기간·단순 또는 지수 방식·다음 종가다. 내부 코드나 ISO 시각을 적지 않는다.`;
   if(focus==='thesis')return `JSON 객체만 답한다. answer_ko는 한국어 네 줄이며 판단:, 근거:, 선택지:, 다음 확인: 순서다. 각 줄은 한 문장 110자 이내. 판단은 사용자 전제를 공식 사실과 계좌 비중에서 분리한 조건부 의견이어야 한다. 근거는 공식 문서에 실제로 있는 사실과 발표일·대상 기간을 짧게 연결하고 반대 해석 또는 미확인 부분을 숨기지 않는다. 비중·평가액은 투자 논리의 증거가 아니다. 선택지는 사업의 적절성과 보유 비중의 적절성을 구분하고 유지와 변경을 가르는 조건을 설명한다. 다음 확인은 실제 실적·사업 지표 또는 사용자가 쓴 기준이어야 한다.\nJSON의 relation은 support, weaken, mixed, unverified 중 하나다. 사용자 논리와 실제 공식 자료의 관계만 판단한다. premise_ko는 사용자 원문에서 확인되는 전제 하나만 짧게 인용한다. source_phrase는 제공된 public_company_evidence.summary에 실제 연속으로 등장하는 한국어 근거 구절을 그대로 5자 이상 복사한다. relation_ko는 그 구절이 전제를 왜 지지하거나 약화하는지 90자 이내로 설명한다. 공식 자료가 없거나 관계가 확인되지 않으면 relation은 unverified, source_phrase는 빈 문자열, relation_ko는 '이번 자료로는 판단할 수 없음'으로 한다. 서로 다른 보유 논리를 만들어내지 않는다.\nprior_user_decision은 실제 저장한 판단이지 매매가 아니다. since_decision.publication_after_decision=false면 자료를 다시 찾았더라도 새 변화라고 말하지 않는다. 이전 판단 때 공개되지 않았던 자료를 당시 알았던 근거로 쓰지 않는다. 가격 기록의 20일 비교는 사용자의 매매 규칙이 아니다. 내부 코드, ISO 시각, 원장 상태, 증거 없는 기업 사실은 적지 않는다.`;
   const headline=focus==='risk'?'가장 큰 위험':focus==='performance'?'기간 성과':
     focus==='realized'?'매도 손익':focus==='thesis'?'보유 논리':'핵심';
@@ -313,7 +329,7 @@ function parseThesisReview(raw:string,evidence:any,context:any){
   if(!answer)return {answer:null,relation:null};
   if(!parsed||!evidence?.summary||!String(context.thesis?.rationale||'').trim())return {answer,relation:null};
   const rationale=String(context.thesis.rationale||'');
-  const priceOnly=/추세|돌파|거래량|이동평균|차트|가격/.test(rationale)&&
+  const priceOnly=/추세|돌파|거래량|이동평균|이평선|정배열|역배열|차트|가격/.test(rationale)&&
     !/매출|이익|실적|사업|수요|성장|제품|고객|현금|라이선스/.test(rationale);
   const unverified={status:'unverified',premise_ko:rationale.slice(0,90),
     interpretation_ko:priceOnly?'가격·거래량 전제는 기업 공시로 직접 검증할 수 없습니다. 가격 기록과 본인이 정한 조건을 비교하세요.':
@@ -334,12 +350,22 @@ function parseThesisReview(raw:string,evidence:any,context:any){
 function verifiedPriceThesis(context:any){
   const rationale=String(context.thesis?.rationale||'');
   const price=context.price_evidence;
-  if(!/추세|돌파|거래량|이동평균|차트|가격/.test(rationale)||!price?.ready)return null;
+  if(!/추세|돌파|거래량|이동평균|이평선|정배열|역배열|차트|가격/.test(rationale)||!price?.ready)return null;
   const date=String(price.price_date).replace(/^(\d{4})-(\d{2})-(\d{2})$/,
     (_:string,y:string,m:string,d:string)=>`${y}. ${Number(m)}. ${Number(d)}.`);
   const amount=(n:number)=>n.toLocaleString('ko-KR',{maximumFractionDigits:2});
   const currency=price.currency==='USD'?'달러':price.currency==='KRW'?'원':String(price.currency);
   const sourceLabel=price.source==='kb_openapi'?'KB 가격 기록':'저장된 가격 기록';
+  if(/이동평균|이평선|정배열|역배열/.test(rationale)){
+    const ma=price.moving_averages;
+    if(!ma?.ready)return ['판단: 이동평균 배열은 이번 자료로 판정하지 못했습니다.',
+      '근거: '+(ma?.reason==='EMA_NOT_VERIFIED'?'지수이동평균을 요청했으나 단순평균으로 대신 판정하지 않습니다.':'같은 출처의 충분한 기간별 종가가 필요합니다.')];
+    const label=ma.periods.join('·'),order=ma.order==='bullish'?'단기부터 큰 정배열 방향':ma.order==='bearish'?'단기부터 작은 역배열 방향':'기간별 평균이 섞인 순서';
+    return ['판단: '+label+'개 종가 단순평균은 '+order+'입니다. '+
+      (ma.basis==='reference_periods'?'내가 뜻한 기간은 미지정이므로 보유 이유 충족 여부는 미확인입니다.':'저장 기록상 비교이며 매매 신호나 지속 상승을 뜻하지 않습니다.'),
+      '근거: '+price.symbol+' '+price.price_date+' 기준 '+ma.averages.map((x:any)=>x.period+'개 평균 '+amount(x.value)+currency).join(' · ')+
+      ' (동일 출처 종가·'+(ma.basis==='reference_periods'?'참고 기간':'원문 지정 기간')+', 거래일 누락·조정 여부 미확인).'];
+  }
   const ratio=price.volume_vs_prior_20_average;
   const userRule=price.approved_rule;
   const judgement=userRule?.event_breakout===true?
@@ -387,28 +413,31 @@ function priceThesisModelSelection(raw:string,context:any){
   const lines=priceThesisModelLines(raw);
   const unrelated=/공시|실적|가이던스|매출|라이선스|고객|회사 발표|기업 자료|사업 지표/;
   const unsafe=/돌파.{0,15}(없었|실패|무너|붕괴|확인됐|확인됨|입증됐|발생했|확인되지 않)|매도.{0,8}(해야|확정)|적정 비중|목표 비중.{0,8}(적정|권고)|(?:가격|거래량|시계열).{0,18}(?:없|부재|제공되지|사용하지 않았)/;
+  const maThesis=/이동평균|이평선|정배열|역배열/.test(String(context.thesis?.rationale||''));
+  const maUnsafe=(line:string)=>maThesis&&(/돌파|고점|\d/.test(line)||/(?:정배열|역배열).{0,10}(?:확인|성립|충족|유지됐|깨졌|아닙|입니다)/.test(line)||/확정|보장/.test(line));
   const opinion=lines['판단']&&lines['판단'].length<=190&&
     /조건|다면|경우|전제|때는|때까지/.test(lines['판단'])&&
     /유보|축소|변경|매도|유지(?:를|할지|한다|하면| 검토)/.test(lines['판단'])&&
     !/\d/.test(lines['판단'])&&!unrelated.test(lines['판단'])&&
-    !unsafe.test(lines['판단'])?lines['판단']:null;
+    !unsafe.test(lines['판단'])&&!maUnsafe(lines['판단'])?lines['판단']:null;
   const choice=lines['선택지']&&lines['선택지'].length<=190&&
-    !unrelated.test(lines['선택지'])&&!unsafe.test(lines['선택지'])?lines['선택지']:null;
+    !unrelated.test(lines['선택지'])&&!unsafe.test(lines['선택지'])&&!maUnsafe(lines['선택지'])?lines['선택지']:null;
   const next=lines['다음 확인']&&lines['다음 확인'].length<=190&&
-    /기준|돌파|종가|가격|거래량|추세/.test(lines['다음 확인'])&&
-    !unrelated.test(lines['다음 확인'])&&!unsafe.test(lines['다음 확인'])?
+    /기준|돌파|종가|가격|거래량|추세|이평선|이동평균|기간/.test(lines['다음 확인'])&&
+    !unrelated.test(lines['다음 확인'])&&!unsafe.test(lines['다음 확인'])&&!maUnsafe(lines['다음 확인'])?
     lines['다음 확인']:null;
   const approved=!!context.price_evidence?.approved_rule;
   return {opinion,choice:choice||'선택지: 내 기준의 유지 여부와 계좌 영향을 확인한 뒤 유지 또는 변경을 판단하세요.',
-    next:next||(approved?
+    next:next||(maThesis?'다음 확인: 보유 이유에 이동평균 기간과 단순·지수 방식을 적고, 그 조건의 이후 종가를 대조하세요.':approved?
     '다음 확인: 승인한 돌파 기준의 이후 종가와 저장한 재검토 조건을 대조하세요.':
     '다음 확인: 당시 돌파 날짜와 내 기준을 확인한 뒤 후속 종가와 비교하세요.'),
-    usedModel:!!(choice||next),usedModelForDecision:!!opinion};
+    usedModel:maThesis?!!opinion:!!(opinion||choice||next),usedModelForDecision:!!opinion};
 }
 function thesisReviewFallback(context:any){
   const rationale=String(context.thesis?.rationale||'');
-  const priceThesis=/추세|돌파|거래량|이동평균|차트|가격/.test(rationale);
+  const priceThesis=/추세|돌파|거래량|이동평균|이평선|정배열|역배열|차트|가격/.test(rationale);
   const observed=verifiedPriceThesis(context);
+  if(observed&&/이동평균|이평선|정배열|역배열/.test(rationale))return observed.join('\n')+'\n선택지: 내가 정한 기간과 방식이 확인되기 전에는 보유 이유의 충족 여부를 유보하고 계좌 영향을 별도로 비교하세요.\n다음 확인: 보유 이유에 이동평균 기간과 단순·지수 방식을 적고 다음 종가로 다시 점검하세요.';
   if(observed)return observed.join('\n')+'\n'+
     (context.price_evidence.above_prior_20_closing_high?
       '선택지: 이 비교를 내 보유 조건으로 정했다면 가격 근거를 더 살피고, 다른 기준이라면 그 조건부터 적으세요.\n':
@@ -581,7 +610,7 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
     selected?scopedRequest(token,'investment_theses?select=id,version,rationale,catalysts,risks,add_condition,trim_condition,exit_condition,notes,updated_at&user_id=eq.'+
       userId+'&security_id='+ids+'&order=updated_at.desc&limit=1'):[],
     thesisReview?scopedRequest(token,'daily_security_prices?select=price_date,close,volume,currency,source,observed_at&security_id=eq.'+
-      selected.id+'&order=price_date.desc,observed_at.desc&limit=80').catch(()=>null):null,
+      selected.id+'&order=price_date.desc,observed_at.desc&limit=240').catch(()=>null):null,
     thesisReview?scopedRequest(token,'investment_decisions?select=created_at,choice,reason,review_condition,thesis_version,official_evidence_snapshot,price_snapshot&security_id=eq.'+
       selected.id+'&order=created_at.desc&limit=1').catch(()=>[]):[],
     thesisReview?scopedRequest(token,'investment_breakout_rules?select=kind,threshold,currency,event_date,created_at&security_id=eq.'+
@@ -632,7 +661,7 @@ async function buildContext(token:string,userId:string,symbol:string,period:stri
     latest_decision:decisions?.[0]||null,
     recent_trades:history,price_evidence:thesisReview?
       (priceRows?priceTrendEvidence(priceRows,selected.symbol,selected.currency,
-        breakoutRules?.[0]?.currency===selected.currency?breakoutRules[0]:null):
+        breakoutRules?.[0]?.currency===selected.currency?breakoutRules[0]:null,String(thesis?.[0]?.rationale||'')):
         {ready:false,reason:'PRICE_QUERY_UNAVAILABLE'}):null,
     thesis:thesis?.[0]?limitObject(thesis[0],
       ['version','rationale','catalysts','risks','add_condition','trim_condition','exit_condition','notes','updated_at']):null,
@@ -771,7 +800,7 @@ Deno.serve(async(req:Request)=>{
     }
     const context=await buildContext(token,userId,symbol,questionPeriod(question),question);
     const rationale=String(context.thesis?.rationale||'');
-    const priceOnlyThesis=focus==='thesis'&&/추세|돌파|거래량|이동평균|차트|가격/.test(rationale)&&
+    const priceOnlyThesis=focus==='thesis'&&/추세|돌파|거래량|이동평균|이평선|정배열|역배열|차트|가격/.test(rationale)&&
       !/매출|이익|실적|사업|수요|성장|제품|고객|현금|라이선스/.test(rationale);
     const publicEvidence=symbol&&['risk','thesis','general'].includes(focus)&&!priceOnlyThesis?
       await publicCompanyEvidence(key,context.selected_security):null;
@@ -864,15 +893,15 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
           ' 감소. '+reviewComparison.position_currency+' 현금 '+won(reduce.cash_increase_krw)+' 상당.\n'+
           (priceOnlyThesis?priceSelection?.next:
             readable?lines[3]:'다음 확인: 당시 돌파 기준과 지금의 유지·재검토 조건을 확인하세요.');
-      }else if(readable&&observed&&!publicEvidence){
-        answer=priceOnlyThesis?[...observed,priceSelection?.choice,priceSelection?.next].join('\n'):
+      }else if(observed&&!publicEvidence&&(readable||priceOnlyThesis&&/이동평균|이평선|정배열|역배열/.test(rationale)&&priceSelection?.opinion)){
+        answer=priceOnlyThesis?[priceSelection?.opinion||observed[0],observed[1],priceSelection?.choice,priceSelection?.next].join('\n'):
           [...observed,...readable.split('\n').slice(2)].join('\n');
       }else if(priceOnlyThesis&&!observed){
         answer=thesisReviewFallback(context);
       }
       responseKind=priceOnlyThesis?
         (observed&&(decisionReview?priceSelection?.usedModelForDecision:
-          readable&&priceSelection?.usedModel)?'model_interpretation_server_metrics':'validated_fallback'):
+          priceSelection?.usedModel&&(readable||/이동평균|이평선|정배열|역배열/.test(rationale)&&priceSelection?.opinion))?'model_interpretation_server_metrics':'validated_fallback'):
         readable?(observed?'model_interpretation_server_metrics':'model'):'validated_fallback';
     }else if(focus==='weight'&&weightScenario?.ok){
       const s=weightScenario.reduce,p=weightScenario.hold,a=weightScenario.price_assumptions;

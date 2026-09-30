@@ -12,6 +12,7 @@ if(!baseline){if(source.includes('performanceReviewContext'))await import('./bui
 if(!baseline&&source.includes('review-home-item'))await import('./build86_review_home.mjs');
 if(!baseline&&source.includes('function allocationData'))await import('./build87_allocation.mjs');
 if(!baseline&&source.includes('function requestDetailOpinion'))await import('./build88_recovery.mjs');
+if(!baseline&&source.includes('detail-thesis-check'))await import('./build89_ma_thesis.mjs');
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
@@ -263,7 +264,9 @@ try{
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
     if(!baseline&&source.includes('function requestDetailOpinion')){
-      await page.evaluate(args=>{window.__uiFixture(...args);window.__uiAiTest('failure');window.__uiDetail('s0')},[live,decision,analysis,comparison]);
+      const maOpinion=source.includes('detail-thesis-check')?{...analysis,price_evidence:{...analysis.price_evidence,moving_averages:{ready:true,periods:[20,60,120],basis:'reference_periods',order:'bullish'}}}:analysis;
+      const maLive=source.includes('detail-thesis-check')?{...live,testThesis:{version:1,rationale:'이평선 정배열'}}:live;
+      await page.evaluate(args=>{window.__uiFixture(...args);window.__uiAiTest('failure');window.__uiDetail('s0')},[maLive,decision,maOpinion,comparison]);
       await page.locator('#detailFreshReview').waitFor();
       await page.evaluate(()=>{document.getElementById('detailReason').value='보유 이유 유지';document.getElementById('detailReview').value='다음 종가 확인';document.getElementById('detailWeightTarget').value=''});
       await page.locator('#detailFreshReview').click();
@@ -280,6 +283,7 @@ try{
       const requestState=await page.evaluate(()=>({ids:window.__aiIds,syncs:window.__syncCount}));
       assert.equal(requestState.ids.length,2);assert.equal(requestState.ids[0],requestState.ids[1]);assert.equal(requestState.syncs,2,'uncertain response retry preserves original snapshot');
       assert.doesNotMatch(await page.locator('#detailWeightResult').innerText(),/갱신하는 중/);
+      if(source.includes('detail-thesis-check')){assert.match(await page.locator('.detail-thesis-check').innerText(),/정배열 방향.*내 기간 미지정/);assert.equal(await page.locator('#detailBreakoutGroup').isVisible(),false)}
       await page.screenshot({path:`${out}/ai-recovered-${width}.png`});
       await page.locator('#detailClose').click();
     }
