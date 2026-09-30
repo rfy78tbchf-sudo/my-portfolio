@@ -175,6 +175,29 @@ try{
     }
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
     if(source.includes('brokerDayCard')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
+    if(source.includes('detailSetupRule')){
+      await page.locator('#detailSetupRule').click();
+      assert.ok(await page.locator('#detailDecisionForm').isVisible());
+      assert.equal(await page.evaluate(()=>document.activeElement.id),'detailRuleType');
+      const original=await page.locator('#detailReview').inputValue();
+      const saved=await page.locator('#detailDecisionSummary').innerText();
+      await page.locator('#detailRuleType').selectOption('ma');
+      assert.equal(await page.locator('#detailReview').inputValue(),original,'select alone does not overwrite draft');
+      await page.locator('#detailApplyRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'20·60·120개 종가 단순평균 정배열 이탈');
+      await page.locator('#detailRuleType').selectOption('price');
+      await page.locator('#detailRuleAmount').fill('-1');await page.locator('#detailApplyRule').click();
+      assert.match(await page.locator('#detailRuleFeedback').innerText(),/0보다 큰/);
+      await page.locator('#detailRuleAmount').fill('250.5');await page.locator('#detailRuleCurrency').selectOption('USD');await page.locator('#detailRuleDirection').selectOption('이하');await page.locator('#detailApplyRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'종가 250.5 달러 이하');
+      await page.locator('#detailRuleType').selectOption('date');await page.locator('#detailRuleDay').fill('2099-12-01');await page.locator('#detailApplyRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'2099-12-01');
+      assert.equal(await page.locator('#detailDecisionSummary').innerText(),saved,'applying a draft must not change saved judgment');
+      await page.locator('#detailRuleType').selectOption('ma');
+      await page.locator('#detailRuleBuilder').scrollIntoViewIfNeeded();
+      await page.screenshot({path:`${out}/condition-builder-${width}.png`});
+      await page.locator('#detailReview').fill(original);
+    }
     await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
     if(source.includes('detailMaRule')){
       const previous=await page.locator('#detailReview').inputValue();
