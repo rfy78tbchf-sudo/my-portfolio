@@ -232,6 +232,16 @@ try{
       if(source.includes('function openReasonEditor')){
         assert.equal(await page.locator('#detailStart #thesisGroup').count(),1);
         await page.locator('#thesisForm button[type=submit]').click();assert.match(await page.locator('#thesisStatus').innerText(),/한 줄/);
+        if(source.includes('thesisMaApply')){
+          await page.locator('[data-thesis-field="rationale"]').fill('이평선 정배열로 보유');
+          await page.locator('#thesisMaSetup > summary').click();
+          await page.locator('#thesisMaPeriods').selectOption('5·20·60');
+          await page.locator('#thesisMaApply').click();
+          assert.equal(await page.locator('[data-thesis-field="rationale"]').inputValue(),'이평선 정배열로 보유\n이평선 기준: 5·20·60일 단순이동평균 정배열');
+          await page.locator('#thesisMaApply').click();
+          assert.match(await page.locator('#thesisMaFeedback').innerText(),/이미 숫자/);
+          await page.screenshot({path:`${out}/thesis-periods-${width}.png`});
+        }
         await page.locator('[data-thesis-field="rationale"]').fill('실적 개선을 기대하며 보유');
         await page.locator('#thesisForm button[type=submit]').click();
         await page.getByRole('button',{name:'AI로 보유 이유 점검',exact:true}).waitFor();
