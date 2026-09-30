@@ -24,7 +24,8 @@ if(process.argv.includes('--browser')){
  try{for(const width of [360,390,430]){
   const page=await browser.newPage({viewport:{width,height:860},isMobile:true,hasTouch:true});
   const data=points.map(x=>({...x,source:'a'}));
-  await page.setContent('<style>'+html.split('<style>')[1].split('</style>')[0]+'</style><main style="padding:14px"><section class="card"><h3>종목 가격</h3>'+scope.securityChart(data,'USD')+'</section><section class="card" style="margin-top:12px"><h3>자산 추이</h3>'+scope.assetChart(data)+'</section><section id="short" class="card">'+short+'</section></main>');
+  await page.setContent('<meta name="viewport" content="width=device-width, initial-scale=1"><style>'+html.split('<style>')[1].split('</style>')[0]+'</style><main style="padding:14px"><section class="card"><h3>종목 가격</h3>'+scope.securityChart(data,'USD')+'</section><section class="card" style="margin-top:12px"><h3>자산 추이</h3>'+scope.assetChart(data)+'</section><section id="short" class="card">'+short+'</section></main>');
+  assert.equal(await page.evaluate(()=>innerWidth),width);
   const chart=page.locator('.ma-chart').first();
   assert.equal(await chart.locator('[data-ma-line="20"]').evaluate(el=>getComputedStyle(el).display),'block');
   await chart.locator('[data-ma-period="20"]').uncheck();
