@@ -164,6 +164,11 @@ try{
     await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
     await page.screenshot({path:`${out}/detail-${width}.png`});
+    if(source.includes('detail-price-chart')){
+      assert.equal(await page.locator('#detailBody > :first-child').getAttribute('class'),'card detail-price-chart');
+      assert.equal(await page.locator('.detail-price-chart').evaluate(el=>!!el.closest('details:not([open])')),false);
+      assert.equal(await page.locator('.detail-price-chart .security-chart-hit').count(),1);
+    }
     if(source.includes("startPanel.id='detailStart'")){
       if(width===390){await page.locator('.detail-usage').evaluate(x=>x.open=true);await page.screenshot({path:`${out}/detail-guide-${width}.png`});await page.locator('.detail-usage').evaluate(x=>x.open=false)}
       await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionSummary');

@@ -81,7 +81,7 @@ try{
     assert.ok(await page.locator('#detailModal').evaluate(node=>node.classList.contains('hidden')),
       `${width}px: tapping the actual X binding must close the detail`);
     await page.evaluate(()=>window.openTestDetail('held'));
-    await page.getByText('가격 차트와 기술지표').click();
+    await page.getByText('기술지표와 평가 기준').click();
     assert.ok(await page.getByText('추가 조회 실패').isVisible());
     assert.equal(await page.locator('#thesisAnalyze').isVisible(),false,
       'the secondary AI paths stay folded away from the main decision flow');
