@@ -26,7 +26,7 @@ if(process.argv.includes('--browser')){
   const page=await browser.newPage({viewport:{width,height:860},isMobile:true,hasTouch:true});
   const data=points.map(x=>({...x,source:'a'}));
   await page.setContent('<meta name="viewport" content="width=device-width, initial-scale=1"><style>'+html.split('<style>')[1].split('</style>')[0]+'</style><main style="padding:14px"><section class="card"><h3>종목 가격</h3>'+scope.securityChart(data,'USD')+'</section><section class="card" style="margin-top:12px"><h3>다른 종목</h3>'+scope.securityChart(data,'USD')+'</section><section id="asset" class="card"><h3>자산 추이</h3>'+scope.assetChart(data)+'</section><section id="short" class="card">'+short+'</section></main>');
-  await page.addScriptTag({content:scope.price.toString()+';'+scope.bindSecurityChart.toString()});
+  await page.addScriptTag({content:scope.price.toString()+';'+scope.chartMovingAverages.toString()+';'+scope.chartMaLines.toString()+';'+scope.bindSecurityChart.toString()});
   await page.evaluate(data=>bindSecurityChart(document.querySelector('.security-price-interactive'),data,'USD'),data);
   assert.equal(await page.evaluate(()=>innerWidth),width);
   assert.equal(await page.locator('#asset [data-ma-period]').count(),0);
@@ -51,6 +51,33 @@ if(process.argv.includes('--browser')){
   assert.equal(await page.locator('.ma-chart').nth(1).locator('[data-ma-period="20"]').isChecked(),true,'independent chart controls');
   assert.equal(await page.locator('#short input:disabled').count(),4);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal overflow');
+  const root=page.locator('.security-price-interactive').first(),latest=root.locator('.security-latest-price');
+  const latestText=await latest.innerText();assert.match(latestText,/239 USD/);
+  await root.locator('[data-chart-zoom="in"]').click();
+  assert.ok(Number(await root.getAttribute('data-chart-count'))<140);
+  assert.equal(await latest.innerText(),latestText,'latest close persists while zooming');
+  const count=Number(await root.getAttribute('data-chart-count'));
+  await root.locator('[data-chart-pan]').focus();await page.keyboard.press('Home');
+  assert.equal(await root.getAttribute('data-chart-start'),'0');
+  assert.equal(await latest.innerText(),latestText,'latest close persists outside visible dates');
+  const plotted=await root.locator('[data-ma-line="20"] polyline').getAttribute('points');
+  assert.equal(plotted.split(' ').length,count-19,'MA uses full history before cropping');
+  await root.locator('[data-chart-zoom="reset"]').click();
+  assert.equal(await root.getAttribute('data-chart-count'),'140');
+  // Use real browser touch input for pinch and two-finger translation.
+  const cdp=await page.context().newCDPSession(page),touchBox=await hit.boundingBox();
+  const cy=touchBox.y+touchBox.height/2,cx=touchBox.x+touchBox.width/2;
+  const touch=(x,id)=>({x,y:cy,id,radiusX:2,radiusY:2,force:1});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[touch(cx-25,1),touch(cx+25,2)]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[touch(cx-65,1),touch(cx+65,2)]});
+  const pinchCount=Number(await root.getAttribute('data-chart-count'));assert.ok(pinchCount<100,'two-finger pinch zooms chart');
+  const pinchStart=Number(await root.getAttribute('data-chart-start'));
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[touch(cx-40,1),touch(cx+90,2)]});
+  assert.ok(Number(await root.getAttribute('data-chart-start'))<pinchStart,'two fingers pan visible range');
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  assert.equal(await latest.innerText(),latestText);
+  assert.equal(await chart.locator('[data-ma-period="120"]').isChecked(),true,'zoom keeps MA selection');
+  await cdp.detach();
   await page.screenshot({path:`mobile-artifacts/build90/ma-${width}.png`,fullPage:true});
   await page.close();
  }}finally{await browser.close()}
