@@ -417,8 +417,8 @@ function priceThesisModelSelection(raw:string,context:any){
   const maUnsafe=(line:string)=>maThesis&&(/돌파|고점|\d/.test(line)||/(?:정배열|역배열).{0,10}(?:확인|성립|충족|유지됐|깨졌|아닙|입니다)/.test(line)||/확정|보장/.test(line));
   const opinion=lines['판단']&&lines['판단'].length<=190&&
     /조건|다면|경우|전제|때는|때까지/.test(lines['판단'])&&
-    /유보|축소|변경|매도|유지(?:를|할지|한다|하면| 검토)/.test(lines['판단'])&&
-    !/\d/.test(lines['판단'])&&!unrelated.test(lines['판단'])&&
+    /유보|축소|변경|매도|(?:유지|보유)(?:를|할지|한다|하면| 검토|하고|하는|하되|할 수|하세요)/.test(lines['판단'])&&
+    !/\d|반드시|무조건|보장|해야\s*(?:합니다|한다)/.test(lines['판단'])&&!unrelated.test(lines['판단'])&&
     !unsafe.test(lines['판단'])&&!maUnsafe(lines['판단'])?lines['판단']:null;
   const choice=lines['선택지']&&lines['선택지'].length<=190&&
     !unrelated.test(lines['선택지'])&&!unsafe.test(lines['선택지'])&&!maUnsafe(lines['선택지'])?lines['선택지']:null;
@@ -848,7 +848,7 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       await finishAnalysis(token,requestId,'model_failed',null,null,failure.code);
       return respond(req,{...failure,request_id:requestId},502)}
     const result=await openai.json();
-    const modelAnswer=String(result.output_text||result.output?.flatMap((o:any)=>o.content||[])
+    let modelAnswer=String(result.output_text||result.output?.flatMap((o:any)=>o.content||[])
       .filter((c:any)=>c.type==='output_text').map((c:any)=>c.text).join('\n')||'').trim();
     if(result.status==='incomplete'||!modelAnswer){
       const exhausted=result.incomplete_details?.reason==='max_output_tokens';
@@ -862,6 +862,19 @@ const instruction=`당신은 한국어 개인 투자 분석가다. 서버에서 
       return respond(req,{ok:false,code,request_id:requestId,
         message:refused?'이 요청에는 AI 답변을 제공할 수 없습니다. 질문을 바꿔 주세요.':
           'AI가 답변을 끝내지 못했습니다. 다시 누르면 새 요청으로 시도합니다.'},502)}
+    // One bounded repair request for rejected price opinions; never relabel server copy as AI.
+    if(priceOnlyThesis&&!priceThesisModelSelection(modelAnswer,context).usedModelForDecision){
+      try{
+        const repair=await fetch('https://api.openai.com/v1/responses',{method:'POST',
+          headers:{'content-type':'application/json','authorization':'Bearer '+key},
+          body:JSON.stringify({model:MODEL,instructions:instruction+'\n추가 출력 제약: 판단 줄은 숫자 없이 조건부 유지·변경·유보 의견 한 문장으로 작성한다. 기준이 확인되면 또는 조건이 약해진 경우처럼 조건을 명시한다. 현재 배열·과거 돌파 사실을 새로 단정하지 않는다. 판단:, 근거:, 선택지:, 다음 확인: 네 줄을 answer_ko에 넣는다.',
+            input:'투자자 질문: '+question+'\n확인된 자료(JSON): '+JSON.stringify(relevant),
+            ...(MODEL.startsWith('gpt-5')?{reasoning:{effort:'low'}}:{}),max_output_tokens:1600,store:false}),signal:AbortSignal.timeout(12000)});
+        if(repair.ok){const repaired=await repair.json();const candidate=String(repaired.output_text||repaired.output?.flatMap((o:any)=>o.content||[]).filter((c:any)=>c.type==='output_text').map((c:any)=>c.text).join('\n')||'');
+          if(repaired.status!=='incomplete'&&priceThesisModelSelection(candidate,context).usedModelForDecision)modelAnswer=candidate;
+        }
+      }catch{/* Retain a truthful, validated fallback when the repair cannot finish. */}
+    }
     let answer=modelAnswer,responseKind='model',thesisRelation:any=null;
     // In a risk answer only the server formats figures. Reject model arithmetic,
     // category changes (volatility/forecast), and unverified account scope claims.

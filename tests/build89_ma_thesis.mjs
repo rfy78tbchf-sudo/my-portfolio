@@ -3,10 +3,10 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {stripTypeScriptTypes} from 'node:module';
 const source=fs.readFileSync(new URL('../supabase/functions/investment-assistant/index.ts',import.meta.url),'utf8');
-let handler,saved=null,prompt='',webSearches=0;
+let handler,saved=null,prompt='',webSearches=0,calls=0,rejectCount=0;
 const scope=vm.createContext({Request,Response,Headers,URL,Date,console,crypto,AbortSignal,
  Deno:{env:{get:()=>''},serve:fn=>handler=fn},
- fetch:async(url,options)=>{assert.equal(url,'https://api.openai.com/v1/responses');prompt=JSON.parse(options.body).input;
+ fetch:async(url,options)=>{assert.equal(url,'https://api.openai.com/v1/responses');prompt=JSON.parse(options.body).input;calls++;if(calls<=rejectCount)return new Response(JSON.stringify({status:'completed',output_text:'판단: 정배열입니다. 반드시 보유해야 합니다.'}));
  return new Response(JSON.stringify({status:'completed',id:'fixture-provider',output_text:JSON.stringify({answer_ko:'판단: 내가 정한 기간과 유지 조건이 확인되기 전에는 변경 판단을 유보하고, 조건이 약해진 경우 축소를 검토하세요.\n근거: 서버의 이동평균 참고 비교는 사용자의 기간 설정과 구분해야 합니다.\n선택지: 같은 가격 조건에서 유지와 축소의 영향을 함께 비교하세요.\n다음 확인: 이동평균 기간과 방식을 적고 다음 종가를 대조하세요.',relation:'unverified',source_phrase:''})}));}
 });
 vm.runInContext(stripTypeScriptTypes(source.slice(source.indexOf('\n')+1)),scope);
@@ -42,3 +42,16 @@ assert.ok(prompt.includes('moving_averages'));assert.match(result.answer,/이동
 assert.equal(saved.answer,result.answer);assert.equal(saved.price_evidence.moving_averages.basis,'reference_periods');
 if(process.env.MA_PRICE_FIXTURE)console.log(JSON.stringify({price_date:context.price_evidence.price_date,moving_averages:context.price_evidence.moving_averages,answer:result.answer},null,2));
 console.log('Build89: MA periods, source sufficiency, EMA distinction, exact server arithmetic, thesis routing and answer persistence passed (provider simulated)');
+
+for(const rejected of [1,2]){
+ calls=0;rejectCount=rejected;saved=null;
+ const retryResponse=await handler(new Request('https://fixture.invalid',{method:'POST',headers:{authorization:'Bearer fixture'},body:JSON.stringify({symbol:'MRNA',question:'이 종목의 저장된 투자 논리를 검토해줘',request_id:crypto.randomUUID()})}));
+ const retryResult=await retryResponse.json();assert.equal(retryResponse.status,200,JSON.stringify(retryResult));
+ assert.equal(calls,2,'only one repair request');
+ assert.equal(retryResult.response_kind,rejected===1?'model_interpretation_server_metrics':'validated_fallback');
+ assert.equal(saved.answer,retryResult.answer);assert.doesNotMatch(retryResult.answer,/반드시|보유해야/);
+}
+const selection=vm.runInContext('priceThesisModelSelection',scope);
+assert.ok(selection('판단: 내 조건이 확인된 경우 보유할 수 있지만, 조건이 약해지면 다시 판단하세요.',context).opinion);
+assert.equal(selection('판단: 내 조건이 확인된 경우 반드시 보유해야 합니다.',context).opinion,null);
+console.log('Build95: rejected output repairs once; repeated rejection stays fallback; repaired answer is persisted (provider simulated)');
