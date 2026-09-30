@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const scope=vm.createContext({money:String,price:String,esc:String});
-vm.runInContext(html.slice(html.indexOf('  function chartMovingAverages('),html.indexOf('  function heatmapHtml(')),scope);
+vm.runInContext(html.slice(html.indexOf('  function price('),html.indexOf('\n',html.indexOf('  function price(')))+'\n'+html.slice(html.indexOf('  function chartMovingAverages('),html.indexOf('  function heatmapHtml(')),scope);
 const values=Array.from({length:140},(_,i)=>100+i);
 const ma=scope.chartMovingAverages(values);
 for(const s of ma){assert.equal(s.values[s.period-2],null);assert.equal(s.values[s.period-1],100+(s.period-1)/2);assert.equal(s.values[139],239-(s.period-1)/2)}
@@ -13,7 +13,7 @@ for(const bad of [null,NaN,Infinity,'']){const data=values.slice();data[50]=bad;
 const points=values.map((close,i)=>({date:new Date(Date.UTC(2026,0,i+1)).toISOString().slice(0,10),close,total_assets:close*100,source:i<70?'a':'b',currency:'USD'}));
 assert.equal(scope.chartMovingAverages(values,points)[0].values[73],null);
 assert.equal(scope.chartMovingAverages(values,points)[0].values[74],172);
-for(const rendered of [scope.securityChart(points,'USD')]){assert.match(rendered,/data-ma-period="120"/);assert.match(rendered,/data-ma-line="20"/);assert.doesNotMatch(rendered,/NaN|Infinity/)}
+for(const rendered of [scope.securityChart(points,'USD')]){assert.match(rendered,/data-ma-period="120"/);assert.match(rendered,/data-ma-line="20"/);assert.doesNotMatch(rendered,/NaN|Infinity|USD USD|KRW KRW/)}
 assert.doesNotMatch(scope.assetChart(points),/data-ma-period/);assert.doesNotMatch(scope.chart(values),/data-ma-period/);
 const short=scope.securityChart(points.slice(0,4),'USD');assert.equal((short.match(/ disabled/g)||[]).length,4);
 const flat=scope.securityChart(points.map(x=>({...x,close:100,source:'a'})),'USD');assert.doesNotMatch(flat,/NaN|Infinity/);
@@ -26,7 +26,7 @@ if(process.argv.includes('--browser')){
   const page=await browser.newPage({viewport:{width,height:860},isMobile:true,hasTouch:true});
   const data=points.map(x=>({...x,source:'a'}));
   await page.setContent('<meta name="viewport" content="width=device-width, initial-scale=1"><style>'+html.split('<style>')[1].split('</style>')[0]+'</style><main style="padding:14px"><section class="card"><h3>종목 가격</h3>'+scope.securityChart(data,'USD')+'</section><section class="card" style="margin-top:12px"><h3>다른 종목</h3>'+scope.securityChart(data,'USD')+'</section><section id="asset" class="card"><h3>자산 추이</h3>'+scope.assetChart(data)+'</section><section id="short" class="card">'+short+'</section></main>');
-  await page.addScriptTag({content:'var price=String;'+scope.bindSecurityChart.toString()});
+  await page.addScriptTag({content:scope.price.toString()+';'+scope.bindSecurityChart.toString()});
   await page.evaluate(data=>bindSecurityChart(document.querySelector('.security-price-interactive'),data,'USD'),data);
   assert.equal(await page.evaluate(()=>innerWidth),width);
   assert.equal(await page.locator('#asset [data-ma-period]').count(),0);
