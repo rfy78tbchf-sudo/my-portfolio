@@ -46,6 +46,7 @@ jobs:
       - run: node tests/build65_decision_completion.mjs
       - run: node tests/build67_ui_visual.mjs
       - run: node tests/build90_chart_ma.mjs --browser
+      - run: node tests/build93_review_conditions.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

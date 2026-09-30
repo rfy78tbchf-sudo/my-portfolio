@@ -176,6 +176,13 @@ try{
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
     if(source.includes('brokerDayCard')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
     await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
+    if(source.includes('detailMaRule')){
+      const previous=await page.locator('#detailReview').inputValue();
+      await page.getByText('확인 가능한 조건 예시',{exact:true}).click();
+      await page.locator('#detailMaRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'20·60·120개 종가 단순평균 정배열 이탈');
+      await page.locator('#detailReview').fill(previous);
+    }
     await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
     if(source.includes("startPanel.id='detailStart'")&&width===390){
       await page.setViewportSize({width,height:844});
