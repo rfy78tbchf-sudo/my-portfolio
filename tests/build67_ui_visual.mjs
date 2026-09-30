@@ -9,7 +9,8 @@ async function openOptionalTools(page){
   await page.screenshot({path:'mobile-artifacts/simple-detail-'+page.viewportSize().width+'.png'});
   const prices=page.locator('.holding-unit-prices');
   if(await prices.count()){
-   assert.doesNotMatch(await prices.locator('strong').allTextContents().then(x=>x.join(' ')),/USD|JPY|HKD/);
+   const labels=await prices.locator(':scope > .row > span').allTextContents();
+   if(labels.includes('환산 평균 매입가'))assert.ok((await prices.locator('strong').allTextContents()).every(x=>/USD|JPY|HKD|확인 중/.test(x)));
    await page.locator('.detail-overview').screenshot({path:'mobile-artifacts/holding-unit-prices-'+page.viewportSize().width+'.png'});
   }
   await group.locator(':scope > summary').click();
