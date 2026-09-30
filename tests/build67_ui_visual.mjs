@@ -7,6 +7,11 @@ async function openOptionalTools(page){
   if(await page.locator('.detail-price-chart').count())assert.ok(await page.locator('.detail-price-chart').isVisible());
   assert.equal(await page.locator('#detailFreshReview').isVisible(),false,'AI input is optional on initial screen');
   await page.screenshot({path:'mobile-artifacts/simple-detail-'+page.viewportSize().width+'.png'});
+  const prices=page.locator('.holding-unit-prices');
+  if(await prices.count()){
+   assert.doesNotMatch(await prices.locator('strong').allTextContents().then(x=>x.join(' ')),/USD|JPY|HKD/);
+   await page.locator('.detail-overview').screenshot({path:'mobile-artifacts/holding-unit-prices-'+page.viewportSize().width+'.png'});
+  }
   await group.locator(':scope > summary').click();
  }
 }
@@ -48,7 +53,7 @@ const live={accounts:[{id:'broker',name:'KB 종합위탁',mode:'live',provider:'
   performanceGate:{ok:true,state:'estimated',partial:false,reliable_start:'2026-08-29',observed_through:'2026-09-29',investment_pnl:326840,return_estimate_pct:.52,opening_assets:62810330,closing_assets:63842170,external_flow:705000,as_of:now},
   homeChart:{items:[{date:'2026-08-29',total_assets:62810330},{date:'2026-09-04',total_assets:63221000},{date:'2026-09-10',total_assets:61986500},{date:'2026-09-16',total_assets:62178000},{date:'2026-09-22',total_assets:63576900},{date:'2026-09-29',total_assets:63842170}]},
   securityPerformance:{items:[{symbol:'LLY',name:'일라이 릴리',confirmed_contribution:243200,realized_pnl:231200,dividend_net:12000},{symbol:'META',name:'메타 플랫폼스',confirmed_contribution:86000,realized_pnl:76000,dividend_net:10000},{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',confirmed_contribution:-72000,realized_pnl:-72000,dividend_net:0}]}}
-for(const [i,[symbol,name,quantity,value,pnl]] of names.entries()){const id='s'+i,currency=i===6?'KRW':'USD',account_id=i===6?'isa':'broker';live.securityMap[id]={id,symbol,name,currency,market:i===6?'KRX':'NAS'};live.securities.push(live.securityMap[id]);live.holdings.push({security_id:id,account_id,quantity,as_of:now,currency,market_value:value,fx_rate_to_base:1});live.holdingBasis.push({security_id:id,account_id,valuation_krw:value,cost_krw:value-pnl,pnl_krw:pnl,quantity,as_of:now})}
+for(const [i,[symbol,name,quantity,value,pnl]] of names.entries()){const id='s'+i,currency=i===6?'KRW':'USD',account_id=i===6?'isa':'broker';live.securityMap[id]={id,symbol,name,currency,market:i===6?'KRX':'NAS'};live.securities.push(live.securityMap[id]);live.holdings.push({security_id:id,account_id,quantity,as_of:now,currency,market_value:value,fx_rate_to_base:1});live.holdingBasis.push({security_id:id,account_id,valuation_krw:value,cost_krw:value-pnl,pnl_krw:pnl,average_unit_krw:(value-pnl)/quantity,valued_unit_krw:value/quantity,quantity,as_of:now})}
 const comparison={target_pct:10,price_assumptions:{down_pct:-10,up_pct:10},observation_at:now,denominator:{value:63842170},assets_before_krw:63842170,position_currency:'USD',hold:{quantity:32,value_krw:12472000,weight_pct:19.53,down_impact_krw:-1247200,up_impact_krw:1247200},reduce:{mode:'integer_shares',shares_to_sell:16,quantity_reference:16,value_krw:6236000,weight_pct:9.77,cash_increase_krw:6236000,down_impact_krw:-623600,up_impact_krw:623600,cash_native_estimate:4570}};
 const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_reduction',reason:'눌림목을 살펴보고 보유 전제가 약해지면 축소 검토',review_condition:'눌림목 모니터링',analysis_id:'isolated-ui-analysis',created_at:now,basis_at:now,thesis_version:1,price_snapshot:{price_date:'2026-09-28',close:285,currency:'USD'},account_snapshot:{observation_at:now},scenario_snapshot:{choice_comparison:comparison}};
 const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
