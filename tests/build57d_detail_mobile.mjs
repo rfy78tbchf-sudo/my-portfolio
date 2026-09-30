@@ -59,7 +59,7 @@ try{
       (0,eval)(fake+source+'\nwindow.openTestDetail=openSecurityDetail');
       (0,eval)(binding);
       window.openTestDetail('held');
-    },{source:html.slice(start,end)+html.slice(html.indexOf('  function opinionDeadline('),html.indexOf('  function fetchTimeout(')),binding:closeBinding});
+    },{source:html.slice(html.indexOf('  function bindSecurityChart('),html.indexOf('  function heatmapHtml('))+html.slice(start,end)+html.slice(html.indexOf('  function opinionDeadline('),html.indexOf('  function fetchTimeout(')),binding:closeBinding});
     await page.getByText('My TEST reason').first().waitFor({timeout:8000}).catch(()=>{
       throw Error(`${width}px stock detail did not render: ${pageErrors.join('; ')||'no browser error'}`)});
     const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).filter(x=>x.id!=='detailStart').map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
