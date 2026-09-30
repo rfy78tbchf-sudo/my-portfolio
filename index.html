@@ -372,7 +372,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
     var hit=root.querySelector('.security-chart-hit');if(!hit||!points||points.length<2)return;
     root=hit.closest('.security-price-interactive');
     var svg=hit.ownerSVGElement,cross=root.querySelector('.security-crosshair'),vertical=root.querySelector('[data-price-vertical]'),horizontal=root.querySelector('[data-price-horizontal]'),dot=root.querySelector('[data-price-dot]'),selected=points.length-1;
-    var vals=points.map(function(x){return Number(x.close||0)}),ma=chartMovingAverages(points.map(function(x){return x.close}),points),n=points.length,start=0,count=n,min=0,range=1,pointers=new Map(),pinch=null,blocked=false;
+    var vals=points.map(function(x){return Number(x.close||0)}),ma=chartMovingAverages(points.map(function(x){return x.close}),points),n=points.length,start=0,count=n,min=0,range=1,pointers=new Map(),pinch=null,touchPinch=null,blocked=false;
     var pan=root.querySelector('[data-chart-pan]'),minimum=Math.min(10,n),line=root.querySelector('.security-price-line'),maLayer=root.querySelector('.security-ma-lines');
     function ratio(clientX){var r=svg.getBoundingClientRect();return Math.max(0,Math.min(1,((clientX-r.left)/r.width*360-10)/340))}
     function y(value){return 190-(value-min)/range*155}
@@ -402,11 +402,16 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       if(pointers.size===2){var p=pair(),center=(p[0].x+p[1].x)/2;pinch={distance:Math.max(1,Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)),count:count,anchor:start+ratio(center)*(count-1)};blocked=true}
       else if(pointers.size===1){blocked=false;select(Math.round(start+ratio(e.clientX)*(count-1)))}
     };
-    hit.onpointermove=function(e){if(pointers.has(e.pointerId))pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    hit.onpointermove=function(e){if(touchPinch&&e.pointerType==='touch')return;if(pointers.has(e.pointerId))pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
       if(pointers.size>=2&&pinch){var p=pair(),distance=Math.max(1,Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)),next=Math.max(minimum,Math.min(n,Math.round(pinch.count*pinch.distance/distance))),center=(p[0].x+p[1].x)/2;windowAt(next,pinch.anchor-ratio(center)*(next-1))}
       else if(!blocked&&(pointers.size===1||e.pointerType==='mouse'))select(Math.round(start+ratio(e.clientX)*(count-1)));
     };
     hit.onpointerup=hit.onpointercancel=hit.onlostpointercapture=function(e){pointers.delete(e.pointerId);if(pointers.size<2)pinch=null;if(!pointers.size)blocked=false};
+    // Touch events provide both fingers in one snapshot, avoiding intermediate pointer positions.
+    hit.addEventListener('touchstart',function(e){if(e.touches.length!==2)return;var a=e.touches[0],b=e.touches[1];touchPinch={distance:Math.max(1,Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)),count:count,anchor:start+ratio((a.clientX+b.clientX)/2)*(count-1)};blocked=true;e.preventDefault()},{passive:false});
+    hit.addEventListener('touchmove',function(e){if(!touchPinch||e.touches.length!==2)return;e.preventDefault();var a=e.touches[0],b=e.touches[1],distance=Math.max(1,Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)),next=Math.max(minimum,Math.min(n,Math.round(touchPinch.count*touchPinch.distance/distance)));windowAt(next,touchPinch.anchor-ratio((a.clientX+b.clientX)/2)*(next-1))},{passive:false});
+    function endTouch(e){if(e.touches.length<2)touchPinch=null;blocked=e.touches.length>0}
+    hit.addEventListener('touchend',endTouch);hit.addEventListener('touchcancel',endTouch);
     hit.onkeydown=function(e){var next=e.key==='ArrowLeft'?selected-1:e.key==='ArrowRight'?selected+1:e.key==='Home'?start:e.key==='End'?start+count-1:null;if(next!==null){e.preventDefault();select(next)}};
     hit.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();zoom(e.deltaY>0?1.2:.8,ratio(e.clientX))},{passive:false});
     draw();cross.classList.add('hidden');

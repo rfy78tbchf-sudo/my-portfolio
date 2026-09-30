@@ -74,6 +74,7 @@ if(process.argv.includes('--browser')){
   const pinchCount=Number(await root.getAttribute('data-chart-count'));assert.ok(pinchCount<100,'two-finger pinch zooms chart');
   const pinchStart=Number(await root.getAttribute('data-chart-start'));
   await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[touch(cx-40,1),touch(cx+90,2)]});
+  console.log('pinch pan state',width,pinchStart,await root.getAttribute('data-chart-start'),await root.getAttribute('data-chart-count'));
   await page.waitForFunction(start=>{const el=document.querySelector('.security-price-interactive');return Number(el.dataset.chartCount)===54&&Number(el.dataset.chartStart)<start},pinchStart);
   assert.ok(Number(await root.getAttribute('data-chart-start'))<pinchStart,'two fingers pan visible range');
   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
