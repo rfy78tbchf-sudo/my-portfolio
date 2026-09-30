@@ -1,3 +1,4 @@
+import './build104_native_prices.mjs';
 import './build102_home_today.mjs';
 import './build98_holding_prices.mjs';
 import assert from 'node:assert/strict';
@@ -56,6 +57,7 @@ const live={accounts:[{id:'broker',name:'KB 종합위탁',mode:'live',provider:'
   homeChart:{items:[{date:'2026-08-29',total_assets:62810330},{date:'2026-09-04',total_assets:63221000},{date:'2026-09-10',total_assets:61986500},{date:'2026-09-16',total_assets:62178000},{date:'2026-09-22',total_assets:63576900},{date:'2026-09-29',total_assets:63842170}]},
   securityPerformance:{items:[{symbol:'LLY',name:'일라이 릴리',confirmed_contribution:243200,realized_pnl:231200,dividend_net:12000},{symbol:'META',name:'메타 플랫폼스',confirmed_contribution:86000,realized_pnl:76000,dividend_net:10000},{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',confirmed_contribution:-72000,realized_pnl:-72000,dividend_net:0}]}}
 for(const [i,[symbol,name,quantity,value,pnl]] of names.entries()){const id='s'+i,currency=i===6?'KRW':'USD',account_id=i===6?'isa':'broker';live.securityMap[id]={id,symbol,name,currency,market:i===6?'KRX':'NAS'};live.securities.push(live.securityMap[id]);live.holdings.push({security_id:id,account_id,quantity,as_of:now,currency,market_value:value,fx_rate_to_base:1});live.holdingBasis.push({security_id:id,account_id,valuation_krw:value,cost_krw:value-pnl,pnl_krw:pnl,average_unit_krw:(value-pnl)/quantity,valued_unit_krw:value/quantity,quantity,as_of:now})}
+live.holdings[0].native_prices={source:'KB_SPQM2226_NATIVE',currency:'USD',quantity:live.holdings[0].quantity,average_price:311.2343,market_price:286.58,observed_at:now};
 const today=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Seoul'});
 live.todayGate={ok:true,state:'estimated',partial:false,observed_through:today,investment_pnl:326840};
 live.todayStocks={ok:true,period:'오늘',period_start:today,period_end:today,basis_at:now,complete:false,items:[{security_id:'s0',symbol:'ARM',name:'에이알엠 홀딩스(ADR)',pnl_krw:220000},{security_id:'s1',symbol:'RXRX',name:'리커전 파머슈티컬스',pnl_krw:-80000}]};

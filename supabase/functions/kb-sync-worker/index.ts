@@ -98,9 +98,10 @@ function kbBusinessError(data: any) {
     processMessage: h?.processMessage || null,
   };
 }
-async function callTr(appKey: string, token: string, path: string, dataBody: Record<string, unknown>) {
+async function callTr(appKey: string, token: string, path: string, dataBody: Record<string, unknown>, signal?: AbortSignal) {
   const r = await fetch(KB_BASE + path, {
     method: "POST",
+    signal,
     headers: {
       "content-type": "application/json",
       accept: "application/json",
@@ -259,10 +260,52 @@ async function previewUser(userId:string) {
     overseas:previewOne("SPQM2226",overseasRaw,["Record1","Record2"]),
   };
 }
+async function fetchNativeBalance(appKey:string,token:string) {
+  return await callTr(appKey,token,"/api/v1/spqm2226",{
+    std_crncy_f:"1",exch_r_aplc_f:"2",fee_clsf:"0",
+    cn_f:"",nxt_key:"",mktpr_aplc_clsf:""
+  },AbortSignal.timeout(12000));
+}
+async function inspectNativePrices(userId:string) {
+  const {appKey,token,overseasRaw}=await fetchCurrent(userId);
+  const nativeRaw=await fetchNativeBalance(appKey,token);
+  const fields=["is_cd","mkt_clsf","crncy_clsf_nm","frgn_hld_q_p6",
+    "byng_avr_prc_p4","now_prc_p4","byng_amt","krw_val_amt","std_exch_r"];
+  const select=(raw:any)=>(raw?.dataBody?.Record2||[]).map((r:any)=>
+    Object.fromEntries(fields.filter(k=>r[k]!==undefined).map(k=>[k,r[k]])));
+  return {krw:select(overseasRaw),native:select(nativeRaw)};
+}
+// Native unit prices are display evidence only. Keep the established KRW
+// snapshot, totals, FX and accounting fields sourced from the original request.
+function attachNativePrices(holdings:any[],nativeRaw:any,observedAt:string) {
+  const rows=Array.isArray(nativeRaw?.dataBody?.Record2)?nativeRaw.dataBody.Record2:[];
+  const positive=(v:any)=>v!=null&&String(v).trim()!==""&&Number.isFinite(Number(v))&&Number(v)>0;
+  const key=(r:any)=>[r.is_cd,r.mkt_clsf,r.crncy_clsf_nm].map(x=>String(x||"").trim().toUpperCase()).join("|");
+  return holdings.map(h=>{
+    const original=h.provider_payload||{},matches=rows.filter((r:any)=>key(r)===key(original));
+    if(matches.length!==1||holdings.filter(x=>key(x.provider_payload||{})===key(original)).length!==1)return h;
+    const r=matches[0],cur=String(r.crncy_clsf_nm||"").trim().toUpperCase();
+    const qty=Number(r.frgn_hld_q_p6),avg=Number(r.byng_avr_prc_p4),quote=Number(r.now_prc_p4),cost=Number(r.byng_amt);
+    if(!/^(USD|JPY|HKD|CNY|CNH|EUR|GBP)$/.test(cur)||cur!==h.currency||
+      !positive(r.frgn_hld_q_p6)||Math.abs(qty-Number(h.quantity))>0.0000001||
+      !positive(r.byng_avr_prc_p4)||!positive(r.now_prc_p4)||!positive(r.byng_amt)||
+      !positive(original.now_prc_p4)||!positive(original.std_exch_r))return h;
+    // Check decimal interpretation and reject a KRW-sized response returned as native.
+    if(Math.abs(avg*qty-cost)>Math.max(0.02,qty*0.0001)||
+      Math.abs(Number(original.now_prc_p4)/Number(original.std_exch_r)/quote-1)>0.03)return h;
+    return {...h,provider_payload:{...original,native_prices:{
+      source:"KB_SPQM2226_NATIVE",currency:cur,quantity:qty,
+      average_price:avg,market_price:quote,observed_at:observedAt
+    }}};
+  });
+}
 async function syncCurrent(userId:string) {
-  const { domesticRaw, overseasRaw } = await fetchCurrent(userId);
+  const { appKey, token, domesticRaw, overseasRaw } = await fetchCurrent(userId);
   const d = normalizeDomestic(domesticRaw);
   const o = normalizeOverseas(overseasRaw);
+  // A failed or incomplete optional native query must not block balance sync.
+  const nativeRaw=await fetchNativeBalance(appKey,token).catch(()=>null);
+  o.holdings=attachNativePrices(o.holdings,nativeRaw,new Date().toISOString());
   const holdings = [...d.holdings, ...o.holdings];
 
   const dS = d.summary || {};
@@ -1302,6 +1345,9 @@ Deno.serve(async (req:Request) => {
     if (action === "inspect-current-positions") {
       const result=await inspectCurrentPositions(userId,body?.symbols);
       return json(req,{ok:true,mode:"read_only_current_position_audit",...result});
+    }
+    if (action === "inspect-native-prices") {
+      return json(req,{ok:true,mode:"read_only_native_price_audit",...await inspectNativePrices(userId)});
     }
     if (action === "sync-history-month") {
       const month=String(body?.month||"");
