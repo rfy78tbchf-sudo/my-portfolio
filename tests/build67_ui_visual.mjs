@@ -1,3 +1,4 @@
+import './build98_holding_prices.mjs';
 import assert from 'node:assert/strict';
 async function openOptionalTools(page){
  if(!await page.locator('#detailExtras').count())await page.locator('#detailExtras').waitFor({state:'attached'});

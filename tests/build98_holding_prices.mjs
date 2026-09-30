@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const c=vm.createContext({esc:String,price:(v,u)=>`${v} ${u}`,money:v=>`${v}원`,kstStamp:String});
+vm.runInContext(html.slice(html.indexOf('  function holdingPriceSummaryHtml('),html.indexOf('  function decisionReviewHtml(')),c);
+const render=c.holdingPriceSummaryHtml;
+const p={account_id:'a',security_id:'s',currency:'USD',as_of:'2026-09-30',avg_cost:120.5,market_price:130};
+const b={account_id:'a',security_id:'s',as_of:p.as_of,average_unit_krw:170000,valued_unit_krw:180000};
+let out=render([p],[b],[],'USD');assert.match(out,/120.5 USD/);assert.match(out,/130 USD/);assert.match(out,/170000원/);assert.match(out,/실시간 호가는 아닙니다/);
+assert.doesNotMatch(render([p],[{...b,as_of:'old'}],[],'USD'),/170000원/,'stale basis must not be mixed');
+for(const value of [null,undefined,0,-1,NaN,Infinity,''])assert.match(render([{...p,avg_cost:value}],[],[],'USD'),/평균 매입가<\/span><strong>확인 중/);
+out=render([p,{...p,account_id:'b',avg_cost:140}],[],[{id:'a',name:'첫 계좌'},{id:'b',name:'둘째 계좌'}],'USD');assert.match(out,/첫 계좌/);assert.match(out,/둘째 계좌/);assert.match(out,/140 USD/);
+assert.doesNotMatch(render([{...p,currency:'KRW'}],[b],[],'KRW'),/원화 원가단가/);
+console.log('Build98: per-account native prices, missing values and matching observation basis passed');
