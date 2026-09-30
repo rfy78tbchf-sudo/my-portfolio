@@ -980,7 +980,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
           aiSourceLinks(review,sourceUrls);
           if(review.querySelector('.review-status b').textContent==='조건 구체화 필요'){
             var setup=document.createElement('button');setup.type='button';setup.id='detailSetupRule';setup.className='btn full';setup.textContent='다시 볼 조건 설정하기';
-            setup.onclick=function(){openDecisionForm();var builder=document.getElementById('detailRuleBuilder');builder.scrollIntoView({block:'center'});document.getElementById('detailRuleType').focus({preventScroll:true})};
+            setup.onclick=function(){var reason=document.getElementById('detailReason'),conditionInput=document.getElementById('detailReview');if(form.hidden&&!reason.value.trim()&&!conditionInput.value.trim()){reason.value=rows[0].reason||'';conditionInput.value=rows[0].review_condition||'';document.getElementById('detailChoice').value=rows[0].choice||'hold'}openDecisionForm();var builder=document.getElementById('detailRuleBuilder');builder.scrollIntoView({block:'center'});document.getElementById('detailRuleType').focus({preventScroll:true})};
             review.querySelector('.review-condition-result').insertAdjacentElement('afterend',setup);
           }
           var refresh=document.createElement('button');refresh.type='button';refresh.className='btn secondary';
