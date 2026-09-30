@@ -107,7 +107,7 @@ const homeStart=html.indexOf('  function reviewHomeCard('),homeEnd=html.indexOf(
 assert.ok(homeStart>0&&homeEnd>homeStart);
 const homeScope=vm.createContext({esc:String,kstStamp:String,kstDate:()=> '2026-09-26',live:{
   securityMap:{held:{id:'held',symbol:'TEST',name:'Test Holding'}},holdings:[{security_id:'held',quantity:10}],
-  reviewDecisions:[{security_id:'held',created_at:'2026-09-01',review_condition:'2026-10-02 확인',
+  reviewDecisions:[{security_id:'held',created_at:'2026-09-01',review_condition:'2026-10-02',
     official_evidence_snapshot:{documents:[{url:'https://www.sec.gov/old'}]}}],reviewAnalyses:[]}});
 vm.runInContext(html.slice(homeStart,homeEnd),homeScope);
 assert.doesNotMatch(vm.runInContext('reviewHomeCard()',homeScope),/다시 점검할 판단/,'a future date is not due');
@@ -121,7 +121,7 @@ assert.match(vm.runInContext('reviewHomeCard()',homeScope),/보유 전제와 관
 homeScope.live.reviewAnalyses[0].official_evidence.thesis_relation=null;
 assert.doesNotMatch(vm.runInContext('reviewHomeCard()',homeScope),/다시 점검할 판단/,'a generic filing cannot be a premise-change alert');
 homeScope.live.reviewAnalyses=[];
-homeScope.live.reviewDecisions[0].review_condition='2026-09-22 확인';
+homeScope.live.reviewDecisions[0].review_condition='2026-09-22';
 assert.match(vm.runInContext('reviewHomeCard()',homeScope),/점검 날짜/);
 const localeStart=html.indexOf('  function officialPeriodKo('),localeEnd=html.indexOf('  function openSecurityDetail(',localeStart);
 assert.ok(localeStart>0&&localeEnd>localeStart);

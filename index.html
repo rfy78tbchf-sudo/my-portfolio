@@ -533,6 +533,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       if(samePriceDate)condition='판단 당시와 같은 종가까지 확인했습니다. 이후 새 가격 변화는 없으며 정성적인 조건은 사용자 원문대로 수동 점검합니다: '+esc(decision.review_condition||'');
     }
     var match=String(decision.review_condition||'').match(/^(?:종가|가격)\s*([\d,.]+)\s*(달러|원)\s*(이하|이상)$/);
+    if(!refreshFailed&&match){reviewState='확인 자료 부족';condition='같은 통화의 유효한 종가와 판단 당시 기준일이 부족해 조건 충족 여부를 자동으로 단정하지 않습니다.'}
     if(!refreshFailed&&match&&recent&&recent.close!=null&&Number.isFinite(Number(recent.close))&&prior.price_date&&recent.currency===(match[2]==='달러'?'USD':'KRW')&&Number.isFinite(Number(match[1].replace(/,/g,'')))){
       var hit=match[3]==='이하'?Number(recent.close)<=Number(match[1].replace(/,/g,'')):
         Number(recent.close)>=Number(match[1].replace(/,/g,''));
