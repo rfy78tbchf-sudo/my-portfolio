@@ -1,4 +1,4 @@
-import './build105_price_watch.mjs';
+import {points as swingPoints,values as swingValues} from './build106_swing_peak.mjs';
 import './build104_native_prices.mjs';
 import './build102_home_today.mjs';
 import './build98_holding_prices.mjs';
@@ -73,7 +73,7 @@ const injected=`
       if(name==='get_live_realized_sales'&&data.closedRealizedFixture)return data.closedRealizedFixture;
       if(name==='get_live_realized_sales')return {ok:true,period:p.p_period,period_start:p.p_period==='1W'?'2026-09-23':'2026-09-01',period_end:'2026-09-29',items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',realized_local:100,historical_krw_estimate:140000,status:'calculated'},{symbol:'SOXS',name:'SOXS',currency:'USD',realized_local:null,historical_krw_estimate:null,status:'cost_review'}]};
       if(name==='get_live_period_stock_pnl')return {...live.stockPnl,period:p.p_period,period_start:p.p_period==='1M'?'2026-08-29':'2026-09-01'};
-      if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
+      if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:live.swingPrices[p.p_security_id]||[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
       if(name==='get_pending_kb_position_events')return [{symbol:'TEST',type:'sell',order_date:kstDaysAgo(1),settlement_date:kstDate(),quantity:7}];
       if(name==='get_live_security_activity')return {items:[]};
       if(name==='save_investment_thesis'){data.testThesis={...p.p_fields,version:2};return {ok:true,version:2}};
@@ -110,8 +110,7 @@ let html=source.replace('  restoreLogin();',injected).replace(/<script[^>]+src=[
 // Keep the application's actual AI response renderer as well.
 html=html.replace('</body>',`<script>${readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8')}</script></body>`);
 writeFileSync(out+'/fixture.html',html);
-// Price watch uses current KST dates and synthetic technical observations.
-live.analysis={ok:true,items:names.slice(0,4).map((n,i)=>({security_id:'s'+i,currency:live.securityMap['s'+i].currency,price_date:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul'}).format(new Date()),close:80-i,high_52w:100,drawdown_from_52w_high_pct:-20-i}))};
+live.swingPrices=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,swingPoints([...swingValues.slice(0,-1),85-i],today)]));
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:(await import('@sparticuz/chromium')).default.args}:{} )});
 try{
   for(const width of [390,402,430]){
@@ -127,7 +126,16 @@ try{
     assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),3);
     await page.locator('#homePriceWatch .price-watch-row').first().click();
     await page.locator('.detail-price-chart').waitFor();
+    assert.ok(await page.locator('.security-swing-marker').isVisible());
+    assert.match(await page.locator('.security-peak-summary').innerText(),/110 USD/);
+    await page.locator('.detail-price-chart').screenshot({path:out+'/swing-chart-'+width+'.png'});
+    await page.locator('[data-chart-zoom="in"]').click();await page.locator('[data-chart-zoom="in"]').click();
+    await page.locator('[data-chart-pan]').focus();await page.keyboard.press('Home');
+    assert.equal(await page.locator('.security-swing-marker').isVisible(),false);
+    await page.locator('[data-chart-zoom="reset"]').click();
+    assert.ok(await page.locator('.security-swing-marker').isVisible());
     await page.locator('#detailClose').click();
+    await page.locator('#homePriceWatch').screenshot({path:out+'/swing-home-'+width+'.png'});
     await page.locator('#homePriceWatch summary').first().click();
     assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),4);
     await page.locator('#homePriceWatch summary').first().click();

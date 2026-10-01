@@ -26,7 +26,7 @@ if(process.argv.includes('--browser')){
   const page=await browser.newPage({viewport:{width,height:860},isMobile:true,hasTouch:true});
   const data=points.map(x=>({...x,source:'a'}));
   await page.setContent('<meta name="viewport" content="width=device-width, initial-scale=1"><style>'+html.split('<style>')[1].split('</style>')[0]+'</style><main style="padding:14px"><section class="card"><h3>종목 가격</h3>'+scope.securityChart(data,'USD')+'</section><section class="card" style="margin-top:12px"><h3>다른 종목</h3>'+scope.securityChart(data,'USD')+'</section><section id="asset" class="card"><h3>자산 추이</h3>'+scope.assetChart(data)+'</section><section id="short" class="card">'+short+'</section></main>');
-  await page.addScriptTag({content:scope.price.toString()+';'+scope.chartMovingAverages.toString()+';'+scope.chartMaLines.toString()+';'+scope.bindSecurityChart.toString()});
+  await page.addScriptTag({content:scope.recentSwingPeak.toString()+';'+scope.price.toString()+';'+scope.chartMovingAverages.toString()+';'+scope.chartMaLines.toString()+';'+scope.bindSecurityChart.toString()});
   await page.evaluate(data=>bindSecurityChart(document.querySelector('.security-price-interactive'),data,'USD'),data);
   assert.equal(await page.evaluate(()=>innerWidth),width);
   assert.equal(await page.locator('#asset [data-ma-period]').count(),0);
