@@ -388,7 +388,8 @@ try{
       await page.screenshot({path:`${out}/ai-recovered-${width}.png`});
       await page.locator('#detailClose').click();
     }
-    const todayJourney={...live,todayGate:null,todayStocks:{...live.todayStocks,pnl_krw:140000,candidate_count:4,krw_included_count:3,items:[
+    const browsePrices=swingPoints(Array.from({length:160},(_,i)=>100+i),today);
+    const todayJourney={...live,swingPrices:{...live.swingPrices,s0:browsePrices,s1:browsePrices,s3:browsePrices.slice(-2)},todayGate:null,todayStocks:{...live.todayStocks,pnl_krw:140000,candidate_count:4,krw_included_count:3,items:[
       {security_id:'s0',symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',end_quantity:32,pnl_krw:220000},
       {security_id:'s1',symbol:'RXRX',name:'리커전 파머슈티컬스',currency:'USD',end_quantity:2100,pnl_krw:-80000},
       {security_id:'s3',symbol:'LLY',name:'일라이 릴리',currency:'USD',end_quantity:3,pnl_krw:0},
@@ -409,12 +410,25 @@ try{
     await page.locator('[data-performance-detail="ARM"]').click();await page.locator('.detail-price-chart').waitFor();
     assert.equal(await page.locator('[data-detail-step="-1"]').isDisabled(),true);
     assert.match(await page.locator('.detail-browse').innerText(),/1 \/ 4/);
+    await page.locator('[data-chart-period="3"]').click();
+    await page.locator('[data-ma-period="5"]').check();
+    await page.locator('[data-ma-period="20"]').uncheck();
+    await page.locator('[data-ma-period="120"]').check();
     await page.locator('[data-detail-step="1"]').click();
     await page.locator('.detail-head b').getByText('일라이 릴리',{exact:true}).waitFor();
     await page.locator('.performance-review-context').getByText('0원',{exact:true}).waitFor();
+    assert.equal(await page.locator('[data-chart-period="3"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-ma-period="120"]').isDisabled(),true);
+    assert.equal(await page.locator('[data-ma-period="120"]').isChecked(),false);
     await page.locator('[data-detail-step="1"]').click();
     await page.locator('.detail-head b').getByText('리커전 파머슈티컬스',{exact:true}).waitFor();
     await page.locator('.performance-review-context').getByText('-80,000원',{exact:true}).waitFor();
+    assert.equal(await page.locator('[data-chart-period="3"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-ma-period="5"]').isChecked(),true);
+    assert.equal(await page.locator('[data-ma-period="20"]').isChecked(),false);
+    assert.equal(await page.locator('[data-ma-period="120"]').isChecked(),true);
+    assert.match(await page.locator('[data-price-date]').innerText(),new RegExp(today));
+    await page.locator('.detail-price-chart').screenshot({path:out+'/chart-continuity-'+width+'.png'});
     await page.locator('[data-detail-step="1"]').click();
     await page.locator('.detail-head b').getByText('모더나',{exact:true}).waitFor();
     assert.equal(await page.locator('[data-detail-step="1"]').isDisabled(),true);
