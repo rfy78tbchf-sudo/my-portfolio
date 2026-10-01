@@ -23,7 +23,7 @@ mkdirSync('mobile-artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||undefined});
 try{
   for(const width of [390,402,430]){
-    const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});
+    const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});page.on('dialog',dialog=>{if(page.listenerCount('dialog')===1)dialog.accept()});
     const pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));
     await page.setContent(`<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${styles}.detail-modal{--detail-safe-top:59px}.test-status-bar{position:fixed;inset:0 0 auto;height:59px;z-index:100;background:#ced5db;pointer-events:auto}</style><main class="shell"><div id="detailModal" class="detail-modal hidden"><div class="detail-sheet"><div class="detail-head"><div><b>종목 상세</b><div class="sub">보유 상태 · 내 논리 · 판단</div></div><button id="detailClose" class="close-btn" aria-label="닫기">×</button></div><div id="detailBody"></div></div></div></main><div class="test-status-bar" aria-hidden="true"></div>`);
     await page.evaluate(({source,binding})=>{

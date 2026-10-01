@@ -1,3 +1,4 @@
+import './build113_detail_input.mjs';
 import './build108_today_journey.mjs';
 import {points as swingPoints,values as swingValues} from './build106_swing_peak.mjs';
 import './build104_native_prices.mjs';
@@ -115,7 +116,7 @@ live.swingPrices=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,swingPoin
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:(await import('@sparticuz/chromium')).default.args}:{} )});
 try{
   for(const width of [390,402,430]){
-    const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+    const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});page.on('dialog',dialog=>{if(page.listenerCount('dialog')===1)dialog.accept()});const errors=[];page.on('pageerror',e=>errors.push(e.message));
     await page.route('**/*',route=>route.abort());await page.setContent(html,{waitUntil:'domcontentloaded'});
     const fontFile=resolve(process.env.UI_FONT_CSS||'node_modules/@fontsource/noto-sans-kr/400.css');
     if(existsSync(fontFile)){const css=readFileSync(fontFile,'utf8').replace(/url\(([^)]+)\)/g,(_,p)=>`url(data:font/woff2;base64,${readFileSync(resolve(dirname(fontFile),p.replaceAll("'",''))).toString('base64')})`);await page.addStyleTag({content:css+' body{font-family:"Noto Sans KR",sans-serif}'});await page.evaluate(()=>document.fonts.ready)}
@@ -459,6 +460,9 @@ try{
     await openOptionalTools(page);
     await page.locator('#detailDecisionAction').click();
     await page.locator('#detailReason').fill('입력 보존 확인');
+    page.once('dialog',dialog=>dialog.dismiss());await page.locator('#detailClose').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
+    assert.ok(await page.locator('#detailModal').isVisible());
     page.once('dialog',dialog=>dialog.dismiss());await page.locator('[data-detail-step="-1"]').click();
     assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
     assert.match(await page.locator('.detail-head b').innerText(),/리커전/);
