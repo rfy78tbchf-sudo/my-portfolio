@@ -1,3 +1,4 @@
+import './build108_today_journey.mjs';
 import {points as swingPoints,values as swingValues} from './build106_swing_peak.mjs';
 import './build104_native_prices.mjs';
 import './build102_home_today.mjs';
@@ -387,6 +388,28 @@ try{
       await page.screenshot({path:`${out}/ai-recovered-${width}.png`});
       await page.locator('#detailClose').click();
     }
+    const todayJourney={...live,todayGate:null,todayStocks:{...live.todayStocks,pnl_krw:140000,candidate_count:4,krw_included_count:3,items:[
+      {security_id:'s0',symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',end_quantity:32,pnl_krw:220000},
+      {security_id:'s1',symbol:'RXRX',name:'리커전 파머슈티컬스',currency:'USD',end_quantity:2100,pnl_krw:-80000},
+      {security_id:'s3',symbol:'LLY',name:'일라이 릴리',currency:'USD',end_quantity:3,pnl_krw:0},
+      {security_id:'s2',symbol:'MRNA',name:'모더나',currency:'USD',end_quantity:40,pnl_krw:null,reason:'가격 확인 필요'}]}};
+    await page.evaluate(args=>{window.__uiFixture(...args);window.__uiRender('home')},[todayJourney,decision,analysis,comparison]);
+    assert.match(await page.locator('#homeToday').innerText(),/집계 대기/);
+    await page.locator('[data-home-today-performance]').click();
+    assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('.performance-position').count(),4);
+    assert.match(await page.locator('.performance-hero').first().innerText(),/140,000/);
+    await page.locator('#stockPnlSort').selectOption('loss');
+    assert.match(await page.locator('.performance-position').first().innerText(),/리커전/);
+    await page.locator('#stockPnlSort').selectOption('profit');
+    assert.match(await page.locator('.performance-position').first().innerText(),/에이알엠/);
+    assert.match(await page.locator('.performance-position').last().innerText(),/계산 대기/);
+    await page.locator('.contribution-list').screenshot({path:out+'/today-all-'+width+'.png'});
+    await page.locator('[data-performance-detail="ARM"]').click();await page.locator('.detail-price-chart').waitFor();
+    await page.locator('#detailClose').click();
+    assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
   }
 }finally{await browser.close()}

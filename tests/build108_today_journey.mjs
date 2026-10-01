@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),requests=[];
+const today={ok:true,period:'오늘',period_start:'2026-10-01',period_end:'2026-10-01',items:[],pnl_krw:700};
+const c=vm.createContext({live:{todayStocks:today,stockPnl:{ok:true,period:'THIS_MONTH'}},stockPeriod:'THIS_MONTH',stockPeriodEpoch:0,stockView:'realized',stockPnlSort:'loss',currentTab:'home',kstDate:()=> '2026-10-01',render(){},rpc:(_,p)=>new Promise((resolve,reject)=>requests.push({p,resolve,reject}))});
+vm.runInContext(html.slice(html.indexOf('  function openTodayPerformance('),html.indexOf('  function demoPortfolio('))+html.slice(html.indexOf('  function sortedStockPnl('),html.indexOf('  function stockPeriodLabel('))+html.slice(html.indexOf('  function changeStockPeriod('),html.indexOf('  function stockPeriodPerformance(')),c);
+c.changeStockPeriod('1W');c.openTodayPerformance();assert.equal(c.stockView,'total');assert.equal(c.stockPeriod,'오늘');assert.equal(c.currentTab,'performance');assert.equal(c.live.stockPnl,today);assert.equal(c.stockPnlSort,'impact');
+requests[0].resolve({ok:true,period:'1W',pnl_krw:90000});await new Promise(setImmediate);assert.equal(c.live.stockPnl,today,'old in-flight request cannot replace home today');
+c.live.todayStocks={...today,period_start:'2026-09-30',period_end:'2026-09-30'};c.openTodayPerformance();assert.equal(c.live.stockPnl,null);assert.equal(requests[1].p.p_period,'오늘');requests[1].resolve({...today,period_end:'2026-09-30'});await new Promise(setImmediate);assert.equal(c.live.stockPnl,null,'yesterday is not today');assert.equal(c.live.stockPnlFailed,true);
+c.live.todayStocks=null;c.openTodayPerformance();requests[2].reject(Error('offline'));await new Promise(setImmediate);assert.equal(c.live.stockPnlFailed,true);c.openTodayPerformance();requests[3].resolve(today);await new Promise(setImmediate);assert.equal(c.live.stockPnl,today);
+const rows=[{symbol:'A',pnl_krw:20},{symbol:'B',pnl_krw:-40},{symbol:'C',pnl_krw:0},{symbol:'D',pnl_krw:null},{symbol:'E',pnl_krw:999,reason:'missing_price'}];
+for(const [order,expected] of [['impact','B,A,C,D,E'],['profit','A,C,B,D,E'],['loss','B,C,A,D,E']])assert.equal(c.sortedStockPnl(rows,order).map(x=>x.symbol).join(','),expected);
+assert.equal(rows.map(x=>x.symbol).join(','),'A,B,C,D,E','sorting preserves cached source order');
+console.log('Build108: today route, view reset, snapshot reuse, stale response invalidation, midnight dates, retry and sorting passed');
