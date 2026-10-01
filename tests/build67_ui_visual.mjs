@@ -140,6 +140,17 @@ try{
     await page.locator('#homePriceWatch summary').first().click();
     assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),4);
     await page.locator('#homePriceWatch summary').first().click();
+    const pendingWatch=page.locator('.price-watch-pending');
+    assert.equal(await pendingWatch.locator('button:visible').count(),0);
+    await pendingWatch.locator('summary').click();
+    assert.ok(await pendingWatch.locator('button:visible').count()>0);
+    assert.match(await pendingWatch.innerText(),/가격 자료 없음/);
+    await pendingWatch.screenshot({path:out+'/watch-pending-'+width+'.png'});
+    await pendingWatch.locator('button').first().click();
+    await page.locator('.detail-price-chart').waitFor();
+    await page.locator('#detailClose').click();
+    assert.ok(await pendingWatch.locator('button').first().isVisible());
+    await pendingWatch.locator('summary').click();
     for(const tab of ['home','portfolio','performance']){
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);

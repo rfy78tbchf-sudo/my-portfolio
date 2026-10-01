@@ -20,6 +20,12 @@ for(const end of ['2026-09-23','2026-10-02']){live.swingPrices.a=points(values,e
 live.swingPrices.a=points([...values.slice(0,-1),93.5]);assert.equal(c.homePriceWatchData().alerts.length,1,'exact -15%');
 live.swingPrices.a=points([...values.slice(0,-1),93.51]);assert.equal(c.homePriceWatchData().alerts.length,0);
 live.swingPrices.a=[];assert.equal(c.homePriceWatchData().unknown,1);
+assert.equal(c.homePriceWatchData().pending[0].reason,'가격 자료 없음');
+live.swingPrices.a=points(values,'2026-09-20');assert.equal(c.homePriceWatchData().pending[0].reason,'최근 가격 갱신 필요');
+live.swingPrices.a=points([...values,120]);assert.equal(c.homePriceWatchData().pending[0].reason,'전고점 돌파 · 새 전고점 대기');
+live.swingPrices.a=points(Array(30).fill(100));assert.equal(c.homePriceWatchData().pending[0].reason,'전고점 확정 대기');
+assert.match(c.homePriceWatchCard(),/class="more-list price-watch-pending"/);
+assert.doesNotMatch(c.homePriceWatchCard(),/price-watch-pending" open/);
 // Bounded optional loading: failed securities do not erase other holdings or data.
 let active=0,max=0,requests=0;c.rest=async path=>{active++;max=Math.max(max,active);requests++;await new Promise(r=>setTimeout(r,1));active--;if(path.includes('eq.bad'))throw Error('unavailable');return points(values).reverse().map(p=>({...p,price_date:p.date}))};
 const target={holdings:['a','b','c','d','bad'].map(security_id=>({security_id,quantity:1}))};await c.loadSwingPrices(target);assert.equal(requests,5);assert.ok(max<=3);assert.equal(target.swingPrices.bad.length,0);assert.equal(target.swingPrices.a[0].close,80);
