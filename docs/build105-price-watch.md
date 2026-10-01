@@ -1,0 +1,9 @@
+# Build105 — Home drawdown watch
+
+Home now shows a compact price watch after today's account movement. It uses the existing authenticated technical summary and current positive holdings, counts each security once across accounts, and lists securities at or below -15% from the stored 52-week-high indicator. The three largest drawdowns appear first; remaining matches are expandable. Each row opens the existing security chart directly. No thesis, review condition or AI request is required.
+
+Dates and currency must be valid, observations must be within seven calendar days (weekends/holidays are not classified), and close/high/drawdown must be mutually consistent. Failed, missing, duplicated, stale, future-dated or mismatched observations count as unknown, never as zero or 'no decline'. Scope and excluded count are in the collapsed basis. Short stored history can understate the actual 52-week high. This is the observed drawdown level, not a newly crossed threshold, account P&L, return since acquisition, or push notification.
+
+No new network requests, accounting changes, schema changes or user-record writes. Existing home movement, foreign native prices and optional decision workflows remain in place. App and service-worker versions increment together.
+
+Validation: deterministic boundary, invalid-value, missing/failed data, stale/future-date, currency, ambiguous metric, multi-account deduplication and ordering tests. Production-renderer synthetic mobile tests at 390/402/430px verify top-three/expand behavior and opening/closing the existing price chart, alongside the existing home/portfolio/performance and decision regressions. Local browser uses portable Chromium; local font location is configurable without changing CI defaults. These are synthetic checks, not an authenticated verification of the owner's current alerts.

@@ -1,3 +1,4 @@
+import './build105_price_watch.mjs';
 import './build104_native_prices.mjs';
 import './build102_home_today.mjs';
 import './build98_holding_prices.mjs';
@@ -109,18 +110,27 @@ let html=source.replace('  restoreLogin();',injected).replace(/<script[^>]+src=[
 // Keep the application's actual AI response renderer as well.
 html=html.replace('</body>',`<script>${readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8')}</script></body>`);
 writeFileSync(out+'/fixture.html',html);
+// Price watch uses current KST dates and synthetic technical observations.
+live.analysis={ok:true,items:names.slice(0,4).map((n,i)=>({security_id:'s'+i,currency:live.securityMap['s'+i].currency,price_date:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul'}).format(new Date()),close:80-i,high_52w:100,drawdown_from_52w_high_pct:-20-i}))};
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:(await import('@sparticuz/chromium')).default.args}:{} )});
 try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
     await page.route('**/*',route=>route.abort());await page.setContent(html,{waitUntil:'domcontentloaded'});
-    const fontFile=resolve('node_modules/@fontsource/noto-sans-kr/400.css');
+    const fontFile=resolve(process.env.UI_FONT_CSS||'node_modules/@fontsource/noto-sans-kr/400.css');
     if(existsSync(fontFile)){const css=readFileSync(fontFile,'utf8').replace(/url\(([^)]+)\)/g,(_,p)=>`url(data:font/woff2;base64,${readFileSync(resolve(dirname(fontFile),p.replaceAll("'",''))).toString('base64')})`);await page.addStyleTag({content:css+' body{font-family:"Noto Sans KR",sans-serif}'});await page.evaluate(()=>document.fonts.ready)}
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
     await page.locator('#homeToday [data-security-id="s0"]').click();
     await page.locator('.detail-price-chart').waitFor();
     await page.locator('#detailClose').click();
+    assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),3);
+    await page.locator('#homePriceWatch .price-watch-row').first().click();
+    await page.locator('.detail-price-chart').waitFor();
+    await page.locator('#detailClose').click();
+    await page.locator('#homePriceWatch summary').first().click();
+    assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),4);
+    await page.locator('#homePriceWatch summary').first().click();
     for(const tab of ['home','portfolio','performance']){
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);
