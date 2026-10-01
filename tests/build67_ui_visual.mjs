@@ -1,3 +1,4 @@
+import './build114_portfolio_average.mjs';
 import './build113_detail_input.mjs';
 import './build108_today_journey.mjs';
 import {points as swingPoints,values as swingValues} from './build106_swing_peak.mjs';
@@ -169,6 +170,11 @@ try{
       if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeToday').isVisible());const box=await page.locator('#homeToday').boundingBox();assert.ok(box.y<500,`${width}px today summary is near top`);assert.match(await page.locator('#homeToday').innerText(),/326,840/)}
       if(tab==='portfolio'&&!baseline){const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[3]<800,`${width}px four portfolio rows with prices visible`)}
       if(tab==='portfolio'){
+        await page.locator('#portfolioPriceView').selectOption('average');
+        assert.match(await page.locator('.position-quote').first().innerText(),/평단|평균 매입가/);
+        await page.locator('.portfolio-list').screenshot({path:out+'/portfolio-average-'+width+'.png'});
+        await page.locator('#portfolioPriceView').selectOption('close');
+        assert.match(await page.locator('.position-quote').first().innerText(),/종가/);
         assert.match(await page.locator('.position-quote').first().innerText(),/285 USD/);
         await page.locator('#portfolioSort').selectOption('loss');
         assert.equal(await page.locator('.portfolio-row').first().getAttribute('data-security-id'),'s0');
