@@ -151,6 +151,17 @@ try{
     await page.locator('#detailClose').click();
     assert.ok(await pendingWatch.locator('button').first().isVisible());
     await pendingWatch.locator('summary').click();
+    const statusFixture={...live,swingPrices:{...live.swingPrices,s0:swingPoints([...swingValues,120],today)}};
+    await page.evaluate(args=>window.__uiFixture(...args),[statusFixture,decision,analysis,comparison]);
+    const formingWatch=page.locator('.price-watch-forming');
+    assert.match(await formingWatch.locator('summary').innerText(),/새 전고점 형성 중 1종목/);
+    assert.equal(await formingWatch.locator('button:visible').count(),0);
+    await formingWatch.locator('summary').click();
+    assert.match(await formingWatch.innerText(),/이전 전고점 돌파 후 형성 중/);
+    await page.locator('#homePriceWatch').screenshot({path:out+'/watch-status-'+width+'.png'});
+    await formingWatch.locator('button').click();await page.locator('.detail-price-chart').waitFor();
+    await page.locator('#detailClose').click();
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     for(const tab of ['home','portfolio','performance']){
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);

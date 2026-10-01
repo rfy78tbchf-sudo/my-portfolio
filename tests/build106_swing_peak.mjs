@@ -22,10 +22,15 @@ live.swingPrices.a=points([...values.slice(0,-1),93.51]);assert.equal(c.homePric
 live.swingPrices.a=[];assert.equal(c.homePriceWatchData().unknown,1);
 assert.equal(c.homePriceWatchData().pending[0].reason,'가격 자료 없음');
 live.swingPrices.a=points(values,'2026-09-20');assert.equal(c.homePriceWatchData().pending[0].reason,'최근 가격 갱신 필요');
-live.swingPrices.a=points([...values,120]);assert.equal(c.homePriceWatchData().pending[0].reason,'전고점 돌파 · 새 전고점 대기');
-live.swingPrices.a=points(Array(30).fill(100));assert.equal(c.homePriceWatchData().pending[0].reason,'전고점 확정 대기');
+live.swingPrices.a=points([...values,120]);assert.equal(c.homePriceWatchData().forming[0].reason,'이전 전고점 돌파 후 형성 중');assert.equal(c.homePriceWatchData().unknown,0);
+live.swingPrices.a=points(Array(30).fill(100));assert.equal(c.homePriceWatchData().forming[0].reason,'확정된 전고점 없음');assert.equal(c.homePriceWatchData().checked,0);
+live.swingPrices.a=[];
 assert.match(c.homePriceWatchCard(),/class="more-list price-watch-pending"/);
 assert.doesNotMatch(c.homePriceWatchCard(),/price-watch-pending" open/);
+const mixed={holdings:['a','b','c','d'].map(security_id=>({security_id,quantity:1})),securityMap:Object.fromEntries(['a','b','c','d'].map(id=>[id,{name:id,symbol:id,currency:'USD'}])),swingPrices:{a:points(values),b:points([...values,120]),c:points(Array(30).fill(100)),d:[]}};
+c.live=mixed;const coverage=c.homePriceWatchData();assert.equal(coverage.checked,1);assert.equal(coverage.forming.length,2);assert.equal(coverage.unknown,1);assert.equal(coverage.checked+coverage.forming.length+coverage.unknown,coverage.total);
+assert.match(c.homePriceWatchCard(),/가격 자료 확인 필요 1종목/);assert.match(c.homePriceWatchCard(),/새 전고점 형성 중 2종목/);
+c.live=live;
 // Bounded optional loading: failed securities do not erase other holdings or data.
 let active=0,max=0,requests=0;c.rest=async path=>{active++;max=Math.max(max,active);requests++;await new Promise(r=>setTimeout(r,1));active--;if(path.includes('eq.bad'))throw Error('unavailable');return points(values).reverse().map(p=>({...p,price_date:p.date}))};
 const target={holdings:['a','b','c','d','bad'].map(security_id=>({security_id,quantity:1}))};await c.loadSwingPrices(target);assert.equal(requests,5);assert.ok(max<=3);assert.equal(target.swingPrices.bad.length,0);assert.equal(target.swingPrices.a[0].close,80);
