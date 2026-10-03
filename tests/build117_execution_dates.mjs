@@ -1,8 +1,8 @@
 // Emits a read-only PostgreSQL regression using the actual production matcher.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-const sql=fs.readFileSync('supabase/build117_domestic_execution_dates.sql','utf8');
-const matcher=sql.slice(sql.indexOf('), domestic_date_candidates'),sql.indexOf('), bounds as (')).replace('public.realized_pnl_events','fixture_evidence');
+const sql=fs.readFileSync(process.argv[2]||'supabase/build117_domestic_execution_dates.sql','utf8');
+const matcher=sql.slice(sql.indexOf('), domestic_date_candidates'),sql.indexOf('), bounds as (')).replaceAll('public.realized_pnl_events','fixture_evidence');
 assert.ok(matcher.includes('c.transaction_matches=1 and c.evidence_matches=1'));
 const tx=[],ev=[],expected=[];
 function add(id,changes={},eChanges={},want=true){
