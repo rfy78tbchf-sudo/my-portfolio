@@ -1,3 +1,4 @@
+import './build119_composition.mjs';
 import './build114_portfolio_average.mjs';
 import './build113_detail_input.mjs';
 import './build108_today_journey.mjs';

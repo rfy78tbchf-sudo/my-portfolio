@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const fn=source.slice(source.indexOf('  function loadStockRealized('),source.indexOf('  function stockSeparatedHtml('));
 const requests=[];
-const ctx={stockPeriod:'THIS_MONTH',stockRealizedEpoch:0,live:{},num:String,render(){},rpc:(_,p)=>new Promise((resolve,reject)=>requests.push({p,resolve,reject}))};
+const ctx={setTimeout,clearTimeout,stockPeriod:'THIS_MONTH',stockRealizedEpoch:0,live:{},num:String,render(){},rpc:(_,p)=>new Promise((resolve,reject)=>requests.push({p,resolve,reject}))};
 vm.createContext(ctx);vm.runInContext(fn,ctx);
 const rows=ctx.stockRealizedRows({items:[{symbol:'A',currency:'USD',realized_local:10,historical_krw_estimate:14000,status:'calculated'},{symbol:'A',currency:'USD',realized_local:null,status:'cost_review'},{symbol:'B',currency:'KRW',realized_local:-300,status:'partial_date'},{symbol:'C',currency:'USD',realized_local:5,historical_krw_estimate:null}]});
 assert.equal(rows[0].amount,14000);assert.equal(rows[0].known,1);assert.equal(rows[0].count,2);
