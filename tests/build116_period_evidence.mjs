@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync('index.html','utf8');
+const p={ok:true,period:'THIS_MONTH',items:[{symbol:'A',name:'A',pnl_krw:10,pnl_local:10,currency:'KRW'},{symbol:'B',name:'B',pnl_krw:999,pnl_local:999,reason:'시작 보유수량 확인 필요'},{symbol:'C',pnl_krw:'NaN'},{symbol:'D',pnl_krw:''}],pnl_krw:10,complete:false,krw_included_count:1,candidate_count:4};
+const c=vm.createContext({live:{stockPnl:p},stockView:'total',stockPeriod:'THIS_MONTH',stockPnlSort:'impact',period:'오늘',esc:String,signedMoney:String,num:String,cls:()=>'',stockMark:()=>'',stockViewButtons:()=>'',stockPeriodButtons:()=>'',stockPeriodLabel:()=> '이번 달',stockTotalPartsHtml:()=>'',kstStamp:()=>''});
+vm.runInContext(source.slice(source.indexOf('  function sortedStockPnl('),source.indexOf('  function stockPeriodLabel('))+source.slice(source.indexOf('  function stockPeriodPerformance('),source.indexOf('  function livePerformance(')),c);
+const result=c.stockPeriodPerformance();
+assert.ok(!result.includes('999'));
+assert.ok(!result.includes('>NaN<'));
+assert.equal((result.match(/계산 대기/g)||[]).length,3);
+assert.ok(result.includes('수익 종목 합계 <b class="up">10</b>'));
+assert.ok(result.includes('시작 보유수량 확인 필요'));
+assert.ok(result.includes('시작일 전날의 계좌 잔고 기록을 우선'));
+assert.ok(result.includes('체결일이 확인되지 않은 종목은 계산에서 제외'));
+console.log('Build116: unresolved and nonfinite row values excluded; current calculation evidence explained');
