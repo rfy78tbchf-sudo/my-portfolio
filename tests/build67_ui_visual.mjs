@@ -404,6 +404,14 @@ try{
       assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.screenshot({path:`${out}/local-history-${width}.png`});
+      for(const basis of ['held','split_closed']){
+        const basisData={...localHistory,stockPnl:{...localHistory.stockPnl,items:localHistory.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,local_history_basis:basis,end_quantity:basis==='held'?2:0}:x)}};
+        await page.evaluate(data=>window.__uiLocalHistory(data),basisData);
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
+        assert.match(await page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'}).innerText(),basis==='held'?/현재 평가액 \+ 전체 원장/:/분할 입출고 대조/);
+        assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
+      }
+
       await page.locator('[data-stock-period="THIS_MONTH"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
