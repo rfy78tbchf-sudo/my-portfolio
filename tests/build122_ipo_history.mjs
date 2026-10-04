@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const sql=fs.readFileSync('supabase/build122_ipo_history.sql','utf8');
+const ctes=sql.slice(sql.indexOf('ipo_records as materialized ('),sql.indexOf('), ledger as materialized ('))+')';
+const rows=[],holdings=[],validSales=[];
+const cases=['valid','fee','additional','bounded','foreign','wrong_source','missing_cash','gross_mismatch','quantity_mismatch','duplicate_receipt','missing_payment','negative_fee','late_payment','early_sale','future_sale','invalid_sale','held','prior_buy'];
+for(const key of cases){
+ const base={account_id:'fixture',security_id:key,currency:key==='foreign'?'USD':'KRW',test_period:key==='bounded'?'1M':'ALL',source:key==='wrong_source'?'manual':'api',fee:0,tax:0,price:100,effective_at:null};
+ const add=(id,type,quantity,net_amount,date,summary,gross,cash,fee=0)=>rows.push({...base,id:key+id,type,quantity,net_amount,trade_at:date,fee,provider_payload:{smry_nm:summary,dl_amt:gross,ec_amt:cash}});
+ add('pay','other',10,-500,'2025-01-01T03:00:00Z','공모불입 출금','500','500');
+ if(key==='additional') add('more','other',1,-100,'2025-01-02T03:00:00Z','공모추가납입 출금','100','100');
+ else add('refund','other',2,key==='fee'?290:300,'2025-01-02T03:00:00Z','공모주환불금 입금','300',key==='fee'?'290':'300',key==='fee'?10:0);
+ const qty=key==='additional'?6:2;
+ add('in','transfer_in',qty,0,'2025-01-03T03:00:00Z','공모주 입고','','0');
+ add('sell','sell',qty,qty*150,'2025-01-03T00:00:00Z','매도',String(qty*150),String(qty*150));
+ if(key!=='invalid_sale')validSales.push({id:key+'sell'});
+ const get=id=>rows.find(r=>r.id===key+id);
+ if(key==='missing_cash')get('refund').provider_payload.ec_amt=null;
+ if(key==='gross_mismatch')get('pay').provider_payload.dl_amt='501';
+ if(key==='quantity_mismatch')get('in').quantity=3;
+ if(key==='duplicate_receipt')rows.push({...get('in'),id:key+'in2'});
+ if(key==='missing_payment')rows.splice(rows.indexOf(get('pay')),1);
+ if(key==='negative_fee')get('pay').fee=-1;
+ if(key==='late_payment')get('pay').trade_at='2025-01-04T03:00:00Z';
+ if(key==='early_sale')get('sell').trade_at='2025-01-02T03:00:00Z';
+ if(key==='future_sale')get('sell').trade_at='2027-01-02T03:00:00Z';
+ if(key==='held')holdings.push({account_id:'fixture',security_id:key,quantity:1});
+ if(key==='prior_buy')rows.push({...get('sell'),id:key+'buy',type:'buy'});
+}
+const j=x=>"'"+JSON.stringify(x)+"'::jsonb";
+assert.ok(sql.includes('t.id=any(v.evidence_ids)'));
+if(process.argv.includes('--sql')) console.log(`with account as(select 'fixture'::text id),bounds as(select '2026-10-04'::timestamptz cutoff),keys as(select x id,x asset_key from unnest(array[${cases.map(x=>"'"+x+"'").join(',')}]) x),dated_transactions as(select * from jsonb_to_recordset(${j(rows)}) x(id text,account_id text,security_id text,currency text,test_period text,source text,fee numeric,tax numeric,price numeric,effective_at timestamptz,type text,quantity numeric,net_amount numeric,trade_at timestamptz,provider_payload jsonb)),verified_domestic_cash as(select * from jsonb_to_recordset(${j(validSales)}) x(id text)),fixture_holdings as(select * from jsonb_to_recordset(${j(holdings)}) x(account_id text,security_id text,quantity numeric)),${ctes.replaceAll('p_period','test_period').replaceAll('public.holdings','fixture_holdings')} select count(*) cases,count(*) filter(where (v.asset_key is not null)<>(k.id in ('valid','fee','additional')) or (k.id='fee' and v.cash<>-210)) failures from keys k left join verified_ipo v on v.asset_key=k.id;`);
+else console.log('Build122: IPO evidence wiring checked; --sql runs 18 source-reconciliation cases');
