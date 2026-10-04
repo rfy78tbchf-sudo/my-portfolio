@@ -1,0 +1,30 @@
+import fs from 'node:fs';
+const sql=fs.readFileSync('supabase/build127_distribution_cash.sql','utf8');
+const ctes=sql.slice(sql.indexOf('distribution_records as materialized ('),sql.indexOf('), resolved_totals as ('))+')';
+const names=['valid','net_dividend','dividend_gap','bad_raw','wrong_sign','unknown_tax','manual','wrong_isin','wrong_currency','bad_day','missing_fx','corporate','converted','wrong_receipt_count'];
+const ks=[],ts=[],cs=[],ds=[],items=[],corp=[];
+for(const [idx,key] of names.entries()){
+ const id=key;
+ ks.push({id,asset_key:key,currency:'USD'});
+ const row=(type,currency,cash,kind)=>({security_id:id,type,currency,net_amount:cash,source:'api',external_id:'KB:SWQA2301:'+key+type+currency,trade_at:'2025-02-03T03:00:00Z',provider_payload:{dl_dt:'20250203',stnd_is_cd:key,crncy_clsf_nm:currency==='USD'?' USD':'',fcrncy_amt:String(currency==='USD'?Math.abs(cash):0),ec_amt:String(currency==='KRW'?Math.abs(cash):0),smry_nm:kind}});
+ const rows=[row('dividend','USD',100,'배당금 입금'),row('tax','USD',-15,'해외원천세 출금'),row('tax','USD',5,'해외원천세 환급 입금'),row('tax','KRW',-2000,'배당세금추징 출금')];
+ if(key==='bad_raw')rows[1].provider_payload.fcrncy_amt='oops';
+ if(key==='wrong_sign')rows[1].net_amount=15;
+ if(key==='unknown_tax')rows[1].provider_payload.smry_nm='알 수 없는 세금';
+ if(key==='manual')rows[1].source='manual';
+ if(key==='wrong_isin')rows[1].provider_payload.stnd_is_cd='different';
+ if(key==='wrong_currency')rows[1].provider_payload.crncy_clsf_nm='KRW';
+ if(key==='bad_day')rows[1].provider_payload.dl_dt='20250202';
+ if(key==='missing_fx')rows.filter(t=>t.type==='tax').forEach(t=>{t.trade_at='2025-03-03T03:00:00Z';t.provider_payload.dl_dt='20250303'});
+ ts.push(...rows);
+ cs.push({security_id:id,asset_key:key,dividend:key==='dividend_gap'?90:100});
+ const d={resolved_security_id:id,paid_at:'2025-02-03T03:00:00Z',gross_amount:100,net_amount:key==='net_dividend'?85:100,tax:key==='net_dividend'?15:0,currency:'USD'};
+ ds.push(d);if(key==='wrong_receipt_count')ds.push(d);
+ if(key==='corporate')corp.push({asset_keys:[key]});
+ items.push({item:{security_id:id,pnl_local:20,pnl_krw:['converted','missing_fx'].includes(key)?28000:null,dividend_local:100,local_cash_only:!['converted','missing_fx'].includes(key)}});
+}
+const j=x=>"'"+JSON.stringify(x)+"'::jsonb";
+const rec=(n,v,f)=>`${n} as(select * from jsonb_to_recordset(${j(v)}) x(${f}))`;
+const inputs=["bounds as(select '2025-01-01'::date start_date,'2025-06-01'::timestamptz cutoff)",rec('keys',ks,'id text,asset_key text,currency text'),rec('owned_transactions',ts,'security_id text,type text,currency text,net_amount numeric,source text,external_id text,trade_at timestamptz,provider_payload jsonb'),rec('calculated',cs,'security_id text,asset_key text,dividend numeric'),rec('dividend_receipts',ds,'resolved_security_id text,paid_at timestamptz,gross_amount numeric,net_amount numeric,tax numeric,currency text'),rec('corporate_resolved',corp,'asset_keys text[]'),rec('resolved_items',items,'item jsonb'),"fixture_fx as(select 'USD'::text base_currency,'KRW'::text quote_currency,'2025-02-03'::date rate_date,1400::numeric rate,'fixture'::text source,now() observed_at)"];
+const expected="item->>'security_id' in ('valid','missing_fx','converted')";
+console.log('with '+inputs.join(',')+','+ctes.replaceAll('p_period',"'ALL'").replaceAll('public.fx_rates','fixture_fx')+` select count(*) cases,count(*) filter(where coalesce((item->>'distribution_tax_verified')::boolean,false)<>(${expected}) or ((${expected}) and ((item->>'pnl_local')::numeric<>10 or (item->>'dividend_local')::numeric<>90)) or (item->>'security_id'='converted' and ((item->>'pnl_krw')::numeric<>12000 or (item->>'separate_cash_krw')::numeric<>0)) or (item->>'security_id'='missing_fx' and (item->>'pnl_krw' is not null or item->>'local_cash_only'<>'true')) or (item->>'security_id' in ('valid','missing_fx') and (item->>'separate_cash_krw')::numeric<>-2000)) failures from taxed_items;`);
