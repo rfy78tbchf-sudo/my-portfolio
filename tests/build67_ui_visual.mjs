@@ -1,3 +1,4 @@
+import './build126_pnl_scope.mjs';
 import './build122_ipo_history.mjs';
 import './build121_domestic_cash.mjs';
 import './build120_local_history.mjs';
@@ -420,10 +421,21 @@ try{
         await page.getByText('전체 4개 종목 기록 반영',{exact:false}).waitFor();
         await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
         assert.match(await row.innerText(),basis==='pending'?/결제 후 금액이 달라질 수 있는/:/OLDTEST · LOCAL/);
-        assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
+        assert.match(await page.locator('.performance-hero').innerText(),basis==='corporate_group'?/-1,501,234/:/-1,500,000/);
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         await page.screenshot({path:`${out}/history-${basis}-${width}.png`});
       }
+      const scopeFixture={...localHistory,stockPnl:{...localHistory.stockPnl,comparison_fx:{USD:1400},items:[{symbol:'LOCAL',name:'외화 큰 손실',currency:'USD',pnl_local:-2000,pnl_krw:null,local_cash_only:true,local_history_basis:'corporate_group',reason:'거래일 확인 필요',separate_cash_krw:-100000,corporate_realized_local:-5000,corporate_distribution_local:3000,start_quantity:0,end_quantity:0,start_value_local:0,end_value_local:0,trade_cash_local:-5000,dividend_local:3000,aliases:['OLDLOCAL','LOCAL']},{symbol:'KRLOSS',name:'원화 작은 손실',currency:'KRW',pnl_local:-500000,pnl_krw:-500000},{symbol:'KRGAIN',name:'원화 이익',currency:'KRW',pnl_local:1000000,pnl_krw:1000000}],pnl_krw:500000,candidate_count:3,krw_included_count:2,local_only_count:1}};
+      await page.evaluate(data=>window.__uiLocalHistory(data),scopeFixture);
+      await page.locator('#stockPnlSort').selectOption('loss');
+      assert.match(await page.locator('.performance-position').first().innerText(),/외화 큰 손실/);
+      assert.match(await page.locator('.performance-hero').innerText(),/전체 원화 합계는 아직 미확정/);
+      assert.match(await page.locator('.performance-hero').innerText(),/400,000원/);
+      assert.match(await page.locator('.performance-hero').innerText(),/-2,000(?:\.00)? USD/);
+      assert.match(await page.locator('.corporate-summary').innerText(),/매매 -5,000(?:\.00)? USD/);
+      assert.equal(await page.locator('.scoped-pnl-parts').evaluate(el=>el.open),false);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/mixed-pnl-scope-${width}.png`});
       await page.locator('[data-stock-period="THIS_MONTH"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
