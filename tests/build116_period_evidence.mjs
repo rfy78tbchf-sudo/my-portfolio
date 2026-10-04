@@ -12,5 +12,5 @@ assert.equal((result.match(/계산 대기/g)||[]).length,3);
 assert.ok(result.includes('수익 종목 합계 <b class="up">10</b>'));
 assert.ok(result.includes('시작 보유수량 확인 필요'));
 assert.ok(result.includes('시작일 전날의 계좌 잔고 기록을 우선'));
-assert.ok(result.includes('체결일이 확인되지 않은 종목은 계산에서 제외'));
+assert.ok(result.includes('체결일이 확인되지 않은 종목은 원화 계산에서 제외'));
 console.log('Build116: unresolved and nonfinite row values excluded; current calculation evidence explained');

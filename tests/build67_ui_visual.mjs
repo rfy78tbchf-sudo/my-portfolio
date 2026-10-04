@@ -1,3 +1,4 @@
+import './build120_local_history.mjs';
 import './build119_composition.mjs';
 import './build114_portfolio_average.mjs';
 import './build113_detail_input.mjs';
@@ -106,6 +107,7 @@ const injected=`
         return {ok:true,json:async()=>window.__aiMode==='recovery'&&url.includes('request_id=eq.')?[{...opinion,comparison_evidence:null}]:[]};
       };
     };
+    window.__uiLocalHistory=function(data){live=data;stockPeriod='ALL';stockView='total';currentTab='performance';render()};
     window.__uiRender=function(tab){currentTab=tab;render()};window.__uiDetail=openSecurityDetail;
     render();
   };
@@ -392,6 +394,15 @@ try{
         const closedData={...stockData,stockRealizedPeriod:null,stockRealized:null,closedRealizedFixture:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',items:[{symbol:'TEST',currency:'USD',realized_local:null},{symbol:'TEST',currency:'USD',realized_local:10,historical_krw_estimate:14000}],closed_cycles:[{symbol:'TEST',name:'기간 내 전량 매도 종목',currency:'USD',aliases:['TEST'],closed_realized:{method:'flat_to_flat_net_cash',sale_count:2,realized_local:-100,realized_krw:-140000,provisional_date_count:0}}]}};
         await page.evaluate(args=>window.__uiFixture(...args),[closedData,decision,analysis,comparison]);await page.locator('[data-stock-view="realized"]').click();await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();await page.getByText(/매도 2건 · 기간 합계 계산/).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/-140,000/);assert.equal(await page.locator('.performance-position').count(),1);await page.screenshot({path:`${out}/closed-realized-${width}.png`});await page.locator('[data-stock-view="total"]').click();
       }
+      const localHistory={...stockData,stockRealizedPeriod:'ALL',stockRealizedFailed:true,stockPnl:{...stockData.stockPnl,period:'ALL',complete:false,local_only_count:1,candidate_count:3,items:[...stockData.stockPnl.items,{symbol:'LOCAL',name:'외화 전체 손익 검증',currency:'USD',pnl_local:12345.67,pnl_krw:null,local_cash_only:true,reason:'거래일 확인 필요',start_quantity:0,end_quantity:0,start_value_local:0,end_value_local:0,trade_cash_local:12340.67,dividend_local:5}]}};
+      await page.evaluate(data=>window.__uiLocalHistory(data),localHistory);
+      const localRow=page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'});
+      assert.match(await localRow.innerText(),/12,345.67 USD/);
+      assert.match(await localRow.innerText(),/원화 환산 대기/);
+      assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/local-history-${width}.png`});
+      await page.locator('[data-stock-period="THIS_MONTH"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
     if(!baseline&&source.includes('function requestDetailOpinion')){
