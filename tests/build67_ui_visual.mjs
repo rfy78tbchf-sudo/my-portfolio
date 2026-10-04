@@ -412,6 +412,18 @@ try{
         assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
       }
 
+      for(const basis of ['pending','corporate_group']){
+        const next={...localHistory,stockPnl:{...localHistory.stockPnl,all_items_displayed:true,source_candidate_count:4,provisional_count:basis==='pending'?1:0,items:localHistory.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,local_history_basis:basis,provisional_amount:basis==='pending',aliases:['OLDTEST','LOCAL'],corporate_cash_local:2,separate_cash_krw:basis==='corporate_group'?-1234:0}:x)}};
+        await page.evaluate(data=>window.__uiLocalHistory(data),next);
+        const row=page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'});
+        assert.match(await row.innerText(),basis==='pending'?/결제 전 잠정/:/별도 세금 -1,234원/);
+        await page.getByText('전체 4개 종목 기록 반영',{exact:false}).waitFor();
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
+        assert.match(await row.innerText(),basis==='pending'?/결제 후 금액이 달라질 수 있는/:/OLDTEST · LOCAL/);
+        assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        await page.screenshot({path:`${out}/history-${basis}-${width}.png`});
+      }
       await page.locator('[data-stock-period="THIS_MONTH"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
