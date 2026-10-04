@@ -2,7 +2,7 @@
 
 Status: production migration applied successfully on 2026-10-04. Post-migration
 comparison confirms unchanged KRW totals and components for all four periods.
-Frontend release and mobile CI are being verified.
+Frontend release and mobile CI passed (commit ba7621231a6dc8cfde0a7a8b4adf90997e772d5d).
 
 For ALL only, expose local-currency P&L for fully closed foreign positions whose
 full recorded buy and sell cash flows match original broker gross and stored
