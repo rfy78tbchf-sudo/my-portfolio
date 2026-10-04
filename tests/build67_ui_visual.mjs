@@ -437,6 +437,7 @@ try{
       assert.equal(await page.locator('.scoped-pnl-parts').evaluate(el=>el.open),false);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.screenshot({path:`${out}/mixed-pnl-scope-${width}.png`});
+      assert.equal(await page.locator('.reference-pnl-unavailable').count(),1);
       const referenceFixture={...scopeFixture,stockPnl:{...scopeFixture.stockPnl,period:'ALL',items:scopeFixture.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,reference_pnl_krw:-3000000,reference_fx_basis:'event_date_with_ledger_fallback',reference_ledger_date_count:4}:x)}};
       await page.evaluate(data=>window.__uiLocalHistory(data),referenceFixture);
       assert.equal(await page.locator('.reference-pnl').evaluate(el=>el.open),false);

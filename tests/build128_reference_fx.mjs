@@ -19,3 +19,6 @@ assert.match(h,/<details/);assert.match(h,/-22,000원/);assert.match(h,/체결�
 assert.equal(foreign.pnl_krw,null);assert.equal(foreign.pnl_local,-20);
 assert.equal(c.stockPnlOverview(p).krwWithTax,8000);
 console.log('Build128: reference-only full coverage, separate tax once, invalid/missing amounts rejected, verified totals unchanged');
+assert.match(c.stockReferenceHtml({...p,items:[known,{...foreign,reference_pnl_krw:null}]}),/reference-pnl-unavailable/);
+assert.match(c.stockReferenceHtml({...p,items:[known,{...foreign,reference_pnl_krw:null}]}),/1개 항목/);
+assert.equal(c.stockReferenceHtml({...p,period:'1M'}),'');
