@@ -1,3 +1,4 @@
+import './build128_reference_fx.mjs';
 import './build126_pnl_scope.mjs';
 import './build122_ipo_history.mjs';
 import './build121_domestic_cash.mjs';
@@ -436,6 +437,16 @@ try{
       assert.equal(await page.locator('.scoped-pnl-parts').evaluate(el=>el.open),false);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.screenshot({path:`${out}/mixed-pnl-scope-${width}.png`});
+      const referenceFixture={...scopeFixture,stockPnl:{...scopeFixture.stockPnl,period:'ALL',items:scopeFixture.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,reference_pnl_krw:-3000000,reference_fx_basis:'event_date_with_ledger_fallback',reference_ledger_date_count:4}:x)}};
+      await page.evaluate(data=>window.__uiLocalHistory(data),referenceFixture);
+      assert.equal(await page.locator('.reference-pnl').evaluate(el=>el.open),false);
+      await page.locator('.reference-pnl summary').click();
+      assert.match(await page.locator('.reference-pnl').innerText(),/-2,600,000원/);
+      assert.match(await page.locator('.reference-pnl').innerText(),/체결일 미확인 4건/);
+      assert.match(await page.locator('.performance-hero').innerText(),/400,000원/);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/reference-fx-${width}.png`});
+
       await page.locator('[data-stock-period="THIS_MONTH"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
