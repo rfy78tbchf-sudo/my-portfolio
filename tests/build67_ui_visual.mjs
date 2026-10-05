@@ -80,10 +80,12 @@ const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_ver
 const injected=`
   window.__uiFixture=function(data,record,opinion,comparison){
     live=data;liveError=null;mode='live';period='1M';session=null;
+    var stockResponse=data.stockPnl,failStockOnce=false;
+    window.__uiFailStockOnce=function(){failStockOnce=true};
     rpc=async function(name,p){
       if(name==='get_live_realized_sales'&&data.closedRealizedFixture)return data.closedRealizedFixture;
       if(name==='get_live_realized_sales')return {ok:true,period:p.p_period,period_start:p.p_period==='1W'?'2026-09-23':'2026-09-01',period_end:'2026-09-29',items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',realized_local:100,historical_krw_estimate:140000,status:'calculated'},{symbol:'SOXS',name:'SOXS',currency:'USD',realized_local:null,historical_krw_estimate:null,status:'cost_review'}]};
-      if(name==='get_live_period_stock_pnl')return {...live.stockPnl,period:p.p_period,period_start:p.p_period==='1M'?'2026-08-29':'2026-09-01'};
+      if(name==='get_live_period_stock_pnl'){if(failStockOnce){failStockOnce=false;throw Error('Simulated timeout')}return {...stockResponse,period:p.p_period,period_start:p.p_period==='1M'?'2026-08-29':'2026-09-01'}};
       if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:live.swingPrices[p.p_security_id]||[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
       if(name==='get_pending_kb_position_events')return [{symbol:'TEST',type:'sell',order_date:kstDaysAgo(1),settlement_date:kstDate(),quantity:7}];
       if(name==='get_live_security_activity')return {items:[]};
@@ -359,7 +361,10 @@ try{
       await page.screenshot({path:`${out}/period-stock-${width}.png`});
       await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/period-stock-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
-      await page.locator('[data-stock-period="1M"]').click();assert.match(await page.locator('.performance-hero').first().innerText(),/2026-08-29/);
+      if(width===390)await page.evaluate(()=>window.__uiFailStockOnce());
+      await page.locator('[data-stock-period="1M"]').click();
+      if(width===390){await page.locator('#stockPnlRetry').waitFor();assert.equal(await page.locator('.performance-hero').count(),0,'failed period must not show old numbers');await page.locator('#stockPnlRetry').click()}
+      assert.match(await page.locator('.performance-hero').first().innerText(),/2026-08-29/);
       await page.locator('[data-stock-period="THIS_MONTH"]').click();assert.match(await page.locator('.performance-hero').first().innerText(),/2026-09-01/);
       if(source.includes('stockSeparatedHtml')){
         await page.locator('[data-stock-view="unrealized"]').click();
