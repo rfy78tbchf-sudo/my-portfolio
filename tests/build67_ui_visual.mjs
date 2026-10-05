@@ -1,3 +1,4 @@
+import './build130_pnl_find.mjs';
 import './build128_reference_fx.mjs';
 import './build126_pnl_scope.mjs';
 import './build122_ipo_history.mjs';
@@ -447,6 +448,27 @@ try{
       assert.match(await page.locator('.performance-hero').innerText(),/400,000원/);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.screenshot({path:`${out}/reference-fx-${width}.png`});
+      const heroBeforeFind=await page.locator('.performance-hero').innerText();
+      await page.locator('#stockPnlSearch').fill('oldlocal');
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      assert.equal(await page.locator('#stockPnlSearch').evaluate(el=>document.activeElement===el),true);
+      assert.equal(await page.locator('.performance-hero').innerText(),heroBeforeFind);
+      await page.locator('[data-pnl-scope="kr"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),0);
+      assert.equal(await page.locator('#stockPnlEmpty').isVisible(),true);
+      await page.locator('#stockPnlReset').click();
+      await page.locator('[data-pnl-scope="foreign"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      await page.locator('#stockPnlSort').selectOption('profit');
+      assert.equal(await page.locator('[data-pnl-scope="foreign"]').getAttribute('aria-pressed'),'true');
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      await page.locator('[data-pnl-scope="held"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),0);
+      await page.locator('#stockPnlReset').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),3);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/pnl-find-${width}.png`});
+
 
       await page.locator('[data-stock-period="THIS_MONTH"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
