@@ -366,6 +366,17 @@ try{
       if(width===390){await page.locator('#stockPnlRetry').waitFor();assert.equal(await page.locator('.performance-hero').count(),0,'failed period must not show old numbers');await page.locator('#stockPnlRetry').click()}
       assert.match(await page.locator('.performance-hero').first().innerText(),/2026-08-29/);
       await page.locator('[data-stock-period="THIS_MONTH"]').click();assert.match(await page.locator('.performance-hero').first().innerText(),/2026-09-01/);
+      const foreignReview={...stockData,stockPnl:{...stockData.stockPnl,items:stockData.stockPnl.items.map(x=>x.symbol==='ARM'?{...x,pnl_krw:null,pnl_local:-1500,local_cash_only:true,separate_cash_krw:-1234,provisional_amount:true}:x)}};
+      await page.evaluate(args=>window.__uiFixture(...args),[foreignReview,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+      await page.locator('[data-performance-detail="ARM"]').click();
+      await page.locator('.performance-review-context').waitFor();
+      assert.match(await page.locator('.performance-review-context').innerText(),/-1,500(?:\.00)? USD/);
+      assert.match(await page.locator('.performance-review-context').innerText(),/별도 원화 세금 -1,234원/);
+      assert.match(await page.locator('.performance-review-context').innerText(),/이번 달 기간손익/);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/foreign-review-${width}.png`});
+      await page.locator('#detailClose').click();
+      await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
       if(source.includes('stockSeparatedHtml')){
         await page.locator('[data-stock-view="unrealized"]').click();
         assert.match(await page.locator('.performance-hero').innerText(),/현재 보유분/);

@@ -9,3 +9,12 @@ c.stockView='unrealized';a=c.performanceReviewContext('A');assert.equal(a.amount
 c.stockView='realized';c.live.stockRealizedPeriod='THIS_MONTH';c.live.stockRealized={ok:true,period:'THIS_MONTH',items:[{symbol:'A',amount:35,known:1,count:2}],period_start:'2026-09-01',period_end:'2026-09-29'};
 assert.equal(c.performanceReviewContext('A').partial,true);c.live.stockRealizedLoading=true;assert.equal(c.performanceReviewContext('A'),null);
 console.log('Build82: period/type provenance, partial, unknown/zero and cross-security isolation passed');
+
+c.stockView='total';c.num=(n)=>Number(n).toLocaleString('en-US');
+c.live.stockPnl.items=[{symbol:'A',currency:'USD',pnl_krw:null,pnl_local:-245.75,local_cash_only:true,separate_cash_krw:-1200,provisional_amount:true}];
+a=c.performanceReviewContext('A');assert.equal(a.amount,-245.75);assert.equal(a.currency,'USD');assert.equal(a.separateCash,-1200);
+assert.match(c.performanceReviewHtml(a,'A'),/-245.75 USD/);assert.match(c.performanceReviewHtml(a,'A'),/별도 원화 세금 -1200/);assert.match(c.performanceReviewHtml(a,'A'),/결제 전 잠정/);
+c.live.stockPnl.items[0].pnl_local=0;assert.equal(c.performanceReviewContext('A').amount,0);
+c.live.stockPnl.items[0].pnl_local='';assert.equal(c.performanceReviewContext('A').amount,null);
+c.live.stockPnl.items[0].pnl_krw=300;a=c.performanceReviewContext('A');assert.equal(a.currency,'KRW');assert.equal(a.separateCash,null);
+console.log('Build132: native currency, separate tax, pending, zero/missing and converted-row scope preserved');
