@@ -722,7 +722,7 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
   return {transactions:tx,dividends:divs,cashFlows:flows};
 }
 async function settlementEvidence(rows:any[],ledger:any[]){
-  const used=new Set<number>(),out:any[]=[];
+  const out:any[]=[];
   for(const r of rows){
     const side=String(r?.trd_clsf_nm||"").trim();
     const type=side==="매수"?"buy":side==="매도"?"sell":"";
@@ -731,13 +731,8 @@ async function settlementEvidence(rows:any[],ledger:any[]){
     const order=isoDate8(r?.ordr_dt),settlement=isoDate8(r?.stmt_dt);
     const qty=n(r?.stmt_q_p6),price=n(r?.frgn_stmt_prc_p6);
     if(!type||!/^US[A-Z0-9]{10}$/.test(isin)||!symbol||!order||qty<=0||price<=0)continue;
-    // Consume an identical official ledger row at most once. Different sizes
-    // remain evidence, never synthesized executions or cash flows.
-    const matched=ledger.findIndex((t:any,i:number)=>!used.has(i)&&
-      String(t?.dl_dt||"")===String(r?.stmt_dt||"")&&
-      String(t?.stnd_is_cd||"").toUpperCase()===isin&&
-      classifyLedger(t)===type&&n(t?.q)===qty);
-    if(matched>=0){used.add(matched);continue;}
+    // Preserve settled records too: their order date is independent evidence.
+    // P&L already excludes evidence that has a corresponding ledger record.
     const fields=[isin,symbol,order,settlement,type,qty,price,
       String(r?.frgn_stmt_amt_p4||""),String(r?.frgn_agr_amt_p4||"")];
     const bytes=new TextEncoder().encode(JSON.stringify(fields));
@@ -748,9 +743,16 @@ async function settlementEvidence(rows:any[],ledger:any[]){
       settlement_date:settlement,quantity:qty,price,
       gross_amount:nOrNull(r?.frgn_stmt_amt_p4),currency:String(r?.crncy_cd||"USD"),
       evidence:{order_date:order,settlement_date:settlement,source:"SPQM2205",
-        settlement_flag:String(r?.stmt_f||"").slice(0,12)}});
+        settlement_flag:String(r?.stmt_f||"").slice(0,12),
+        trade_gross:nOrNull(r?.frgn_agr_amt_p4),occurrences:1}});
   }
-  return out;
+  const unique=new Map<string,any>();
+  for(const row of out){
+    const prior=unique.get(row.source_key);
+    if(prior) prior.evidence.occurrences++;
+    else unique.set(row.source_key,row);
+  }
+  return [...unique.values()];
 }
 function normalizeRealized(rows:any[],month:string){
   return rows.map((r:any)=>{
@@ -838,17 +840,21 @@ async function syncHistoryMonth(userId:string,month:string){
     p_realized:realizedRows
   });
   const evidence=await settlementEvidence(settlement.rows,ledger.rows);
-  const evidenceWritten=await adminRpc("save_kb_position_evidence_for_service",{
-    p_user_id:userId,p_rows:evidence
-  });
+  if(evidence.length>2000) throw new Error("OVERSEAS_EVIDENCE_MONTH_TOO_LARGE");
+  let evidenceWritten=0;
+  for(let offset=0;offset<evidence.length;offset+=300){
+    evidenceWritten+=Number(await adminRpc("save_kb_position_evidence_for_service",{
+      p_user_id:userId,p_rows:evidence.slice(offset,offset+300)
+    }));
+  }
   const sourceKeys=evidence.map(x=>x.source_key);
   await adminRpc("reactivate_kb_evidence_for_service",{
     p_user_id:userId,p_source_keys:sourceKeys
   });
-  const orderDatesLinked=await adminRpc("link_kb_order_dates_for_service",{p_user_id:userId});
   const retiredRevisions=await adminRpc("finish_kb_evidence_month_for_service",{
     p_user_id:userId,p_month:month,p_source_keys:sourceKeys
   });
+  const orderDatesLinked=await adminRpc("link_kb_order_dates_for_service",{p_user_id:userId});
   await adminRpc("record_kb_evidence_month_for_service",{
     p_user_id:userId,p_month:month,p_count:evidence.length
   });
