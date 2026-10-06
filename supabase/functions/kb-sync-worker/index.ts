@@ -1151,6 +1151,40 @@ async function probeEarlierPriceWindow(userId:string,requestedSymbol:unknown,cur
       day.slice(0,4)+'-'+day.slice(4,6)+'-'+day.slice(6,8)};
 }
 
+async function syncCorporateOpeningPrices(userId:string){
+ const dayStart=todaySeoul()+'T00:00:00+09:00';
+ const cache=await fetch(SUPABASE_URL+'/rest/v1/corporate_unadjusted_prices?select=symbol&observed_at=gte.'+encodeURIComponent(dayStart),{headers:{apikey:SECRET_KEY}});
+ if(cache.ok){const rows=await cache.json();if(new Set(rows.map((r:any)=>r.symbol)).size===2)return {cached:true,results:[]};}
+ const {appKey,appSecret}=await credentials(userId);
+ const token=await issueToken(appKey,appSecret);
+ const today=todaySeoul(),year=Number(today.slice(0,4)),month=Number(today.slice(5,7)),day=Number(today.slice(8));
+ const beforePeriod=(months:number)=>{
+  const first=new Date(Date.UTC(year,month-1-months,1));
+  const last=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();
+  return new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth(),Math.min(day,last)-1)).toISOString().slice(0,10);
+ };
+ const windows=[{symbol:'SOXS',cursor:beforePeriod(3)},{symbol:'MSTY',cursor:beforePeriod(12)}];
+ const results=[];
+ for(const w of windows){
+  let rows:any[]=[];
+  for(const venue of ['AMX','NAS','NYS']){
+   const data=await callTr(appKey,token,'/api/v1/gsc10060',{krx_cd:venue,is_cd:w.symbol,
+    chrt_clsf:'3',bndl:'',mdfy_stk_prc_use_f:'0',rcrd_c:'30',srch_strt_dy:w.cursor.replaceAll('-',''),clsf:'1'}).catch(()=>null);
+   rows=normalizeChartRows('', 'USD',data?.dataBody?.out2||[],'overseas')
+    .filter((r:any)=>r.price_date<=w.cursor&&r.price_date>=new Date(Date.parse(w.cursor)-7*86400000).toISOString().slice(0,10))
+    .map((r:any)=>({symbol:w.symbol,price_date:r.price_date,close:r.close,currency:'USD',source:'kb_gsc10060_unadjusted',observed_at:r.observed_at}));
+   if(rows.length)break;
+  }
+  if(rows.length){
+   const response=await fetch(SUPABASE_URL+'/rest/v1/corporate_unadjusted_prices?on_conflict=symbol,price_date',{
+    method:'POST',headers:{apikey:SECRET_KEY,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify(rows)});
+   if(!response.ok)throw new Error('CORPORATE_PRICE_SAVE_'+response.status);
+  }
+  results.push({symbol:w.symbol,cursor:w.cursor,rows:rows.length});
+ }
+ return {results};
+}
+
 async function syncHistoricalFx(){
   // The public H.10 series transmits no user portfolio or credentials to FRED.
   // US noon rate is only a historical estimate of a Korean broker's applied FX.
@@ -1281,6 +1315,7 @@ Deno.serve(async (req:Request) => {
   if (!userId) return json(req,{ok:false,code:"AUTH_REQUIRED"},401);
   const action = String(body?.action || "preview");
   try {
+    if(action === "sync-corporate-opening-prices")return json(req,await syncCorporateOpeningPrices(userId));
     if(action === "overseas-day-pnl")return json(req,await overseasDayPnl(userId,String(body.date||todaySeoul())));
     if (action === "preview") {
       const p = await previewUser(userId);
@@ -1338,6 +1373,7 @@ Deno.serve(async (req:Request) => {
     }
     if (action === "sync-current") {
       const s = await syncCurrent(userId);
+      await syncCorporateOpeningPrices(userId).catch(()=>null);
       return json(req,{ok:true,mode:"current_snapshot_sync",...s});
     }
     if (action === "preview-history") {
