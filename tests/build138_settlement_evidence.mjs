@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import {stripTypeScriptTypes} from 'node:module';
+import {webcrypto} from 'node:crypto';
+const code=readFileSync('supabase/functions/kb-sync-worker/index.ts','utf8');
+const n=v=>Number(String(v??'').replaceAll(',','').trim())||0;
+const ctx=vm.createContext({n,nOrNull:v=>v==null?null:n(v),TextEncoder,crypto:webcrypto,
+ isoDate8:v=>String(v).replace(/^(\d{4})(\d{2})(\d{2})$/,'$1-$2-$3')});
+vm.runInContext(stripTypeScriptTypes(code.slice(code.indexOf('async function settlementEvidence('),code.indexOf('function normalizeRealized('))),ctx);
+const row={trd_clsf_nm:'매수',stnd_is_cd:'US0000000001',shrt_is_cd:'TEST',ordr_dt:'20260929',stmt_dt:'20261001',stmt_q_p6:'2',frgn_stmt_prc_p6:'100',frgn_stmt_amt_p4:'201',frgn_agr_amt_p4:'200',crncy_cd:'USD'};
+const ledger=[{dl_dt:'20261001',stnd_is_cd:row.stnd_is_cd,q:'2',smry_nm:'매수'}];
+let out=await ctx.settlementEvidence([row],ledger);
+assert.equal(out.length,1,'settled execution-day evidence must not be discarded');
+assert.equal(out[0].order_date,'2026-09-29');
+assert.equal(out[0].evidence.trade_gross,200);
+assert.equal(out[0].evidence.occurrences,1);
+assert.equal(out[0].gross_amount,201,'settlement cash remains unchanged');
+out=await ctx.settlementEvidence([row,row],ledger);
+assert.equal(out.length,1,'identical keys cannot break the evidence upsert');
+assert.equal(out[0].evidence.occurrences,2,'collapsed duplicates cannot become unique date evidence');
+assert.equal((await ctx.settlementEvidence([{...row,stmt_q_p6:'0'}],[])).length,0);
+assert.equal((await ctx.settlementEvidence([{...row,trd_clsf_nm:'기타'}],[])).length,0);
+assert.ok(code.indexOf('const retiredRevisions=')<code.indexOf('const orderDatesLinked='),'retire stale evidence before matching dates');
+console.log('Build135 settlement evidence regression passed');
+const block=code.slice(code.indexOf('  if(evidence.length>2000)'),code.indexOf('  const sourceKeys=evidence.map'));
+const sizes=[];
+const batch=vm.createContext({evidence:Array.from({length:650},()=>({})),userId:'fixture',adminRpc:async(name,args)=>{sizes.push(args.p_rows.length);return args.p_rows.length}});
+assert.equal(await vm.runInContext('(async()=>{'+block+'return evidenceWritten})()',batch),650);
+assert.deepEqual(sizes,[300,300,50]);
+batch.evidence=Array.from({length:2001},()=>({}));
+await assert.rejects(vm.runInContext('(async()=>{'+block+'})()',batch),/MONTH_TOO_LARGE/);
+
+for(const isin of ['AU0000000023','CA0000000024']) assert.equal((await ctx.settlementEvidence([{...row,stnd_is_cd:isin}],[])).length,1);
+assert.equal((await ctx.settlementEvidence([{...row,stnd_is_cd:'NOT_AN_ISIN'}],[])).length,0);
+console.log('International execution evidence passed');

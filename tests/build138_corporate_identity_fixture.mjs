@@ -1,0 +1,4 @@
+import fs from 'node:fs';
+const s=fs.readFileSync('supabase/build138_period_corporate.sql','utf8');
+const selection=s.match(/on \(item->>'security_id'\)::uuid=(\(select c.security_id from calculated c join corporate_catalog[\s\S]*?limit 1\))/)[1];
+console.log(`with corporate_catalog(group_key,old_key,new_key) as(values ('A','old','new'),('B','first','middle'),('B','middle','last')),calculated(asset_key,security_id) as(values ('old','00000000-0000-0000-0000-000000000001'::uuid),('new','00000000-0000-0000-0000-000000000002'::uuid),('first','00000000-0000-0000-0000-000000000003'::uuid),('middle','00000000-0000-0000-0000-000000000004'::uuid),('last','00000000-0000-0000-0000-000000000005'::uuid)),expected(group_key,want) as(values ('A','00000000-0000-0000-0000-000000000002'::uuid),('B','00000000-0000-0000-0000-000000000005'::uuid)) select count(*) cases,count(*) filter(where ${selection} is distinct from want) failures from expected g;`);

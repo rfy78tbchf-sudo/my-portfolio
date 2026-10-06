@@ -1,0 +1,9 @@
+# Builds 138–139 — Execution evidence and period completeness
+
+Execution evidence accepts structurally valid international ISINs instead of US-only prefixes. USD, account, unique two-way matching, source, quantity, price, and exact raw gross identities remain mandatory. Six-decimal average-price rounding permits only half a final price digit per share plus half a cent of gross rounding. Existing dates are never overwritten.
+
+Verified complete corporate histories may appear in bounded periods only when every underlying event belongs to the window and every execution date is known. Same-security splits retain cash, quantity, and source gates. Corporate display selects the terminal security identifier, avoiding a dropped group when the representative uses an ISIN instead of a ticker. Full-history quantity validation uses a verified execution timestamp when available, consistently with the ledger.
+
+Current-day domestic sales can be represented provisionally from exact broker execution evidence. Raw quantity, gross, fees, tax, realized-profit identity, source, freshness and uniqueness are validated. Any same-day or later sale ledger record suppresses this conservative fallback. It creates no transactions. Whole-history recovery also reconciles ending quantity and validated historic cash. Settlement replaces provisional evidence rather than adding to it.
+
+Validation: 29 execution-link fixtures, 22 bounded corporate fixtures, 19 split fixtures, 14 domestic provisional-sale fixtures, and collector regression tests passed. Live owner-scoped full-history and six-month native-currency inclusion reached full coverage at the verification snapshot. Composition differences were zero. This is not a claim of exact KRW conversion, confirmed unsettled trades, or complete coverage for every shorter window. Remaining opening-valuation and ambiguous execution-date cases stay gated.

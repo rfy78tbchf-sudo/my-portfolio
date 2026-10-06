@@ -730,7 +730,7 @@ async function settlementEvidence(rows:any[],ledger:any[]){
     const symbol=String(r?.shrt_is_cd||"").trim().toUpperCase();
     const order=isoDate8(r?.ordr_dt),settlement=isoDate8(r?.stmt_dt);
     const qty=n(r?.stmt_q_p6),price=n(r?.frgn_stmt_prc_p6);
-    if(!type||!/^US[A-Z0-9]{10}$/.test(isin)||!symbol||!order||qty<=0||price<=0)continue;
+    if(!type||!/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(isin)||!symbol||!order||qty<=0||price<=0)continue;
     // Preserve settled records too: their order date is independent evidence.
     // P&L already excludes evidence that has a corresponding ledger record.
     const fields=[isin,symbol,order,settlement,type,qty,price,
