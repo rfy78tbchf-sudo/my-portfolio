@@ -22,3 +22,7 @@ c.live.stockRealized={ok:true,period_start:'2026-10-01',period_end:'2026-10-06',
 const closed=c.stockRealizedRows(c.live.stockRealized);assert.equal(closed[0].local,458.92);assert.equal(closed[0].count,2);assert.equal(closed[0].known,2);assert.equal(closed[0].cost,15259.53);assert.equal(closed[0].provisionalSettlement,2);assert.match(c.stockSeparatedHtml(),/458.92 USD/);assert.match(c.stockSeparatedHtml(),/결제 전 계산/);
 assert.equal(c.stockRealizedItems({...c.live.stockRealized,items:executions.slice(0,1)})[0].realized_local,null);
 console.log('Build151: flat-cycle native amount, coverage, cost and provisional label verified');
+
+const aliasCycle={...flat,symbol:'US25461H2913',aliases:['SOXS','US25461H2913'],closed_realized:{...flat.closed_realized,sale_count:1,realized_local:29.23,realized_krw:39741.108}};
+const aliasRows=c.stockRealizedItems({items:[{symbol:'SOXS',currency:'USD',realized_local:null}],closed_cycles:[aliasCycle]});assert.equal(aliasRows.length,1);assert.equal(aliasRows[0].symbol,'SOXS');assert.equal(aliasRows[0].realized_local,29.23);
+console.log('Build152: ISIN cycle matches ticker without duplicate or unreadable symbol');
