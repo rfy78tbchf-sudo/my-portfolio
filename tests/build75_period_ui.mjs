@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const fn=source.slice(source.indexOf('  function changeStockPeriod('),source.indexOf('  function stockPeriodPerformance('));
 const requests=[];
-const ctx={stockPeriod:'THIS_MONTH',stockPeriodEpoch:0,live:{stockPnl:{ok:true,period:'THIS_MONTH'}},render(){},rpc:(_,p)=>new Promise((resolve,reject)=>requests.push({p,resolve,reject}))};
+const ctx={kstDate:()=> '2026-10-06',stockPeriod:'THIS_MONTH',stockPeriodEpoch:0,live:{stockPnl:{ok:true,period:'THIS_MONTH'}},render(){},rpc:(_,p)=>new Promise((resolve,reject)=>requests.push({p,resolve,reject}))};
 vm.createContext(ctx);vm.runInContext(fn,ctx);
 ctx.changeStockPeriod('1W');ctx.changeStockPeriod('1M');
 requests[1].resolve({ok:true,period:'1M',pnl_krw:12});await new Promise(setImmediate);
