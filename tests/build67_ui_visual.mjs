@@ -427,6 +427,7 @@ try{
             await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();
             await page.locator('#brokerDayCard>summary').click();
           }
+          await page.locator('.sale-row-details').last().locator(':scope > summary').click();
           await page.locator('.stock-row-evidence').last().locator('summary').click();
           assert.match(await page.locator('.stock-row-evidence').last().innerText(),/매수원가 확인 필요/);
           const boxes=await page.locator('#brokerDayCard .tool-row').evaluate(el=>{const a=el.querySelector('input').getBoundingClientRect(),b=el.querySelector('button').getBoundingClientRect();return {inputRight:a.right,buttonLeft:b.left,inputBottom:a.bottom,buttonTop:b.top}});
