@@ -7,7 +7,7 @@ const dates={period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-2
 const cycle={symbol:'ISIN',aliases:['ISIN','AAA'],name:'Closed fixture',currency:'USD',closed_realized:{method:'flat_to_flat_net_cash',sale_count:2,realized_local:-10,realized_krw:-14000,provisional_date_count:0}};
 const r={...dates,ok:true,items:[{symbol:'AAA',currency:'USD',realized_local:5,historical_krw_estimate:7000},{symbol:'AAA',currency:'USD',realized_local:null},{symbol:'BBB',currency:'KRW',realized_local:500}],closed_cycles:[cycle]};
 const rows=ctx.stockRealizedRows(r);assert.equal(rows.length,2);
-const c=rows.find(x=>x.symbol==='ISIN');assert.equal(c.amount,-14000);assert.equal(c.count,2);assert.equal(c.known,2);assert.match(c.detail,/기간 합계/);
+const c=rows.find(x=>x.symbol==='AAA');assert.equal(c.amount,-14000);assert.equal(c.count,2);assert.equal(c.known,2);assert.match(c.detail,/기간 합계/);
 assert.equal(r.items.length,3);assert.equal(r.items[1].realized_local,null);
 const p={...dates,pnl_krw:-20000,items:[{symbol:'ISIN',aliases:['AAA'],pnl_krw:-14000},{symbol:'BBB',pnl_krw:-6000}]};
 assert.equal(ctx.stockTotalParts(p,r).realized,-13500);
