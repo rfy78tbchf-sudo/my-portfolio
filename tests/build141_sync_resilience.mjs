@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('index.html','utf8');
+for(const [,script] of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(script);
+function block(start,end){return html.slice(html.indexOf(start),html.indexOf(end,html.indexOf(start)));}
+let calls=[],active=0,max=0;
+const ctx=vm.createContext({Promise,recentHistoryMonths:()=>['2026-09','2026-10'],edgeSync:async(action,payload)=>{active++;max=Math.max(max,active);calls.push([action,payload.month]);await Promise.resolve();active--;if(action==='sync-current'||payload.month==='2026-09')throw Error('offline');}});
+vm.runInContext(block('  function runRefreshSync(', '  function refreshLive('),ctx);
+const errors=await ctx.runRefreshSync();
+assert.equal(calls.length,4);assert.equal(max,1);assert.equal(errors.length,2);assert.equal(calls.at(-1)[0],'sync-prices');
+let finish,count=0;
+ctx.loadLiveOnce=()=>{count++;return new Promise(r=>finish=r)};
+vm.runInContext(block('  var liveLoadPromise=null;', '  function loadLiveOnce('),ctx);
+const a=ctx.loadLive(),b=ctx.loadLive();assert.equal(a,b);assert.equal(count,1);finish();await a;
+const c=ctx.loadLive();assert.equal(count,2);finish();await c;
+ctx.loadLiveOnce=()=>Promise.reject(Error('network'));
+await assert.rejects(ctx.loadLive());ctx.loadLiveOnce=()=>Promise.resolve('recovered');assert.equal(await ctx.loadLive(),'recovered');
+assert.match(html,/if\(previousLive\)\{live=previousLive;return\}/);
+assert.match(html,/indicator.textContent=liveError\?/);
+console.log('Build141: sequential partial-failure recovery, in-flight coalescing, retry and script syntax passed');
