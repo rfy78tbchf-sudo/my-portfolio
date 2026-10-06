@@ -1,3 +1,4 @@
+import './build143_month_review.mjs';
 import './build142_fast_refresh.mjs';
 import './build141_sync_resilience.mjs';
 import './build131_pnl_recovery.mjs';
@@ -242,7 +243,7 @@ try{
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
       await page.evaluate(()=>window.__uiRender('home'));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
-      await page.locator('.home-reviews>summary').click();
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true,'due reviews are visible without an extra tap');
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
       assert.match(await card.innerText(),/다시 점검할 판단 1개/);
       assert.equal(await card.locator('[data-decision-detail]').first().getAttribute('data-decision-detail'),'s1');
