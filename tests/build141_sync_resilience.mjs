@@ -7,7 +7,7 @@ function block(start,end){return html.slice(html.indexOf(start),html.indexOf(end
 let calls=[],active=0,max=0;
 const ctx=vm.createContext({Promise,recentHistoryMonths:()=>['2026-09','2026-10'],edgeSync:async(action,payload)=>{active++;max=Math.max(max,active);calls.push([action,payload.month]);await Promise.resolve();active--;if(action==='sync-current'||payload.month==='2026-09')throw Error('offline');}});
 vm.runInContext(block('  function runRefreshSync(', '  function refreshLive('),ctx);
-const errors=await ctx.runRefreshSync();
+const errors=await ctx.runRefreshSync(null,true);
 assert.equal(calls.length,4);assert.equal(max,1);assert.equal(errors.length,2);assert.equal(calls.at(-1)[0],'sync-prices');
 let finish,count=0;
 ctx.loadLiveOnce=()=>{count++;return new Promise(r=>finish=r)};

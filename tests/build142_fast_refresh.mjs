@@ -1,0 +1,16 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const html=fs.readFileSync('index.html','utf8');
+const source=html.slice(html.indexOf('  function runRefreshSync('),html.indexOf('  function refreshLive('));
+let calls=[],loads=0;let fail=false;
+const badge={textContent:''};const ctx=vm.createContext({Promise,Date,mode:'live',session:{refreshToken:'synthetic'},recentHistoryMonths:()=>['2026-09','2026-10'],kstMonth:()=> '2026-10',document:{getElementById:()=>badge},edgeSync:async(a,p)=>{calls.push([a,p.month]);if(fail&&p.month==='2026-10')throw Error('offline')},loadLive:async()=>{loads++},render(){}});
+vm.runInContext(source,ctx);
+await ctx.runRefreshSync();assert.deepEqual(calls,[['sync-current',undefined]]);
+calls=[];const a=ctx.completeBackgroundSync(),b=ctx.completeBackgroundSync();assert.equal(a,b);await a;assert.equal(calls.length,3);assert.equal(loads,1);
+calls=[];await ctx.completeBackgroundSync();assert.equal(calls.length,0);
+ctx.backgroundSyncTimes['history:2026-10']=0;await ctx.completeBackgroundSync();assert.equal(calls.length,1);assert.equal(calls[0][1],'2026-10');
+ctx.backgroundSyncTimes['history:2026-10']=0;fail=true;await ctx.completeBackgroundSync();assert.equal(ctx.backgroundSyncTimes['history:2026-10'],0);assert.equal(badge.textContent,'내역 일부 미갱신');fail=false;
+await ctx.completeBackgroundSync();assert.ok(ctx.backgroundSyncTimes['history:2026-10']>0);
+const home=html.slice(html.indexOf('  function liveHome(){'),html.indexOf('    var snaps=',html.indexOf('  function liveHome(){')));
+const h=vm.createContext({live:null,liveError:null,empty:()=>{throw Error('not disconnected')}});vm.runInContext(home+'}',h);assert.match(h.liveHome(),/불러오는 중/);
+assert.match(html,/#pullRefresh\{position:fixed;z-index:7;top:auto;bottom:/);
+console.log('Build142: first-load state, balance-only foreground, background dedup, TTL, failure retry and status passed');
