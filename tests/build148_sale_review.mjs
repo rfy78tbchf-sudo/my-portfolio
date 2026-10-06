@@ -1,0 +1,11 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const source=fs.readFileSync('index.html','utf8'),c=vm.createContext({});
+vm.runInContext(source.slice(source.indexOf('  function saleReviewScope('),source.indexOf('  function openSaleReview(')),c);
+const row={symbol:'SOLD',currency:'USD',amount:0};c.stockPeriod='1M';c.live={stockRealized:{ok:true,period_start:'2026-09-01',period_end:'2026-09-30'},stockRealizedPeriod:'1M',securityMap:{s:{id:'s',symbol:'SOLD',currency:'USD'}},holdings:[]};c.stockRealizedRows=()=>[row];
+assert.equal(c.saleReviewScope('SOLD','USD').id,'s','fully sold security opens');assert.equal(c.saleReviewScope('SOLD','KRW'),null);c.live.stockRealizedPeriod='1W';assert.equal(c.saleReviewScope('SOLD','USD'),null);c.live.stockRealizedPeriod='1M';
+c.live.securityMap.other={id:'other',symbol:'SOLD',currency:'USD'};assert.equal(c.saleReviewScope('SOLD','USD'),null,'ambiguous symbols cannot mix accounts/securities');delete c.live.securityMap.other;
+const args={p_security_id:'s',p_start:'2026-09-01',p_end:'2026-09-30',p_reason:'reason',p_lesson:'lesson',p_next_action:'next',p_revision:0};
+let data={ok:true,security_id:'s',period_start:args.p_start,period_end:args.p_end,note:{revision:1,reason:'reason',lesson:'lesson',next_action:'next'}};
+c.rpc=async name=>{if(name==='save_sale_review')throw Error('lost response');return data};assert.equal((await c.saveSaleReviewVerified(args)).revision,1,'readback recovers lost save response');
+data={...data,security_id:'wrong'};await assert.rejects(c.saveSaleReviewVerified(args));data={...data,security_id:'s',note:{...data.note,lesson:'other'}};await assert.rejects(c.saveSaleReviewVerified(args));
+console.log('Build148: fully sold entry, period/currency/identity guards, readback recovery and mismatch rejection passed');
