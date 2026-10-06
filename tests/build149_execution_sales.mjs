@@ -9,3 +9,9 @@ Object.assign(c,{stockView:'realized',stockPeriod:'THIS_MONTH',live:{stockRealiz
 vm.runInContext(s.slice(s.indexOf('  function stockSeparatedHtml('),s.indexOf("  var stockPeriod='THIS_MONTH'")),c);
 const html=c.stockSeparatedHtml();assert.match(html,/매도 3건 · 2종목/);assert.match(html,/결제 반영 대기/);assert.doesNotMatch(html,/계산 대기|일부 계산/);
 console.log('Build149: pending sales grouped, dates visible, no fake zero, no unsafe closed-cycle replacement, render passed');
+
+const official={symbol:'KR',currency:'KRW',status:'broker_official',realized_local:155770,allocated_cost:2250000,quantity:200,trade_date:'2026-10-06'};
+c.live.stockRealized={ok:true,items:[official,{symbol:'US',currency:'USD',realized_local:123.45,historical_krw_estimate:null,allocated_cost:1000}],period_start:'2026-10-01',period_end:'2026-10-06'};
+const useful=c.stockSeparatedHtml();assert.match(useful,/123.45 USD/);assert.match(useful,/155770/);assert.match(useful,/sale-row-details/);assert.doesNotMatch(useful,/secondary full[^>]*data-sale-review/);
+assert.equal(c.stockRealizedItems({items:[official],closed_cycles:[{symbol:'KR',aliases:['KR'],closed_realized:{method:'flat_to_flat_net_cash',sale_count:1,realized_local:9,realized_krw:9}}]})[0].realized_local,155770);
+console.log('Build150: native USD without FX, official KRW, collapsed review and official priority passed');
