@@ -1,3 +1,4 @@
+import './build147_swing_alerts.mjs';
 import './build146_decision_followup.mjs';
 import './build145_period_cache.mjs';
 import './build144_demand_pnl.mjs';
@@ -130,6 +131,7 @@ let html=source.replace('  restoreLogin();',injected).replace(/<script[^>]+src=[
 // Keep the application's actual AI response renderer as well.
 html=html.replace('</body>',`<script>${readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8')}</script></body>`);
 writeFileSync(out+'/fixture.html',html);
+live.swingAlertState=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,{unread:true}]));
 live.swingPrices=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,swingPoints([...swingValues.slice(0,-1),85-i],today)]));
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:(await import('@sparticuz/chromium')).default.args}:{} )});
 try{
@@ -143,6 +145,9 @@ try{
     await page.locator('#homeToday [data-security-id="s0"]').click();
     await page.locator('.detail-price-chart').waitFor();
     await page.locator('#detailClose').click();
+    assert.match(await page.locator('#homePriceWatch').innerText(),/새 하락 알림 4개/);
+    await page.locator('#swingAlertAck').click();
+    assert.equal(await page.locator('#swingAlertAck').count(),0);
     assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),3);
     await page.locator('#homePriceWatch .price-watch-row').first().click();
     await page.locator('.detail-price-chart').waitFor();
