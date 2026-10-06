@@ -1,3 +1,4 @@
+import './build141_sync_resilience.mjs';
 import './build131_pnl_recovery.mjs';
 import './build130_pnl_find.mjs';
 import './build128_reference_fx.mjs';
@@ -48,11 +49,11 @@ if(!baseline&&source.includes('detail-thesis-check'))await import('./build89_ma_
 const denseUi=source.includes('contribution-toggle');
 // Exercise the real refresh lifecycle, which the previous static fixture missed.
 if(!process.env.UI_BASELINE){
- const fn=source.slice(source.indexOf('  function refreshLive('),source.indexOf('  (function bindPullToRefresh'));
+ const fn=source.slice(source.indexOf('  function runRefreshSync('),source.indexOf('  (function bindPullToRefresh'));
  for(const fail of [false,true]){
   const labels=[],button={set textContent(v){labels.push(v)},setAttribute(){},disabled:false};
   const indicator={classList:{add(){},remove(){}}};
-  const ctx={mode:'live',document:{visibilityState:'visible',getElementById:id=>id==='refreshBtn'?button:indicator},liveRefreshPromise:null,lastLiveLoadAt:0,currentTab:'home',window:{scrollY:0,scrollTo(){}},edgeSync:()=>Promise.resolve(),syncRecentHistory:()=>Promise.resolve(),loadLive:()=>fail?Promise.reject(new Error('isolated failure')):Promise.resolve(),live:{},render(){},setTimeout(){}};
+  const ctx={mode:'live',document:{visibilityState:'visible',getElementById:id=>id==='refreshBtn'?button:indicator},liveRefreshPromise:null,liveError:null,lastLiveLoadAt:0,currentTab:'home',window:{scrollY:0,scrollTo(){}},edgeSync:()=>Promise.resolve(),syncRecentHistory:()=>Promise.resolve(),recentHistoryMonths:()=>['2026-10'],loadLive:()=>fail?Promise.reject(new Error('isolated failure')):Promise.resolve(),live:{},render(){},setTimeout(){}};
   vm.createContext(ctx);vm.runInContext(fn,ctx);await ctx.refreshLive(true,true).catch(()=>{});
   assert.ok(labels.length>=2);assert.ok(labels.every(x=>x==='↻'),'refresh must stay an icon during load and after success/failure');assert.equal(button.disabled,false);
  }
