@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+let day='2026-10-06',calls=[];
+const c=vm.createContext({stockPeriod:'ALL',stockPeriodEpoch:0,live:{},render(){},kstDate:()=>day,rpc:(_,p)=>new Promise((resolve,reject)=>calls.push({period:p.p_period,resolve,reject}))});
+vm.runInContext(source.slice(source.indexOf('  function changeStockPeriod('),source.indexOf('  function stockPeriodPerformance(')),c);
+let p=c.changeStockPeriod('ALL');calls[0].resolve({ok:true,period:'ALL',value:1});await p;
+p=c.changeStockPeriod('THIS_MONTH');calls[1].resolve({ok:true,period:'THIS_MONTH'});await p;
+await c.changeStockPeriod('ALL');assert.equal(calls.length,2);assert.equal(c.live.stockPnl.value,1,'revisit uses successful result');
+const a=c.changeStockPeriod('1W'),b=c.changeStockPeriod('1M'),a2=c.changeStockPeriod('1W');assert.equal(calls.length,4,'pending revisit shares request');
+calls[2].resolve({ok:true,period:'1W'});await Promise.all([a,a2]);calls[3].resolve({ok:true,period:'1M'});await b;assert.equal(c.live.stockPnl.period,'1W','late response cannot replace selected period');
+p=c.changeStockPeriod('YTD');calls[4].reject(Error('timeout'));await p;p=c.changeStockPeriod('YTD');assert.equal(calls.length,6,'failure is retryable');calls[5].resolve({ok:false,period:'YTD'});await p;
+p=c.changeStockPeriod('YTD');assert.equal(calls.length,7,'invalid result is not cached');calls[6].resolve({ok:true,period:'YTD'});await p;
+day='2026-10-07';p=c.changeStockPeriod('YTD');assert.equal(calls.length,8,'day rollover invalidates cache');calls[7].resolve({ok:true,period:'YTD'});await p;
+c.live={};p=c.changeStockPeriod('YTD');assert.equal(calls.length,9,'new balance snapshot invalidates cache');const target=c.live;c.live={};calls[8].resolve({ok:true,period:'YTD'});await p;assert.equal(c.live.stockPnl,undefined);assert.equal(target.stockPnlCache.YTD,undefined);
+console.log('Build145: successful period reuse, pending deduplication, late response, retry, midnight and snapshot invalidation passed');
