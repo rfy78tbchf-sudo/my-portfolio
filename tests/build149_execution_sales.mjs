@@ -15,3 +15,10 @@ c.live.stockRealized={ok:true,items:[official,{symbol:'US',currency:'USD',realiz
 const useful=c.stockSeparatedHtml();assert.match(useful,/123.45 USD/);assert.match(useful,/155770/);assert.match(useful,/sale-row-details/);assert.doesNotMatch(useful,/secondary full[^>]*data-sale-review/);
 assert.equal(c.stockRealizedItems({items:[official],closed_cycles:[{symbol:'KR',aliases:['KR'],closed_realized:{method:'flat_to_flat_net_cash',sale_count:1,realized_local:9,realized_krw:9}}]})[0].realized_local,155770);
 console.log('Build150: native USD without FX, official KRW, collapsed review and official priority passed');
+
+const flat={symbol:'SOXL',currency:'USD',aliases:['SOXL'],closed_realized:{method:'flat_to_flat_net_cash',sale_count:2,realized_local:458.92,realized_krw:627551.076,allocated_cost:15259.53,provisional_settlement_count:2}};
+const executions=[{symbol:'SOXL',currency:'USD',status:'order_unverified',realized_local:null},{symbol:'SOXL',currency:'USD',status:'settlement_pending',realized_local:null}];
+c.live.stockRealized={ok:true,period_start:'2026-10-01',period_end:'2026-10-06',items:executions,closed_cycles:[flat]};
+const closed=c.stockRealizedRows(c.live.stockRealized);assert.equal(closed[0].local,458.92);assert.equal(closed[0].count,2);assert.equal(closed[0].known,2);assert.equal(closed[0].cost,15259.53);assert.equal(closed[0].provisionalSettlement,2);assert.match(c.stockSeparatedHtml(),/458.92 USD/);assert.match(c.stockSeparatedHtml(),/결제 전 계산/);
+assert.equal(c.stockRealizedItems({...c.live.stockRealized,items:executions.slice(0,1)})[0].realized_local,null);
+console.log('Build151: flat-cycle native amount, coverage, cost and provisional label verified');

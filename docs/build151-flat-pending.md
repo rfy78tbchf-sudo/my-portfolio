@@ -1,0 +1,7 @@
+# Build151 — order-independent realized profit before settlement
+
+The existing zero-opening/zero-ending calculation was limited to fully posted cash ledgers. Extend it only when active SPQM2205 executions completely reconcile with the validated period result: same dates, trade count, net cash, zero quantity delta, zero independent opening ledger quantity, and matching every posted trade by ISIN, type, quantity, price, order/settlement dates and cash. Require unique execution occurrence, valid gross-price identity and plausible cash direction. Keep unresolved rows intact and add a separate closed-period result; UI replaces them only with exact sale-count coverage.
+
+Live October6 verification: SOXL 3 buys total USD15259.53, 2 sales total USD15718.45, net USD458.92. All quantities bought and sold are 96 shares, opening/ending zero. Two trade entries (one buy and one sell) are unsettled. This is a provisional period calculation, not broker-reported individual-fill profit. UI shows 결제 전 계산 and native USD amount. KRW period estimate 627551.076 is separate from native profit. Combined displayed partial KRW total including official domestic155770 is783321 rounded. Calculated coverage3 of8 sales;5 still unresolved.
+
+Fresh read-only KB SPQM2206 queries for October2,5,6 each succeeded but returned no profit rows. No fabricated chronology, fees, or trades. Existing raw transactions unchanged. Native/coverage/provisional display regression and authenticated RPC checked.
