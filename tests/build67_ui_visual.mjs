@@ -1,3 +1,4 @@
+import './build146_decision_followup.mjs';
 import './build145_period_cache.mjs';
 import './build144_demand_pnl.mjs';
 import './build143_month_review.mjs';
@@ -253,7 +254,14 @@ try{
       await card.getByText('다른 종목 판단 1개 보기',{exact:true}).click();
       await page.screenshot({path:`${out}/review-home-${width}.png`});
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'review list overflow');
-      await card.locator('[data-decision-detail="s0"]').click();await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();
+      await card.locator('[data-decision-detail="s0"]').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+      assert.equal(await page.evaluate(()=>document.getElementById('detailExtras').open),true,'home review route opens saved-decision section');
+      await page.locator('#detailContinueDecision').click();
+      assert.equal(await page.locator('#detailReason').inputValue(),decision.reason);
+      assert.equal(await page.locator('#detailReview').inputValue(),decision.review_condition);
+      await page.locator('#detailReason').fill('작성 중인 새 이유');await page.locator('#detailContinueDecision').click();
+      assert.equal(await page.locator('#detailReason').inputValue(),'작성 중인 새 이유','follow-up does not replace edits');
+      await page.screenshot({path:`${out}/decision-followup-${width}.png`});
       await page.locator('#detailClose').click();assert.ok(await card.locator('[data-decision-detail="s0"]').isVisible());
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
