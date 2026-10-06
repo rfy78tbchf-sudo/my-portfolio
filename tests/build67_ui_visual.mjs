@@ -93,7 +93,7 @@ const injected=`
     window.__saleNotes=window.__saleNotes||{};
     rpc=async function(name,p){
       var saleKey=p&&[p.p_security_id,p.p_start,p.p_end].join('|');
-      if(name==='get_sale_review')return {ok:true,security_id:p.p_security_id,period_start:p.p_start,period_end:p.p_end,note:window.__saleNotes[saleKey]||null,before:null,during:[]};
+      if(name==='get_sale_review')return {ok:true,security_id:p.p_security_id,period_start:p.p_start,period_end:p.p_end,note:window.__saleNotes[saleKey]||null,before:null,during:[],history:[{period_start:'2026-08-01',period_end:'2026-08-31',reason:'이전 기간 복기',lesson:'이전 교훈',next_action:'이전 기준'}]};
       if(name==='save_sale_review'){if(window.__saleFail)throw Error('Synthetic save failure');window.__saleNotes[saleKey]={reason:p.p_reason,lesson:p.p_lesson,next_action:p.p_next_action,revision:p.p_revision+1,updated_at:'2026-10-06T00:00:00Z'};return {ok:true,revision:p.p_revision+1}};
 
       if(name==='get_live_realized_sales'&&data.closedRealizedFixture)return data.closedRealizedFixture;
@@ -445,7 +445,7 @@ try{
         await page.evaluate(()=>window.__saleFail=true);await page.locator('#saleReviewForm button').click();await page.getByText(/저장 확인 실패/).waitFor();assert.equal(await page.locator('#saleReviewReason').inputValue(),'계획한 비중 축소');
         await page.evaluate(()=>window.__saleFail=false);await page.locator('#saleReviewForm button').click();await page.getByText(/복기 저장 완료/).waitFor();
         await page.screenshot({path:`${out}/sale-review-${width}.png`});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-        await page.locator('#detailClose').click();await page.locator('[data-sale-review="TEST"]').click();await page.locator('#saleReviewForm').waitFor();assert.equal(await page.locator('#saleReviewLesson').inputValue(),'분할 매도 기준을 미리 정하기');await page.locator('#detailClose').click();
+        await page.locator('#detailClose').click();await page.locator('[data-sale-review="TEST"]').click();await page.locator('#saleReviewForm').waitFor();assert.equal(await page.locator('#saleReviewLesson').inputValue(),'분할 매도 기준을 미리 정하기');await page.getByText('지난 복기 1개 보기',{exact:true}).click();assert.ok(await page.getByText('이전 기간 복기',{exact:true}).isVisible());await page.locator('#detailClose').click();
         await page.locator('[data-stock-view="total"]').click();
       }
       const localHistory={...stockData,stockRealizedPeriod:'ALL',stockRealizedFailed:true,stockPnl:{...stockData.stockPnl,period:'ALL',complete:false,local_only_count:1,candidate_count:3,items:[...stockData.stockPnl.items,{symbol:'LOCAL',name:'외화 전체 손익 검증',currency:'USD',pnl_local:12345.67,pnl_krw:null,local_cash_only:true,reason:'거래일 확인 필요',start_quantity:0,end_quantity:0,start_value_local:0,end_value_local:0,trade_cash_local:12340.67,dividend_local:5}]}};
