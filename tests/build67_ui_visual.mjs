@@ -93,6 +93,7 @@ const injected=`
   window.__uiFixture=function(data,record,opinion,comparison){
     live=data;liveError=null;mode='live';period='1M';session={accessToken:'synthetic-ui-session'};
     var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
+    if(!crypto.randomUUID){let syntheticId=0;Object.defineProperty(crypto,'randomUUID',{value:()=> '00000000-0000-4000-8000-'+String(++syntheticId).padStart(12,'0')})}
     window.__uiFailStockOnce=function(){failStockOnce=true};
     window.__saleNotes=window.__saleNotes||{};
     rpc=async function(name,p){
@@ -624,7 +625,7 @@ try{
     await page.locator('#detailReason').fill('매출 성장 근거를 다음 실적에서 다시 확인');
     await page.locator('#detailReview').fill('다음 실적 발표 후 확인');
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    await page.locator('#detailDecisionDone').waitFor();
+    await page.locator('#detailDecisionDone').waitFor().catch(async e=>{throw Error(e.message+'; save status: '+await page.locator('#detailDecisionStatus').innerText())});
     assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost response must not replay the write');
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
     await page.screenshot({path:out+'/decision-recovered-'+width+'.png'});
