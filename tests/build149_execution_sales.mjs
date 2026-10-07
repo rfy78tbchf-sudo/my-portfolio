@@ -26,3 +26,8 @@ console.log('Build151: flat-cycle native amount, coverage, cost and provisional 
 const aliasCycle={...flat,symbol:'US25461H2913',aliases:['SOXS','US25461H2913'],closed_realized:{...flat.closed_realized,sale_count:1,realized_local:29.23,realized_krw:39741.108}};
 const aliasRows=c.stockRealizedItems({items:[{symbol:'SOXS',currency:'USD',realized_local:null}],closed_cycles:[aliasCycle]});assert.equal(aliasRows.length,1);assert.equal(aliasRows[0].symbol,'SOXS');assert.equal(aliasRows[0].realized_local,29.23);
 console.log('Build152: ISIN cycle matches ticker without duplicate or unreadable symbol');
+
+const unknown=c.stockRealizedRows({items:[{symbol:'MU',currency:'USD',quantity:3,trade_date:'2026-10-05',issue_date:'2026-09-22',status:'order_unverified',realized_local:null}]})[0];
+assert.match(c.stockRealizedEvidenceHtml(unknown),/2026-09-22 매매 순서·원가 확인 필요/);
+assert.match(c.stockSeparatedHtml(),/2건 원화 합산/);
+console.log('Build154: unresolved originating date and calculated coverage visible');
