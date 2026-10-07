@@ -27,7 +27,7 @@ assert.match(basisSql,/v_history\.thesis_version is distinct from v_current_vers
 assert.match(basisSql,/account observation changed; refresh analysis/);
 const start=html.indexOf('  function decisionReviewHtml('),end=html.indexOf('  function aiSourceLinks(',start);
 assert.ok(start>0&&end>start);
-const scope=vm.createContext({esc:s=>String(s),kstStamp:s=>String(s),price:(n,c)=>`${n} ${c}`,
+const scope=vm.createContext({kstDate:()=> '2026-09-26',esc:s=>String(s),kstStamp:s=>String(s),price:(n,c)=>`${n} ${c}`,
   signedMoney:n=>`${n}원`,weightPct:n=>`${n}%`,Set});
 vm.runInContext(html.slice(start,end),scope);
 const judgement={created_at:'2026-09-01T12:00:00Z',thesis_version:2,
@@ -109,7 +109,7 @@ const homeScope=vm.createContext({esc:String,kstStamp:String,kstDate:()=> '2026-
   securityMap:{held:{id:'held',symbol:'TEST',name:'Test Holding'}},holdings:[{security_id:'held',quantity:10}],
   reviewDecisions:[{security_id:'held',created_at:'2026-09-01',review_condition:'2026-10-02',
     official_evidence_snapshot:{documents:[{url:'https://www.sec.gov/old'}]}}],reviewAnalyses:[]}});
-vm.runInContext(html.slice(homeStart,homeEnd),homeScope);
+vm.runInContext(html.slice(html.indexOf('  function decisionConditionState('),html.indexOf('  function officialPeriodKo('))+html.slice(homeStart,homeEnd),homeScope);
 assert.doesNotMatch(vm.runInContext('reviewHomeCard()',homeScope),/다시 점검할 판단/,'a future date is not due');
 homeScope.live.reviewAnalyses=[{symbol:'OTHER',created_at:'2026-09-05',official_evidence:{documents:[
   {url:'https://www.sec.gov/new',published_on:'2026-09-04',date_verified:true}],

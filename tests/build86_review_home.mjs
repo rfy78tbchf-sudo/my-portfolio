@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import fs from 'node:fs';
 const source=fs.readFileSync('index.html','utf8');
 const c={live:{securityMap:{a:{id:'a',symbol:'A',name:'Alpha'},b:{id:'b',symbol:'B',name:'Beta'}},holdings:[{security_id:'a',quantity:1},{security_id:'b',quantity:2}],reviewDecisions:[],reviewAnalyses:[],priceMeta:{}},esc:String,kstStamp:String,kstDate:()=> '2026-09-30'};
-vm.createContext(c);vm.runInContext(source.slice(source.indexOf('  function reviewHomeCard('),source.indexOf('  function benchmarkCard(')),c);
+vm.createContext(c);vm.runInContext(source.slice(source.indexOf('  function decisionConditionState('),source.indexOf('  function officialPeriodKo('))+source.slice(source.indexOf('  function reviewHomeCard('),source.indexOf('  function benchmarkCard(')),c);
 const d={security_id:'a',choice:'hold',created_at:'2026-09-29T00:00:00Z',review_condition:'실적 확인',thesis_version:1,price_snapshot:{price_date:'2026-09-28'}};
 assert.equal(c.reviewHomeCard(),'');c.live.reviewDecisions=[d];assert.match(c.reviewHomeCard(),/저장한 판단 다시 보기/);
 c.live.reviewDecisions=[{...d,created_at:'2026-09-27',review_condition:'2026-09-28'},d];assert.doesNotMatch(c.reviewHomeCard(),/점검 날짜 도래/,'superseded condition stays retired');

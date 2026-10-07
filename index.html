@@ -613,25 +613,9 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       if(laterPrice){reviewState='확인 자료 부족';condition='새 종가는 확인했지만 정성적인 재검토 조건의 충족 여부는 수동 점검이 필요합니다. 사용자 원문: '+esc(decision.review_condition||'')}
       if(samePriceDate)condition='판단 당시와 같은 종가까지 확인했습니다. 이후 새 가격 변화는 없으며 정성적인 조건은 사용자 원문대로 수동 점검합니다: '+esc(decision.review_condition||'');
     }
-    var match=String(decision.review_condition||'').match(/^(?:종가|가격)\s*([\d,.]+)\s*(달러|원)\s*(이하|이상)$/);
-    if(!refreshFailed&&match){reviewState='확인 자료 부족';condition='같은 통화의 유효한 종가와 판단 당시 기준일이 부족해 조건 충족 여부를 자동으로 단정하지 않습니다.'}
-    if(!refreshFailed&&match&&recent&&recent.close!=null&&Number.isFinite(Number(recent.close))&&prior.price_date&&recent.currency===(match[2]==='달러'?'USD':'KRW')&&Number.isFinite(Number(match[1].replace(/,/g,'')))){
-      var hit=match[3]==='이하'?Number(recent.close)<=Number(match[1].replace(/,/g,'')):
-        Number(recent.close)>=Number(match[1].replace(/,/g,''));
-      if(recent.price_date<=String(prior.price_date||'')){
-        reviewState='새 종가 대기';condition='당시와 같은 시장 기준일의 가격을 다시 읽었습니다. 판단 이후 새 가격 변화는 아직 확인되지 않았습니다.';
-      }else{
-        condition=(hit?'현재 종가가 저장한 기준에 해당합니다.':'현재 종가는 저장한 기준에 해당하지 않습니다.')+
-          ' '+esc(recent.price_date)+' 종가 기준이며, 그 사이 한번이라도 닿았는지는 확인하지 않았습니다.';
-        reviewState=hit?'재검토할 변화 있음':'확인된 변화 없음';
-      }
-    }
-    var due=String(decision.review_condition||'').trim().match(/^20\d\d-\d\d-\d\d$/);if(due&&(!Number.isFinite(Date.parse(due[0]))||new Date(due[0]).toISOString().slice(0,10)!==due[0]))due=null;
-    if(due&&due[0]>String(decision.created_at||'').slice(0,10)){
-      reviewState=due[0]<=kstDate()?'재검토할 변화 있음':'확인된 변화 없음';
-      condition='직접 적은 점검 날짜 '+esc(due[0])+(reviewState==='재검토할 변화 있음'?'가 지났습니다.':'까지 기다릴 수 있습니다.')+
-        ' 날짜 외 조건이 있으면 따로 확인해 주세요.';
-    }
+    var simple=decisionConditionState(decision,recent,kstDate(),refreshFailed),
+      match=simple.kind==='price',due=simple.kind==='date';
+    if(simple.kind){reviewState=simple.state;condition=esc(simple.message)}
     var maRule=String(decision.review_condition||'').trim().match(/^(\d{1,3})[·/,](\d{1,3})[·/,](\d{1,3})(?:개 종가 단순평균|일 단순이동평균) 정배열 이탈$/);
     if(maRule&&!refreshFailed){
       var periods=maRule.slice(1).map(Number),rows=(currentPrices||[]).slice().sort(function(a,b){return String(a.date||a.price_date).localeCompare(String(b.date||b.price_date))}),cut=String(prior.price_date||''),latest=rows[rows.length-1],dates=new Set(),valid=periods[0]>=2&&periods[0]<periods[1]&&periods[1]<periods[2]&&periods[2]<=200;
@@ -680,6 +664,28 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
     return '<section class="decision-review"><h3>지난 판단 이후</h3><div class="review-status"><b>'+reviewState+'</b><span>'+(reviewState==='확인된 변화 없음'?'기존 결정을 유지할지 확인해 주세요.':reviewState==='재검토할 변화 있음'?'바뀐 근거를 확인하고 다시 판단해 주세요.':reviewState==='조건 구체화 필요'?'다시 볼 조건을 선택해 저장해 주세요.':reviewState==='새 종가 대기'?'같은 종가를 다시 읽은 상태입니다.':'최신 자료를 확인한 뒤 결정해 주세요.')+'</span></div><dl class="review-summary"><div><dt>지난 결정</dt><dd>'+esc(labels[decision.choice]||'판단 기록')+'</dd></div><div><dt>내 이유</dt><dd>'+esc(String(decision.reason||'').slice(0,130))+'</dd></div><div><dt>다시 볼 조건</dt><dd>'+esc(decision.review_condition||'미등록')+'</dd></div></dl>'+
       '<p class="review-condition-result sub">'+condition+'</p>'+(meaningful.length?summary:'')+detail.replace('</summary>','</summary>'+(meaningful.length?'':summary))+'</section>';
   }
+  function decisionConditionState(decision,quote,today,refreshFailed){
+    var text=String(decision.review_condition||'').trim(),prior=decision.price_snapshot||{},
+      match=text.match(/^(?:종가|가격)\s*([\d,.]+)\s*(달러|원)\s*(이하|이상)$/),
+      isDate=/^20\d\d-\d\d-\d\d$/.test(text);
+    function validDate(value){return typeof value==='string'&&/^20\d\d-\d\d-\d\d$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString().slice(0,10)===value}
+    function result(kind,state,message,home,hit){return {kind:kind,state:state,message:message,home:home||state,hit:!!hit}}
+    if(isDate){
+      var created=new Date(decision.created_at),saved=Number.isFinite(created.getTime())?created.toLocaleDateString('sv-SE',{timeZone:'Asia/Seoul'}):'';
+      if(!validDate(text)||!saved||text<=saved)return result('date','조건 구체화 필요','판단을 저장한 한국 날짜보다 뒤의 유효한 점검 날짜를 정해 주세요.');
+      var arrived=text<=today;
+      return result('date',arrived?'재검토할 변화 있음':'확인된 변화 없음','직접 적은 점검 날짜 '+text+(arrived?'가 도래했습니다.':'까지 기다릴 수 있습니다.')+' 날짜 외 조건이 있으면 따로 확인해 주세요.',(arrived?'점검 날짜 도래 · ':'점검 예정 · ')+text,arrived);
+    }
+    if(!match)return result(null,'조건 구체화 필요','');
+    var threshold=Number(match[1].replace(/,/g,'')),currency=match[2]==='달러'?'USD':'KRW';
+    if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(match[1])||!Number.isFinite(threshold)||threshold<=0)return result('price','조건 구체화 필요','0보다 큰 유효한 가격 기준을 정해 주세요.');
+    var date=quote&&(quote.price_date||quote.date);
+    if(refreshFailed||!quote||String(quote.close==null?'':quote.close).trim()===''||!Number.isFinite(Number(quote.close))||Number(quote.close)<=0||quote.currency!==currency||(prior.currency&&prior.currency!==currency)||!validDate(date)||!validDate(prior.price_date)||date>today||prior.price_date>today)return result('price','확인 자료 부족','같은 통화의 유효한 종가와 판단 당시 기준일이 부족해 조건 충족 여부를 자동으로 단정하지 않습니다.');
+    if(date<=prior.price_date)return result('price','새 종가 대기','판단 이후 새 가격 변화는 아직 확인되지 않았습니다. 판단 당시보다 새로운 시장 기준일의 종가가 필요합니다.','새 종가 대기 · '+date+' 기준');
+    var hit=match[3]==='이하'?Number(quote.close)<=threshold:Number(quote.close)>=threshold;
+    return result('price',hit?'재검토할 변화 있음':'확인된 변화 없음',(hit?'현재 종가가 저장한 기준에 해당합니다.':'현재 종가는 저장한 기준에 해당하지 않습니다.')+' '+date+' 종가 기준이며, 그 사이 한번이라도 닿았는지는 확인하지 않았습니다.',(hit?'저장한 가격 조건에 해당 · ':'최근 종가는 가격 조건 미해당 · ')+date+' 종가',hit);
+  }
+
   function officialPeriodKo(doc){
     var value=String(doc&&((doc.period_ko||doc.period))||'');
     if(/[가-힣]/.test(value))return value.slice(0,80);
@@ -2155,20 +2161,11 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
         .find(function(a){return a.date_verified===true&&a.published_on&&a.published_on>savedDate&&
           !old.some(function(b){return b.url===a.url})});
       var quote=live.priceMeta&&live.priceMeta[d.security_id]&&live.priceMeta[d.security_id].latest,
-        match=String(d.review_condition||'').match(/^(?:종가|가격)\s*([\d,.]+)\s*(달러|원)\s*(이하|이상)$/),
-        triggered=match&&quote&&d.price_snapshot&&d.price_snapshot.price_date&&
-          quote.close!=null&&Number.isFinite(Number(quote.close))&&Number.isFinite(Number(match[1].replace(/,/g,'')))&&
-          quote.price_date>d.price_snapshot.price_date&&
-          quote.currency===(match[2]==='달러'?'USD':'KRW')&&
-          (match[3]==='이하'?Number(quote.close)<=Number(match[1].replace(/,/g,'')):
-            Number(quote.close)>=Number(match[1].replace(/,/g,''))),
-        due=String(d.review_condition||'').trim().match(/^20\d\d-\d\d-\d\d$/),
-        dateDue=due&&due[0]>String(d.created_at).slice(0,10)&&due[0]<=kstDate();
-      items.push({decision:d,security:s,attention:!!(unseen||dateDue||triggered)});
+        state=decisionConditionState(d,quote,kstDate(),false);
+      items.push({decision:d,security:s,attention:!!(unseen||state.hit)});
       var item=items[items.length-1];
-      item.message=triggered?'저장한 가격 조건에 해당 · '+quote.price_date+' 종가':
-        unseen?'보유 전제와 관련된 새 공식 자료 · '+unseen.published_on:
-        dateDue?'점검 날짜 도래 · '+due[0]:/^(\d{1,3})[·/,](\d{1,3})[·/,](\d{1,3})(?:개 종가 단순평균|일 단순이동평균) 정배열 이탈$/.test(String(d.review_condition||''))?'종목을 열어 저장 당시와 이평선 배열 비교':!match&&!due?'조건 구체화 필요 · 자동 확인 기준을 정해 주세요':'저장한 조건을 직접 확인해 주세요';
+      item.message=state.hit?state.home:unseen?'보유 전제와 관련된 새 공식 자료 · '+unseen.published_on:
+        state.kind?state.home:/^(\d{1,3})[·/,](\d{1,3})[·/,](\d{1,3})(?:개 종가 단순평균|일 단순이동평균) 정배열 이탈$/.test(String(d.review_condition||''))?'종목을 열어 저장 당시와 이평선 배열 비교':'조건 구체화 필요 · 자동 확인 기준을 정해 주세요';
     }
     if(!items.length)return '';
     items.sort(function(a,b){return Number(b.attention)-Number(a.attention)});

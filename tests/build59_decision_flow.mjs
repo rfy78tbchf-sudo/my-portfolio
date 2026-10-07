@@ -56,7 +56,7 @@ const home=vm.createContext({live:{reviewDecisions:[{
   holdings:[{security_id:'synthetic-arm',quantity:36}],
   priceMeta:{'synthetic-arm':{latest:{price_date:'2026-09-27',close:299,currency:'USD'}}}},
   esc:String,kstStamp:String,kstDate:()=> '2026-09-27'});
-vm.runInContext(html.slice(homeStart,homeEnd),home);
+vm.runInContext(html.slice(html.indexOf('  function decisionConditionState('),html.indexOf('  function officialPeriodKo('))+html.slice(homeStart,homeEnd),home);
 assert.match(vm.runInContext('reviewHomeCard()',home),/저장한 가격 조건에 해당/);
 assert.match(vm.runInContext('reviewHomeCard()',home),/자동 매매 신호가 아닙니다/);
 home.live.priceMeta['synthetic-arm'].latest.price_date='2026-09-25';
