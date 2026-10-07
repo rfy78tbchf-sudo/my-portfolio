@@ -40,7 +40,7 @@ try{
         var esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
         var num=(x,d)=>Number(x).toFixed(d),money=x=>Math.round(Number(x)).toLocaleString('ko-KR')+'원',pct=x=>Number(x).toFixed(2)+'%';
         var finiteMetric=x=>x==null||x===''?NaN:Number(x);
-        var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstStamp=String,weightPct=x=>Number(x).toFixed(1)+'%';
+        var signedMoney=x=>(Number(x)>0?'+':'')+money(x),amountHtml=money,cls=()=>'',price=money,kstDate=()=>"2026-09-30",kstStamp=String,weightPct=x=>Number(x).toFixed(1)+'%';
         var metric=(name,value)=>'<div class="metric"><span>'+name+'</span><b>'+value+'</b></div>';
         var securityChart=()=>'',interpretTechnical=()=>'',thesisEditor=()=>'<form id="thesisForm"><textarea data-thesis-field="rationale"></textarea><button type="submit">저장</button><span id="thesisStatus"></span></form>';
         var lastAiRequest=null,analysisCallCount=0;

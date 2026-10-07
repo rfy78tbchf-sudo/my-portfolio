@@ -32,7 +32,7 @@ scope.reviewAnalysis=[{created_at:'2026-09-20T00:00:00Z',official_evidence:{docu
   thesis_relation:{status:'mixed',thesis_version:2,
     interpretation_ko:'신제품 성장 관련 사실은 보유 이유를 일부 지지하지만, 후속 분기 지속성은 아직 확인되지 않아 이후 실적을 다시 봐야 합니다.'}}}];
 scope.esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;');
-scope.weightPct=n=>`${n}%`;scope.kstStamp=x=>String(x);scope.price=(n,c)=>`${n} ${c}`;
+scope.kstDate=()=> '2026-09-30';scope.weightPct=n=>`${n}%`;scope.kstStamp=x=>String(x);scope.price=(n,c)=>`${n} ${c}`;
 scope.officialPeriodKo=()=> '2026년 2분기';
 const review=vm.runInContext('decisionReviewHtml(reviewDecision,[],{items:[]},reviewAnalysis)',scope);
 const pageHtml=`<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body><main class="shell"><div class="content"><section class="hero"><div class="asset">511,345,671원</div></section>${card}<section class="card">${review}<a href="https://www.sec.gov/Archives/edgar/data/123/exhibit.htm">공식 자료 원문 보기</a></section></div></main><nav class="nav"><button>홈</button><button>포트폴리오</button><button>성과</button><button>분석</button><button>더보기</button></nav></body></html>`;
