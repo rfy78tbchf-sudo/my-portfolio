@@ -90,7 +90,7 @@ const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_redu
 const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
 const injected=`
   window.__uiFixture=function(data,record,opinion,comparison){
-    live=data;liveError=null;mode='live';period='1M';session=null;
+    live=data;liveError=null;mode='live';period='1M';session={accessToken:'synthetic-ui-session'};
     var stockResponse=data.stockPnl,failStockOnce=false;
     window.__uiFailStockOnce=function(){failStockOnce=true};
     window.__saleNotes=window.__saleNotes||{};
