@@ -34,6 +34,7 @@ try{
           holdingBasis:[{security_id:'held',account_id:'own',valuation_krw:10000,pnl_krw:500},
             {security_id:'other',account_id:'own',valuation_krw:4000,pnl_krw:-100}],accounts:[{id:'own',name:'Fixture only'}],settlementBasis:[],
           decisionMetrics:{ok:true,position:{symbol:'TEST',weight_pct:20}}};
+        var liveAuthEpoch=0,session={accessToken:"synthetic-detail"};
         var currentTab="portfolio",detailEpoch=0,stored=[],readbackIncomplete=true,SUPABASE_URL='https://example.invalid',SUPABASE_KEY='test-only';
         var edgeSync=async()=>({ok:true}),loadLive=async()=>live;
         var esc=x=>String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
