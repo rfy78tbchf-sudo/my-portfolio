@@ -24,7 +24,7 @@ assert.match(summary,/현재 보유 종목 점검/);
 assert.match(html,/data-performance-detail/);
 const c=html.indexOf('  function priceFocusedThesis('),d=html.indexOf('  function officialPeriodKo(',c);
 assert.ok(c>0&&d>c);
-Object.assign(scope,{kstDate:()=> '2026-09-27',kstStamp:String,price:String,
+Object.assign(scope,{kstDate:()=> '2026-09-30',kstStamp:String,price:String,
   officialPeriodKo:()=> '분기',weightPct:String,signedMoney:String});
 vm.runInContext(html.slice(c,d),scope);
 scope.decision={choice:'hold',reason:'Check next report',review_condition:'차주 시황 변동',
