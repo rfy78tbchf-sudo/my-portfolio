@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const source=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
 let waiting=[],calls=[];
-const context={Promise,stockPeriod:'THIS_MONTH',stockPeriodEpoch:0,live:{stockPnl:null},render(){},kstDate:()=> '2026-01-05',rpcDirect(name,payload){calls.push([name,payload]);return new Promise((resolve,reject)=>waiting.push({resolve,reject}))}};
+const context={Promise,liveAuthEpoch:1,session:{accessToken:"test"},stockPeriod:'THIS_MONTH',stockPeriodEpoch:0,live:{stockPnl:null},render(){},kstDate:()=> '2026-01-05',rpcDirect(name,payload){calls.push([name,payload]);return new Promise((resolve,reject)=>waiting.push({resolve,reject}))}};
 vm.createContext(context);
 vm.runInContext(source.slice(source.indexOf('  var stockCalculationTail='),source.indexOf('  function rpcDirect(')),context);
 vm.runInContext(source.slice(source.indexOf('  function changeStockPeriod('),source.indexOf('  function stockPeriodPerformance(')),context);

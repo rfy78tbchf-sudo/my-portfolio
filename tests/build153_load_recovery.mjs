@@ -30,3 +30,17 @@ const stale=c.loadLiveOnce();c.liveAuthEpoch++;c.session=null;finishCore([]);awa
 console.log('Build155: first paint before reconciliation, stable target and logout isolation');
 
 c.session={accessToken:'c'};const prior={accounts:[{id:'retained'}]};c.live=prior;c.rest=async()=>{throw new Error('offline')};await c.loadLiveOnce();assert.equal(c.live,prior);assert.equal(c.liveError,'offline');
+
+// User opens performance while enrichment is still blocked. Its result survives.
+c.live=null;c.rest=async path=>path.startsWith('accounts?')?[{id:'early'}]:[];
+let releaseEnrichment;const enrichment=new Promise(r=>releaseEnrichment=r);
+c.rpc=async name=>name==='reconcile_live_cash_flows'?enrichment:name==='get_app_settings'?{}:null;
+const inFlight=c.loadLiveOnce();await new Promise(r=>setImmediate(r));
+assert.equal(c.live.stockPnl,null,'core exposes on-demand performance immediately');
+const calculated={ok:true,period:'THIS_MONTH',pnl_krw:123};
+c.live.stockPnl=calculated;c.live.stockPnlDeferred=false;c.live.todayStocks={ok:true};
+c.live.stockRealized={ok:true,items:[]};const realized=c.live.stockRealized;
+releaseEnrichment({ok:true});await inFlight;
+assert.equal(c.live.stockPnl,calculated);assert.equal(c.live.stockPnlDeferred,false);
+assert.equal(c.live.stockRealized,realized);assert.equal(c.live.todayStocks.ok,true);
+console.log('Build156: enrichment preserves demand-loaded period, realized and today results');

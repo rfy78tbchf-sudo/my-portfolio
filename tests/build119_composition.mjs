@@ -21,7 +21,7 @@ for(const bad of [null,'',' ',Infinity,'NaN']){
 assert.equal(ctx.stockTotalParts({...p,items:[{symbol:'TEST',pnl_krw:100,reason:'pending'}]},r).realized,null);
 assert.equal(ctx.stockTotalParts(p,{...r,items:[{symbol:'TEST',currency:'KRW',realized_local:null,coverage_count:3}]}).missing,3);
 
-// Deterministic watchdog: timeout, late completion, retry and account/period races.
+// Transport timeout, retry and account/period races. Queue wait is not network time.
 const requests=[],timers=new Map();let timerId=0;
 const state={live:{},stockPeriod:'ALL',stockRealizedEpoch:0,render(){},
   setTimeout(fn){const id=++timerId;timers.set(id,fn);return id},
@@ -30,7 +30,7 @@ const state={live:{},stockPeriod:'ALL',stockRealizedEpoch:0,render(){},
 vm.createContext(state);
 vm.runInContext(html.slice(html.indexOf('  function loadStockRealized('),html.indexOf('  function stockUnrealizedRows(')),state);
 state.loadStockRealized();assert.equal(state.live.stockRealizedLoading,true);
-[...timers.values()][0]();assert.equal(state.live.stockRealizedLoading,false);assert.equal(state.live.stockRealizedFailed,true);
+assert.equal(timers.size,0,'queue wait must not run a failure timer');requests[0].reject(Error('network timeout'));await new Promise(setImmediate);assert.equal(state.live.stockRealizedLoading,false);assert.equal(state.live.stockRealizedFailed,true);
 requests[0].resolve(r);await new Promise(setImmediate);assert.equal(state.live.stockRealized,null);
 state.loadStockRealized(true);requests[1].resolve(r);await new Promise(setImmediate);
 assert.equal(state.live.stockRealized,r);assert.equal(state.live.stockRealizedFailed,false);assert.equal(timers.size,0);

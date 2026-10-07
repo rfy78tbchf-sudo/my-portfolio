@@ -1480,15 +1480,39 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       });
     });
   }
-  function rest(path){return readFetch(SUPABASE_URL+'/rest/v1/'+path,{headers:{'apikey':SUPABASE_KEY}},9000,false).then(function(r){if(!r.ok)throw new Error('DB '+r.status);return r.json()})}
+  // Bound background fan-out; interactive calculations take the next free slot.
+  var liveReadQueue=[],liveReadsActive=0;
+  function queueLiveRead(task,priority){
+    var owner=liveAuthEpoch;
+    return new Promise(function(resolve,reject){
+      var job={task:task,resolve:resolve,reject:reject,owner:owner};
+      if(priority)liveReadQueue.unshift(job);else liveReadQueue.push(job);
+      drainLiveReads();
+    });
+  }
+  function drainLiveReads(){
+    while(liveReadsActive<3&&liveReadQueue.length){
+      (function(job){
+        if(job.owner!==liveAuthEpoch||!session){job.reject(new Error('AUTH_REQUIRED'));return}
+        liveReadsActive++;
+        Promise.resolve().then(job.task).then(job.resolve,job.reject).finally(function(){liveReadsActive--;drainLiveReads()});
+      })(liveReadQueue.shift());
+    }
+  }
+  function rest(path){return queueLiveRead(function(){return readFetch(SUPABASE_URL+'/rest/v1/'+path,{headers:{'apikey':SUPABASE_KEY}},9000,false).then(function(r){if(!r.ok)throw new Error('DB '+r.status);return r.json()})})}
   // Serialize expensive P&L requests without delaying unrelated reads.
   var stockCalculationTail=Promise.resolve();
   function rpc(name,payload){
     if(['get_live_period_stock_pnl','get_live_realized_sales','get_live_ledger_realized'].indexOf(name)<0)return rpcDirect(name,payload);
-    var result=stockCalculationTail.then(function(){return rpcDirect(name,payload)});
+    var owner=liveAuthEpoch;
+    var result=stockCalculationTail.then(function(){if(owner!==liveAuthEpoch||!session)throw new Error('AUTH_REQUIRED');return rpcDirect(name,payload)});
     stockCalculationTail=result.catch(function(){});return result;
   }
-  function rpcDirect(name,payload){var fetcher=['get_app_settings','get_live_performance_summary','get_live_security_performance','get_live_technical_summary','get_live_monthly_performance','get_live_home_chart','get_live_fx_attribution','get_live_daily_heatmap','get_live_sync_status','get_app_health_check'].indexOf(name)>=0?readFetch:authFetch;return fetcher(SUPABASE_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{'content-type':'application/json','apikey':SUPABASE_KEY},body:JSON.stringify(payload||{})},12000,false).then(function(r){if(!r.ok)return r.json().catch(function(){return {}}).then(function(b){throw new Error(b.message||('RPC '+r.status))});return r.json()})}
+  function rpcDirect(name,payload){
+    if(name.indexOf('get_')!==0)return rpcNetwork(name,payload);
+    return queueLiveRead(function(){return rpcNetwork(name,payload)},['get_live_period_stock_pnl','get_live_realized_sales'].indexOf(name)>=0);
+  }
+  function rpcNetwork(name,payload){var fetcher=['get_app_settings','get_live_performance_summary','get_live_security_performance','get_live_technical_summary','get_live_monthly_performance','get_live_home_chart','get_live_fx_attribution','get_live_daily_heatmap','get_live_sync_status','get_app_health_check'].indexOf(name)>=0?readFetch:authFetch;return fetcher(SUPABASE_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{'content-type':'application/json','apikey':SUPABASE_KEY},body:JSON.stringify(payload||{})},['get_live_period_stock_pnl','get_live_realized_sales'].indexOf(name)>=0?25000:12000,false).then(function(r){if(!r.ok)return r.json().catch(function(){return {}}).then(function(b){throw new Error(b.message||('RPC '+r.status))});return r.json()})}
   function loadPerformance(){if(!live)return Promise.resolve(null);var requestedPeriod=period,request=++performanceRequestEpoch,target=live;return Promise.all([
     rpc('get_live_performance_summary',{p_period:requestedPeriod}),
     rpc('get_live_security_performance',{p_period:requestedPeriod}),
@@ -1539,7 +1563,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
   }
   var liveLoadEpoch=0,liveAuthEpoch=0;
   function loadLiveOnce(){
-    var epoch=++liveLoadEpoch,owner=liveAuthEpoch,previous=live;
+    var epoch=++liveLoadEpoch,owner=liveAuthEpoch,previous=live;performanceRequestEpoch++;realizedRequestEpoch++;
     function active(){return epoch===liveLoadEpoch&&liveAuthEpoch===owner&&!!session}
     return Promise.all([
 rest('accounts?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true'),
@@ -1556,12 +1580,12 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
       target.accounts=core[0];target.securities=core[1];target.holdings=core[2];target.snapshots=core[3].slice().reverse();
       target.securities.forEach(function(x){target.securityMap[x.id]=x});
       target.manualSnapshots=core[4];target.holdingBasis=core[5];target.settlementBasis=core[6];target.accountScope=core[7];
-      target.stockPnlDeferred=true;target.detailsLoading=true;target.cashFlowCheck=null;
+      target.stockPnl=null;target.stockPnlDeferred=true;target.detailsLoading=true;target.cashFlowCheck=null;
       live=target;liveError=null;if(mode==='live')render(true);
       return loadLiveDetails(core,target,active).finally(function(){if(active()&&live===target)target.detailsLoading=false});
     }).catch(function(e){if(!active())return;liveError=e.message||'계좌 데이터를 불러오지 못했습니다.';live=previous;if(mode==='live')render(true)});
   }
-  function loadLiveDetails(core,target,active){var previousLive=live;liveError=null;performanceRequestEpoch++;realizedRequestEpoch++;return Promise.all([rpc('reconcile_live_cash_flows',{}).catch(function(e){return {ok:false,error:e.message||'입출금 점검 실패'}}),rpc('get_app_settings',{}).catch(function(){return {}})]).then(function(initial){if(!active()||live!==target)return;var cashFlowCheck=initial[0],settings=initial[1]||{};var saved=settings.home_period;if(!periodTouched&&typeof saved==='string'&&['오늘','1W','1M','3M','6M','YTD','1Y','ALL'].indexOf(saved)>=0)period=saved;if(!realizedPeriodExplicit)realizedPeriod=period;var requestedPeriod=period,requestedRealizedPeriod=realizedPeriod,requestedRealizedAccount=realizedAccount;compactMode=!!settings.compact_mode;hideZeroHoldings=!!settings.hide_zero_holdings;applyUiSettings();return Promise.all([
+  function loadLiveDetails(core,target,active){liveError=null;return Promise.all([rpc('reconcile_live_cash_flows',{}).catch(function(e){return {ok:false,error:e.message||'입출금 점검 실패'}}),rpc('get_app_settings',{}).catch(function(){return {}})]).then(function(initial){if(!active()||live!==target)return;var cashFlowCheck=initial[0],settings=initial[1]||{};var saved=settings.home_period;if(!periodTouched&&typeof saved==='string'&&['오늘','1W','1M','3M','6M','YTD','1Y','ALL'].indexOf(saved)>=0)period=saved;if(!realizedPeriodExplicit)realizedPeriod=period;var requestedPeriod=period,requestedRealizedPeriod=realizedPeriod,requestedRealizedAccount=realizedAccount;compactMode=!!settings.compact_mode;hideZeroHoldings=!!settings.hide_zero_holdings;applyUiSettings();return Promise.all([
     Promise.resolve(core[0]),
     Promise.resolve(core[1]),
     Promise.resolve(core[2]),
@@ -1602,7 +1626,7 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
     Promise.resolve(null),
     rpc('get_live_reliable_performance',{p_period:'오늘'}).catch(function(){return null}),
     Promise.resolve(null) // Today's P&L is loaded on demand, not alongside the selected period.
-  ]).then(function(a){if(!active()||live!==target)return;var map={},priceMap={};a[1].forEach(function(x){map[x.id]=x});(a[17]||[]).forEach(function(q){var entry=priceMap[q.security_id]||(priceMap[q.security_id]={latest:null,previous:null});if(!entry.latest)entry.latest=q;else if(!entry.previous&&entry.latest.price_date!==q.price_date)entry.previous=q});var completed={stockPnlDeferred:true,todayGate:a[44],todayStocks:a[45],stockPnl:a[43],accounts:a[0],securities:a[1],securityMap:map,holdings:a[2],snapshots:a[3].reverse(),transactions:a[4],performance:a[5],performancePeriod:requestedPeriod,securityPerformance:a[6],analysis:a[7],monthlyPerformance:a[8],heatmap:a[12],soldHoldings:a[9],homeChart:a[10],fxAttribution:a[11],syncStatus:a[13],health:a[14],manualSnapshots:a[15],attribution:a[16],priceMeta:priceMap,fxMeta:a[18]||[],settings:settings,dividendHistory:a[19],dividendOverview:a[20],ledgerEstimate:a[21],risk:a[22],benchmark:a[23],leverageComparison:a[24],reconciliation:a[25],reconciliationCases:a[26]||[],cashAccounting:a[27],cashBridges:a[28]||[],analysisCoverage:a[29],behavior:null,performanceGate:a[30],verifiedMovements:a[31],cashAssessments:a[32],priceLifecycle:a[33],observationCutoffs:a[34],holdingBasis:a[35]||[],settlementBasis:a[36]||[],accountScope:a[37],decisionMetrics:a[38],realizedSales:a[39],realizedSalesPeriod:requestedRealizedPeriod,realizedSalesAccount:requestedRealizedAccount,realizedSalesLoading:false,oneMonthCoverage:a[40],reviewDecisions:a[41]||[],reviewAnalyses:a[42]||[],cashFlowCheck:cashFlowCheck,ledgerHistory:null,adjustments:null,auditHistory:null,cashFlowHistory:null,moreLoading:false};Object.keys(completed).forEach(function(k){if(['realizedSales','realizedSalesPeriod','realizedSalesAccount','realizedSalesLoading'].indexOf(k)>=0)return;if(requestedPeriod!==period&&['performance','performancePeriod','securityPerformance','homeChart','fxAttribution','heatmap','attribution','ledgerEstimate','benchmark','leverageComparison','performanceGate','verifiedMovements','cashAssessments'].indexOf(k)>=0)return;target[k]=completed[k]});lastLiveLoadAt=Date.now();checkPriceAlerts();if(mode==='live')render(true);return Promise.all([rpc('get_live_flow_basis',{p_start:a[5]&&a[5].period_start,p_end:a[5]&&a[5].period_end}).catch(function(){return null}),a[22]&&a[22].largest_symbol?rpc('get_live_decision_metrics',{p_symbol:a[22].largest_symbol,p_change_pct:-10}).catch(function(){return null}):Promise.resolve(null),loadSwingPrices(live)]).then(function(result){if(!active()||live!==target)return;if(requestedPeriod===period)live.flowBasis=result[0];live.decisionMetrics=result[1];if(requestedPeriod!==period||requestedRealizedPeriod!==realizedPeriod||requestedRealizedAccount!==realizedAccount)return Promise.all([loadPerformance(),loadRealizedSales().catch(function(){if(live)live.realizedSales=null})])})})}).catch(function(e){if(!active()||live!==target)return;target.detailsError=e.message||'분석 조회 실패';})}
+  ]).then(function(a){if(!active()||live!==target)return;var map={},priceMap={};a[1].forEach(function(x){map[x.id]=x});(a[17]||[]).forEach(function(q){var entry=priceMap[q.security_id]||(priceMap[q.security_id]={latest:null,previous:null});if(!entry.latest)entry.latest=q;else if(!entry.previous&&entry.latest.price_date!==q.price_date)entry.previous=q});var completed={stockPnlDeferred:true,todayGate:a[44],todayStocks:a[45],stockPnl:a[43],accounts:a[0],securities:a[1],securityMap:map,holdings:a[2],snapshots:a[3].reverse(),transactions:a[4],performance:a[5],performancePeriod:requestedPeriod,securityPerformance:a[6],analysis:a[7],monthlyPerformance:a[8],heatmap:a[12],soldHoldings:a[9],homeChart:a[10],fxAttribution:a[11],syncStatus:a[13],health:a[14],manualSnapshots:a[15],attribution:a[16],priceMeta:priceMap,fxMeta:a[18]||[],settings:settings,dividendHistory:a[19],dividendOverview:a[20],ledgerEstimate:a[21],risk:a[22],benchmark:a[23],leverageComparison:a[24],reconciliation:a[25],reconciliationCases:a[26]||[],cashAccounting:a[27],cashBridges:a[28]||[],analysisCoverage:a[29],behavior:null,performanceGate:a[30],verifiedMovements:a[31],cashAssessments:a[32],priceLifecycle:a[33],observationCutoffs:a[34],holdingBasis:a[35]||[],settlementBasis:a[36]||[],accountScope:a[37],decisionMetrics:a[38],realizedSales:a[39],realizedSalesPeriod:requestedRealizedPeriod,realizedSalesAccount:requestedRealizedAccount,realizedSalesLoading:false,oneMonthCoverage:a[40],reviewDecisions:a[41]||[],reviewAnalyses:a[42]||[],cashFlowCheck:cashFlowCheck,ledgerHistory:null,adjustments:null,auditHistory:null,cashFlowHistory:null,moreLoading:false};Object.keys(completed).forEach(function(k){if(['stockPnl','stockPnlDeferred','todayStocks','realizedSales','realizedSalesPeriod','realizedSalesAccount','realizedSalesLoading'].indexOf(k)>=0)return;if(requestedPeriod!==period&&['performance','performancePeriod','securityPerformance','homeChart','fxAttribution','heatmap','attribution','ledgerEstimate','benchmark','leverageComparison','performanceGate','verifiedMovements','cashAssessments'].indexOf(k)>=0)return;target[k]=completed[k]});lastLiveLoadAt=Date.now();checkPriceAlerts();if(mode==='live')render(true);return Promise.all([rpc('get_live_flow_basis',{p_start:a[5]&&a[5].period_start,p_end:a[5]&&a[5].period_end}).catch(function(){return null}),a[22]&&a[22].largest_symbol?rpc('get_live_decision_metrics',{p_symbol:a[22].largest_symbol,p_change_pct:-10}).catch(function(){return null}):Promise.resolve(null),loadSwingPrices(live)]).then(function(result){if(!active()||live!==target)return;if(requestedPeriod===period)live.flowBasis=result[0];live.decisionMetrics=result[1];if(requestedPeriod!==period||requestedRealizedPeriod!==realizedPeriod||requestedRealizedAccount!==realizedAccount)return Promise.all([loadPerformance(),loadRealizedSales().catch(function(){if(live)live.realizedSales=null})])})})}).catch(function(e){if(!active()||live!==target)return;target.detailsError=e.message||'분석 조회 실패';})}
   function showApp(nextMode){mode=nextMode;document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');var b=document.getElementById('modeBadge');b.textContent=mode==='demo'?'예시':'동기화';b.title=mode==='demo'?'예시 데이터':'KB 계좌 동기화 데이터 · 실시간 시세가 아닙니다';b.className='badge '+(mode==='demo'?'demo':'');document.getElementById('refreshBtn').classList.toggle('hidden',mode!=='live');render()}
   function demoHome(){var asset=218450000,todayPnl=1840000,todayPct=.85;return '<section class="hero"><div class="eyebrow">총 자산</div><div class="asset">'+money(asset)+'</div><div class="pnl '+cls(todayPnl)+'">'+money(todayPnl)+' · '+pct(todayPct)+'</div>'+periods()+'</section><div class="grid desktop2"><section class="card"><h3>자산 추이</h3>'+chart(demoSeries)+'</section><section class="card"><h3>손익 구성</h3><div class="metric-grid">'+metric('평가손익',money(21830000),'up')+metric('실현손익',money(5320000),'up')+metric('배당',money(1840000),'up')+metric('수수료·세금',money(-1140000),'down')+'</div></section></div><section class="card" style="margin-top:12px"><h3>기여도 상위</h3>'+demoHoldings.slice(0,4).map(function(h){return '<div class="row"><div><b>'+h.name+'</b><div class="sub">'+h.symbol+' · 비중 '+h.weight.toFixed(1)+'%</div></div><strong class="'+cls(h.day)+'">'+pct(h.day)+'</strong></div>'}).join('')+'</section>'}
   function fiveYearPlan(total,snapshotDate,settings){
@@ -2242,8 +2266,8 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
     var target=live,next=stockPeriod;if(!target)return;
     if(!force&&target.stockRealizedPeriod===next&&(target.stockRealizedLoading||target.stockRealized||target.stockRealizedFailed))return;
     var request=++stockRealizedEpoch;target.stockRealizedPeriod=next;target.stockRealizedLoading=true;target.stockRealized=null;target.stockRealizedFailed=false;render();
-    var settled=false,timer=setTimeout(function(){finish(null,true)},20000);
-    function finish(value,failed){if(settled)return;settled=true;clearTimeout(timer);if(request!==stockRealizedEpoch||live!==target||stockPeriod!==next)return;target.stockRealized=value;target.stockRealizedFailed=failed;target.stockRealizedLoading=false;render()}
+    var settled=false; // Network timeout starts when dequeued, not while waiting for another calculation.
+    function finish(value,failed){if(settled)return;settled=true;if(request!==stockRealizedEpoch||live!==target||stockPeriod!==next)return;target.stockRealized=value;target.stockRealizedFailed=failed;target.stockRealizedLoading=false;render()}
     rpc('get_live_realized_sales',{p_period:next,p_account:null}).then(function(x){finish(x,!x||!x.ok)}).catch(function(){finish(null,true)});return true;
   }
   function stockUnrealizedRows(data){
