@@ -831,6 +831,21 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       openSecurityDetail(target.id,target.context,true);
     }});
   }
+  async function saveDecisionReceipt(args){
+    var owner=liveAuthEpoch,saved,error;
+    try{saved=await rpc('save_investment_decision',args)}catch(e){error=e}
+    if(owner!==liveAuthEpoch||!session)throw Error('AUTH_REQUIRED');
+    if(saved&&saved.ok&&saved.id)return saved;
+    // The write may have committed even if its response was lost. Never replay it automatically.
+    try{
+      var rows=await rest('investment_decisions?select=id,security_id,request_id&request_id=eq.'+
+        encodeURIComponent(args.p_request_id)+'&security_id=eq.'+encodeURIComponent(args.p_security_id)+'&limit=2');
+      if(owner!==liveAuthEpoch||!session)throw Error('AUTH_REQUIRED');
+      if(Array.isArray(rows)&&rows.length===1&&rows[0].id&&rows[0].request_id===args.p_request_id&&rows[0].security_id===args.p_security_id)
+        return {ok:true,id:rows[0].id,recovered:true};
+    }catch(e){if(owner!==liveAuthEpoch||!session)throw Error('AUTH_REQUIRED');}
+    throw error||Error('저장 결과를 확인할 수 없습니다. 입력은 유지됩니다. 같은 요청으로 다시 시도해 주세요.');
+  }
   function openSecurityDetail(id,performanceContext,continueJourney,reviewEntry){
     if(!id)return;
     var modal=document.getElementById('detailModal'),body=document.getElementById('detailBody');
@@ -1198,7 +1213,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
             p_target_pct:null,p_down_pct:null,p_up_pct:null,p_observation_at:null};
           if(withComparison)Object.assign(args,{p_target_pct:lastComparison.targetPct,p_down_pct:lastComparison.downPct,
             p_up_pct:lastComparison.upPct,p_observation_at:lastComparison.observationAt});
-          var saved=await rpc('save_investment_decision',args);
+          var saved=await saveDecisionReceipt(args);
           if(!saved.ok||!saved.id)throw Error('저장 결과를 확인할 수 없습니다.');
           var recorded=await rpc('get_investment_decisions',{p_security_id:id}),verified=Array.isArray(recorded)&&recorded.find(function(row){return row.id===saved.id});
           if(!active())return;

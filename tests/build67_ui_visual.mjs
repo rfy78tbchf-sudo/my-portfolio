@@ -1,3 +1,4 @@
+import './build157_decision_receipt.mjs';
 import './build156_read_queue.mjs';
 import './build153_load_recovery.mjs';
 import './build149_execution_sales.mjs';
@@ -91,7 +92,7 @@ const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_ver
 const injected=`
   window.__uiFixture=function(data,record,opinion,comparison){
     live=data;liveError=null;mode='live';period='1M';session={accessToken:'synthetic-ui-session'};
-    var stockResponse=data.stockPnl,failStockOnce=false;
+    var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
     window.__uiFailStockOnce=function(){failStockOnce=true};
     window.__saleNotes=window.__saleNotes||{};
     rpc=async function(name,p){
@@ -107,13 +108,18 @@ const injected=`
       if(name==='get_live_security_activity')return {items:[]};
       if(name==='save_investment_thesis'){data.testThesis={...p.p_fields,version:2};return {ok:true,version:2}};
       if(name==='get_investment_thesis')return {ok:true,thesis:data.testThesis||{version:1,rationale:'최근 추세돌파와 상승 흐름을 확인하며 보유',updated_at:record?record.created_at:'2026-09-28T22:10:00Z'}};
-      if(name==='get_investment_decisions')return record?[record]:[];
+      if(name==='save_investment_decision'&&data.decisionSaveFixture){
+        window.__decisionWrites++;
+        savedDecision={id:'recovered-decision',security_id:p.p_security_id,request_id:p.p_request_id,choice:p.p_choice,reason:p.p_reason,review_condition:p.p_review_condition,analysis_id:p.p_analysis_id,created_at:new Date().toISOString(),thesis_version:1,scenario_snapshot:{}};
+        throw Error('Synthetic response lost after commit');
+      }
+      if(name==='get_investment_decisions')return savedDecision?[savedDecision]:record?[record]:[];
       if(name==='get_investment_breakout_rule')return null;
       if(name==='get_live_choice_comparison')return {...comparison,ok:true};
       if(name==='get_live_decision_metrics')return {ok:false};
       return {ok:false,items:[]};
     };
-    authFetch=async function(url,options){if(options&&options.method==='POST')throw Error('No model generation or writes allowed in UI capture');return {ok:true,json:async()=>[opinion]}};
+    authFetch=async function(url,options){if(options&&options.method==='POST')throw Error('No model generation or writes allowed in UI capture');return {ok:true,json:async()=>url.includes('investment_decisions?')?(savedDecision?[savedDecision]:[]):[opinion]}};
     loadLive=async()=>{};edgeSync=async(action)=>{if(action==='overseas-day-pnl')return {ok:true,available:false,items:[]};throw Error('No account sync during UI capture')};
     document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('refreshBtn').classList.remove('hidden');
     window.__uiAiTest=function(testMode){
@@ -610,6 +616,22 @@ try{
     await page.locator('#detailClose').click();
     assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    // Complete a decision after a lost write response, then reopen its persisted record.
+    await page.evaluate(args=>window.__uiFixture(...args),[{...live,decisionSaveFixture:true},null,analysis,comparison]);
+    await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
+    await page.locator('#detailDecisionAction').click();
+    await page.locator('#detailChoice').selectOption('hold');
+    await page.locator('#detailReason').fill('매출 성장 근거를 다음 실적에서 다시 확인');
+    await page.locator('#detailReview').fill('다음 실적 발표 후 확인');
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await page.locator('#detailDecisionDone').waitFor();
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost response must not replay the write');
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
+    await page.screenshot({path:out+'/decision-recovered-'+width+'.png'});
+    await page.locator('#detailDecisionDone').click();
+    await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
+    await page.locator('#detailClose').click();
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
   }
 }finally{await browser.close()}
