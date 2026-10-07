@@ -16,6 +16,7 @@ const a=ctx.loadLive(),b=ctx.loadLive();assert.equal(a,b);assert.equal(count,1);
 const c=ctx.loadLive();assert.equal(count,2);finish();await c;
 ctx.loadLiveOnce=()=>Promise.reject(Error('network'));
 await assert.rejects(ctx.loadLive());ctx.loadLiveOnce=()=>Promise.resolve('recovered');assert.equal(await ctx.loadLive(),'recovered');
-assert.match(html,/if\(previousLive\)\{live=previousLive;return\}/);
+// Previous-core retention is exercised with rejected requests in build153_load_recovery.
+assert.match(html,/live=previous;if\(mode==='live'\)render\(true\)/);
 assert.match(html,/indicator.textContent=liveError\?/);
 console.log('Build141: sequential partial-failure recovery, in-flight coalescing, retry and script syntax passed');

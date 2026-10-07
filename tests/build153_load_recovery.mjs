@@ -28,3 +28,5 @@ const sameTarget=c.live;release({ok:true});await staged;assert.equal(c.live,same
 c.live=null;let finishCore;const delayed=new Promise(r=>finishCore=r);c.rest=async()=>delayed;
 const stale=c.loadLiveOnce();c.liveAuthEpoch++;c.session=null;finishCore([]);await stale;assert.equal(c.live,null);
 console.log('Build155: first paint before reconciliation, stable target and logout isolation');
+
+c.session={accessToken:'c'};const prior={accounts:[{id:'retained'}]};c.live=prior;c.rest=async()=>{throw new Error('offline')};await c.loadLiveOnce();assert.equal(c.live,prior);assert.equal(c.liveError,'offline');
