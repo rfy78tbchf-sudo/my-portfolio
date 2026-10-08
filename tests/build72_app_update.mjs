@@ -16,3 +16,6 @@ assert.match(html,/detail-overview'\)\.after\(startPanel,extras\)/);
 const change=html.slice(html.indexOf('    var chartChange='),html.indexOf('    var flow='));
 assert.ok(!change.includes('입출금·계좌 편입'),'routine caveat is not in chart headline');
 console.log('Build72: resumed app checks version; explicit update preserves drafts; first action and quiet chart verified');
+
+assert.equal(html.match(/<!-- build: ([^ ]+) -->/)[1],html.match(/var appBuild='([^']+)'/)[1]);
+const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');assert.equal(html.match(/var appBuild='[^']*-(\d+)'/)[1],sw.match(/shell-\d+-(\d+)/)[1],'update notice and cached shell share release number');

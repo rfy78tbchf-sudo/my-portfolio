@@ -1,3 +1,4 @@
+import './build164_resume.mjs';
 import './build162_quick_review.mjs';
 import './build159_decision_changes.mjs';
 import './build158_review_consistency.mjs';
@@ -93,6 +94,7 @@ const comparison={target_pct:10,price_assumptions:{down_pct:-10,up_pct:10},obser
 const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_reduction',reason:'눌림목을 살펴보고 보유 전제가 약해지면 축소 검토',review_condition:'눌림목 모니터링',analysis_id:'isolated-ui-analysis',created_at:now,basis_at:now,thesis_version:1,price_snapshot:{price_date:'2026-09-28',close:285,currency:'USD'},account_snapshot:{observation_at:now},scenario_snapshot:{choice_comparison:comparison}};
 const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
 const injected=`
+  window.__uiPreserveRender=function(){render(true)};
   window.__uiFixture=function(data,record,opinion,comparison){
     live=data;liveError=null;mode='live';period='1M';session={accessToken:'synthetic-ui-session'};
     var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
@@ -413,6 +415,11 @@ try{
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
       if(source.includes('stockTotalPartsHtml')){assert.equal(await page.locator('.pnl-composition').evaluate(el=>el.open),false);await page.locator('.pnl-composition>summary').click();await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,650,000/)}
       if(source.includes('stockCalculationHtml')){if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.evaluate(()=>scrollTo(0,0));}
+      await page.locator('.pnl-composition').scrollIntoViewIfNeeded();
+      const resumeY=await page.evaluate(()=>window.scrollY);
+      await page.evaluate(()=>window.__uiPreserveRender());
+      assert.equal(await page.locator('.pnl-composition').evaluate(el=>el.open),true,'background render keeps expanded composition');
+      assert.ok(Math.abs(await page.evaluate(()=>window.scrollY)-resumeY)<3,'background render keeps current scroll');
       await page.locator('.pnl-composition>summary').click();
       assert.match(await page.locator('.pnl-leaders').innerText(),/원화 계산 종목 중/);
       await page.locator('[data-pnl-leader="ARM"]').click();await page.locator('.performance-review-context').waitFor();await page.locator('#detailClose').click();
