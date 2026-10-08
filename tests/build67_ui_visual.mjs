@@ -221,6 +221,7 @@ try{
         await page.locator('#portfolioPriceView').selectOption('close');
         assert.match(await page.locator('.position-quote').first().innerText(),/종가/);
         assert.match(await page.locator('.position-quote').first().innerText(),/285 USD/);
+        assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),true,'price changes preserve expanded controls');
         await page.locator('#portfolioSort').selectOption('loss');
         assert.equal(await page.locator('.portfolio-row').first().getAttribute('data-security-id'),'s0');
         await page.locator('#portfolioSort').selectOption('profit');
@@ -307,6 +308,10 @@ try{
     else{await page.getByRole('heading',{name:/자산 추이/}).scrollIntoViewIfNeeded();await page.getByRole('heading',{name:/자산 추이/}).evaluate(el=>el.closest('section').scrollIntoView({block:'start'}))}
     await page.screenshot({path:`${out}/trend-${width}.png`});
     await page.locator('#assetChartHit').tap();assert.ok(await page.locator('#assetChartTip').isVisible(),'chart observation is touch-readable');
+    await page.evaluate(()=>window.__uiDetail('s0'));
+    await page.locator('#detailStartAction').waitFor({state:'visible'});
+    await page.locator('#detailReturn').click();
+    assert.equal(await page.locator('#detailModal').isVisible(),false);
     await page.evaluate(()=>window.__uiDetail('s0'));
     await page.locator('#detailStartAction').waitFor({state:'visible'});
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
