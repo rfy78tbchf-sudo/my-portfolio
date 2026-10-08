@@ -207,7 +207,7 @@ try{
     for(const tab of ['home','portfolio','performance']){
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);
-      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeToday').isVisible());assert.ok(await page.locator('#homeHoldings').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_FOLLOWING)));const box=await page.locator('#homeToday').boundingBox();assert.ok(box.y<500,`${width}px today summary is near top`);assert.match(await page.locator('#homeToday').innerText(),/326,840/)}
+      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeToday').isVisible());const box=await page.locator('#homeToday').boundingBox();assert.ok(box.y<500,`${width}px today summary is near top`);assert.match(await page.locator('#homeToday').innerText(),/326,840/)}
       if(tab==='portfolio'&&!baseline){assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),false,'settings start collapsed');const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[3]<800,`${width}px four portfolio rows with prices visible`)}
       if(tab==='portfolio'){
         const controls=page.locator('#portfolioControls');if(await controls.count()&&!await controls.evaluate(el=>el.open))await controls.locator('summary').click();
@@ -277,6 +277,7 @@ try{
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
       await page.evaluate(()=>window.__uiRender('home'));
+      assert.ok(await page.locator('#homeHoldings').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_FOLLOWING)));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true,'due reviews are visible without an extra tap');
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
