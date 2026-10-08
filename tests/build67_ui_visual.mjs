@@ -207,9 +207,10 @@ try{
     for(const tab of ['home','portfolio','performance']){
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);
-      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeToday').isVisible());const box=await page.locator('#homeToday').boundingBox();assert.ok(box.y<500,`${width}px today summary is near top`);assert.match(await page.locator('#homeToday').innerText(),/326,840/)}
-      if(tab==='portfolio'&&!baseline){const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[3]<800,`${width}px four portfolio rows with prices visible`)}
+      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeToday').isVisible());assert.ok(await page.locator('#homeHoldings').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_FOLLOWING)));const box=await page.locator('#homeToday').boundingBox();assert.ok(box.y<500,`${width}px today summary is near top`);assert.match(await page.locator('#homeToday').innerText(),/326,840/)}
+      if(tab==='portfolio'&&!baseline){assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),false,'settings start collapsed');const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[3]<800,`${width}px four portfolio rows with prices visible`)}
       if(tab==='portfolio'){
+        const controls=page.locator('#portfolioControls');if(await controls.count()&&!await controls.evaluate(el=>el.open))await controls.locator('summary').click();
         await page.locator('#portfolioPriceView').selectOption('average');
         assert.match(await page.locator('.position-quote').first().innerText(),/평단|평균 매입가/);
         await page.locator('.portfolio-list').screenshot({path:out+'/portfolio-average-'+width+'.png'});
@@ -239,6 +240,14 @@ try{
           await page.locator('#search').fill('없는종목XYZ');assert.ok(await page.locator('#portfolioSearchEmpty').isVisible());
           await page.locator('#portfolioSort').selectOption('value');
         }
+        await page.locator('#search').fill('ARM');
+        const listY=await page.evaluate(()=>window.scrollY);
+        await page.locator('.portfolio-row:visible').first().click();
+        await page.locator('#detailClose').waitFor({state:'visible'});
+        await page.locator('#detailClose').click();
+        assert.equal(await page.locator('#search').inputValue(),'ARM','closing stock retains search');
+        assert.equal(await page.locator('.portfolio-row:visible').count(),1);
+        assert.ok(Math.abs(await page.evaluate(()=>window.scrollY)-listY)<3,'closing stock retains list position');
         await page.locator('#search').fill('');
       }
 
