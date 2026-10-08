@@ -874,7 +874,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
     if(!modal||!body)return;
     if(!continueJourney){detailReturnState={y:window.scrollY,focus:document.activeElement};detailJourney=detailBrowseItems(id);detailChartSettings={period:'all',ma:[20,60]}}
     detailInputChanged=false;detailDirtyGroups={};bindDetailBrowse(id);
-    body.oninput=function(event){if(event.target.closest('#detailExtras')&&event.target.matches('input,textarea,select')){var form=event.target.closest('form'),group=form&&form.id||'detailExtras';detailDirtyGroups[group]=(detailDirtyGroups[group]||0)+1;detailInputChanged=true}};
+    body.oninput=function(event){if(event.target.closest('#detailExtras, #detailStart')&&event.target.matches('input,textarea,select')){var form=event.target.closest('form'),group=form&&form.id||'detailExtras';detailDirtyGroups[group]=(detailDirtyGroups[group]||0)+1;detailInputChanged=true}};
     modal.querySelector('.detail-sheet').scrollTop=0;modal.scrollTop=0;
     var request=++detailEpoch,active=function(){return request===detailEpoch&&!modal.classList.contains('hidden')};
     var known=live&&live.securityMap&&live.securityMap[id],owned=(live&&live.holdings||[]).filter(function(x){return x.security_id===id&&Number(x.quantity)>0});
@@ -944,8 +944,8 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       startPanel.innerHTML='<div class="detail-start-label">이 종목, 계속 보유할까?</div><p id="detailStartHint"></p><button type="button" id="detailStartAction" class="btn full"></button><button type="button" id="detailDirectDecision" class="detail-direct">유지·판단 유보 바로 기록</button><details class="detail-usage"><summary>AI 의견·비교·기록은 어떻게 다른가요?</summary><p><b>보유 이유</b> · 왜 갖고 있는지 적어 둡니다.</p><p><b>AI 의견</b> · 그 이유를 근거와 함께 점검합니다.</p><p><b>일부 매도 비교</b> · 수량·현금·가격 변동 영향을 계산합니다. 선택 사항입니다.</p><p><b>내 결정 기록</b> · 내가 선택한 내용과 다시 볼 조건을 저장합니다. 실제 매매는 하지 않습니다.</p></details>';
       var extras=document.createElement('details');extras.id='detailExtras';extras.className='card-group';
       var extrasTitle=document.createElement('summary');extrasTitle.textContent='AI 분석·매도 계산·내 기록 (선택)';extras.appendChild(extrasTitle);
-      body.querySelector('.detail-overview').after(extras);
-      [startPanel,reasonSection,document.getElementById('thesisGroup'),opinionSection,compareSection,decisionSection].forEach(function(section){if(section)extras.appendChild(section)});
+      body.querySelector('.detail-overview').after(startPanel,extras);
+      [reasonSection,document.getElementById('thesisGroup'),opinionSection,compareSection,decisionSection].forEach(function(section){if(section)extras.appendChild(section)});
 
       function revealDetailTarget(target){if(!target)return;var parent=target.parentElement;while(parent&&parent!==body){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement}target.scrollIntoView({block:'start',behavior:'smooth'});target.setAttribute('tabindex','-1');target.focus({preventScroll:true})}
       function openReasonEditor(){
@@ -956,9 +956,9 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       }
       function updateDetailStart(rows){var button=document.getElementById('detailStartAction'),hint=document.getElementById('detailStartHint');if(!button||!active())return;
         var direct=document.getElementById('detailDirectDecision');if(direct)direct.hidden=!!(Array.isArray(rows)&&rows.length);
-        if(Array.isArray(rows)&&rows.length){hint.textContent='저장한 결정이 있습니다. 지난 이유와 이후 변화를 먼저 확인하세요.';button.textContent='지난 결정과 이후 변화 보기';button.onclick=function(){revealDetailTarget(document.getElementById('detailDecisionSummary'))}}
-        else if(!(results[2]&&results[2].thesis&&results[2].thesis.rationale)){hint.textContent='먼저 왜 보유하는지 한 줄 적어주세요. AI가 그 이유를 바탕으로 점검합니다.';button.textContent='먼저 보유 이유 적기';button.onclick=openReasonEditor}
-        else{hint.textContent='보유 이유를 기록해 두셨네요. AI 의견을 읽고, 필요하면 매도 가정을 계산한 뒤 내 결정을 남기세요.';button.textContent='AI 의견부터 확인하기';button.onclick=function(){revealDetailTarget(opinionSection)}}
+        if(Array.isArray(rows)&&rows.length){var reviewStatus=document.querySelector('#detailDecisionReview .review-status b');hint.textContent='지난 결정: '+(choiceLabels&&choiceLabels[rows[0].choice]||'판단 기록')+(reviewStatus?' · '+reviewStatus.textContent:'');button.textContent='지난 결정과 이후 변화 보기';button.onclick=function(){revealDetailTarget(document.getElementById('detailDecisionReview')||document.getElementById('detailDecisionSummary'))}}
+        else if(!(results[2]&&results[2].thesis&&results[2].thesis.rationale)){hint.textContent='보유 이유를 한 줄 남기면 그 근거를 점검할 수 있습니다. 판단만 바로 기록해도 됩니다.';button.textContent='먼저 보유 이유 적기';button.onclick=openReasonEditor}
+        else{hint.textContent='저장한 보유 이유와 AI 의견을 확인하세요. 계산과 기록은 필요할 때 선택할 수 있습니다.';button.textContent='AI 의견부터 확인하기';button.onclick=function(){revealDetailTarget(opinionSection)}}
       }
       var editReason=document.createElement('button');editReason.type='button';editReason.className='detail-reason-edit';editReason.textContent=results[2]&&results[2].thesis&&results[2].thesis.rationale?'보유 이유 수정':'보유 이유 적기';editReason.onclick=openReasonEditor;document.getElementById('detailThesisSummary').after(editReason);
       document.getElementById('detailDirectDecision').onclick=function(){openDecisionForm()};
@@ -1183,7 +1183,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
           reviewActions.prepend(confirm);
           var revise=document.createElement('button');revise.type='button';revise.className='btn secondary';
           revise.textContent='일부 매도 비교하기';revise.onclick=function(){var target=document.getElementById('detailWeightTarget');target.scrollIntoView({block:'center'});target.focus()};
-          reviewActions.appendChild(revise);form.insertAdjacentElement('beforebegin',review)}
+          reviewActions.appendChild(revise);form.insertAdjacentElement('beforebegin',review);updateDetailStart(rows)}
         if(!hasLatest){node.textContent='아직 저장한 이전 판단이 없습니다.';return}
         rows.forEach(function(d,index){var item=document.createElement('div');item.className='decision-history-row';
           var inner=document.createElement('div'),head=document.createElement('b'),explain=document.createElement('div'),basis=document.createElement('div');

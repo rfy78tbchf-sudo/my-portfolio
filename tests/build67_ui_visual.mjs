@@ -303,7 +303,15 @@ try{
     else{await page.getByRole('heading',{name:/자산 추이/}).scrollIntoViewIfNeeded();await page.getByRole('heading',{name:/자산 추이/}).evaluate(el=>el.closest('section').scrollIntoView({block:'start'}))}
     await page.screenshot({path:`${out}/trend-${width}.png`});
     await page.locator('#assetChartHit').tap();assert.ok(await page.locator('#assetChartTip').isVisible(),'chart observation is touch-readable');
-    await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
+    await page.evaluate(()=>window.__uiDetail('s0'));
+    await page.locator('#detailStartAction').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
+    assert.equal(await page.locator('#detailStart').evaluate(el=>el.parentElement.id),'detailBody');
+    assert.match(await page.locator('#detailStartHint').innerText(),/지난 결정:/);
+    await page.locator('#detailStartAction').click();
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),true);
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
     await page.screenshot({path:`${out}/detail-${width}.png`});
     if(source.includes('detail-price-chart')){
@@ -313,7 +321,7 @@ try{
     }
     if(source.includes("startPanel.id='detailStart'")){
       if(width===390){await page.locator('.detail-usage').evaluate(x=>x.open=true);await page.screenshot({path:`${out}/detail-guide-${width}.png`});await page.locator('.detail-usage').evaluate(x=>x.open=false)}
-      await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionSummary');
+      await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
     }
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
     if(source.includes('brokerDayCard')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
