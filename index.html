@@ -237,6 +237,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
 .sale-row-details{grid-column:1/-1;width:100%;font-size:13px;color:var(--muted)}.sale-row-details>summary{cursor:pointer;padding:8px 0}.sale-row-details .stock-row-evidence{display:block!important}.sale-row-details .btn{margin:8px 0;min-height:40px;font-size:13px}
 .decision-change-field{margin:12px 0;overflow-wrap:anywhere}.decision-change-field b{display:block;margin-bottom:4px}
 .portfolio-controls{margin:2px 0 8px}.portfolio-controls>summary{min-height:44px;display:flex;align-items:center;color:#65717f;font-size:14px;cursor:pointer}.portfolio-controls>summary::before{content:"▸";margin-right:7px}.portfolio-controls[open]>summary::before{content:"▾"}.portfolio-controls .holdings-options{margin-top:4px}
+.review-date-shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}.review-date-shortcuts .btn{flex:1;min-height:44px}
 </style>
 </head>
 <body>
@@ -564,6 +565,12 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
         (hasNative?'증권사 외화 잔고에서 받은 평균 매입가와 조회 가격입니다. 조회 '+esc(kstStamp(native.observed_at))+' · 실시간 호가는 아닙니다. 차트 종가와 기준 시각이 다를 수 있습니다.':foreign?'원화 취득금액·평가액을 보유 수량과 같은 잔고의 조회 환율로 나눈 참고값입니다. 실제 외화 매수 평단과 다를 수 있으며 실시간 호가는 아닙니다. 차트 종가와도 기준 시각이 다를 수 있습니다.':'잔고 조회 시 제공된 가격입니다. 차트의 종가와 기준 시각이 다를 수 있으며 실시간 호가는 아닙니다.')+'</p>'+
         (foreign?'<p class="sub">'+(hasNative?'원화 평가 기준 환율: ':'적용 환율: ')+(valid(pos.fx_rate_to_base)?'1 '+esc(unit)+' = '+esc(fx.toLocaleString('ko-KR',{maximumFractionDigits:6}))+'원':'확인 중')+'<br>원화 평균 매입단가 '+(valid(average)?money(Number(average)):'확인 중')+' · 원화 평가단가 '+(valid(valuation)?money(Number(valuation)):'확인 중')+'</p>':'')+'</details>';
     }).join('')+'</div>';
+  }
+  function reviewDateAfter(today,days){
+    if(!/^20\d\d-\d\d-\d\d$/.test(today)||[7,30].indexOf(days)<0)return '';
+    var date=new Date(today+'T00:00:00Z');
+    if(!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==today)return '';
+    date.setUTCDate(date.getUTCDate()+days);return date.toISOString().slice(0,10);
   }
   function decisionFollowupDraft(previous,draft,today,edited){
     if(edited||String(draft.reason||'').trim()||String(draft.review||'').trim())return null;
@@ -931,7 +938,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
         '<div class="decision-weight"><label>가격만 바꿔 보기 (%)<input id="detailPriceChange" type="number" class="input" value="-10" min="-90" max="100" step="1"></label>'+
         '<button id="detailPriceRun" type="button" class="btn secondary">가격만 계산</button></div><div id="detailPriceResult" class="ai-answer" role="status"></div></details>'+
         '<div id="detailWeightResult" class="choice-result" role="status" aria-live="polite"></div></section>'+
-        '<section class="card" style="margin-top:12px"><h3>내 결정 기록</h3><div class="detail-purpose">어떻게 하기로 했는지와 이유를 남깁니다. 비교 계산 없이 유지·판단 유보도 기록할 수 있습니다.</div><form id="detailDecisionForm" class="decision-entry" hidden><label>어떻게 할까요?<select aria-describedby="detailChoiceGuide" id="detailChoice" class="select"><option value="hold">현재 유지</option><option value="consider_reduction">일부 축소 검토</option><option value="pause_addition">추가매수 보류</option><option value="revisit">추가 확인 후 판단</option></select></label><div id="detailChoiceGuide" class="detail-choice-guide" role="status"></div><label>그렇게 결정한 이유<textarea id="detailReason" placeholder="이 결정을 내린 이유를 내 말로 적어주세요" class="input" maxlength="600" rows="2" required></textarea></label><label>어떤 변화가 생기면 다시 볼까요?<textarea id="detailReview" placeholder="어떤 변화가 생기면 다시 판단할지 적어주세요" class="input" maxlength="600" rows="2" required></textarea></label><div id="detailRuleBuilder"><label>다시 볼 조건 쉽게 설정<select id="detailRuleType" class="select"><option value="custom">직접 작성</option><option value="ma">20·60·120개 종가 정배열 이탈</option><option value="price">지정 가격 도달</option><option value="date">지정 날짜에 점검</option></select></label><div id="detailRulePrice" hidden><label>기준 가격<input id="detailRuleAmount" disabled class="input" type="number" min="0.0001" step="any" inputmode="decimal"></label><label>통화<select id="detailRuleCurrency" class="select"><option value="USD">USD</option><option value="KRW">KRW</option></select></label><label>가격 조건<select id="detailRuleDirection" class="select"><option value="이하">이하</option><option value="이상">이상</option></select></label></div><div id="detailRuleDate" hidden><label>점검 날짜<input id="detailRuleDay" disabled class="input" type="date"></label></div><button id="detailApplyRule" type="button" class="btn secondary full" hidden>선택한 조건 적용</button><p id="detailRuleFeedback" class="sub" role="status">조건을 적용한 뒤 아래 저장 버튼을 눌러 주세요.</p><details class="more-list"><summary>확인 가능한 조건 예시</summary><p class="sub">가격은 최신 종가, 날짜는 한국 날짜로 확인합니다. 이평선은 저장 종가 단순평균 기준입니다.</p><button id="detailMaRule" type="button" class="btn secondary full">20·60·120개 종가 정배열 이탈로 설정</button></details></div><button type="submit" class="btn full">내 판단 저장</button><div id="detailDecisionStatus" class="status" role="status"></div></form><details class="more-list"><summary>이전 판단 보기</summary><div id="detailDecisionHistory"></div></details></section>'+byAccount+
+        '<section class="card" style="margin-top:12px"><h3>내 결정 기록</h3><div class="detail-purpose">어떻게 하기로 했는지와 이유를 남깁니다. 비교 계산 없이 유지·판단 유보도 기록할 수 있습니다.</div><form id="detailDecisionForm" class="decision-entry" hidden><label>어떻게 할까요?<select aria-describedby="detailChoiceGuide" id="detailChoice" class="select"><option value="hold">현재 유지</option><option value="consider_reduction">일부 축소 검토</option><option value="pause_addition">추가매수 보류</option><option value="revisit">추가 확인 후 판단</option></select></label><div id="detailChoiceGuide" class="detail-choice-guide" role="status"></div><label>그렇게 결정한 이유<textarea id="detailReason" placeholder="이 결정을 내린 이유를 내 말로 적어주세요" class="input" maxlength="600" rows="2" required></textarea></label><button id="detailReuseReason" type="button" class="btn secondary full" hidden>지난 판단의 이유 가져오기</button><label>어떤 변화가 생기면 다시 볼까요?<textarea id="detailReview" placeholder="어떤 변화가 생기면 다시 판단할지 적어주세요" class="input" maxlength="600" rows="2" required></textarea></label><div class="review-date-shortcuts" aria-label="재점검 날짜 빠른 선택"><button type="button" class="btn secondary" data-review-days="7">7일 뒤 점검</button><button type="button" class="btn secondary" data-review-days="30">30일 뒤 점검</button></div><div id="detailRuleBuilder"><label>다시 볼 조건 쉽게 설정<select id="detailRuleType" class="select"><option value="custom">직접 작성</option><option value="ma">20·60·120개 종가 정배열 이탈</option><option value="price">지정 가격 도달</option><option value="date">지정 날짜에 점검</option></select></label><div id="detailRulePrice" hidden><label>기준 가격<input id="detailRuleAmount" disabled class="input" type="number" min="0.0001" step="any" inputmode="decimal"></label><label>통화<select id="detailRuleCurrency" class="select"><option value="USD">USD</option><option value="KRW">KRW</option></select></label><label>가격 조건<select id="detailRuleDirection" class="select"><option value="이하">이하</option><option value="이상">이상</option></select></label></div><div id="detailRuleDate" hidden><label>점검 날짜<input id="detailRuleDay" disabled class="input" type="date"></label></div><button id="detailApplyRule" type="button" class="btn secondary full" hidden>선택한 조건 적용</button><p id="detailRuleFeedback" class="sub" role="status">조건을 적용한 뒤 아래 저장 버튼을 눌러 주세요.</p><details class="more-list"><summary>확인 가능한 조건 예시</summary><p class="sub">가격은 최신 종가, 날짜는 한국 날짜로 확인합니다. 이평선은 저장 종가 단순평균 기준입니다.</p><button id="detailMaRule" type="button" class="btn secondary full">20·60·120개 종가 정배열 이탈로 설정</button></details></div><button type="submit" class="btn full">내 판단 저장</button><div id="detailDecisionStatus" class="status" role="status"></div></form><details class="more-list"><summary>이전 판단 보기</summary><div id="detailDecisionHistory"></div></details></section>'+byAccount+
         '<details class="card-group"><summary>거래 기록과 결제 상세</summary><section class="card activity-list"><h3>매매·배당 기록</h3><div class="notice">매도 대금은 실현손익을 뜻하지 않습니다.</div>'+
         (activity.unavailable?'<div class="notice">거래 기록을 불러오지 못했습니다.</div>':history||'<div class="notice">연결된 매매·배당 기록이 없습니다.</div>')+'</section>'+settlementDetails+'</details>';
       bindSecurityChart(body,p,s.currency,detailChartSettings);
@@ -1108,6 +1115,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
         var oldComparison=document.getElementById('detailPreviousComparison');if(oldComparison)oldComparison.remove();
         var form=document.getElementById('detailDecisionForm');if(!form)return;
         var hasLatest=Array.isArray(rows)&&rows.length>0;
+        document.getElementById('detailReuseReason').hidden=!(hasLatest&&String(rows[0].reason||'').trim());
         var assumption=savedComparisonAssumption(rows),targetRow=document.querySelector('#detailBody .choice-target');
         if(assumption&&targetRow){
           var prior=document.createElement('details');prior.id='detailPreviousComparison';prior.className='more-list choice-previous';
@@ -1206,6 +1214,17 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
           .catch(function(){if(active()){if(!priceFocusedThesis(results[2]&&results[2].thesis,latestDecisionRows&&latestDecisionRows[0]))reviewRefreshFailed=true;renderDecisionHistory(latestDecisionRows);}});
       };
       if(Array.isArray(results[3])&&results[3].length)refreshDecisionReview();
+      document.getElementById('detailReuseReason').onclick=function(){
+        var previous=latestDecisionRows&&latestDecisionRows[0],input=document.getElementById('detailReason'),status=document.getElementById('detailDecisionStatus');
+        if(!previous)return;
+        if(previous.choice!==document.getElementById('detailChoice').value){status.textContent='지난 판단과 선택한 결정이 다릅니다. 이번 결정에 맞는 이유를 적어 주세요.';return}
+        if(input.value.trim()){status.textContent='작성한 이유를 유지했습니다. 지난 이유를 가져오려면 입력 내용을 먼저 비워 주세요.';return}
+        input.value=previous.reason||'';input.dispatchEvent(new Event('input',{bubbles:true}));status.textContent='지난 이유를 가져왔습니다. 지금도 같은 이유인지 확인한 뒤 저장해 주세요.';
+      };
+      Array.prototype.forEach.call(document.querySelectorAll('[data-review-days]'),function(button){button.onclick=function(){
+        var day=reviewDateAfter(kstDate(),Number(button.getAttribute('data-review-days')));if(!day)return;
+        ruleType.value='date';ruleType.onchange();document.getElementById('detailRuleDay').value=day;applyReviewRule(day);
+      }});
       var ruleType=document.getElementById('detailRuleType'),ruleFeedback=document.getElementById('detailRuleFeedback');
       document.getElementById('detailRuleCurrency').value=s.currency==='KRW'?'KRW':'USD';
       function applyReviewRule(value){var input=document.getElementById('detailReview');input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));ruleFeedback.textContent='조건을 적용했습니다. 아래 저장 버튼을 눌러야 내 판단에 반영됩니다.';input.scrollIntoView({block:'center'});}

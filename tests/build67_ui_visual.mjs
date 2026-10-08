@@ -1,3 +1,4 @@
+import './build162_quick_review.mjs';
 import './build159_decision_changes.mjs';
 import './build158_review_consistency.mjs';
 import './build157_decision_receipt.mjs';
@@ -642,6 +643,16 @@ try{
     await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
     await page.locator('#detailDecisionAction').click();
     await page.locator('#detailChoice').selectOption('hold');
+    await page.locator('#detailChoice').selectOption(decision.choice);
+    await page.locator('#detailReuseReason').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),decision.reason);
+    await page.locator('#detailReason').fill('수정 중인 이유');await page.locator('#detailReuseReason').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),'수정 중인 이유');
+    await page.locator('#detailChoice').selectOption('hold');
+    await page.locator('[data-review-days="7"]').click();
+    const nextDay=await page.evaluate(()=>{const d=new Date(new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date())+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+7);return d.toISOString().slice(0,10)});
+    assert.equal(await page.locator('#detailReview').inputValue(),nextDay);
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'shortcuts only edit the draft');
     await page.locator('#detailReason').fill('매출 성장 근거를 다음 실적에서 다시 확인');
     await page.locator('#detailReview').fill('다음 실적 발표 후 확인');
     await page.locator('#detailDecisionForm button[type=submit]').click();
