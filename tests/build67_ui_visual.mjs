@@ -312,7 +312,13 @@ try{
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
     assert.equal(await page.locator('#detailStart').evaluate(el=>el.parentElement.id),'detailBody');
     assert.match(await page.locator('#detailStartHint').innerText(),/지난 결정:/);
-    await page.locator('#detailStartAction').click();
+    assert.equal(await page.locator('.detail-shortcuts').count(),1);
+    await page.locator('[data-detail-jump="holding"]').click();
+    assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('detail-overview')),true);
+    await page.locator('[data-detail-jump="reason"]').click();
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),true);
+    assert.equal(await page.evaluate(()=>document.activeElement.contains(document.getElementById('detailThesisSummary'))),true);
+    await page.locator('[data-detail-jump="decision"]').click();
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),true);
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
     await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
