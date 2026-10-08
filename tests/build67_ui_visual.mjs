@@ -411,8 +411,11 @@ try{
       assert.match(await page.locator('.performance-hero').first().innerText(),/-1,500,000/);
       assert.equal(await page.locator('.performance-position').count(),2);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
-      if(source.includes('stockTotalPartsHtml')){await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,650,000/)}
+      if(source.includes('stockTotalPartsHtml')){assert.equal(await page.locator('.pnl-composition').evaluate(el=>el.open),false);await page.locator('.pnl-composition>summary').click();await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,650,000/)}
       if(source.includes('stockCalculationHtml')){if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.evaluate(()=>scrollTo(0,0));}
+      await page.locator('.pnl-composition>summary').click();
+      assert.match(await page.locator('.pnl-leaders').innerText(),/원화 계산 종목 중/);
+      await page.locator('[data-pnl-leader="ARM"]').click();await page.locator('.performance-review-context').waitFor();await page.locator('#detailClose').click();
       await page.screenshot({path:`${out}/period-stock-${width}.png`});
       await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/period-stock-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
