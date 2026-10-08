@@ -1,3 +1,4 @@
+import './build159_decision_changes.mjs';
 import './build158_review_consistency.mjs';
 import './build157_decision_receipt.mjs';
 import './build156_read_queue.mjs';
@@ -115,7 +116,7 @@ const injected=`
         savedDecision={id:'recovered-decision',security_id:p.p_security_id,request_id:p.p_request_id,choice:p.p_choice,reason:p.p_reason,review_condition:p.p_review_condition,analysis_id:p.p_analysis_id,created_at:new Date().toISOString(),thesis_version:1,scenario_snapshot:{}};
         throw Error('Synthetic response lost after commit');
       }
-      if(name==='get_investment_decisions')return savedDecision?[savedDecision]:record?[record]:[];
+      if(name==='get_investment_decisions')return savedDecision?[savedDecision,...(record?[record]:[])]:record?[record]:[];
       if(name==='get_investment_breakout_rule')return null;
       if(name==='get_live_choice_comparison')return {...comparison,ok:true};
       if(name==='get_live_decision_metrics')return {ok:false};
@@ -619,7 +620,7 @@ try{
     assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     // Complete a decision after a lost write response, then reopen its persisted record.
-    await page.evaluate(args=>window.__uiFixture(...args),[{...live,decisionSaveFixture:true},null,analysis,comparison]);
+    await page.evaluate(args=>window.__uiFixture(...args),[{...live,decisionSaveFixture:true},decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
     await page.locator('#detailDecisionAction').click();
     await page.locator('#detailChoice').selectOption('hold');
@@ -629,6 +630,12 @@ try{
     await page.locator('#detailDecisionDone').waitFor().catch(async e=>{throw Error(e.message+'; save status: '+await page.locator('#detailDecisionStatus').innerText())});
     assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost response must not replay the write');
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
+    const change=page.locator('#detailDecisionSummary .decision-change');
+    assert.equal(await change.evaluate(el=>el.open),false,'comparison starts collapsed');
+    await change.locator('summary').click();
+    assert.match(await change.innerText(),/이유.*변경/s);
+    assert.ok((await change.innerText()).includes(decision.reason));
+    assert.ok((await change.innerText()).includes('매출 성장 근거를 다음 실적에서 다시 확인'));
     await page.screenshot({path:out+'/decision-recovered-'+width+'.png'});
     await page.locator('#detailDecisionDone').click();
     await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
