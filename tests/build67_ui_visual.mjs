@@ -160,7 +160,7 @@ const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH
 try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});page.on('dialog',dialog=>{if(page.listenerCount('dialog')===1)dialog.accept()});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    await page.route('**/*',route=>route.abort());await page.setContent(html,{waitUntil:'domcontentloaded'});
+    await page.route('**/*',route=>route.request().url()==='https://portfolio.test/'?route.fulfill({status:200,contentType:'text/html',body:html}):route.abort());await page.goto('https://portfolio.test/',{waitUntil:'domcontentloaded'});
     const fontFile=resolve(process.env.UI_FONT_CSS||'node_modules/@fontsource/noto-sans-kr/400.css');
     if(existsSync(fontFile)){const css=readFileSync(fontFile,'utf8').replace(/url\(([^)]+)\)/g,(_,p)=>`url(data:font/woff2;base64,${readFileSync(resolve(dirname(fontFile),p.replaceAll("'",''))).toString('base64')})`);await page.addStyleTag({content:css+' body{font-family:"Noto Sans KR",sans-serif}'});await page.evaluate(()=>document.fonts.ready)}
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
