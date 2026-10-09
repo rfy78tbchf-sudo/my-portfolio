@@ -345,9 +345,19 @@ try{
     await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
     if(source.includes('brokerDayCard')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
     if(source.includes('detailSetupRule')){
-      await page.locator('#detailSetupRule').click();
+      if(source.includes("result('manual'")){
+        assert.equal(await page.locator('#detailDecisionReview .review-status b').innerText(),'직접 확인할 조건');
+        assert.equal(await page.locator('#detailSetupRule').count(),0,'manual text must not be presented as an invalid condition');
+        assert.match(await page.locator('#detailDecisionReview .review-condition-result').innerText(),/자동으로 판정하지 않습니다/);
+        await page.locator('#detailDecisionAction').click();
+        assert.equal(await page.locator('#detailReview').inputValue(),decision.review_condition,'manual condition remains exact when editing');
+        await page.locator('#detailRuleOptions > summary').click();
+        assert.equal(await page.locator('#detailRuleOptions').evaluate(el=>el.open),true,'structured comparisons remain available as an optional edit');
+      }else{
+        await page.locator('#detailSetupRule').click();
+        assert.equal(await page.evaluate(()=>document.activeElement.id),'detailRuleType');
+      }
       assert.ok(await page.locator('#detailDecisionForm').isVisible());
-      assert.equal(await page.evaluate(()=>document.activeElement.id),'detailRuleType');
       const original=await page.locator('#detailReview').inputValue();
       const saved=await page.locator('#detailDecisionSummary').innerText();
       await page.locator('#detailRuleType').selectOption('ma');
