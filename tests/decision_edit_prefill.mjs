@@ -7,6 +7,7 @@ import {test} from 'node:test';
 const html=readFileSync(process.env.PORTFOLIO_HTML||new URL('../index.html',import.meta.url),'utf8');
 function section(start,end){const a=html.indexOf(start),b=html.indexOf(end,a);assert.ok(a>=0&&b>a,start);return html.slice(a,b);}
 const source=[
+  section('  function decisionConditionState(', '  function officialPeriodKo('),
   section('  function clearDetailDirty(', '  function closeSecurityDetail('),
   section('    body.oninput=', "    modal.querySelector('.detail-sheet').scrollTop=0"),
   section('  function decisionFollowupDraft(', '  function decisionReviewHtml('),
@@ -23,7 +24,7 @@ function fixture(rows=[saved()]){
   function node(id){let ownId=id;const el={value:'',hidden:false,disabled:false,textContent:'',innerHTML:'',style:{},dataset:{},listeners:{},children:[],isConnected:true,
     get id(){return ownId},set id(value){if(ownId)nodes.delete(ownId);ownId=value;if(value)nodes.set(value,el)},
     addEventListener(type,fn){this.listeners[type]=fn},appendChild(child){this.children.push(child);child.parentElement=this;return child},
-    prepend(child){this.children.unshift(child)},insertAdjacentElement(){},insertAdjacentHTML(){},setAttribute(){},
+    prepend(child){this.children.unshift(child)},insertAdjacentElement(){},insertAdjacentHTML(where,value){this.innerHTML=where==='afterbegin'?value+this.innerHTML:this.innerHTML+value},setAttribute(){},
     remove(){nodes.delete(this.id);this.isConnected=false},contains(){return false},scrollIntoView(){},focus(){ctx.document.activeElement=this},
     closest(selector){return selector==='form'?nodes.get('detailDecisionForm'):selector.includes('#detailExtras')?nodes.get('detailStart'):null},
     matches(){return true},dispatchEvent(event){if(event.type==='input')ctx.body.oninput({target:this});this.listeners[event.type]?.call(this,event)},
@@ -140,4 +141,23 @@ test('whitespace in a programmatic draft is preserved rather than treated as emp
 });
 test('unsupported historical choices cannot be assigned to the select',()=>{
   for(const choice of ['unknown','__proto__','toString']){const f=fixture([saved(choice)]);f.edit();assert.deepEqual(f.values(),['hold','','']);assert.equal(f.calls.length,0);}
+});
+
+test('manual checkpoint saves verbatim, confirms direct review, and reopens as an immutable record',async()=>{
+  const old=saved('hold',{review_condition:'다음 실적 발표 때 확인'}),f=fixture([old]),prior=clone(f.persisted[0]);
+  f.edit();assert.equal(f.values()[2],old.review_condition);f.input('detailReason','기대가 이어지는지 확인하려고');await f.submit();
+  assert.equal(f.calls[0].p_review_condition,old.review_condition);assert.equal(f.persisted.length,2);assert.deepEqual(f.persisted[1],prior);
+  assert.match(f.element('detailDecisionSummary').innerHTML,/저장 완료 · 직접 확인할 조건으로 기록했습니다/);
+  const reopened=fixture(f.persisted);reopened.edit();assert.equal(reopened.values()[2],old.review_condition);
+  const result=reopened.ctx.decisionConditionState(reopened.persisted[0],null,'2026-10-09',false);
+  assert.equal(result.kind,'manual');assert.equal(result.hit,false);
+});
+test('cleared review text remains required and never writes a blank manual condition',async()=>{
+  const f=fixture([saved('hold',{review_condition:'다음 실적 발표 때 확인'})]);f.edit();f.input('detailReview','   ');await f.submit();
+  assert.equal(f.calls.length,0);assert.match(f.element('detailDecisionStatus').textContent,/내 이유와 다시 볼 조건을 적어/);
+});
+test('structured date keeps its own saved summary instead of a manual-review label',async()=>{
+  const f=fixture([saved('hold',{review_condition:'2026-11-01'})]);f.edit();await f.submit();
+  assert.match(f.element('detailDecisionSummary').innerHTML,/저장한 조건과 이후 자료/);
+  assert.doesNotMatch(f.element('detailDecisionSummary').innerHTML,/직접 확인할 조건으로 기록했습니다/);
 });

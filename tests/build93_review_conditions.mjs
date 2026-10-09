@@ -17,7 +17,7 @@ assert.match(review(d,rows.map((r,i)=>i===50?{...r,source:'other'}:r)),/확인 �
 assert.match(review(d,rows.map(r=>({...r,currency:'KRW'}))),/확인 자료 부족/);
 assert.match(review(d,rows.map(r=>({...r,close:100}))),/条件|조건 구체화 필요/);
 for(const condition of ['이평선 배열 변화','눌림목 모니터링','2026-09-01 이평선 배열 변화','EMA 20·60·120 정배열 이탈']){
- const result=review({...d,review_condition:condition},rows.slice(0,120));assert.match(result,/조건 구체화 필요/);assert.doesNotMatch(result,/<b>확인된 변화 없음<\/b>/);
+ const result=review({...d,review_condition:condition},rows.slice(0,120));assert.match(result,/직접 확인할 조건/);assert.doesNotMatch(result,/<b>확인된 변화 없음<\/b>/);
 }
 assert.match(review({...d,review_condition:'종가 250 달러 이하'}),/재검토할 변화 있음/);
 assert.match(review({...d,review_condition:'종가 250 달러 이하'},rows.slice(0,120)),/새 종가 대기/);

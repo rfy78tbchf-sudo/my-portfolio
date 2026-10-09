@@ -370,7 +370,7 @@ try{
     await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
     if(source.includes('detailMaRule')){
       const previous=await page.locator('#detailReview').inputValue();
-      await page.getByText('확인 가능한 조건 예시',{exact:true}).click();
+      await page.getByText('자동 비교 기준 안내',{exact:true}).click();
       await page.locator('#detailMaRule').click();
       assert.equal(await page.locator('#detailReview').inputValue(),'20·60·120개 종가 단순평균 정배열 이탈');
       await page.locator('#detailReview').fill(previous);

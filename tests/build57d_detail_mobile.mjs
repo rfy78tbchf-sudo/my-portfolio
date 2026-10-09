@@ -191,6 +191,7 @@ try{
     await page.waitForFunction(()=>/저장 완료|저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     const saveMessage=await page.locator('#detailDecisionStatus').textContent();
     assert.match(saveMessage,/내 판단 저장 완료/,saveMessage);
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/직접 확인할 조건으로 기록했습니다/);
     assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-TEST',
       'the user decision links to the saved analysis for the selected security');
     assert.equal(await page.evaluate(()=>stored[0].p_target_pct),10,
@@ -205,12 +206,16 @@ try{
     await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
     await page.locator('#detailDecisionReview').waitFor({state:'attached'});
     assert.match(await page.locator('#detailDecisionReview').textContent(),/I can absorb this exposure/);
+    assert.equal(await page.locator('#detailDecisionReview .review-status b').innerText(),'직접 확인할 조건');
+    assert.match(await page.locator('#detailDecisionReview').innerText(),/충족 여부를 자동으로 판정하지 않습니다/);
+    assert.doesNotMatch(await page.locator('#detailDecisionReview').innerText(),/조건 구체화 필요/);
     assert.match(await page.locator('#detailDecisionSummary').textContent(),/현재 유지.*Recheck the reported operating result/);
     await page.locator('#detailDecisionAction').click();
     assert.equal(await page.locator('#detailChoice').inputValue(),'hold');
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
     assert.equal(await page.locator('#detailReview').inputValue(),'Recheck the reported operating result');
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/새 판단으로 기록/);
+    assert.match(await page.locator('#detailReviewHelp').innerText(),/직접 확인할 조건으로 저장/);
     await page.locator('#detailDecisionForm').scrollIntoViewIfNeeded();
     await page.screenshot({path:`mobile-artifacts/build173-edit-prefill-${width}.png`});
     await page.locator('#detailChoice').selectOption('revisit');
