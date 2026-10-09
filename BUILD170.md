@@ -13,3 +13,5 @@ Put the existing start panel first, with a short saved holding-reason preview. O
 Synthetic mobile journey on all tested widths: home holding → first decision without opening optional tools → user-written reason + explicit seven-day checkpoint → save/readback (including lost-response recovery) → return home → reopen saved judgment. Assert the exact reason and checkpoint, single write and re-review destination. Previous tests now assert the intentional first-action ordering. Existing save, follow-up, chart and update checks remain.
 
 This release addresses the first-decision usability path. It does not claim real iPhone completion under a minute, production financial reconciliation, or live model validation. Existing period-P&L completeness and real-device usability still require separate evidence. No production decisions were created by the tests.
+
+End-to-end test additionally exposed background review refresh replacing the focused review node after returning from home. Preserve focus in the refreshed review without forcing another scroll.
