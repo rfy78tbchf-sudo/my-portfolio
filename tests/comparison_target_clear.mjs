@@ -8,6 +8,7 @@ import {test} from 'node:test';
 const html=readFileSync(process.env.PORTFOLIO_HTML||new URL('../index.html',import.meta.url),'utf8');
 function section(start,end){const a=html.indexOf(start),b=html.indexOf(end,a);assert.ok(a>=0&&b>a,start);return html.slice(a,b);}
 const sources=[
+  section('  function detailCurrentWeightHtml(', '  function decisionImpactHtml('),
   section('      function updateDecisionGuide(){',"      document.getElementById('detailChoice').addEventListener"),
   section("      ['detailWeightTarget','detailDown','detailUp'].forEach",'      var reviewAnalyses='),
   section("      var decisionForm=document.getElementById('detailDecisionForm');",'      var general='),
@@ -38,6 +39,7 @@ function fixture(){
     comparisonHtml:()=>'<div class="choice-result-head">comparison</div>',
     thesisSaved:true,thesisVersion:1,analyze:element('thesisAnalyze'),general:element('detailAiGeneral'),
     edgeSync:async()=>{},loadLive:async()=>{},money:String,signedMoney:String,kstStamp:String,num:String,esc:String,
+    finiteMetric:x=>x==null||x===''?NaN:Number(x),weightPct:x=>Number(x).toFixed(1)+'%',
     aiOfficialEvidence(){},aiSourceLinks(){},compactDetailAnswer(){},decisionImpactHtml:()=>'',
     loadThesisPrior(){},refreshDecisionReview(){},detailOpinionError:error=>error.message,
     requestDetailOpinion:async()=>({answer:'new opinion',analysis_id:'new-comparison-ai',history_saved:true}),

@@ -58,9 +58,9 @@ try{
           if(name==='save_investment_decision'&&p.p_security_id==='other'){stored.unshift({...p,id:'other-fixture',security_id:'other',reason:p.p_reason,review_condition:p.p_review_condition,choice:p.p_choice,analysis_id:p.p_analysis_id,created_at:'2026-09-27',scenario_snapshot:{}});return {ok:true,id:'other-fixture'}}
           if(name==='save_investment_decision'){if(!stored.length)stored.unshift({...p,id:'fixture-id',security_id:p.p_security_id,reason:p.p_reason,review_condition:p.p_review_condition,choice:p.p_choice,analysis_id:p.p_analysis_id,created_at:'2026-09-26',scenario_snapshot:{choice_comparison:{target_pct:p.p_target_pct,price_assumptions:{down_pct:p.p_down_pct,up_pct:p.p_up_pct},observation_at:p.p_observation_at,hold:{value_krw:10000},reduce:{mode:'integer_shares',shares_to_sell:5,cash_increase_krw:5000}}}});else if(stored[0].p_request_id!==p.p_request_id)throw Error('retry created a new decision');return {ok:true,id:'fixture-id'}};
           if(name==='get_live_decision_metrics'){var value=p.p_symbol==='TEST'?10000:4000;return {
-            ok:true,observation_at:'2026-09-26T12:10:00Z',denominator:{value:50000},position:{symbol:p.p_symbol,value:value},
+            ok:true,observation_at:'2026-09-26T12:10:00Z',denominator:{metric_id:'app_display_assets',value:50000,label:'KB 자동계좌 + 최신 ISA 총액 (평가시각 미확인)'},position:{symbol:p.p_symbol,value:value,weight_pct:value/50000*100},
             scenario:{assumption_pct:p.p_change_pct,impact_krw:value*p.p_change_pct/100}}};
-          if(name==='get_live_choice_comparison')return {ok:true,observation_at:'2026-09-26',denominator:{value:50000},assets_before_krw:50000,current_cash_kb_krw:null,
+          if(name==='get_live_choice_comparison')return {ok:true,observation_at:'2026-09-26',denominator:{metric_id:'app_display_assets',value:50000,label:'KB 자동계좌 + 최신 ISA 총액 (평가시각 미확인)'},assets_before_krw:50000,current_cash_kb_krw:null,
             price_assumptions:{down_pct:p.p_down_pct,up_pct:p.p_up_pct},
             hold:{quantity:10,value_krw:10000,weight_pct:20,down_impact_krw:-1000,up_impact_krw:1000},
             reduce:{mode:'integer_shares',shares_to_sell:5,quantity_reference:5,value_krw:5000,weight_pct:10,cash_increase_krw:5000,down_impact_krw:-500,up_impact_krw:500}};
@@ -129,6 +129,12 @@ try{
       'do not show an empty result panel before the comparison');
     assert.equal(await page.locator('#detailDown').isVisible(),false,
       'advanced price assumptions stay out of the first reading path');
+    assert.ok(await page.locator('#detailCurrentWeight').isVisible(),'current weight stays visible beside target input');
+    assert.match(await page.locator('#detailCurrentWeight').innerText(),/현재 비중 20\.0%/);
+    assert.match(await page.locator('#detailCurrentWeight small').innerText(),/KB 자동계좌 \+ 최신 ISA 총액/);
+    const targetBox=await page.locator('#detailWeightTarget').boundingBox(),currentBox=await page.locator('#detailCurrentWeight').boundingBox();
+    assert.ok(currentBox.x>=targetBox.x+targetBox.width&&currentBox.x+currentBox.width<=width,
+      `${width}px: current weight is beside the input without horizontal clipping`);
     await page.locator('#detailWeightTarget').fill('10');
     await page.locator('#detailWeightRun').click();
     await page.screenshot({path:`mobile-artifacts/choice-detail-${width}.png`});
