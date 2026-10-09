@@ -33,6 +33,7 @@ jobs:
       - run: node tests/build54_mobile.mjs
       - run: node tests/build57_decision_journey.mjs
       - run: node tests/build57d_choice_decision.mjs
+      - run: node tests/comparison_target_clear.mjs
       - run: node tests/build57_decision_mobile.mjs
       - run: node tests/build57d_detail_mobile.mjs
       - run: node tests/build58_review_evidence.mjs
