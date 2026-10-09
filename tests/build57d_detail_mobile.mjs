@@ -206,6 +206,20 @@ try{
     await page.locator('#detailDecisionReview').waitFor({state:'attached'});
     assert.match(await page.locator('#detailDecisionReview').textContent(),/I can absorb this exposure/);
     assert.match(await page.locator('#detailDecisionSummary').textContent(),/현재 유지.*Recheck the reported operating result/);
+    await page.locator('#detailDecisionAction').click();
+    assert.equal(await page.locator('#detailChoice').inputValue(),'hold');
+    assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
+    assert.equal(await page.locator('#detailReview').inputValue(),'Recheck the reported operating result');
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/새 판단으로 기록/);
+    await page.locator('#detailDecisionForm').scrollIntoViewIfNeeded();
+    await page.screenshot({path:`mobile-artifacts/build173-edit-prefill-${width}.png`});
+    await page.locator('#detailChoice').selectOption('revisit');
+    await page.locator('#detailReason').fill('Draft reason after reopening');
+    await page.locator('#detailReview').fill('Draft checkpoint after reopening');
+    await page.locator('#detailDecisionAction').click();
+    assert.equal(await page.locator('#detailChoice').inputValue(),'revisit');
+    assert.equal(await page.locator('#detailReason').inputValue(),'Draft reason after reopening');
+    assert.equal(await page.locator('#detailReview').inputValue(),'Draft checkpoint after reopening');
     assert.equal(await page.locator('#detailWeightTarget').inputValue(),'',
       'a prior comparison is an optional assumption, not an automatically approved target');
     assert.equal(await page.locator('#detailPreviousComparison').evaluate(node=>node.open),false,
@@ -221,6 +235,8 @@ try{
       down:lastAiRequest.down_pct,up:lastAiRequest.up_pct})),
       {action:'decision-review',target:10,down:-10,up:10},
       'a deliberate tap recomputes and requests a new AI review with the same saved assumption');
+    assert.equal(await page.locator('#detailReason').inputValue(),'Draft reason after reopening',
+      'background history refresh after a new AI review must preserve the current draft');
     await page.evaluate(()=>window.openTestDetail('other'));await openOptionalTools(page);
     await openOptionalTools(page);await page.getByText('My NEXT reason').first().waitFor();
     assert.equal(await page.getByText('My TEST reason').count(),0);
