@@ -334,7 +334,7 @@ try{
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
     await page.screenshot({path:`${out}/detail-${width}.png`});
     if(source.includes('detail-price-chart')){
-      assert.equal(await page.locator('#detailBody > :first-child').getAttribute('class'),'card detail-price-chart');
+      assert.equal(await page.locator('#detailBody > :first-child').getAttribute('id'),'detailStart');
       assert.equal(await page.locator('.detail-price-chart').evaluate(el=>!!el.closest('details:not([open])')),false);
       assert.equal(await page.locator('.detail-price-chart .security-chart-hit').count(),1);
     }
@@ -378,7 +378,7 @@ try{
     await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
     if(source.includes("startPanel.id='detailStart'")&&width===390){
       await page.setViewportSize({width,height:844});
-      await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
+      await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailStartAction').waitFor();
       await page.getByRole('button',{name:'AI 의견부터 확인하기'}).waitFor();await page.screenshot({path:`${out}/detail-first-review-${width}.png`});
       await page.locator('#detailStartAction').click();assert.ok(await page.locator('#detailFreshReview').isVisible());
       if(source.includes('detailDirectDecision')){
@@ -696,6 +696,35 @@ try{
     await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
     await page.locator('#detailClose').click();
+    // Complete first decision from the actual home entry, with optional tools CLOSED.
+    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;
+    firstVisit.testThesis={version:1,rationale:'매출 성장 근거를 다음 실적까지 확인하며 보유'};
+    await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    const homeStock=page.locator('#homeHoldings [data-security-id="s0"]');await homeStock.click();
+    await page.locator('#detailStart').waitFor();
+    assert.equal(await page.locator('#detailBody>:first-child').getAttribute('id'),'detailStart');
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
+    assert.match(await page.locator('#detailSavedReason').innerText(),/매출 성장 근거/);
+    await page.locator('#detailDirectDecision').click();
+    assert.equal(await page.locator('#detailDecisionForm').evaluate(el=>el.parentElement.id),'detailStart');
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false,'first judgment does not require opening analysis tools');
+    assert.equal(await page.locator('#detailRuleOptions').evaluate(el=>el.open),false,'advanced conditions are optional');
+    await page.locator('#detailChoice').selectOption('hold');
+    await page.locator('#detailReason').fill('실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    await page.locator('[data-review-days="7"]').click();const checkpoint=await page.locator('#detailReview').inputValue();
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await page.locator('#detailDecisionDone').waitFor();
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost save response must not duplicate the decision');
+    assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(checkpoint));
+    await page.screenshot({path:out+'/first-decision-complete-'+width+'.png'});
+    await page.locator('#detailDecisionDone').click();
+    const homeReview=page.locator('.home-reviews');if(!await homeReview.evaluate(el=>el.open))await homeReview.locator(':scope>summary').click();
+    await homeReview.locator('[data-decision-detail="s0"]').click();
+    await page.locator('#detailDecisionReview').waitFor();
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/실적 발표 전까지 현재 보유/);
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    await page.locator('#detailReturn').click();
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
   }
 }finally{await browser.close()}
