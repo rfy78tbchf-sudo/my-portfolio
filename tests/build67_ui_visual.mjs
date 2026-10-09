@@ -1,3 +1,4 @@
+import './build169_chart_preferences.mjs';
 import './build165_chart_recovery.mjs';
 import './build164_resume.mjs';
 import './build162_quick_review.mjs';
@@ -310,6 +311,7 @@ try{
     await page.locator('#assetChartHit').tap();assert.ok(await page.locator('#assetChartTip').isVisible(),'chart observation is touch-readable');
     await page.evaluate(()=>window.__uiDetail('s0'));
     await page.locator('#detailStartAction').waitFor({state:'visible'});
+    await page.locator('[data-chart-period="3"]').click();
     await page.locator('#detailReturn').click();
     assert.equal(await page.locator('#detailModal').isVisible(),false);
     await page.evaluate(()=>window.__uiDetail('s0'));
@@ -317,6 +319,8 @@ try{
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
     assert.equal(await page.locator('#detailStart').evaluate(el=>el.parentElement.id),'detailBody');
     assert.match(await page.locator('#detailStartHint').innerText(),/지난 결정:/);
+    assert.equal(await page.locator('[data-chart-period="3"]').getAttribute('aria-pressed'),'true','reopened detail remembers chosen chart period');
+    await page.locator('[data-chart-period="all"]').click();
     assert.equal(await page.locator('.detail-shortcuts').count(),1);
     await page.locator('[data-detail-jump="holding"]').click();
     assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('detail-overview')),true);
