@@ -124,7 +124,7 @@ const injected=`
       if(name==='get_investment_decisions')return savedDecision?[savedDecision,...(record?[record]:[])]:record?[record]:[];
       if(name==='get_investment_breakout_rule')return null;
       if(name==='get_live_choice_comparison')return {...comparison,ok:true};
-      if(name==='get_live_decision_metrics')return {ok:false};
+      if(name==='get_live_decision_metrics'){if(data.deferMetrics)return new Promise(resolve=>{window.__releaseDetailMetrics=()=>resolve({ok:false})});return {ok:false}};
       return {ok:false,items:[]};
     };
     authFetch=async function(url,options){if(options&&options.method==='POST')throw Error('No model generation or writes allowed in UI capture');return {ok:true,json:async()=>url.includes('investment_decisions?')?(savedDecision?[savedDecision]:[]):[opinion]}};
@@ -707,12 +707,13 @@ try{
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
     await page.locator('#detailClose').click();
     // Complete first decision from the actual home entry, with optional tools CLOSED.
-    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;
+    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;firstVisit.deferMetrics=true;
     firstVisit.testThesis={version:1,rationale:'매출 성장 근거를 다음 실적까지 확인하며 보유'};
     await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
     const homeStock=page.locator('#homeHoldings [data-security-id="s0"]');await homeStock.click();
     await page.locator('#detailStart').waitFor();
+    assert.match(await page.locator('#detailCurrentWeight').innerText(),/비중 확인 중/,'detail is ready while optional calculation remains unresolved');
     assert.equal(await page.locator('#detailBody>:first-child').getAttribute('id'),'detailStart');
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
     assert.match(await page.locator('#detailSavedReason').innerText(),/매출 성장 근거/);
@@ -723,8 +724,11 @@ try{
     await page.locator('#detailChoice').selectOption('hold');
     await page.locator('#detailReason').fill('실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
     await page.locator('[data-review-days="7"]').click();const checkpoint=await page.locator('#detailReview').inputValue();
+    await page.screenshot({path:out+'/decision-while-weight-pending-'+width+'.png'});
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.locator('#detailDecisionDone').waitFor();
+    await page.evaluate(()=>window.__releaseDetailMetrics());
+    assert.match(await page.locator('#detailCurrentWeight').innerText(),/비중 다시 확인/);
     assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost save response must not duplicate the decision');
     assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(checkpoint));
     await page.screenshot({path:out+'/first-decision-complete-'+width+'.png'});

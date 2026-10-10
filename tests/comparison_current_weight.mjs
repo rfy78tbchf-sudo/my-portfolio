@@ -39,19 +39,11 @@ test('server denominator text is escaped',()=>{
   assert.doesNotMatch(out,/<img/);assert.match(out,/&lt;img/);
 });
 
-test('detail load reads exact scenario metrics for the selected symbol and tolerates failure',async()=>{
-  const source=section("      rpc('get_live_decision_metrics',{p_symbol:known.symbol,p_change_pct:0})",'\n    ]).then');
-  const calls=[];const ctx=vm.createContext({known:{symbol:'TEST'},rpc:async(name,args)=>{calls.push({name,...args});return metrics();}});
-  const result=await vm.runInContext(source,ctx);assert.match(render(result),/23\.4%/);
-  assert.deepEqual(calls,[{name:'get_live_decision_metrics',p_symbol:'TEST',p_change_pct:0}]);
-  ctx.rpc=async()=>{throw Error('offline')};assert.equal(await vm.runInContext(source,ctx),null);
-});
-
 test('current value stays beside the input, outside extra disclosure and out of editable state',()=>{
   const source=section('        \'<div class="choice-target">', '        \'<details class="more-list choice-settings">').trim().replace(/\+\s*$/,'');
   context.results=[null,null,null,null,metrics()];context.s={symbol:'TEST'};
   const out=vm.runInContext('('+source+')',context);
-  assert.match(out,/choice-weight-entry/);assert.match(out,/현재 비중 <b>23\.4%/);
+  assert.match(out,/choice-weight-entry/);assert.match(out,/비중 확인 중/);
   assert.ok(out.indexOf('detailWeightTarget')<out.indexOf('id="detailCurrentWeight"')&&out.indexOf('id="detailCurrentWeight"')<out.indexOf('detailWeightRun'));
   assert.doesNotMatch(out,/<details/);assert.match(out,/aria-describedby="detailCurrentWeight"/);
   const input=out.match(/<input[^>]*>/)[0];assert.match(input,/min="0" max="100" step="0.1"/);assert.doesNotMatch(input,/\bvalue=|disabled/);
