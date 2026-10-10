@@ -378,7 +378,8 @@ try{
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true,'due reviews are visible without an extra tap');
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
-      assert.match(await card.innerText(),/다시 점검할 판단 1개/);
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      assert.equal(await card.locator(':scope > h3').isVisible(),false,'nested title is not repeated');
       assert.match(await page.locator('.home-review-brief').innerText(),/직접 확인 1개/);
       assert.equal(await card.locator('[data-decision-detail]').first().getAttribute('data-decision-detail'),'s1');
       assert.equal(await card.locator('[data-decision-detail="s0"]').isVisible(),false);
