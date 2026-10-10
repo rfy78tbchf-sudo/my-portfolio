@@ -1,3 +1,4 @@
+import './build180_loading.mjs';
 import './build179_review_acknowledgements.mjs';
 import './build178_home_context.mjs';
 import './build169_chart_preferences.mjs';
@@ -99,6 +100,24 @@ const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_redu
 const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
 const injected=`
   window.__uiPreserveRender=function(){render(true)};
+  window.__uiLoadingProbe=function(data){
+    window.__homeProbeReads=[];
+    var delayed=new Promise(function(resolve){window.__releaseHomeProbe=resolve});
+    rest=async function(path){window.__homeProbeReads.push(path);await new Promise(function(r){setTimeout(r,80)});
+      if(path.startsWith('accounts?'))return data.accounts;
+      if(path.startsWith('securities?'))return data.securities;
+      if(path.startsWith('holdings?'))return data.holdings;
+      if(path.startsWith('daily_account_snapshots?'))return data.snapshots.slice().reverse();
+      if(path.startsWith('manual_subaccount_snapshots?'))return data.manualSnapshots||[];
+      if(path.startsWith('investment_decisions?')){if(window.__failHomeReview)throw Error('synthetic offline');return data.reviewDecisions||[]}
+      if(path.startsWith('daily_security_prices?'))return [{security_id:'s0',price_date:'2026-09-28',close:90,currency:'USD'}];
+      return [];
+    };
+    rpc=async function(name){if(name==='reconcile_live_cash_flows')return delayed;if(name==='get_live_current_account_scope')return data.accountScope||null;if(name==='get_app_settings')return {};return null};
+    window.__retryHomeProbe=function(){return loadHomeReviewData(live,function(){return true})};
+    window.__homeProbe=loadLiveOnce();
+  };
+
   window.__uiFixture=function(data,record,opinion,comparison){
     liveAuthEpoch++;live=data;liveError=null;mode='live';period='1M';session={accessToken:'test.'+btoa(JSON.stringify({sub:data.draftOwner||('fixture-'+crypto.randomUUID())}))+'.test'};
     var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
@@ -803,6 +822,25 @@ try{
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/실적 발표 전까지 현재 보유/);
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
     await page.locator('#detailReturn').click();
+
+    const probeData=JSON.parse(JSON.stringify(live));probeData.reviewDecisions=[{...decision,choice:'hold',review_condition:'종가 100 달러 이하',price_snapshot:{price_date:'2026-09-26',currency:'USD'}}];
+    await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
+    await page.waitForFunction(()=>document.querySelector('.home-load-status'));
+    await page.waitForFunction(()=>!document.querySelector('.home-load-status'));
+    assert.match(await page.locator('.review-home').innerText(),/저장한 가격 조건에 해당/);
+    assert.ok(await page.locator('.asset').first().innerText(),'account remains readable while enrichment is blocked');
+    await page.screenshot({path:out+'/home-before-analysis-'+width+'.png'});
+    await page.evaluate(async()=>{window.__failHomeReview=true;await window.__retryHomeProbe()});
+    await page.locator('[data-home-review-retry]').waitFor();
+    await page.locator('.home-reviews>summary').click();
+    assert.match(await page.locator('.review-home').textContent(),/눌림목/,'failed review fetch retains prior saved reason');
+    await page.screenshot({path:out+'/home-local-retry-'+width+'.png'});
+    const beforeReads=await page.evaluate(()=>window.__homeProbeReads.length);
+    await page.evaluate(()=>window.__failHomeReview=false);await page.locator('[data-home-review-retry]').click();
+    await page.locator('[data-home-review-retry]').waitFor({state:'detached'});
+    assert.equal(await page.evaluate(()=>window.__homeProbeReads.length)-beforeReads,3);
+    await page.evaluate(async()=>{window.__releaseHomeProbe({ok:true});await window.__homeProbe});
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
   }
 }finally{await browser.close()}
