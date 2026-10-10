@@ -98,7 +98,7 @@ const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_ver
 const injected=`
   window.__uiPreserveRender=function(){render(true)};
   window.__uiFixture=function(data,record,opinion,comparison){
-    live=data;liveError=null;mode='live';period='1M';session={accessToken:'synthetic-ui-session'};
+    liveAuthEpoch++;live=data;liveError=null;mode='live';period='1M';session={accessToken:'synthetic-ui-session'};
     var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
     if(!crypto.randomUUID){let syntheticId=0;Object.defineProperty(crypto,'randomUUID',{value:()=> '00000000-0000-4000-8000-'+String(++syntheticId).padStart(12,'0')})}
     window.__uiFailStockOnce=function(){failStockOnce=true};
@@ -663,14 +663,15 @@ try{
     await openOptionalTools(page);
     await page.locator('#detailDecisionAction').click();
     await page.locator('#detailReason').fill('입력 보존 확인');
-    page.once('dialog',dialog=>dialog.dismiss());await page.locator('#detailClose').click();
-    assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
-    assert.ok(await page.locator('#detailModal').isVisible());
-    page.once('dialog',dialog=>dialog.dismiss());await page.locator('[data-detail-step="-1"]').click();
-    assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
-    assert.match(await page.locator('.detail-head b').innerText(),/리커전/);
-    page.once('dialog',dialog=>dialog.accept());await page.locator('[data-detail-step="-1"]').click();
+    await page.locator('[data-detail-step="-1"]').click();
     await page.locator('.detail-head b').getByText('일라이 릴리',{exact:true}).waitFor();
+    await page.locator('[data-detail-step="1"]').click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    assert.match(await page.locator('.detail-head b').innerText(),/리커전/);
+    assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
+    page.once('dialog',dialog=>dialog.dismiss());await page.locator('#detailDraftDiscard').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
+    page.once('dialog',dialog=>dialog.accept());await page.locator('#detailDraftDiscard').click();
+    assert.equal(await page.locator('#detailDecisionForm').isVisible(),false);
     await page.locator('#detailClose').click();
     assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
