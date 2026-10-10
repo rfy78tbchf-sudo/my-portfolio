@@ -713,7 +713,7 @@ try{
     await page.evaluate(()=>window.__uiRender('home'));
     const homeStock=page.locator('#homeHoldings [data-security-id="s0"]');await homeStock.click();
     await page.locator('#detailStart').waitFor();
-    assert.match(await page.locator('#detailCurrentWeight').innerText(),/비중 확인 중/,'detail is ready while optional calculation remains unresolved');
+    assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 확인 중/,'detail is ready while optional calculation remains unresolved');
     assert.equal(await page.locator('#detailBody>:first-child').getAttribute('id'),'detailStart');
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
     assert.match(await page.locator('#detailSavedReason').innerText(),/매출 성장 근거/);
@@ -728,7 +728,7 @@ try{
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.locator('#detailDecisionDone').waitFor();
     await page.evaluate(()=>window.__releaseDetailMetrics());
-    assert.match(await page.locator('#detailCurrentWeight').innerText(),/비중 다시 확인/);
+    assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 다시 확인/);
     assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost save response must not duplicate the decision');
     assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(checkpoint));
     await page.screenshot({path:out+'/first-decision-complete-'+width+'.png'});
