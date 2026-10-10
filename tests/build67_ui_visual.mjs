@@ -100,6 +100,7 @@ const comparison={target_pct:10,price_assumptions:{down_pct:-10,up_pct:10},obser
 const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_reduction',reason:'눌림목을 살펴보고 보유 전제가 약해지면 축소 검토',review_condition:'눌림목 모니터링',analysis_id:'isolated-ui-analysis',created_at:now,basis_at:now,thesis_version:1,price_snapshot:{price_date:'2026-09-28',close:285,currency:'USD'},account_snapshot:{observation_at:now},scenario_snapshot:{choice_comparison:comparison}};
 const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
 const injected=`
+  var fixtureOriginalLoadLive=loadLive;
   window.__uiPreserveRender=function(){render(true)};
   window.__uiStartCached=function(){var refresh=refreshLive;window.__previewRefreshRequested=0;refreshLive=function(){window.__previewRefreshRequested++;return Promise.resolve()};try{startLive(session)}finally{refreshLive=refresh}};
   window.__uiPreviewFailure=function(){liveError='synthetic offline';render()};
@@ -108,6 +109,7 @@ const injected=`
   window.__uiClearSession=function(){writeSession(null)};
 
   window.__uiLoadingProbe=function(data,waitForRetry){
+    loadLive=fixtureOriginalLoadLive;
     window.__homeProbeReads=[];
     var delayed=new Promise(function(resolve){window.__releaseHomeProbe=resolve});
     rest=async function(path){window.__homeProbeReads.push(path);await new Promise(function(r){setTimeout(r,80)});
