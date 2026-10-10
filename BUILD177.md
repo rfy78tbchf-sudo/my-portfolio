@@ -6,6 +6,14 @@ Decision inputs are now synchronously stored on input, scoped to the authenticat
 
 Confirmed save, recovered matching receipt and explicit discard remove the durable draft. Request identity is persisted before submission to preserve unchanged retry identity after interrupted responses. Storage failure has a visible local warning; malformed data does not break detail. Drafts remain device/browser-local, not cross-device. Logout removes in-memory access; signing into the same account can restore local drafts. Other accounts use separate keys. Clearing browser data removes drafts.
 
-Validation: 92 isolated assertions passed, including fresh-runtime recovery, owner isolation, discard, confirmed removal, interrupted request recovery and blocked/corrupt storage. Existing sync, dirty-state and scroll-return checks passed. Mobile fixture now reloads a real browser page at 390/402/430px and then restores and saves synthetic data only. Deployment and mobile CI results pending.
+Validation: 92 isolated assertions passed, including fresh-runtime recovery, owner isolation, discard, confirmed removal, interrupted request recovery and blocked/corrupt storage. Existing sync, dirty-state and scroll-return checks passed. Mobile fixture now reloads a real browser page at 390/402/430px and then restores and saves synthetic data only. Mobile CI and deployment completed successfully (details below).
 
 Actual signed-in iPhone/PWA process termination and real-user completion remain 확인 필요. No daily 30-second/one-minute usability claim. Next priority is home revisit context and stale-data visibility, after mobile recovery verification.
+
+## Final verification — 2026-10-10
+
+- Production commit: a0f169da4252a8d92aad1e8751f28373fb6c822c.
+- Pages run 38033540006: success. Deployed index matches source SHA-256 303ed8bfd4b94645e2f84a7da5b3677f2a22d2a477cf3524c24da70c5be76ee9.
+- Full Mobile portfolio layout run 38033540603 / job 114159205289: success.
+- Screenshot artifact 11663128020 contains decision-draft-reloaded at 390, 402 and 430px. Reviewed 390px image: restored choice/reason are readable, form remains within screen width and list-return control is accessible. Conditions/save continuity also asserted in browser at all three widths.
+- Tests use isolated synthetic accounts; no real-account judgment or transaction was created. Authenticated iPhone/PWA and user usability timing remain unverified.
