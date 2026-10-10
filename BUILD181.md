@@ -14,7 +14,13 @@ The snapshot is saved only after accepted core reads for the current authenticat
 
 Nine new isolated cases passed: fresh-runtime restore, account isolation/logout clearing, late-owner rejection, unknown valuations, multi-account aggregation, expired/future/corrupt/oversized entries, unavailable storage, failure retry/escaping, fresh replacement and authoritative empty-account clearing. Existing decision-draft, acknowledgement, staged loading and script/sync checks also passed.
 
-Synthetic 390/402/430px browser journey now runs production startLive after full page reload with the same synthetic account: stored summary appears before refresh completion, offline message keeps it visible, retry switches to fresh data and updates the stored total, and logout removes the cache. Full CI and deployment pending.
+Synthetic 390/402/430px browser journey runs production startLive after full page reload with the same synthetic account: stored summary appears before refresh completion, offline message keeps it visible, retry switches to fresh data and updates the stored total, and logout removes the cache. Full mobile CI passed: run 38052745292, job 114215040056, artifact 11670426183. Visually reviewed the 390px reopened and 430px offline screenshots: dated total, stored-data status, holding rows, unknown valuations and retry remain readable.
+
+Initial CI run 38052505286 failed because the older browser fixture replaced loadLive with a no-op, also preventing the synthetic retry. Test-only commit e7d902a795a99dca6e4e3113e76b469ced8e621c restores the real loader for this probe while all data APIs remain synthetic. No production retry change was needed. No real account transactions or decisions were written.
+
+Production implementation: a23a55139eb4cea5fcf41cb5395a2156fd040303. Pages run 38052744568 succeeded. Retrieved deployed index.html and confirmed exact SHA-256 match with the local implementation: 8b59dd76cd98d571ab7d6e63864694860eb87a6c3ecceae81e3582740cfd9824.
+
+The new version must complete one successful account load to populate the summary; subsequent restarts can restore it. Automated coverage and synthetic mobile layout are verified; signed-in physical iPhone behavior remains separate and unverified.
 
 ## Limits and next priority
 
