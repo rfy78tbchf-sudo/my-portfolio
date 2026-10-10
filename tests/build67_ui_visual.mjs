@@ -1,3 +1,4 @@
+import './build182_home_period.mjs';
 import './build181_home_snapshot.mjs';
 import './build180_loading.mjs';
 import './build179_review_acknowledgements.mjs';
@@ -101,6 +102,21 @@ const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_redu
 const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
 const injected=`
   var fixtureOriginalLoadLive=loadLive;
+  window.__uiHomePeriodProbe=function(data){
+    var sales=[];window.__periodReads=0;window.__periodFail=false;
+    window.__periodStatus=function(){return {loaded:live.performancePeriod,salesLoading:live.realizedSalesLoading,reads:window.__periodReads}};
+    window.__releasePeriodSales=function(){sales.splice(0).forEach(function(r){r({ok:true,items:[]})})};
+    rest=async function(){return []};
+    rpc=async function(name,p){
+      if(name==='get_live_realized_sales')return new Promise(function(resolve){sales.push(resolve)});
+      if(name==='get_live_performance_summary'){window.__periodReads++;return data.performance}
+      if(name==='get_live_home_chart'){if(window.__periodFail)throw Error('synthetic offline');return data.homeChart}
+      if(name==='get_live_reliable_performance')return data.performanceGate;
+      if(name==='get_live_security_performance')return data.securityPerformance;
+      return {ok:true,items:[]};
+    };
+  };
+
   window.__uiPreserveRender=function(){render(true)};
   window.__uiStartCached=function(){var refresh=refreshLive;window.__previewRefreshRequested=0;refreshLive=function(){window.__previewRefreshRequested++;return Promise.resolve()};try{startLive(session)}finally{refreshLive=refresh}};
   window.__uiPreviewFailure=function(){liveError='synthetic offline';render()};
@@ -831,6 +847,25 @@ try{
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/실적 발표 전까지 현재 보유/);
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
     await page.locator('#detailReturn').click();
+
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(data=>window.__uiHomePeriodProbe(data),live);
+    await page.locator('[data-period="1W"]').click();
+    await page.waitForFunction(()=>window.__periodStatus().loaded==='1W');
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).salesLoading,true,'home renders while sales remain pending');
+    assert.ok(await page.locator('.hero .pnl').count());
+    await page.screenshot({path:out+'/home-period-ready-'+width+'.png'});
+    await page.locator('[data-period="3M"]').click();await page.waitForFunction(()=>window.__periodStatus().loaded==='3M');
+    const readsBefore=(await page.evaluate(()=>window.__periodStatus())).reads;
+    await page.locator('[data-period="1W"]').click();await page.waitForFunction(()=>window.__periodStatus().loaded==='1W');
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).reads,readsBefore,'revisited home period uses cache');
+    await page.evaluate(()=>window.__periodFail=true);await page.locator('[data-period="6M"]').click();
+    await page.getByRole('button',{name:'다시 확인',exact:true}).waitFor();
+    await page.screenshot({path:out+'/home-period-retry-'+width+'.png'});
+    await page.evaluate(()=>window.__periodFail=false);await page.getByRole('button',{name:'다시 확인',exact:true}).click();
+    await page.waitForFunction(()=>window.__periodStatus().loaded==='6M');
+    await page.evaluate(()=>window.__releasePeriodSales());
 
     const probeData=JSON.parse(JSON.stringify(live));probeData.draftOwner='snapshot-owner-'+width;probeData.reviewDecisions=[{...decision,choice:'hold',review_condition:'종가 100 달러 이하',price_snapshot:{price_date:'2026-09-26',currency:'USD'}}];
     await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));

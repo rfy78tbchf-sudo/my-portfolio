@@ -14,7 +14,7 @@ const live={accounts:[{id:'broker',name:'KB 자동계좌'}],performancePeriod:'1
   realizedSalesPeriod:'1M',realizedSalesAccount:'',realizedSales:{period:'1M'}};
 const scope={live,period:'1M',periodTouched:false,realizedPeriod:'1M',realizedAccount:'',realizedPeriodExplicit:false,
   periodSettingWrite:Promise.resolve(),performanceRequestEpoch:0,realizedRequestEpoch:0,mode:'live',liveError:null,
-  Promise,Number,Date,console,
+  Promise,Number,Date,console,kstDate:()=> '2026-10-10',
   render(){screens.push({selected:scope.period,loaded:scope.live.performancePeriod,
     sold:scope.live.realizedSalesPeriod})},
   rpc(name,params={}){calls.push({name,params});if(name==='get_live_performance_summary')
@@ -48,7 +48,7 @@ pending.get('sales:1W:')({ok:true,period:'1W',items:[]});
 await tick();
 assert.equal(scope.live.performancePeriod,'3M','late responses cannot replace the chosen period');
 assert.equal(scope.live.realizedSalesPeriod,'3M','late sales cannot replace the chosen period');
-assert.equal(screens.length,3,'late responses must not render stale data');
+assert.ok(screens.slice(2).every(x=>x.selected==='3M'&&x.loaded==='3M'),'late responses must not render stale data');
 
 scope.realizedPeriod='THIS_MONTH';scope.realizedAccount='broker';
 const oldSale=vm.runInContext('loadRealizedSales()',scope);
