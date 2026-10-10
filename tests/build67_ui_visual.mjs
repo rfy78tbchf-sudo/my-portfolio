@@ -833,7 +833,8 @@ try{
     await page.screenshot({path:out+'/home-before-analysis-'+width+'.png'});
     await page.evaluate(async()=>{window.__failHomeReview=true;await window.__retryHomeProbe()});
     await page.locator('[data-home-review-retry]').waitFor();
-    await page.locator('.home-reviews>summary').click();
+    if(!await page.locator('.home-reviews').evaluate(el=>el.open))await page.locator('.home-reviews>summary').click();
+    await page.locator('[data-home-review-retry]').scrollIntoViewIfNeeded();
     assert.match(await page.locator('.review-home').textContent(),/눌림목/,'failed review fetch retains prior saved reason');
     await page.screenshot({path:out+'/home-local-retry-'+width+'.png'});
     const beforeReads=await page.evaluate(()=>window.__homeProbeReads.length);
