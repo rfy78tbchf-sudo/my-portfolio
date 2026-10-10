@@ -8,7 +8,7 @@ const r=vm.createContext({live:{securityMap:{},holdings:[],reviewDecisions:[],re
 for(let i=0;i<5;i++){const id='test'+i;r.live.securityMap[id]={id,name:id,symbol:id};r.live.holdings.push({security_id:id,quantity:1});r.live.reviewDecisions.push({security_id:id,created_at:'2026-10-01',review_condition:'2026-10-31',choice:'hold'})}
 vm.runInContext(source.slice(source.indexOf('  function decisionConditionState('),source.indexOf('  function officialPeriodKo('))+source.slice(source.indexOf('  function reviewHomeCard('),source.indexOf('  function benchmarkCard(')),r);
 const html=r.reviewHomeCard();assert.match(html,/다시 점검할 판단 5개/);assert.equal((html.split('<details')[0].match(/review-home-item/g)||[]).length,1);assert.match(html,/다른 종목 판단 4개/);
-assert.ok(source.includes("+shortcuts+(reviewUrgent?reviewSection:'')+homeBrowseCard"));
+assert.ok(source.includes("+(reviewUrgent?reviewSection:'')+homeTodayCard()+shortcuts+homeBrowseCard"));
 assert.ok(source.includes("+(!reviewUrgent?reviewSection:'')+homePriceWatchCard()"));
 assert.match(html,/추가 점검 4개/);
 console.log('Build143: November/year rollover, 10-year bounded month window and one visible due review and four expandable reviews passed');
