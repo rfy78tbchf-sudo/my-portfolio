@@ -1,3 +1,4 @@
+import './build181_home_snapshot.mjs';
 import './build180_loading.mjs';
 import './build179_review_acknowledgements.mjs';
 import './build178_home_context.mjs';
@@ -100,7 +101,13 @@ const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_redu
 const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
 const injected=`
   window.__uiPreserveRender=function(){render(true)};
-  window.__uiLoadingProbe=function(data){
+  window.__uiStartCached=function(){var refresh=refreshLive;window.__previewRefreshRequested=0;refreshLive=function(){window.__previewRefreshRequested++;return Promise.resolve()};try{startLive(session)}finally{refreshLive=refresh}};
+  window.__uiPreviewFailure=function(){liveError='synthetic offline';render()};
+  window.__uiWaitPreviewRefresh=function(){return liveRefreshPromise};
+  window.__uiSnapshotTotal=function(){var p=readHomeSnapshot();return p&&p.data.total};
+  window.__uiClearSession=function(){writeSession(null)};
+
+  window.__uiLoadingProbe=function(data,waitForRetry){
     window.__homeProbeReads=[];
     var delayed=new Promise(function(resolve){window.__releaseHomeProbe=resolve});
     rest=async function(path){window.__homeProbeReads.push(path);await new Promise(function(r){setTimeout(r,80)});
@@ -115,7 +122,7 @@ const injected=`
     };
     rpc=async function(name){if(name==='reconcile_live_cash_flows')return delayed;if(name==='get_live_current_account_scope')return data.accountScope||null;if(name==='get_app_settings')return {};return null};
     window.__retryHomeProbe=function(){return loadHomeReviewData(live,function(){return true})};
-    window.__homeProbe=loadLiveOnce();
+    if(!waitForRetry)window.__homeProbe=loadLiveOnce();
   };
 
   window.__uiFixture=function(data,record,opinion,comparison){
@@ -823,7 +830,7 @@ try{
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
     await page.locator('#detailReturn').click();
 
-    const probeData=JSON.parse(JSON.stringify(live));probeData.reviewDecisions=[{...decision,choice:'hold',review_condition:'종가 100 달러 이하',price_snapshot:{price_date:'2026-09-26',currency:'USD'}}];
+    const probeData=JSON.parse(JSON.stringify(live));probeData.draftOwner='snapshot-owner-'+width;probeData.reviewDecisions=[{...decision,choice:'hold',review_condition:'종가 100 달러 이하',price_snapshot:{price_date:'2026-09-26',currency:'USD'}}];
     await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
     await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
     await page.waitForFunction(()=>document.querySelector('.home-load-status'));
@@ -842,6 +849,25 @@ try{
     await page.locator('[data-home-review-retry]').waitFor({state:'detached'});
     assert.equal(await page.evaluate(()=>window.__homeProbeReads.length)-beforeReads,3);
     await page.evaluate(async()=>{window.__releaseHomeProbe({ok:true});await window.__homeProbe});
+
+    const cachedTotal=await page.evaluate(()=>window.__uiSnapshotTotal());assert.ok(cachedTotal>0);
+    await page.reload();
+    await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>{window.__uiRender('home');window.__uiStartCached()});
+    assert.equal(await page.evaluate(()=>window.__previewRefreshRequested),1,'restore still requests fresh data');
+    await page.locator('.home-snapshot').waitFor();assert.match(await page.locator('.home-snapshot').innerText(),/마지막 확인 총자산/);
+    assert.equal(await page.locator('.home-snapshot-holdings [data-security-id]').count(),0,'stale summary cannot start a comparison');
+    await page.screenshot({path:out+'/home-reopened-snapshot-'+width+'.png'});
+    await page.evaluate(()=>window.__uiPreviewFailure());await page.locator('[data-home-load-retry]').waitFor();
+    await page.screenshot({path:out+'/home-offline-snapshot-'+width+'.png'});
+    const updated=JSON.parse(JSON.stringify(probeData));updated.snapshots[updated.snapshots.length-1].total_assets=cachedTotal+100;
+    if(updated.accountScope)updated.accountScope.current_display_total=cachedTotal+100;
+    await page.evaluate(data=>window.__uiLoadingProbe(data,true),updated);await page.locator('[data-home-load-retry]').click();
+    await page.locator('.home-snapshot').waitFor({state:'detached'});
+    assert.equal(await page.evaluate(()=>window.__uiSnapshotTotal()),cachedTotal+100);
+    await page.evaluate(async()=>{window.__releaseHomeProbe({ok:true});await window.__uiWaitPreviewRefresh()});
+    await page.evaluate(()=>window.__uiClearSession());
+    await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);
+    assert.equal(await page.evaluate(()=>window.__uiSnapshotTotal()),null,'explicit logout removes account summary');
     assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
   }
 }finally{await browser.close()}
