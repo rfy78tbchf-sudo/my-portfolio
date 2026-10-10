@@ -23,3 +23,11 @@ Comparison outputs and AI evidence are not restored. A retained target requires 
 ## Remaining scope
 
 Actual iPhone/PWA behavior and owner-account end-to-end usage still need confirmation. Drafts do not survive a full page reload, app process termination or logout; durable authenticated draft storage is not implemented in this iteration. No claim is made about the 30-second/one-minute usability goals. Next priority: fast reopening/return behavior and deliberate persistence of unfinished work across app restarts, with account isolation and stale-data checks.
+
+## Final verification — 2026-10-10
+
+- Production code commit c2b1a7eaa954f396a8b46d465df93350a2ff8d91; test-only follow-up edb6a86b8907266bc4a03f42e84fb6fa001c7075.
+- Pages deployment run 38028610342 succeeded. Deployed index and local source matched SHA-256 af7163c4c3c755e57a08ad14a38e83b2afbd25baf125fb08f5f4be4c67195bde.
+- Full Mobile portfolio layout run 38028731854 / job 114145014242 passed. Screenshots artifact 11661112481 includes decision-draft-restored at 390/402/430px.
+- Initial mobile run exposed legacy discard-on-navigation expectations and shared authentication epochs between independent fixtures. Follow-up makes each independent fixture a fresh login, asserts real navigation retention within the same fixture, and explicitly checks cancel/confirm on draft discard.
+- Verified scope: synthetic mobile journey and production source deployment. Real-account iPhone completion and durable restart recovery remain unverified/unimplemented respectively, as described above.
