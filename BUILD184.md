@@ -12,7 +12,13 @@ Failed home reads remain distinct from unknown/zero: confirmed home data stays v
 
 ## Verification
 
-Isolated startup tests cover reconciliation ordering, saved period, early core result during blocked enrichment, no duplicate reads, today's shared gate, local failure/retry, same-period request epoch and account/day isolation. Build153/180 loading, Build182 cache and Build183 staged period regression tests pass. Mobile 390/402/430px coverage added for startup headline/chart before auxiliary completion and failed chart retry. Full CI, screenshot and deployed-file verification pending.
+Isolated startup tests cover reconciliation ordering, saved period, early core result during blocked enrichment, no duplicate reads, today's shared gate, local failure/retry, same-period request epoch and account/day isolation. Build153/180 loading, Build182 cache and Build183 staged period regression tests pass. Full mobile CI run 38059916455 (job 114235891450) passed, including 390/402/430px startup headline/chart before auxiliary completion and failed chart retry. Artifact 11673245584. Visually reviewed the full-page 390px ready and 430px retry captures: total, period/today performance and chart are readable; failed chart is distinguished from zero observations with a visible retry. Earlier captures preserved mid-page scroll, so a test-only follow-up captured from the top for proper visual review.
+
+Implementation commit 8fafb3d58b4568af6993a1716ae343ae8a7c576f; screenshot-only follow-up 84ce4f2a69ca6ec1c10f1976e271d7bbf765d57a. Pages run 38059915542 succeeded. Retrieved production index.html matches the implementation exactly: SHA-256 4876db39d47a486fde0c979f96eb22bdbc2b21225a708ec1728cf5715ebd97f6. No user-account test transactions or judgments were written. Automated, synthetic-mobile and deployed-source checks are complete; physical-iPhone daily use remains confirmation needed.
+
+Controlled comparison ran the baseline and new startup functions in separate VM contexts with identical synthetic conditions: three-read queue, 40ms ordinary reads, 350ms reconciliation and 600ms benchmark. Initial account display was 125ms before / 124ms after; home performance 1321ms before / 597ms after; all details 1361ms before / 1398ms after. This demonstrates earlier useful content, not faster database calculations or physical-iPhone timing. Existing Build180 tests separately cover first open, refresh, full reopen, short resume and period switch.
+
+Follow-up isolation test verifies an obsolete period's failed startup read cannot leave an error on a newer selected period. Successful period reload clears the resolved period warning while retaining a separate today-read failure when relevant.
 
 ## Remaining limits
 
