@@ -377,6 +377,15 @@ try{
       assert.ok(await page.locator('#homeHoldings').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_PRECEDING)));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true,'due reviews are visible without an extra tap');
+      await page.evaluate(()=>scrollTo(0,0));
+      const firstScreen=await page.locator('.home-reviews').evaluate(el=>({
+        followsAssets:el.previousElementSibling.matches('.hero'),
+        summaryBottom:el.querySelector('summary').getBoundingClientRect().bottom,
+        viewport:innerHeight
+      }));
+      assert.equal(firstScreen.followsAssets,true,'triggered review follows assets before other home sections');
+      assert.ok(firstScreen.summaryBottom<firstScreen.viewport-80,'review title and reason summary fit above bottom navigation');
+      await page.screenshot({path:`${out}/home-priority-${width}.png`});
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
       assert.equal(await card.locator(':scope > h3').isVisible(),false,'nested title is not repeated');
