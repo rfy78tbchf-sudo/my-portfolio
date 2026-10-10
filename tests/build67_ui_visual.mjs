@@ -911,11 +911,13 @@ try{
     assert.equal((await page.evaluate(()=>window.__startupStatus())).loading,true);
     assert.ok(await page.locator('.hero .pnl').count());
     assert.ok(await page.locator('#homeTrend svg').count(),'startup chart visible while extras pending');
-    await page.screenshot({path:out+'/home-startup-ready-'+width+'.png'});
+    await page.evaluate(()=>window.scrollTo(0,0));
+    await page.screenshot({path:out+'/home-startup-ready-'+width+'.png',fullPage:true});
     await page.evaluate(async()=>{window.__failStartupChart=true;await window.__retryStartup()});
     await page.locator('[data-home-startup-retry]').waitFor();
     assert.ok(await page.locator('.hero .pnl').count(),'failed chart does not hide confirmed performance');
-    await page.screenshot({path:out+'/home-startup-retry-'+width+'.png'});
+    await page.evaluate(()=>window.scrollTo(0,0));
+    await page.screenshot({path:out+'/home-startup-retry-'+width+'.png',fullPage:true});
     await page.evaluate(()=>window.__failStartupChart=false);await page.locator('[data-home-startup-retry]').click();
     await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});
     await page.evaluate(async()=>{window.__holdStartupExtras=false;window.__releaseStartupExtras({ok:true});await window.__homeProbe});
