@@ -1,3 +1,4 @@
+import './build184_startup_home.mjs';
 import './build183_home_priority.mjs';
 import './build182_home_period.mjs';
 import './build181_home_snapshot.mjs';
@@ -131,6 +132,9 @@ const injected=`
     loadLive=fixtureOriginalLoadLive;
     window.__homeProbeReads=[];
     var delayed=new Promise(function(resolve){window.__releaseHomeProbe=resolve});
+    var extras=new Promise(function(resolve){window.__releaseStartupExtras=resolve});
+    window.__startupStatus=function(){return {ready:!!live.performanceGate,loading:live.detailsLoading}};
+    window.__retryStartup=function(){return loadStartupHomeData(live,function(){return true},period,performanceRequestEpoch)};
     rest=async function(path){window.__homeProbeReads.push(path);await new Promise(function(r){setTimeout(r,80)});
       if(path.startsWith('accounts?'))return data.accounts;
       if(path.startsWith('securities?'))return data.securities;
@@ -141,7 +145,7 @@ const injected=`
       if(path.startsWith('daily_security_prices?'))return [{security_id:'s0',price_date:'2026-09-28',close:90,currency:'USD'}];
       return [];
     };
-    rpc=async function(name){if(name==='reconcile_live_cash_flows')return delayed;if(name==='get_live_current_account_scope')return data.accountScope||null;if(name==='get_app_settings')return {};return null};
+    rpc=async function(name,p){if(name==='reconcile_live_cash_flows')return delayed;if(name==='get_live_current_account_scope')return data.accountScope||null;if(name==='get_app_settings')return {};if(name==='get_live_performance_summary')return data.performance;if(name==='get_live_home_chart'){if(window.__failStartupChart)throw Error('synthetic chart offline');return data.homeChart}if(name==='get_live_reliable_performance')return p.p_period==='오늘'?data.todayGate:data.performanceGate;if(name==='get_live_benchmark_comparison'&&window.__holdStartupExtras)return extras;return null};
     window.__retryHomeProbe=function(){return loadHomeReviewData(live,function(){return true})};
     if(!waitForRetry)window.__homeProbe=loadLiveOnce();
   };
@@ -885,6 +889,7 @@ try{
 
     const probeData=JSON.parse(JSON.stringify(live));probeData.draftOwner='snapshot-owner-'+width;probeData.reviewDecisions=[{...decision,choice:'hold',review_condition:'종가 100 달러 이하',price_snapshot:{price_date:'2026-09-26',currency:'USD'}}];
     await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(()=>window.__holdStartupExtras=true);
     await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
     await page.waitForFunction(()=>document.querySelector('.home-load-status'));
     await page.waitForFunction(()=>!document.querySelector('.home-load-status'));
@@ -901,7 +906,19 @@ try{
     await page.evaluate(()=>window.__failHomeReview=false);await page.locator('[data-home-review-retry]').click();
     await page.locator('[data-home-review-retry]').waitFor({state:'detached'});
     assert.equal(await page.evaluate(()=>window.__homeProbeReads.length)-beforeReads,3);
-    await page.evaluate(async()=>{window.__releaseHomeProbe({ok:true});await window.__homeProbe});
+    await page.evaluate(()=>window.__releaseHomeProbe({ok:true}));
+    await page.waitForFunction(()=>window.__startupStatus().ready);
+    assert.equal((await page.evaluate(()=>window.__startupStatus())).loading,true);
+    assert.ok(await page.locator('.hero .pnl').count());
+    assert.ok(await page.locator('#homeTrend svg').count(),'startup chart visible while extras pending');
+    await page.screenshot({path:out+'/home-startup-ready-'+width+'.png'});
+    await page.evaluate(async()=>{window.__failStartupChart=true;await window.__retryStartup()});
+    await page.locator('[data-home-startup-retry]').waitFor();
+    assert.ok(await page.locator('.hero .pnl').count(),'failed chart does not hide confirmed performance');
+    await page.screenshot({path:out+'/home-startup-retry-'+width+'.png'});
+    await page.evaluate(()=>window.__failStartupChart=false);await page.locator('[data-home-startup-retry]').click();
+    await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});
+    await page.evaluate(async()=>{window.__holdStartupExtras=false;window.__releaseStartupExtras({ok:true});await window.__homeProbe});
 
     const cachedTotal=await page.evaluate(()=>window.__uiSnapshotTotal());assert.ok(cachedTotal>0);
     await page.reload();
