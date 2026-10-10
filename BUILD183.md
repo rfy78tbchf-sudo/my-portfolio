@@ -12,9 +12,13 @@ Auxiliary read failures keep the core home result visible. A compact retry is av
 
 ## Verification
 
-Isolated tests cover priority reads, readable home with deliberately blocked auxiliary responses, old evidence clearing, in-flight revisit, late-period/account/day exclusion, and auxiliary failure without whole-home failure. Build182 cache/retry and Build61 period/sales tests pass. Browser coverage added at 390/402/430px for blocked auxiliary analysis, visible headline/chart, auxiliary failure and retry. Full CI, screenshot inspection and deployment verification pending.
+Isolated tests cover priority reads, readable home with deliberately blocked auxiliary responses, old evidence clearing, in-flight revisit, late-period/account/day exclusion, and auxiliary failure without whole-home failure. Build182 cache/retry, Build61 period/sales, Build180 loading and Build142/145/153 regression tests pass. Full mobile CI run 38054633227, job 114220468752, succeeded, including 390/402/430px blocked-auxiliary, cached-revisit and failure/retry journeys. Screenshot artifact 11670109132. Visually reviewed home-period-ready-390.png and home-period-auxiliary-retry-430.png: the headline remains readable while details are pending/failed; the retry is contained in the asset-basis disclosure. Core chart data alignment is tested in the isolated staged-response test.
+
+Production commit 4b8b203752883c159aa8ad8decd3881714781072. Pages run 38054633165 succeeded. Retrieved deployed index.html and confirmed an exact local match: SHA-256 d3fe517d2ed05247b66214fc98218e77d5355110a52cb1b7fb6aab823a9e6665. Implementation, synthetic mobile and deployment verification are complete; signed-in physical iPhone behavior remains confirmation needed.
 
 No real account test writes or real iPhone timing claims. Synthetic data and controlled latency checks are separate from physical-device daily use.
+
+Controlled comparison used separate VM contexts for Build182 and Build183, the same synthetic three-read queue, 40ms ordinary reads and a 600ms benchmark response. Home became ready at 743ms before / 43ms after; all details completed at 743ms before / 765ms after. The gain is earlier useful content, not faster database calculations; staging can slightly extend the final auxiliary completion time. This does not measure actual account or iPhone/PWA latency.
 
 ## Remaining priority
 
