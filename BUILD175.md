@@ -16,3 +16,10 @@ Baseline: main 7e5fbaa9acf60cefccbfa832ead93667376e09ca. The deployed GitHub Pag
 - Real-account authenticated flow, iPhone Face ID/PWA return, first-load/return/refresh/period-switch timings, financial reconciliation, and the 30-second/one-minute usability targets remain **confirmation needed**. This change removes one dependency; it does not claim all detail requests or daily access are fast.
 
 No database, transaction, financial formula, account scope, authentication, or AI behavior is changed. Existing completed work is retained.
+
+## Final verification — 2026-10-10
+
+- Code commit: 4cf0db7ecd7f43416200ca561f48564ca02bc490. Test-only follow-up: fa0bf9ca94f47ab928df31080fdb04032a0009cf.
+- GitHub Pages deployment of the code succeeded (run 38023356707). Deployed index SHA-256 matches the local modified index: d755c4fc001ce2f8ba34966c026b46fcd6cf83b404fded2f88d3d0190978fe18. Production browser reload confirms the obsolete login build number is gone.
+- Full Mobile portfolio layout workflow passed: run 38023508268, job 114129359865. Includes 390/402/430px first-decision save/readback/reopen with optional metrics unresolved and existing chart/condition checks. Artifact: 11660145428. The first CI attempt failed because innerText cannot read this collapsed optional area; the assertion now uses textContent while still verifying the decision form is visible and optional tools remain closed.
+- Completion status: code and isolated mobile journey verified; authenticated production/iPhone usability remains confirmation needed. Next priority remains retaining unfinished decision input when navigating between securities.
