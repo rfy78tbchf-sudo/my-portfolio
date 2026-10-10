@@ -15,6 +15,10 @@ c.performanceRequestEpoch++;c.live.performance={ok:true,marker:'newer'};c.live.h
 releaseExtra({ok:true});await loading;assert.equal(c.live.performance.marker,'newer');assert.equal(c.live.homeChart.marker,'newer');assert.equal(c.live.performanceGate.marker,'newer');
 calls=[];fail=true;await c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);assert.equal(c.live.startupHomeError,true);assert.equal(c.live.performance.ok,true);assert.equal(c.live.homeChart,null);assert.equal(c.liveError,null);assert.equal(calls.length,4,'local retry only reads home data');
 fail=false;await c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);assert.equal(c.live.startupHomeError,false);
+const normalRpc=c.rpc;let pendingReads=[];c.rpc=(name)=>new Promise((resolve,reject)=>pendingReads.push({name,resolve,reject}));
+const obsolete=c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);c.performanceRequestEpoch++;c.period='3M';c.live.performance={marker:'selected-newer'};
+pendingReads.forEach(x=>x.name==='get_live_home_chart'?x.reject(Error('old chart offline')):x.resolve({ok:true}));await obsolete;
+assert.equal(c.live.startupHomeError,false,'obsolete period failure cannot leave a warning on a newer period');assert.equal(c.live.performance.marker,'selected-newer');c.rpc=normalRpc;
 calls=[];c.period='오늘';await c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);assert.equal(calls.filter(x=>x[0]==='get_live_reliable_performance').length,1,'today gate reused for today period');
 const previous=c.live;
 // Use independently resolvable requests to verify account/day and selection guards.

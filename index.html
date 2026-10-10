@@ -1812,7 +1812,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
     }).catch(function(){});
     return (cached?Promise.resolve(cached):pending).then(function(bundle){
       if(request!==performanceRequestEpoch||requestedPeriod!==period||live!==target||day!==kstDate())return null;
-      var a=bundle.values;target.performanceDetailsLoading=false;target.performanceDetailsError=!!bundle.detailsFailed;
+      var a=bundle.values;target.startupHomeError=!!target.startupTodayError;target.performanceDetailsLoading=false;target.performanceDetailsError=!!bundle.detailsFailed;
       target.performance=a[0];target.securityPerformance=a[1];target.soldHoldings=a[2];target.homeChart=a[3];target.fxAttribution=a[4];target.heatmap=a[5];target.attribution=a[6];target.ledgerEstimate=a[7];target.benchmark=a[8];target.leverageComparison=a[9];target.cashAccounting=a[10];target.cashBridges=a[11];target.analysisCoverage=a[12];target.performanceGate=a[13];target.verifiedMovements=a[14];target.cashAssessments=a[15];target.flowBasis=bundle.flow;target.performancePeriod=requestedPeriod;return a[0];
     });
   }
@@ -1926,12 +1926,13 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
     var request=(target.startupHomeRequestEpoch||0)+1,day=kstDate(),failures=[];
     target.startupHomeRequestEpoch=request;target.startupHomeLoading=true;target.startupHomeError=false;
     function read(name,payload,label){return rpc(name,payload).catch(function(){failures.push(label);return null})}
-    var summary=read('get_live_performance_summary',{p_period:selected},'기간 성과'),chart=read('get_live_home_chart',{p_period:selected},'자산 추이'),gate=read('get_live_reliable_performance',{p_period:selected},'기간 기준');
+    var summary=read('get_live_performance_summary',{p_period:selected},'기간 성과'),chart=read('get_live_home_chart',{p_period:selected},'자산 추이'),gate=read('get_live_reliable_performance',{p_period:selected},selected==='오늘'?'오늘 성과':'기간 기준');
     var today=selected==='오늘'?gate:read('get_live_reliable_performance',{p_period:'오늘'},'오늘 성과');
     return Promise.all([summary,chart,gate,today]).then(function(rows){
       if(!active()||live!==target||request!==target.startupHomeRequestEpoch||day!==kstDate())return rows;
-      if(selected===period&&selectedEpoch===performanceRequestEpoch){target.performance=rows[0];target.homeChart=rows[1];target.performanceGate=rows[2];target.performancePeriod=selected}
-      target.todayGate=rows[3];target.startupHomeLoading=false;target.startupHomeError=failures.length>0;
+      var selectedCurrent=selected===period&&selectedEpoch===performanceRequestEpoch;
+      if(selectedCurrent){target.performance=rows[0];target.homeChart=rows[1];target.performanceGate=rows[2];target.performancePeriod=selected}
+      target.todayGate=rows[3];target.startupHomeLoading=false;target.startupTodayError=failures.indexOf('오늘 성과')>=0;target.startupHomeError=target.startupTodayError||(selectedCurrent&&failures.length>0);
       if(mode==='live')render(true);
       return rows;
     });
