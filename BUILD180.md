@@ -26,6 +26,15 @@ During refresh the old review remains present until the fresh result; measured f
 
 ## Verification and remaining gaps
 
-Production-function checks cover a blocked reconciliation with home already ready, single source query per load, same-account retention, local three-read retry, failed core preservation, owner isolation, late response suppression, and existing period/cache/scroll behavior. Synthetic 390/402/430px browser tests exercise readable home while enrichment is unresolved, failed review retrieval, retained saved reason and local retry. CI/deployment pending.
+Production-function checks cover a blocked reconciliation with home already ready, single source query per load, same-account retention, local three-read retry, failed core preservation, owner isolation, late response suppression, and existing period/cache/scroll behavior. Synthetic 390/402/430px browser tests exercise readable home while enrichment is unresolved, failed review retrieval, retained saved reason and local retry. Both full mobile CI runs and production deployments passed; details below.
 
 Actual signed-in iPhone measurements, network variability, broker synchronization duration, cold-session recovery and the 30-second/one-minute comprehension goals remain 확인 필요. Next priority: measure actual startup/revisit and consider an authenticated last-confirmed home cache if network waiting remains the largest daily obstacle. Do not infer completed daily usability from these synthetic timings.
+
+## Final verification — 2026-10-10
+
+- Initial behavior commit f52b64d30a9d81f63e5e5de52626572d430d0530; full mobile run 38051561127 / job 114211575912 passed.
+- Screenshot inspection identified that a top-of-home review retry was distant from the affected card. Follow-up 7cb762f3e6d1c3f652fce018e6b0cf9910f46bb5 places review loading/error/retry beside that section; core account errors remain at the top.
+- Final full mobile run 38051813961 / job 114212303716 passed. Artifact 11669424208. Browser scenarios passed at 390/402/430px, including blocked enrichment, retained decision reason during failure and exactly three reads for a local retry.
+- Visually reviewed initial 390px account/review-ready screenshot and final local-retry screenshot: observed values and reasons remain readable; failed review retrieval is adjacent to its retry action and stored judgment. The synthetic fixture intentionally has incomplete valuations; these are not owner-account values.
+- Pages runs 38051560833 and 38051813697 succeeded. Deployed final index matches source SHA-256 cd4eb5feba581ec9263f3040db6ef8e16c852767aa9c6a6c592b100cb1fc7915.
+- All real-account access in this iteration was limited to public production source retrieval. No real-account transactions or judgments were written. Authenticated owner-account/iPhone performance and daily comprehension goals remain unverified.
