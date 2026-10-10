@@ -724,6 +724,21 @@ try{
     await page.locator('#detailChoice').selectOption('hold');
     await page.locator('#detailReason').fill('실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
     await page.locator('[data-review-days="7"]').click();const checkpoint=await page.locator('#detailReview').inputValue();
+    // Navigate through real controls; drafts are not saved judgments or shared with the next holding.
+    await page.locator('[data-detail-step="1"]').click();await page.locator('#detailStart').waitFor();
+    await page.locator('#detailDirectDecision').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),'');
+    await page.locator('#detailReason').fill('두 번째 종목만의 검토 이유');
+    await page.locator('#detailReview').fill('다음 공시에서 확인');
+    await page.locator('[data-detail-step="-1"]').click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/아직 저장된 판단이 아닙니다/);
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'navigation never saves a judgment');
+    await page.locator('#detailClose').click();await homeStock.click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
+    await page.screenshot({path:out+'/decision-draft-restored-'+width+'.png'});
     await page.screenshot({path:out+'/decision-while-weight-pending-'+width+'.png'});
     await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.locator('#detailDecisionDone').waitFor();

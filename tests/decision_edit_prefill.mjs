@@ -8,7 +8,7 @@ const html=readFileSync(process.env.PORTFOLIO_HTML||new URL('../index.html',impo
 function section(start,end){const a=html.indexOf(start),b=html.indexOf(end,a);assert.ok(a>=0&&b>a,start);return html.slice(a,b);}
 const source=[
   section('  function decisionConditionState(', '  function officialPeriodKo('),
-  section('  function clearDetailDirty(', '  function closeSecurityDetail('),
+  section('  var decisionDraftOwner=', '  function closeSecurityDetail('),
   section('    body.oninput=', "    modal.querySelector('.detail-sheet').scrollTop=0"),
   section('  function decisionFollowupDraft(', '  function decisionReviewHtml('),
   section('      function updateDecisionGuide(){', '      function matchingAnalysis('),
@@ -35,7 +35,7 @@ function fixture(rows=[saved()]){
   element('detailChoice').value='hold';element('detailDecisionForm').hidden=true;
   element('detailDown').value='-10';element('detailUp').value='10';
   const persisted=clone(rows),calls=[];
-  const scope={console,Number,Date,JSON,Promise,Error,Object,Array,String,encodeURIComponent,
+  const scope={console,Number,Date,JSON,Promise,Error,Object,Array,String,encodeURIComponent,liveAuthEpoch:1,
     document:{getElementById:element,createElement:()=>node('created-'+(++sequence)),querySelector:selector=>selector.includes('submit')?element('submit'):null,activeElement:null},
     window:{},Event:class{constructor(type,options){this.type=type;Object.assign(this,options)}},
     body:node('body'),startPanel:element('detailStart'),active:()=>true,id:'held',s:{symbol:'TEST'},
@@ -160,4 +160,50 @@ test('structured date keeps its own saved summary instead of a manual-review lab
   const f=fixture([saved('hold',{review_condition:'2026-11-01'})]);f.edit();await f.submit();
   assert.match(f.element('detailDecisionSummary').innerHTML,/저장한 조건과 이후 자료/);
   assert.doesNotMatch(f.element('detailDecisionSummary').innerHTML,/직접 확인할 조건으로 기록했습니다/);
+});
+
+function reopenDraft(from,rows=[]){const f=fixture(rows);f.ctx.decisionDrafts=from.ctx.decisionDrafts;f.ctx.decisionDraftOwner=from.ctx.decisionDraftOwner;f.ctx.bindDecisionDraft();return f;}
+test('unsaved decision survives leave and reopen without a database write',()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.edit();f.input('detailChoice','revisit');f.input('detailReason','확인할 새 이유');f.input('detailReview','다음 공시');
+ assert.equal(f.ctx.allowDetailLeave('discard?'),true);assert.equal(f.calls.length,0);
+ const back=reopenDraft(f);assert.deepEqual(back.values(),['revisit','확인할 새 이유','다음 공시']);assert.equal(back.element('detailDecisionForm').hidden,false);assert.match(back.element('detailDecisionStatus').textContent,/아직 저장된 판단이 아닙니다/);assert.equal(back.calls.length,0);
+ back.ctx.renderDecisionHistory([saved()]);back.edit();assert.deepEqual(back.values(),['revisit','확인할 새 이유','다음 공시']);
+});
+test('intentional empty values survive navigation',()=>{
+ const f=fixture();f.ctx.bindDecisionDraft();f.edit();f.input('detailReason','');f.input('detailReview','');f.ctx.allowDetailLeave('discard?');const back=reopenDraft(f,[saved()]);back.edit();assert.deepEqual(back.values(),['pause_addition','','']);
+});
+test('different securities never share a draft',()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','A only');f.ctx.allowDetailLeave('discard?');const other=fixture([]);other.ctx.id='other';other.ctx.decisionDrafts=f.ctx.decisionDrafts;other.ctx.decisionDraftOwner=1;other.ctx.bindDecisionDraft();assert.deepEqual(other.values(),['hold','','']);
+});
+test('a new authentication epoch clears retained drafts',()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','private');f.ctx.allowDetailLeave('discard?');f.ctx.liveAuthEpoch=2;assert.equal(Object.keys(f.ctx.decisionDraftStore()).length,0);
+});
+test('saving in flight prevents navigation until the receipt is settled',async()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.edit();f.input('detailReason','reason');f.input('detailReview','2027-01-01');const wait=deferred(),write=f.ctx.saveDecisionReceipt;f.ctx.saveDecisionReceipt=async args=>{await wait.promise;return write(args)};const saving=f.submit();
+ assert.equal(f.ctx.allowDetailLeave('discard?'),false);assert.match(f.element('detailDecisionStatus').textContent,/저장 결과를 확인 중/);wait.resolve();await saving;assert.equal(f.ctx.allowDetailLeave('discard?'),true);
+});
+test('verified save removes only that completed draft',async()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','reason');f.input('detailReview','2027-01-01');f.ctx.allowDetailLeave('discard?');f.ctx.decisionDrafts.other={values:{detailReason:'other'}};await f.submit();assert.equal(f.ctx.decisionDrafts.held,undefined);assert.ok(f.ctx.decisionDrafts.other);
+});
+test('editing during save retains the newer text for reopening',async()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','submitted');f.input('detailReview','2027-01-01');const wait=deferred(),write=f.ctx.saveDecisionReceipt;f.ctx.saveDecisionReceipt=async args=>{const r=await write(args);await wait.promise;return r};const saving=f.submit();f.input('detailReason','newer draft');wait.resolve();await saving;f.ctx.allowDetailLeave('discard?');const back=reopenDraft(f,f.persisted);assert.equal(back.values()[1],'newer draft');
+});
+test('restored comparison inputs never restore calculation or AI evidence',()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','compare');f.element('detailWeightTarget').value='0';f.element('detailDown').value='-15';f.element('detailUp').value='12';f.ctx.lastDetailAnalysisId='old-ai';f.ctx.lastComparison={targetPct:0};f.ctx.allowDetailLeave('discard?');const back=reopenDraft(f);
+ assert.equal(back.element('detailWeightTarget').value,'0');assert.equal(back.element('detailDown').value,'-15');assert.equal(back.element('detailUp').value,'12');assert.equal(back.ctx.lastComparison,null);assert.equal(back.ctx.lastDetailAnalysisId,null);assert.equal(back.ctx.lastComparisonDirty,true);assert.match(back.element('detailDecisionStatus').textContent,/다시 계산/);
+});
+test('failed plain save preserves its request identity across navigation',async()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','retry');f.input('detailReview','2027-01-01');f.ctx.saveDecisionReceipt=async()=>{throw Error('offline')};await f.submit();const request=f.ctx.decisionRequestId;f.ctx.allowDetailLeave('discard?');const back=reopenDraft(f);await back.submit();assert.equal(back.calls[0].p_request_id,request);
+});
+test('a confirmed formerly lost response is not restored as an unsaved draft',async()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','submitted');f.input('detailReview','2027-01-01');f.ctx.saveDecisionReceipt=async()=>{throw Error('lost')};await f.submit();f.ctx.allowDetailLeave('discard?');const row=saved('hold',{reason:'submitted',review_condition:'2027-01-01',request_id:f.ctx.decisionRequestId});const back=reopenDraft(f,[row]);assert.equal(back.element('detailDecisionForm').hidden,true);assert.equal(back.ctx.decisionDrafts.held,undefined);
+});
+test('other unfinished forms still require confirmation while decision draft is retained',()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','retained');f.ctx.detailDirtyGroups.thesisForm=1;f.ctx.window.confirm=()=>false;assert.equal(f.ctx.allowDetailLeave('discard?'),false);assert.equal(f.ctx.decisionDrafts.held.values.detailReason,'retained');f.ctx.window.confirm=()=>true;assert.equal(f.ctx.allowDetailLeave('discard?'),true);
+});
+test('discarding a restored draft requires confirmation and never edits saved history',()=>{
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','draft');f.input('detailReview','next');f.ctx.allowDetailLeave('discard?');const original=saved(),back=reopenDraft(f,[original]),before=clone(back.persisted);
+ back.ctx.window.confirm=()=>false;back.element('detailDraftDiscard').onclick();assert.equal(back.values()[1],'draft');
+ back.ctx.window.confirm=()=>true;back.element('detailDraftDiscard').onclick();assert.equal(back.ctx.decisionDrafts.held,undefined);assert.equal(back.element('detailDecisionForm').hidden,true);assert.equal(back.calls.length,0);assert.deepEqual(back.persisted,before);
+ back.edit();assert.deepEqual(back.values(),[original.choice,original.reason,original.review_condition]);
 });

@@ -36,7 +36,7 @@ function fixture(){
     lastComparison:comparison(),lastComparisonDirty:false,lastDetailAnalysisId:'old-comparison-ai',lastAnalysisComparison:true,
     comparisonEpoch:0,analysisEpoch:0,decisionRequestId:null,decisionRequestKey:null,
     detailDirtyGroups:{detailDecisionForm:1},live:{reviewDecisions:[]},liveError:null,decisionHomeDirty:false,
-    clearDetailDirty(){},renderDecisionHistory(){},revealDetailTarget(){},closeSecurityDetail(){},showComparisonNext(){},
+    decisionDraftStore:()=>({}),clearDetailDirty(){},renderDecisionHistory(){},revealDetailTarget(){},closeSecurityDetail(){},showComparisonNext(){},
     comparisonHtml:()=>'<div class="choice-result-head">comparison</div>',
     thesisSaved:true,thesisVersion:1,analyze:element('thesisAnalyze'),general:element('detailAiGeneral'),
     edgeSync:async()=>{},loadLive:async()=>{},money:String,signedMoney:String,kstStamp:String,kstDate:()=> '2026-10-09',num:String,esc:String,
