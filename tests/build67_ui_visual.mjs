@@ -98,7 +98,7 @@ const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_ver
 const injected=`
   window.__uiPreserveRender=function(){render(true)};
   window.__uiFixture=function(data,record,opinion,comparison){
-    liveAuthEpoch++;live=data;liveError=null;mode='live';period='1M';session={accessToken:'synthetic-ui-session'};
+    liveAuthEpoch++;live=data;liveError=null;mode='live';period='1M';session={accessToken:'test.'+btoa(JSON.stringify({sub:data.draftOwner||('fixture-'+crypto.randomUUID())}))+'.test'};
     var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
     if(!crypto.randomUUID){let syntheticId=0;Object.defineProperty(crypto,'randomUUID',{value:()=> '00000000-0000-4000-8000-'+String(++syntheticId).padStart(12,'0')})}
     window.__uiFailStockOnce=function(){failStockOnce=true};
@@ -708,7 +708,7 @@ try{
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
     await page.locator('#detailClose').click();
     // Complete first decision from the actual home entry, with optional tools CLOSED.
-    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;firstVisit.deferMetrics=true;
+    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;firstVisit.deferMetrics=true;firstVisit.draftOwner='reload-owner-'+width;
     firstVisit.testThesis={version:1,rationale:'매출 성장 근거를 다음 실적까지 확인하며 보유'};
     await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
@@ -739,6 +739,15 @@ try{
     await page.locator('#detailClose').click();await homeStock.click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
     assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
     assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
+    // A new JavaScript runtime retains only localStorage, never the old draft map.
+    await page.reload();
+    await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));await page.locator('#homeHoldings [data-security-id="s0"]').click();
+    await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+    await page.screenshot({path:out+'/decision-draft-reloaded-'+width+'.png'});
     await page.screenshot({path:out+'/decision-draft-restored-'+width+'.png'});
     await page.screenshot({path:out+'/decision-while-weight-pending-'+width+'.png'});
     await page.locator('#detailDecisionForm button[type=submit]').click();

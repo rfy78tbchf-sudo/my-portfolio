@@ -19,7 +19,7 @@ const source=[
 const clone=x=>JSON.parse(JSON.stringify(x));
 function deferred(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return {promise,resolve,reject};}
 function saved(choice='pause_addition',extra={}){return {id:'prior-1',security_id:'held',choice,reason:'실적을 더 확인하려고',review_condition:'2026-10-01',created_at:'2026-10-01T01:00:00Z',analysis_id:'old-ai',scenario_snapshot:{},...extra};}
-function fixture(rows=[saved()]){
+function fixture(rows=[saved()],options={}){
   const nodes=new Map();let sequence=0,request=0,ctx;
   function node(id){let ownId=id;const el={value:'',hidden:false,disabled:false,textContent:'',innerHTML:'',style:{},dataset:{},listeners:{},children:[],isConnected:true,
     get id(){return ownId},set id(value){if(ownId)nodes.delete(ownId);ownId=value;if(value)nodes.set(value,el)},
@@ -37,7 +37,7 @@ function fixture(rows=[saved()]){
   const persisted=clone(rows),calls=[];
   const scope={console,Number,Date,JSON,Promise,Error,Object,Array,String,encodeURIComponent,liveAuthEpoch:1,
     document:{getElementById:element,createElement:()=>node('created-'+(++sequence)),querySelector:selector=>selector.includes('submit')?element('submit'):null,activeElement:null},
-    window:{},Event:class{constructor(type,options){this.type=type;Object.assign(this,options)}},
+    session:options.session,atob,localStorage:options.storage,window:{},Event:class{constructor(type,options){this.type=type;Object.assign(this,options)}},
     body:node('body'),startPanel:element('detailStart'),active:()=>true,id:'held',s:{symbol:'TEST'},
     results:[null,null,{thesis:null},clone(rows)],d:{},p:[{date:'2026-10-08',close:20}],activity:{items:[]},
     choiceLabels:{hold:'현재 유지',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류',revisit:'추가 확인 후 판단'},
@@ -206,4 +206,39 @@ test('discarding a restored draft requires confirmation and never edits saved hi
  back.ctx.window.confirm=()=>false;back.element('detailDraftDiscard').onclick();assert.equal(back.values()[1],'draft');
  back.ctx.window.confirm=()=>true;back.element('detailDraftDiscard').onclick();assert.equal(back.ctx.decisionDrafts.held,undefined);assert.equal(back.element('detailDecisionForm').hidden,true);assert.equal(back.calls.length,0);assert.deepEqual(back.persisted,before);
  back.edit();assert.deepEqual(back.values(),[original.choice,original.reason,original.review_condition]);
+});
+
+const durableStorage=()=>{const values=new Map();return {getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k),values}};
+const draftSession=sub=>({accessToken:'test.'+Buffer.from(JSON.stringify({sub})).toString('base64url')+'.test'});
+function durableFixture(storage,sub='owner',rows=[]){const f=fixture(rows,{storage,session:draftSession(sub)});f.ctx.bindDecisionDraft();return f}
+test('typing survives fresh runtime without navigation or server writes',()=>{
+ const storage=durableStorage(),f=durableFixture(storage);f.ctx.openDecisionForm();f.input('detailReason','재접속 이유');f.input('detailReview','다음 실적');
+ const reopened=durableFixture(storage);assert.deepEqual(reopened.values(),['hold','재접속 이유','다음 실적']);assert.equal(f.calls.length,0);
+ assert.match(f.element('detailDecisionStatus').textContent,/이 기기에 초안 보관됨/);
+ assert.ok(![...storage.values.values()].join('').includes('accessToken'));
+});
+test('same account across refresh restores, different account cannot read or overwrite draft',()=>{
+ const storage=durableStorage(),f=durableFixture(storage);f.input('detailReason','A만의 이유');
+ const other=durableFixture(storage,'other');assert.equal(other.values()[1],'');other.input('detailReason','B만의 이유');
+ assert.equal(durableFixture(storage).values()[1],'A만의 이유');assert.equal(durableFixture(storage,'other').values()[1],'B만의 이유');
+});
+test('discard removes durable draft after reset input events',()=>{
+ const storage=durableStorage(),f=durableFixture(storage);f.input('detailReason','버릴 초안');const reopened=durableFixture(storage);
+ reopened.ctx.window.confirm=()=>true;reopened.element('detailDraftDiscard').onclick();assert.equal(durableFixture(storage).values()[1],'');
+});
+test('verified save removes durable draft',async()=>{
+ const storage=durableStorage(),f=durableFixture(storage);f.input('detailReason','확정 이유');f.input('detailReview','다음 공시');await f.submit();
+ assert.equal(f.calls.length,1);assert.equal(durableFixture(storage).values()[1],'');
+});
+test('request identity survives interrupted save and matching readback prevents revival',async()=>{
+ const storage=durableStorage(),f=durableFixture(storage);f.input('detailReason','이유');f.input('detailReview','조건');
+ f.ctx.saveDecisionReceipt=async()=>{throw Error('offline')};await f.submit();
+ const reopened=durableFixture(storage);assert.equal(reopened.ctx.decisionRequestId,f.ctx.decisionRequestId);assert.ok(reopened.ctx.decisionRequestId);
+ const row=saved('hold',{request_id:f.ctx.decisionRequestId,reason:'이유',review_condition:'조건'});
+ const confirmed=durableFixture(storage,'owner',[row]);assert.equal(confirmed.element('detailDecisionForm').hidden,true);assert.equal(storage.values.size,0);
+});
+test('blocked storage reports non-durable state; malformed storage does not break detail',()=>{
+ const blocked={getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}};const f=durableFixture(blocked);f.input('detailReason','보존');
+ assert.match(f.element('detailDecisionStatus').textContent,/보관하지 못했습니다/);
+ const storage=durableStorage();storage.setItem(f.ctx.decisionDraftKey('held'),'{broken');assert.equal(durableFixture(storage).values()[1],'');
 });
