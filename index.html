@@ -2471,7 +2471,7 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
       button.onclick=function(){
         var fingerprint=button.hasAttribute('data-home-review-undo')?null:decodeURIComponent(button.getAttribute('data-review-fingerprint'));
         if(!writeHomeReviewAcknowledgement(id,fingerprint,ownerKey)){
-          button.closest('.home-review-ack').querySelector('[data-review-ack-status]').textContent='확인 상태를 보관하지 못했습니다. 항목은 점검 목록에 남겨 두었습니다. 다시 시도해 주세요.';return;
+          button.closest('.home-review-ack').querySelector('[data-review-ack-status]').textContent='확인 상태를 변경하지 못했습니다. 기존 표시를 유지합니다. 다시 시도해 주세요.';return;
         }
         render(true);
         var panel=document.querySelector('.home-reviews');if(panel){panel.open=true;panel.scrollIntoView({block:'nearest'});var summary=panel.querySelector('summary');summary.tabIndex=-1;summary.focus({preventScroll:true})}
