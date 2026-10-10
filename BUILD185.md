@@ -12,7 +12,9 @@ Manual conditions, unavailable evidence and active/failed reads have distinct ti
 
 ## Verification
 
-Ten acknowledgement/status tests pass, covering persistence, account isolation, undo, new evidence, corrupt/unavailable storage, unresolved conditions and final-versus-partial completion. Build178 home-context checks and inline JS parsing pass. Browser coverage now asserts final acknowledgement collapses the panel, reloading preserves the checked state, undo reopens the reminder and new quotes create a fresh check. Full mobile CI, screenshot review and production-source verification pending.
+Ten acknowledgement/status tests pass, covering persistence, account isolation, undo, new evidence, corrupt/unavailable storage, unresolved conditions and final-versus-partial completion. Build178 home-context checks and inline JS parsing pass. Full mobile CI run 38061004404 (job 114239081636) passed at 390/402/430px, including final acknowledgement collapse, reload persistence, undo and new-quote reactivation. Existing decision save/revisit journeys passed in the same suite. Artifact 11673181953. Visually reviewed the 390px checked summary, triggered review and decision-context screenshots: completed state is compact, the expanded trigger has one visible heading and the saved reason/condition remains readable.
+
+Initial CI run 38060874214 failed because an old browser assertion expected the removed duplicate inner heading. Test-only follow-up b8f077029c8fd2ca07b2c47525529fd1035e9f8f checks the visible outer summary and verifies the inner heading is hidden. Implementation commit 7e3779ff64fc17b00cdab71dad437f50eca2d17d. Pages run 38061003867 succeeded. Retrieved production index.html matches the local implementation: SHA-256 d125129fa6c21b66c7d8d4bc7240100dd6743f2636ac505fec34b7d803b5fbd7.
 
 No new server/database writes, orders, test trades or user-account test judgments. Existing decision save/revisit flow is retained and will run through the mobile regression suite. Physical iPhone daily comprehension and the 30-second/one-minute usability goals remain unmeasured.
 
