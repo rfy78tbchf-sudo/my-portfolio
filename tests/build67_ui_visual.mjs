@@ -1,3 +1,4 @@
+import './build183_home_priority.mjs';
 import './build182_home_period.mjs';
 import './build181_home_snapshot.mjs';
 import './build180_loading.mjs';
@@ -103,12 +104,14 @@ const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_ver
 const injected=`
   var fixtureOriginalLoadLive=loadLive;
   window.__uiHomePeriodProbe=function(data){
-    var sales=[];window.__periodReads=0;window.__periodFail=false;
-    window.__periodStatus=function(){return {loaded:live.performancePeriod,salesLoading:live.realizedSalesLoading,reads:window.__periodReads}};
+    var sales=[],extras=[];window.__periodReads=0;window.__periodFail=false;window.__periodHoldDetails=false;window.__periodFailDetails=false;
+    window.__releasePeriodDetails=function(){extras.splice(0).forEach(function(r){r({ok:true,items:[]})})};
+    window.__periodStatus=function(){return {loaded:live.performancePeriod,salesLoading:live.realizedSalesLoading,reads:window.__periodReads,detailsLoading:live.performanceDetailsLoading,detailsError:live.performanceDetailsError}};
     window.__releasePeriodSales=function(){sales.splice(0).forEach(function(r){r({ok:true,items:[]})})};
     rest=async function(){return []};
     rpc=async function(name,p){
       if(name==='get_live_realized_sales')return new Promise(function(resolve){sales.push(resolve)});
+      if(name==='get_live_benchmark_comparison'){if(window.__periodFailDetails)throw Error('synthetic auxiliary offline');if(window.__periodHoldDetails)return new Promise(function(resolve){extras.push(resolve)})}
       if(name==='get_live_performance_summary'){window.__periodReads++;return data.performance}
       if(name==='get_live_home_chart'){if(window.__periodFail)throw Error('synthetic offline');return data.homeChart}
       if(name==='get_live_reliable_performance')return data.performanceGate;
@@ -851,11 +854,15 @@ try{
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
     await page.evaluate(data=>window.__uiHomePeriodProbe(data),live);
+    await page.evaluate(()=>window.__periodHoldDetails=true);
     await page.locator('[data-period="1W"]').click();
     await page.waitForFunction(()=>window.__periodStatus().loaded==='1W');
     assert.equal((await page.evaluate(()=>window.__periodStatus())).salesLoading,true,'home renders while sales remain pending');
     assert.ok(await page.locator('.hero .pnl').count());
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).detailsLoading,true,'home is readable while auxiliary analysis remains pending');
     await page.screenshot({path:out+'/home-period-ready-'+width+'.png'});
+    await page.evaluate(()=>{window.__periodHoldDetails=false;window.__releasePeriodDetails()});
+    await page.waitForFunction(()=>window.__periodStatus().detailsLoading===false);
     await page.locator('[data-period="3M"]').click();await page.waitForFunction(()=>window.__periodStatus().loaded==='3M');
     const readsBefore=(await page.evaluate(()=>window.__periodStatus())).reads;
     await page.locator('[data-period="1W"]').click();await page.waitForFunction(()=>window.__periodStatus().loaded==='1W');
@@ -865,6 +872,15 @@ try{
     await page.screenshot({path:out+'/home-period-retry-'+width+'.png'});
     await page.evaluate(()=>window.__periodFail=false);await page.getByRole('button',{name:'다시 확인',exact:true}).click();
     await page.waitForFunction(()=>window.__periodStatus().loaded==='6M');
+    await page.evaluate(()=>window.__releasePeriodSales());
+    await page.evaluate(()=>window.__periodFailDetails=true);await page.locator('[data-period="YTD"]').click();
+    await page.waitForFunction(()=>window.__periodStatus().detailsError===true);
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).loaded,'YTD');
+    assert.ok(await page.locator('.hero .pnl').count(),'auxiliary failure leaves core performance visible');
+    await page.locator('.balance-meta > summary').click();
+    await page.screenshot({path:out+'/home-period-auxiliary-retry-'+width+'.png'});
+    await page.evaluate(()=>window.__periodFailDetails=false);await page.getByRole('button',{name:'분석 다시 확인',exact:true}).click();
+    await page.waitForFunction(()=>window.__periodStatus().detailsError===false&&window.__periodStatus().detailsLoading===false);
     await page.evaluate(()=>window.__releasePeriodSales());
 
     const probeData=JSON.parse(JSON.stringify(live));probeData.draftOwner='snapshot-owner-'+width;probeData.reviewDecisions=[{...decision,choice:'hold',review_condition:'종가 100 달러 이하',price_snapshot:{price_date:'2026-09-26',currency:'USD'}}];
