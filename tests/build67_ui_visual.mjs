@@ -1,3 +1,4 @@
+import './build178_home_context.mjs';
 import './build169_chart_preferences.mjs';
 import './build165_chart_recovery.mjs';
 import './build164_resume.mjs';
@@ -280,6 +281,23 @@ try{
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
     if(source.includes('review-home-item')){
+      const contextDecision={...decision,choice:'hold',reason:'매출 성장을 다음 실적까지 확인',review_condition:'종가 100 달러 이하',created_at:'2026-09-27T00:00:00Z',price_snapshot:{price_date:'2026-09-26',currency:'USD'}};
+      const contextData={...live,reviewDecisions:[contextDecision],priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:110}}}};
+      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false);
+      assert.match(await page.locator('.home-review-brief').innerText(),/자동 조건에 해당하는 항목 없음/);
+      await page.locator('.home-reviews>summary').click();
+      assert.match(await page.locator('.home-decision-context').innerText(),/매출 성장을 다음 실적까지 확인/);
+      assert.match(await page.locator('.home-review-quote').innerText(),/110 USD.*2026-09-28/);
+      await page.locator('.review-home').screenshot({path:out+'/home-decision-context-'+width+'.png'});
+      await page.locator('.review-home [data-decision-detail="s0"]').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+      assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장을 다음 실적까지 확인/);
+      assert.match(await page.locator('#detailDecisionSummary').innerText(),/종가 100 달러 이하/);
+      await page.locator('#detailClose').click();
+      contextData.priceMeta.s0.latest.close=null;
+      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      assert.match(await page.locator('.home-review-brief').innerText(),/자료·조건 확인 1개/);
+
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
       await page.evaluate(()=>window.__uiRender('home'));
@@ -288,6 +306,7 @@ try{
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true,'due reviews are visible without an extra tap');
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
       assert.match(await card.innerText(),/다시 점검할 판단 1개/);
+      assert.match(await page.locator('.home-review-brief').innerText(),/직접 확인 1개/);
       assert.equal(await card.locator('[data-decision-detail]').first().getAttribute('data-decision-detail'),'s1');
       assert.equal(await card.locator('[data-decision-detail="s0"]').isVisible(),false);
       await card.getByText('다른 종목 판단 1개 보기',{exact:true}).click();

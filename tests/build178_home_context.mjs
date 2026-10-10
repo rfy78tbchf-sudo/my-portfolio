@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const c=vm.createContext({esc:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;'),kstStamp:String,kstDate:()=> '2026-10-10'});
+vm.runInContext(source.slice(source.indexOf('  function decisionConditionState('),source.indexOf('  function officialPeriodKo('))+source.slice(source.indexOf('  function reviewHomeCard('),source.indexOf('  function benchmarkCard(')),c);
+const d={security_id:'a',choice:'hold',reason:'매출 성장 확인',review_condition:'종가 100 달러 이하',created_at:'2026-10-01T00:00:00Z',price_snapshot:{price_date:'2026-10-01',currency:'USD'}};
+c.live={securityMap:{a:{id:'a',name:'Alpha',symbol:'A'}},holdings:[{security_id:'a',quantity:1}],reviewDecisions:[d],reviewAnalyses:[],priceMeta:{a:{latest:{price_date:'2026-10-09',currency:'USD',close:110}}}};
+assert.match(c.reviewHomeCard(),/매출 성장 확인/);assert.match(c.reviewHomeCard(),/종가 100 달러 이하/);assert.match(c.reviewHomeCard(),/110 USD/);assert.match(c.reviewHomeCard(),/2026-10-09/);
+assert.match(c.reviewHomeCard(true),/자동 조건에 해당하는 항목 없음/);
+c.live.priceMeta.a.latest.close=90;assert.match(c.reviewHomeCard(true),/조건 도달·새 근거 1개/);
+c.live.priceMeta.a.latest.close=null;assert.match(c.reviewHomeCard(true),/자료·조건 확인 1개/);assert.doesNotMatch(c.reviewHomeCard(),/확인한 종가|0 USD/);
+c.live.reviewDecisions=[{...d,review_condition:'다음 실적 발표 확인'}];assert.match(c.reviewHomeCard(true),/직접 확인 1개/);assert.doesNotMatch(c.reviewHomeCard(true),/항목 없음/);
+c.live.reviewDecisions=[{...d,review_condition:'2026-10-20'}];assert.match(c.reviewHomeCard(true),/항목 없음/);
+c.live.reviewDecisions=[{...d,review_condition:''}];assert.match(c.reviewHomeCard(true),/자료·조건 확인 1개/);
+c.live.reviewDecisions=[{...d,reason:'<img src=x onerror=alert(1)>'}];assert.doesNotMatch(c.reviewHomeCard(),/<img/);assert.match(c.reviewHomeCard(),/&lt;img/);
+c.live.holdings=[];assert.equal(c.reviewHomeCard(true),'');
+console.log('Build178: home decision context, quoted price/date, manual/unknown/no-hit separation, escaping and holding scope passed');
