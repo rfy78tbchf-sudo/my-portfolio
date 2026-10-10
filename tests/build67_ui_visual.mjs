@@ -1,3 +1,4 @@
+import './build179_review_acknowledgements.mjs';
 import './build178_home_context.mjs';
 import './build169_chart_preferences.mjs';
 import './build165_chart_recovery.mjs';
@@ -298,6 +299,25 @@ try{
       await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
       assert.match(await page.locator('.home-review-brief').innerText(),/자료·조건 확인 1개/);
 
+      const ackDecision={...contextDecision};
+      const ackData={...contextData,draftOwner:'ack-owner-'+width,decisionSaveFixture:true,priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:90}}}};
+      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true);
+      await page.locator('[data-home-review-ack="s0"]').click();
+      assert.match(await page.locator('.home-review-brief').innerText(),/확인한 항목 1개/);
+      assert.doesNotMatch(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단/);
+      assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+      await page.locator('.review-home').screenshot({path:out+'/home-review-checked-'+width+'.png'});
+      await page.reload();await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false);
+      assert.match(await page.locator('.home-review-brief').innerText(),/새로 점검할 항목 없음/);
+      await page.locator('.home-reviews>summary').click();await page.locator('[data-home-review-undo="s0"]').click();
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      await page.locator('[data-home-review-ack="s0"]').click();
+      ackData.priceMeta.s0.latest.price_date='2026-09-29';
+      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      assert.equal(await page.locator('[data-home-review-ack="s0"]').isVisible(),true);
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
       await page.evaluate(()=>window.__uiRender('home'));
