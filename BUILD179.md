@@ -12,8 +12,16 @@ Account isolation reuses the authenticated local key namespace already used for 
 
 ## Verification
 
-78 isolated tests passed (8 new acknowledgement cases plus 70 existing condition cases). Existing home/detail parity, home context, priority/holding scope, official evidence, review-list bounds and script/sync checks passed. Synthetic browser journey added for 390/402/430px: check → zero decision writes → full reload → still checked → undo → check again → new quote restores the reminder. Full mobile CI and deployment pending.
+78 isolated tests passed (8 new acknowledgement cases plus 70 existing condition cases). Existing home/detail parity, home context, priority/holding scope, official evidence, review-list bounds and script/sync checks passed. Synthetic browser journey added for 390/402/430px: check → zero decision writes → full reload → still checked → undo → check again → new quote restores the reminder. Full mobile CI and deployment passed; details below.
 
 ## Status and next priority
 
-Code and isolated verification complete; mobile and deployment results recorded below when complete. Actual signed-in iPhone/PWA operation remains 확인 필요. Acknowledgement is not an assessment that the investment is safe or a new hold decision. Current limitation: each new qualifying daily close is new evidence and can prompt a new review; no indefinite snooze or threshold-episode suppression is inferred. Next priority is measuring first open/revisit/refresh and the daily home journey, rather than adding analysis features. The 30-second/one-minute usability goals remain unmeasured.
+Implementation, isolated checks and synthetic mobile verification complete; deployment is verified below. Actual signed-in iPhone/PWA operation remains 확인 필요. Acknowledgement is not an assessment that the investment is safe or a new hold decision. Current limitation: each new qualifying daily close is new evidence and can prompt a new review; no indefinite snooze or threshold-episode suppression is inferred. Next priority is measuring first open/revisit/refresh and the daily home journey, rather than adding analysis features. The 30-second/one-minute usability goals remain unmeasured.
+
+## Final verification — 2026-10-10
+
+- Behavior commit d5e26cc011135f70d1c708e5beb0686ac8ac2fc3. Full mobile run 38049992455 / job 114207014344 succeeded; artifact 11668738653.
+- Reviewed 390px checked-state screenshot: reason/checkpoint/observed quote stay visible, checked time and undo are readable. All 390/402/430px browser assertions passed, including zero synthetic decision writes and restart persistence.
+- Text-only follow-up 13929eecc28a8a5825f5520476f8b1b410e730bb clarifies that either failed check or failed undo preserves the previous display. Eight acknowledgement tests and script/sync checks reran successfully; full mobile suite was not rerun for this copy-only change.
+- Pages 38049992253 (behavior) and 38050187227 (copy follow-up) succeeded. Final source SHA-256 242fad06d2e1a2853b2d1b2059772b6e6e5fa5442a13453a05cd4f74ee06c7e9; live match checked after deployment.
+- Only isolated synthetic data was used for writes. No real user judgment or transaction was created. Actual iPhone and measured daily usability remain unverified.
