@@ -358,7 +358,9 @@ try{
       assert.match(await page.locator('.home-review-brief').innerText(),/확인한 항목 1개/);
       assert.doesNotMatch(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단/);
       assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
-      await page.locator('.review-home').screenshot({path:out+'/home-review-checked-'+width+'.png'});
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'last acknowledged item closes the completed review');
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/새로 점검할 판단 없음/);
+      await page.locator('.home-reviews').screenshot({path:out+'/home-review-checked-'+width+'.png'});
       await page.reload();await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false);
       assert.match(await page.locator('.home-review-brief').innerText(),/새로 점검할 항목 없음/);

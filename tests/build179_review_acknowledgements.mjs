@@ -48,6 +48,19 @@ test('undo persists and never changes a saved judgment',()=>{
 test('missing data remains unknown even after a prior acknowledgement',()=>{
  const f=fixture();f.acknowledge();f.q.close=null;assert.match(f.c.reviewHomeCard(true),/자료·조건 확인 1개/);assert.doesNotMatch(f.c.reviewHomeCard(),/data-home-review-ack=/);
 });
+test('Build185 quiet completion requires no remaining manual, pending, loading or failed review',()=>{
+ const f=fixture();let status=f.c.reviewHomeCard('status');assert.equal(status.quiet,false);assert.equal(status.attention,1);
+ f.acknowledge();status=f.c.reviewHomeCard('status');assert.equal(status.quiet,true);assert.equal(f.c.homeReviewTitle(status),'새로 점검할 판단 없음');
+ f.c.live.homeReviewLoading=true;status=f.c.reviewHomeCard('status');assert.equal(status.quiet,false);assert.equal(f.c.homeReviewTitle(status),'지난 판단 확인 중');
+ f.c.live.homeReviewLoading=false;f.c.live.homeReviewError='offline';status=f.c.reviewHomeCard('status');assert.equal(status.quiet,false);assert.notEqual(f.c.homeReviewTitle(status),'새로 점검할 판단 없음');
+ f.c.live.homeReviewError=null;f.q.close=null;status=f.c.reviewHomeCard('status');assert.equal(status.quiet,false);assert.match(f.c.homeReviewTitle(status),/확인할 자료·조건/);
+ const manual=fixture(storage(),'one','실적 발표 후 성장 확인');status=manual.c.reviewHomeCard('status');assert.equal(status.quiet,false);assert.match(manual.c.homeReviewTitle(status),/직접 확인할 판단/);
+ manual.c.live.reviewDecisions=[];assert.equal(manual.c.reviewHomeCard('status').quiet,false,'absence of saved judgments is not a completed check');
+});
+test('Build185 another due judgment prevents final-item completion',()=>{
+ const f=fixture();f.c.live.securityMap.b={id:'b',symbol:'B',name:'Beta'};f.c.live.holdings.push({security_id:'b',quantity:1});f.c.live.reviewDecisions.push({...f.d,security_id:'b',review_condition:'2026-10-05'});
+ f.acknowledge();const status=f.c.reviewHomeCard('status');assert.equal(status.attention,1);assert.equal(status.checked,1);assert.equal(status.quiet,false);
+});
 test('blocked, corrupt or unscoped storage cannot silently suppress a reminder',()=>{
  const f=fixture();f.store.setItem=()=>{throw Error('quota')};assert.equal(f.acknowledge(),false);assert.match(f.c.reviewHomeCard(),/다시 점검할 판단 1개/);
  f.store.map.set(f.c.homeReviewAcknowledgementKey('a'),'{broken');assert.match(f.c.reviewHomeCard(),/다시 점검할 판단 1개/);
