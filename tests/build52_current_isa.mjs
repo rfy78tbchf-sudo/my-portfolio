@@ -10,7 +10,7 @@ assert.match(sql,/o\.captured_at>v_isa_at/);
 assert.doesNotMatch(sql,/insert into public\.(?:transactions|cash_flows|holdings|daily_account_snapshots)/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-const start=html.indexOf('  function liveHome(){');
+const start=html.indexOf('  function homeAssetBasis(');
 const end=html.indexOf('  function demoPortfolio()',start);
 const oldNav='2026-09-26T06:10:03Z';
 const scope={ok:true,snapshot_at:oldNav,overlay_matches_manual:true,

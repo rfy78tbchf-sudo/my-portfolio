@@ -14,7 +14,7 @@ assert.doesNotMatch(sql,/268-376|373-886/,'no real broker account numbers are st
 assert.equal(55_538_715+9_150_078,64_688_793);
 assert.equal(55_538_715+9_128_990,64_667_705);
 
-const begin=html.indexOf('  function liveHome(){'),end=html.indexOf('  function demoPortfolio()',begin);
+const begin=html.indexOf('  function homeAssetBasis('),end=html.indexOf('  function demoPortfolio()',begin);
 assert.ok(begin>0&&end>begin);
 const date='2026-09-26T00:10:03.561826Z';
 const accountScope={ok:true,snapshot_at:date,overlay_matches_manual:true,

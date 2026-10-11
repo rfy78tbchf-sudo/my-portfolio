@@ -35,7 +35,7 @@ assert.equal(state.rendered,1);
 fields.isaCorrectedAmount.value='1.5';
 await fields.isaCorrectionForm.onsubmit({preventDefault(){}});
 assert.equal(state.calls.length,1,'fractional KRW cannot mutate an observation');
-const homeStart=html.indexOf('  function liveHome(){'),homeEnd=html.indexOf('  function demoPortfolio(){',homeStart);
+const homeStart=html.indexOf('  function homeAssetBasis('),homeEnd=html.indexOf('  function demoPortfolio(){',homeStart);
 const ownerScope={ok:true,snapshot_at:'2026-09-26T00:00:00Z',overlay_matches_manual:true,
   broker_account_overlap_verified:true,current_display_total:1200007,
   current_primary_value:200000,current_primary_observed_at:'2026-09-26T00:00:00Z',

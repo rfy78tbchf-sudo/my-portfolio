@@ -5,7 +5,7 @@ import {chromium} from 'playwright';
 
 const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const css=source.slice(source.indexOf('<style>')+7,source.indexOf('</style>'));
-const start=source.indexOf('  function liveHome(){');
+const start=source.indexOf('  function homeAssetBasis(');
 const end=source.indexOf('  function demoPortfolio(){',start);
 const scope={ok:true,snapshot_at:'2026-09-26T06:10:03Z',overlay_matches_manual:true,
   broker_account_overlap_verified:true,current_display_total:64_688_793,
