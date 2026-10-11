@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';import vm from 'node:vm';
+const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+let states=[{other:'preserved'}],index=0,pop,visible=true,allow=true,closed=0;
+const history={get state(){return states[index]},pushState(s){states=states.slice(0,index+1);states.push(s);index++},replaceState(s){states[index]=s},back(){index--;}};
+const c=vm.createContext({window:{history,addEventListener:(event,cb)=>{pop=cb}},location:{href:'https://example.test/'},document:{getElementById:()=>({classList:{contains:()=>!visible}})},closeSecurityDetail(from){assert.equal(from,true);if(!allow)return false;closed++;visible=false;return true;}});
+vm.runInContext(source.slice(source.indexOf('  var detailHistoryToken='),source.indexOf('  function restoreDetailReturnFocus(')),c);c.initDetailHistory();
+c.enterDetailHistory();c.enterDetailHistory();assert.equal(states.length,2,'one entry per detail journey');assert.equal(history.state.other,'preserved');assert.deepEqual(Object.keys(history.state).sort(),['other','portfolioDetail']);
+history.back();pop();assert.equal(closed,1);assert.equal(index,0);
+visible=true;c.enterDetailHistory();allow=false;history.back();pop();assert.equal(index,1,'cancel restores detail entry');assert.equal(visible,true);
+allow=true;c.leaveDetailHistory(false);visible=false;assert.equal(index,0);pop();assert.equal(closed,1,'button close does not close again');
+visible=true;c.enterDetailHistory();c.leaveDetailHistory(false);c.enterDetailHistory();pop();assert.equal(index,1,'rapid reopen gets one valid detail entry');
+visible=false;history.back();pop();index++;pop();assert.equal(history.state.portfolioDetail,undefined,'forward to stale entry exposes no old detail');
+c.enterDetailHistory();c.initDetailHistory();assert.equal(history.state.portfolioDetail,undefined,'reload drops runtime detail marker');
+console.log('Build188: one-entry journey, back, cancellation, button close, rapid reopen, forward/reload privacy passed');

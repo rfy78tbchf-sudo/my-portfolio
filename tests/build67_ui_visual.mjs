@@ -1,3 +1,4 @@
+import './build188_detail_history.mjs';
 import './build184_startup_home.mjs';
 import './build183_home_priority.mjs';
 import './build182_home_period.mjs';
@@ -848,7 +849,12 @@ try{
     assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/아직 저장된 판단이 아닙니다/);
     assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'navigation never saves a judgment');
-    await page.locator('#detailClose').click();await homeStock.click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    await page.evaluate(()=>history.back());
+    await page.locator('#detailModal').waitFor({state:'hidden'});
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'browser back preserves a draft without saving judgment');
+    await homeStock.click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    await page.screenshot({path:out+'/browser-back-draft-'+width+'.png'});
+
     assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
     assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
     // A new JavaScript runtime retains only localStorage, never the old draft map.
