@@ -175,6 +175,7 @@ const injected=`
       if(name==='save_investment_decision'&&data.decisionSaveFixture){
         window.__decisionWrites++;
         savedDecision={id:'recovered-decision',security_id:p.p_security_id,request_id:p.p_request_id,choice:p.p_choice,reason:p.p_reason,review_condition:p.p_review_condition,analysis_id:p.p_analysis_id,created_at:new Date().toISOString(),thesis_version:1,scenario_snapshot:{}};
+        if(data.deferDecisionSave){data.deferDecisionSave=false;await new Promise(resolve=>{window.__releaseDecisionSave=resolve})}
         throw Error('Synthetic response lost after commit');
       }
       if(name==='get_investment_decisions')return savedDecision?[savedDecision,...(record?[record]:[])]:record?[record]:[];
@@ -875,7 +876,7 @@ try{
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
     await page.locator('#detailClose').click();
     // Complete first decision from the actual home entry, with optional tools CLOSED.
-    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;firstVisit.deferMetrics=true;firstVisit.draftOwner='reload-owner-'+width;
+    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;firstVisit.deferDecisionSave=true;firstVisit.deferMetrics=true;firstVisit.draftOwner='reload-owner-'+width;
     firstVisit.testThesis={version:1,rationale:'매출 성장 근거를 다음 실적까지 확인하며 보유'};
     await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
@@ -923,10 +924,24 @@ try{
     await page.screenshot({path:out+'/decision-draft-restored-'+width+'.png'});
     await page.screenshot({path:out+'/decision-while-weight-pending-'+width+'.png'});
     await page.locator('#detailDecisionForm button[type=submit]').click();
+    await page.waitForFunction(()=>typeof window.__releaseDecisionSave==='function');
+    const editedReason='실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인 · 새로 수정한 초안';
+    await page.locator('#detailReason').fill(editedReason);
+    await page.evaluate(()=>window.__releaseDecisionSave());
+    await page.waitForFunction(()=>document.getElementById('detailDecisionStatus').textContent.includes('수정한 내용은 아직 초안'));
+    assert.equal(await page.locator('#detailDecisionForm').isVisible(),true);
+    assert.equal(await page.locator('#detailReason').inputValue(),editedReason);
+    assert.equal(await page.locator('#detailDecisionDone').count(),0,'newer edits do not receive a completed-and-close action');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),1);
+    assert.ok(!(await page.locator('#detailDecisionSummary').innerText()).includes('새로 수정한 초안'));
+    await page.locator('#detailDecisionStatus').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+    await page.screenshot({path:out+'/save-with-newer-draft-'+width+'.png'});
+    await page.locator('#detailDecisionForm button[type=submit]').click();
     await page.locator('#detailDecisionDone').waitFor();
+    assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(editedReason));
     await page.evaluate(()=>window.__releaseDetailMetrics());
     assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 다시 확인/);
-    assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost save response must not duplicate the decision');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),2,'one write per explicitly submitted version, no lost-response duplicate');
     assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(checkpoint));
     await page.screenshot({path:out+'/first-decision-complete-'+width+'.png'});
     await page.locator('#detailDecisionDone').click();
