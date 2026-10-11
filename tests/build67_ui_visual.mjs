@@ -1,3 +1,4 @@
+import './build196_home_retention.mjs';
 import './build195_resume_retry.mjs';
 import './build194_resume_day.mjs';
 import './build193_review_reload.mjs';
@@ -1052,6 +1053,8 @@ try{
     await page.evaluate(async()=>{window.__failStartupChart=true;await window.__retryStartup()});
     await page.locator('[data-home-startup-retry]').waitFor();
     assert.ok(await page.locator('.hero .pnl').count(),'failed chart does not hide confirmed performance');
+    assert.ok(await page.locator('#homeTrend svg').count(),'failed refresh preserves previously confirmed chart');
+    assert.match(await page.locator('[data-home-startup-retry]').locator('..').innerText(),/자산 추이 갱신 실패.*이전 확인값/);
     await page.evaluate(()=>window.scrollTo(0,0));
     await page.screenshot({path:out+'/home-startup-retry-'+width+'.png',fullPage:true});
     await page.evaluate(()=>window.__failStartupChart=false);await page.locator('[data-home-startup-retry]').click();

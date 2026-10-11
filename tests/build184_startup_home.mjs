@@ -13,7 +13,7 @@ assert.equal(calls.filter(x=>x[0]==='get_live_home_chart').length,1,'reuse start
 // A newer same-period user query must survive the initial enrichment completion.
 c.performanceRequestEpoch++;c.live.performance={ok:true,marker:'newer'};c.live.homeChart={marker:'newer'};c.live.performanceGate={marker:'newer'};
 releaseExtra({ok:true});await loading;assert.equal(c.live.performance.marker,'newer');assert.equal(c.live.homeChart.marker,'newer');assert.equal(c.live.performanceGate.marker,'newer');
-calls=[];fail=true;await c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);assert.equal(c.live.startupHomeError,true);assert.equal(c.live.performance.ok,true);assert.equal(c.live.homeChart,null);assert.equal(c.liveError,null);assert.equal(calls.length,4,'local retry only reads home data');
+calls=[];fail=true;await c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);assert.equal(c.live.startupHomeError,true);assert.equal(c.live.performance.ok,true);assert.equal(c.live.homeChart.marker,'newer');assert.ok(c.live.startupHomeRetained.includes('자산 추이'));assert.equal(c.liveError,null);assert.equal(calls.length,4,'local retry only reads home data');
 fail=false;await c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);assert.equal(c.live.startupHomeError,false);
 const normalRpc=c.rpc;let pendingReads=[];c.rpc=(name)=>new Promise((resolve,reject)=>pendingReads.push({name,resolve,reject}));
 const obsolete=c.loadStartupHomeData(c.live,()=>true,c.period,c.performanceRequestEpoch);c.performanceRequestEpoch++;c.period='3M';c.live.performance={marker:'selected-newer'};
