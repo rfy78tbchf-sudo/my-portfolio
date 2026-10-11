@@ -1,0 +1,12 @@
+import {readFileSync} from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const s=readFileSync(new URL('../index.html',import.meta.url),'utf8'),c=vm.createContext({Intl,Date});
+vm.runInContext(s.slice(s.indexOf('  function homeAssetBasis('),s.indexOf('  function liveHome(')),c);
+const scope={ok:true,current_display_total:10,current_primary_observed_at:'2026-10-11T03:00:00Z',current_isa_capture_at:'2026-09-26T02:42:00Z'};
+const text=c.homeAssetBasis(scope,{snapshot_date:'2000-01-01'});assert.match(text,/2026.*10.*11.*12:00/);assert.match(text,/ISA.*2026.*9.*26.*11:42/);assert.ok(!text.includes('2000'));
+assert.match(c.homeAssetBasis({...scope,current_isa_capture_at:null},{}),/ISA 시각 확인 필요/);
+assert.match(c.homeAssetBasis(null,{snapshot_date:'2025-10-11'}),/2025-10-11 \(시간 미기록\)/);
+assert.match(c.homeAssetBasis({ok:false}, {snapshot_at:'invalid'}),/시각 확인 필요/);
+const branch=s.slice(s.indexOf('  function liveHome('),s.indexOf('    var p=live.performance||{}',s.indexOf('  function liveHome(')));
+assert.ok(branch.includes("return homeStatus+startupStatus+'<section"),'period failure keeps account retry warning');
+assert.ok(branch.includes('homeAssetBasis(scope,last)'));
+console.log('Build190: source-aligned dates, KST, year, unknown timestamps and failure warning retained');

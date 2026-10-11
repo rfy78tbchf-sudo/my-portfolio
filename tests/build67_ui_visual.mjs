@@ -1,3 +1,4 @@
+import './build190_home_basis.mjs';
 import './build188_detail_history.mjs';
 import './build184_startup_home.mjs';
 import './build183_home_priority.mjs';
@@ -200,6 +201,7 @@ const injected=`
       };
     };
     window.__uiLocalHistory=function(data){live=data;stockPeriod='ALL';stockView='total';currentTab='performance';render()};
+    window.__uiHomeFailure=function(){liveError='synthetic refresh failure';live.performanceError='기간 성과 조회 실패';currentTab='home';render()};
     window.__uiRender=function(tab){currentTab=tab;render()};window.__uiDetail=openSecurityDetail;
     render();
   };
@@ -254,6 +256,17 @@ try{
     }
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
+    assert.match(await page.locator('.hero .home-basis-time').innerText(),/KB .*ISA .*한국시간/);
+    assert.equal(await page.locator('.hero .balance-meta').evaluate(el=>el.open),false,'basis dates visible without opening details');
+    await page.screenshot({path:out+'/home-basis-'+width+'.png'});
+    const confirmedAssets=await page.locator('.hero .asset').innerText();
+    await page.evaluate(()=>window.__uiHomeFailure());
+    assert.equal(await page.locator('.hero .asset').innerText(),confirmedAssets);
+    assert.equal(await page.locator('[data-home-load-retry]').isVisible(),true,'account retry remains visible alongside period failure');
+    assert.match(await page.locator('.hero .home-basis-time').innerText(),/KB .*ISA/);
+    await page.screenshot({path:out+'/home-basis-failure-'+width+'.png'});
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+
     await page.locator('#homeToday [data-security-id="s0"]').click();
     await page.locator('.detail-price-chart').waitFor();
     await page.locator('#detailClose').click();
