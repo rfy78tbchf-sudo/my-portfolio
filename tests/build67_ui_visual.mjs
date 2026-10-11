@@ -453,6 +453,7 @@ try{
       assert.equal(await page.locator('#detailReason').inputValue(),decision.reason);
       assert.equal(await page.locator('#detailReview').inputValue(),decision.review_condition);
       assert.ok((await page.locator('#detailDecisionForm .review-entry-context').innerText()).includes(entryReason));
+      await page.locator('#detailDecisionForm .review-entry-context').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
       await page.locator('#detailDecisionForm .review-entry-context').screenshot({path:out+'/review-entry-context-'+width+'.png'});
       await page.locator('#detailReason').fill('작성 중인 새 이유');await page.locator('#detailContinueDecision').click();
       assert.equal(await page.locator('#detailReason').inputValue(),'작성 중인 새 이유','follow-up does not replace edits');
