@@ -1,3 +1,4 @@
+import './build194_resume_day.mjs';
 import './build193_review_reload.mjs';
 import './build191_review_entry.mjs';
 import './build190_home_basis.mjs';
@@ -198,6 +199,18 @@ const injected=`
       };
       try{await loadHomeReviewData(live,function(){return true})}finally{rest=originalRest}
     };
+    window.__uiResumeMidnight=async function(){
+      const NativeDate=window.Date,originalLoad=loadLive,previousLoadAt=lastLiveLoadAt;
+      let tick=NativeDate.parse('2026-10-11T23:59:30+09:00'),reads=0;
+      window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[tick]))}static now(){return tick}};
+      loadLive=async function(){reads++};
+      try{
+        lastLiveLoadAt=tick;currentTab='home';render();
+        const before=reviewHomeCard('status');
+        tick+=60000;await refreshLive(false);
+        return {reads,before,after:reviewHomeCard('status')};
+      }finally{window.Date=NativeDate;loadLive=originalLoad;lastLiveLoadAt=previousLoadAt}
+    };
     window.__uiAiTest=function(testMode){
       window.__aiMode=testMode;window.__aiIds=[];window.__syncCount=0;
       let idCount=0;window.portfolioAnalysisRequestId=async()=> '00000000-0000-4000-8000-'+String(++idCount).padStart(12,'0');
@@ -395,6 +408,18 @@ try{
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
     if(source.includes('review-home-item')){
+      const midnightDecision={...decision,choice:'hold',review_condition:'2026-10-12',created_at:'2026-10-10T00:00:00Z'};
+      const midnightData={...live,reviewDecisions:[midnightDecision]};
+      await page.evaluate(args=>window.__uiFixture(...args),[midnightData,midnightDecision,analysis,comparison]);
+      const midnight=await page.evaluate(()=>window.__uiResumeMidnight());
+      assert.equal(midnight.before.attention,0,'checkpoint is not due before Korean midnight');
+      assert.equal(midnight.reads,1,'one-minute return crossing midnight refreshes');
+      assert.equal(midnight.after.attention,1,'checkpoint becomes due on return after midnight');
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true);
+      assert.match(await page.locator('.review-home-item').first().innerText(),/점검 날짜 도래.*2026-10-12/);
+      await page.evaluate(()=>scrollTo(0,0));
+      await page.screenshot({path:out+'/midnight-resume-'+width+'.png'});
+
       const contextDecision={...decision,choice:'hold',reason:'매출 성장을 다음 실적까지 확인',review_condition:'종가 100 달러 이하',created_at:'2026-09-27T00:00:00Z',price_snapshot:{price_date:'2026-09-26',currency:'USD'}};
       const contextData={...live,reviewDecisions:[contextDecision],priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:110}}}};
       await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
