@@ -550,7 +550,17 @@ try{
       assert.ok(Math.abs(await page.evaluate(()=>window.scrollY)-resumeY)<3,'background render keeps current scroll');
       await page.locator('.pnl-composition>summary').click();
       assert.match(await page.locator('.pnl-leaders').innerText(),/원화 계산 종목 중/);
-      await page.locator('[data-pnl-leader="ARM"]').click();await page.locator('.performance-review-context').waitFor();await page.locator('#detailClose').click();
+      const returnButton=page.locator('[data-pnl-leader="ARM"]');
+      await returnButton.scrollIntoViewIfNeeded();await returnButton.focus();
+      const returnY=await page.evaluate(()=>scrollY);
+      const beforeReturn=await page.locator('.performance-hero').innerText();
+      await returnButton.click();await page.locator('.performance-review-context').waitFor();
+      await page.evaluate(()=>window.__uiPreserveRender());
+      await page.locator('#detailReturn').click();
+      assert.ok(Math.abs(await page.evaluate(()=>scrollY)-returnY)<3,'return keeps scroll after background replacement');
+      assert.equal(await page.locator('.performance-hero').innerText(),beforeReturn,'return keeps selected period and performance');
+      assert.equal(await returnButton.evaluate(el=>el===document.activeElement),true,'return restores the replaced originating stock button');
+      await page.screenshot({path:`${out}/performance-return-${width}.png`});
       await page.screenshot({path:`${out}/period-stock-${width}.png`});
       await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/period-stock-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
