@@ -14,5 +14,5 @@ assert.doesNotMatch(c.reviewHomeCard(),/저장한 가격 조건에 해당/);c.li
 c.live.reviewDecisions[0].price_snapshot=null;assert.doesNotMatch(c.reviewHomeCard(),/저장한 가격 조건에 해당/,'missing baseline is not a later quote');
 c.live.reviewDecisions=[d];c.live.reviewAnalyses=[{symbol:'A',created_at:'2026-09-30',official_evidence:{thesis_relation:{thesis_version:1,status:'weaken'},documents:[{url:'https://example.test/doc',date_verified:true,published_on:'2026-09-30'}]}}];assert.match(c.reviewHomeCard(),/관련된 새 공식 자료/);
 c.live.reviewAnalyses[0].official_evidence.thesis_relation.thesis_version=2;assert.doesNotMatch(c.reviewHomeCard(),/관련된 새 공식 자료/);
-assert.match(source,/select=security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot/);
+assert.match(source,/select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot/);
 console.log('Build86: latest-per-security, priority, manual access, missing prices and evidence version passed');
