@@ -1,3 +1,4 @@
+import './build195_resume_retry.mjs';
 import './build194_resume_day.mjs';
 import './build193_review_reload.mjs';
 import './build191_review_entry.mjs';
@@ -152,6 +153,7 @@ const injected=`
     };
     rpc=async function(name,p){if(name==='reconcile_live_cash_flows')return delayed;if(name==='get_live_current_account_scope')return data.accountScope||null;if(name==='get_app_settings')return {};if(name==='get_live_performance_summary')return data.performance;if(name==='get_live_home_chart'){if(window.__failStartupChart)throw Error('synthetic chart offline');return data.homeChart}if(name==='get_live_reliable_performance')return p.p_period==='오늘'?data.todayGate:data.performanceGate;if(name==='get_live_benchmark_comparison'&&window.__holdStartupExtras)return extras;return null};
     window.__retryHomeProbe=function(){return loadHomeReviewData(live,function(){return true})};
+    window.__quickReturnProbe=async function(){const previous=loadLive;lastLiveLoadAt=Date.now();loadLive=async()=>{throw Error('quick retry must not reload full account')};try{await refreshLive(false)}finally{loadLive=previous}};
     if(!waitForRetry)window.__homeProbe=loadLiveOnce();
   };
 
@@ -1055,6 +1057,16 @@ try{
     await page.evaluate(()=>window.__failStartupChart=false);await page.locator('[data-home-startup-retry]').click();
     await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});
     await page.evaluate(async()=>{window.__holdStartupExtras=false;window.__releaseStartupExtras({ok:true});await window.__homeProbe});
+    await page.evaluate(async()=>{window.__failHomeReview=true;window.__failStartupChart=true;await Promise.all([window.__retryHomeProbe(),window.__retryStartup()])});
+    await page.locator('[data-home-review-retry]').waitFor();await page.locator('[data-home-startup-retry]').waitFor();
+    const retryTotal=await page.locator('.hero .asset').innerText(),retryReads=await page.evaluate(()=>window.__homeProbeReads.length);
+    await page.evaluate(async()=>{window.__failHomeReview=false;window.__failStartupChart=false;await window.__quickReturnProbe()});
+    await page.locator('[data-home-review-retry]').waitFor({state:'detached'});await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});
+    assert.equal(await page.locator('.hero .asset').innerText(),retryTotal,'quick retry preserves confirmed account amount');
+    assert.equal(await page.evaluate(()=>window.__homeProbeReads.length)-retryReads,3,'only review sources use REST; no account/history reload');
+    assert.ok(await page.locator('#homeTrend svg').count(),'failed chart recovers on quick return');
+    await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/quick-return-recovered-'+width+'.png'});
+
 
     const cachedTotal=await page.evaluate(()=>window.__uiSnapshotTotal());assert.ok(cachedTotal>0);
     await page.reload();
