@@ -1,3 +1,4 @@
+import './build193_review_reload.mjs';
 import './build191_review_entry.mjs';
 import './build190_home_basis.mjs';
 import './build188_detail_history.mjs';
@@ -187,6 +188,16 @@ const injected=`
     authFetch=async function(url,options){if(options&&options.method==='POST')throw Error('No model generation or writes allowed in UI capture');return {ok:true,json:async()=>url.includes('investment_decisions?')?(savedDecision?[savedDecision]:[]):[opinion]}};
     loadLive=async()=>{};edgeSync=async(action)=>{if(action==='overseas-day-pnl')return {ok:true,available:false,items:[]};throw Error('No account sync during UI capture')};
     document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('refreshBtn').classList.remove('hidden');
+    window.__reloadReviewRecords=async function(){
+      const originalRest=rest,records=data.reviewDecisions||[];
+      live.reviewDecisions=[];
+      rest=async function(path){
+        if(!path.startsWith('investment_decisions?'))return [];
+        const fields=new URLSearchParams(path.split('?')[1]).get('select').split(',');
+        return records.map(row=>Object.fromEntries(fields.map(key=>[key,row[key]])));
+      };
+      try{await loadHomeReviewData(live,function(){return true})}finally{rest=originalRest}
+    };
     window.__uiAiTest=function(testMode){
       window.__aiMode=testMode;window.__aiIds=[];window.__syncCount=0;
       let idCount=0;window.portfolioAnalysisRequestId=async()=> '00000000-0000-4000-8000-'+String(++idCount).padStart(12,'0');
@@ -424,6 +435,7 @@ try{
       assert.equal(await page.locator('[data-home-review-ack="s0"]').isVisible(),true);
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
+      await page.evaluate(()=>window.__reloadReviewRecords());
       await page.evaluate(()=>window.__uiRender('home'));
       assert.ok(await page.locator('#homeHoldings').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_PRECEDING)));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
