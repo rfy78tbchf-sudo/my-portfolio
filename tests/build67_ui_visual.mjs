@@ -60,7 +60,7 @@ async function openOptionalTools(page){
 import vm from 'node:vm';
 import {readFileSync,mkdirSync,writeFileSync,existsSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
-import {chromium} from 'playwright';
+import {chromium,webkit} from 'playwright';
 
 // Production HTML, CSS, renderers and handlers; isolated deterministic data only.
 // No owner login, network or records are used or changed by this visual test.
@@ -207,16 +207,48 @@ const injected=`
 let html=source.replace('  restoreLogin();',injected).replace(/<script[^>]+src=[^>]+><\/script>/g,'').replace("navigator.serviceWorker.register('./sw.js'","Promise.reject('fixture only').then('./sw.js'");
 // Keep the application's actual AI response renderer as well.
 html=html.replace('</body>',`<script>${readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8')}</script></body>`);
+if(process.env.UI_WEBKIT_NAV==='1')html=html.replace('</body>',`<script>${readFileSync(new URL('../realized-sales-ui.js',import.meta.url),'utf8')}</script></body>`);
 writeFileSync(out+'/fixture.html',html);
 live.swingAlertState=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,{unread:true}]));
 live.swingPrices=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,swingPoints([...swingValues.slice(0,-1),85-i],today)]));
-const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:(await import('@sparticuz/chromium')).default.args}:{} )});
+const navigationOnly=process.env.UI_WEBKIT_NAV==='1';
+const browser=await (navigationOnly?webkit:chromium).launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:(await import('@sparticuz/chromium')).default.args}:{} )});
 try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});page.on('dialog',dialog=>{if(page.listenerCount('dialog')===1)dialog.accept()});const errors=[];page.on('pageerror',e=>errors.push(e.message));
     await page.route('**/*',route=>route.request().url()==='https://portfolio.test/'?route.fulfill({status:200,contentType:'text/html',body:html}):route.abort());await page.goto('https://portfolio.test/',{waitUntil:'domcontentloaded'});
     const fontFile=resolve(process.env.UI_FONT_CSS||'node_modules/@fontsource/noto-sans-kr/400.css');
     if(existsSync(fontFile)){const css=readFileSync(fontFile,'utf8').replace(/url\(([^)]+)\)/g,(_,p)=>`url(data:font/woff2;base64,${readFileSync(resolve(dirname(fontFile),p.replaceAll("'",''))).toString('base64')})`);await page.addStyleTag({content:css+' body{font-family:"Noto Sans KR",sans-serif}'});await page.evaluate(()=>document.fonts.ready)}
+    if(navigationOnly){
+      const data=JSON.parse(JSON.stringify(live));delete data.stockPnl;
+      data.accounts.push({id:'second-fixture-account',provider:'kb_securities_manual',name:'검증용 별도 계좌'});
+      data.reviewDecisions=[];data.decisionSaveFixture=true;data.draftOwner='webkit-navigation-'+width;
+      await page.evaluate(args=>window.__uiFixture(...args),[data,null,analysis,comparison]);
+      await page.evaluate(()=>window.__uiRender('performance'));
+      await page.locator('#realizedAccount').selectOption('second-fixture-account');
+      await page.locator('#realizedPeriod').selectOption('3M');
+      await page.waitForFunction(()=>document.querySelector('#realizedAccount')?.value==='second-fixture-account'&&document.querySelector('#realizedPeriod')?.value==='3M');
+      await page.locator('#realizedAccount').scrollIntoViewIfNeeded();
+      const originalScroll=await page.evaluate(()=>scrollY);
+      await page.evaluate(()=>window.__uiDetail('s0'));
+      await page.locator('#detailDirectDecision').click();
+      await page.locator('#detailReason').fill('WebKit 복귀 검증용 초안');
+      await page.locator('#detailReview').fill('다음 실적 확인');
+      await page.evaluate(()=>window.__uiPreserveRender());
+      await page.evaluate(()=>history.back());await page.locator('#detailModal').waitFor({state:'hidden'});
+      assert.equal(await page.locator('#realizedAccount').inputValue(),'second-fixture-account');
+      assert.equal(await page.locator('#realizedPeriod').inputValue(),'3M');
+      assert.ok(Math.abs(await page.evaluate(()=>scrollY)-originalScroll)<3,'WebKit returns to original list position');
+      await page.screenshot({path:out+'/webkit-account-return-'+width+'.png'});
+      await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+      assert.equal(await page.locator('#detailReason').inputValue(),'WebKit 복귀 검증용 초안');
+      assert.equal(await page.locator('#detailReview').inputValue(),'다음 실적 확인');
+      assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+      await page.locator('#detailReturn').click();await page.waitForFunction(()=>!history.state?.portfolioDetail);
+      assert.equal(await page.locator('#realizedAccount').inputValue(),'second-fixture-account');
+      assert.equal(await page.locator('#realizedPeriod').inputValue(),'3M');
+      assert.deepEqual(errors,[]);await page.close();continue;
+    }
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
     await page.locator('#homeToday [data-security-id="s0"]').click();

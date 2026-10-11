@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: node tests/build49_ai_cache.mjs
       - run: node tests/build49c_ai_error.mjs
       - run: node tests/build49d_ai_readability.mjs
@@ -50,6 +50,7 @@ jobs:
       - run: node tests/build64a_unconfirmed_close.mjs
       - run: node tests/build65_decision_completion.mjs
       - run: node tests/build67_ui_visual.mjs
+      - run: UI_WEBKIT_NAV=1 UI_OUTPUT=mobile-artifacts/webkit-navigation node tests/build67_ui_visual.mjs
       - run: node tests/build90_chart_ma.mjs --browser
       - run: node tests/build93_review_conditions.mjs
       - uses: actions/upload-artifact@v4
