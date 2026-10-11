@@ -225,6 +225,9 @@ try{
       data.reviewDecisions=[];data.decisionSaveFixture=true;data.draftOwner='webkit-navigation-'+width;
       await page.evaluate(args=>window.__uiFixture(...args),[data,null,analysis,comparison]);
       await page.evaluate(()=>window.__uiRender('performance'));
+      for(const group of await page.locator('#realizedAccount').locator('xpath=ancestor::details').all()){
+        if(!await group.evaluate(el=>el.open))await group.locator(':scope > summary').click();
+      }
       await page.locator('#realizedAccount').selectOption('second-fixture-account');
       await page.locator('#realizedPeriod').selectOption('3M');
       await page.waitForFunction(()=>document.querySelector('#realizedAccount')?.value==='second-fixture-account'&&document.querySelector('#realizedPeriod')?.value==='3M');
