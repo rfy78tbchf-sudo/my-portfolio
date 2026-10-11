@@ -35,7 +35,7 @@ function fixture(rows=[saved()],options={}){
   element('detailChoice').value='hold';element('detailDecisionForm').hidden=true;
   element('detailDown').value='-10';element('detailUp').value='10';
   const persisted=clone(rows),calls=[];
-  const scope={console,Number,Date,JSON,Promise,Error,Object,Array,String,encodeURIComponent,liveAuthEpoch:1,
+  const scope={reviewEntry:false,console,Number,Date,JSON,Promise,Error,Object,Array,String,encodeURIComponent,liveAuthEpoch:1,
     document:{getElementById:element,createElement:()=>node('created-'+(++sequence)),querySelector:selector=>selector.includes('submit')?element('submit'):null,activeElement:null},
     session:options.session,atob,localStorage:options.storage,window:{},Event:class{constructor(type,options){this.type=type;Object.assign(this,options)}},
     body:node('body'),startPanel:element('detailStart'),active:()=>true,id:'held',s:{symbol:'TEST'},

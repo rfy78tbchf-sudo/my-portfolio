@@ -1,3 +1,4 @@
+import './build191_review_entry.mjs';
 import './build190_home_basis.mjs';
 import './build188_detail_history.mjs';
 import './build184_startup_home.mjs';
@@ -444,11 +445,14 @@ try{
       await card.getByText('다른 종목 판단 1개 보기',{exact:true}).click();
       await page.screenshot({path:`${out}/review-home-${width}.png`});
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'review list overflow');
+      const entryReason=await card.locator('[data-decision-detail="s0"]').getAttribute('data-review-reason');
       await card.locator('[data-decision-detail="s0"]').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+      assert.ok((await page.locator('#detailDecisionReview .review-entry-context').innerText()).includes(entryReason));
       assert.equal(await page.evaluate(()=>document.getElementById('detailExtras').open),true,'home review route opens saved-decision section');
       await page.locator('#detailContinueDecision').click();
       assert.equal(await page.locator('#detailReason').inputValue(),decision.reason);
       assert.equal(await page.locator('#detailReview').inputValue(),decision.review_condition);
+      assert.ok((await page.locator('#detailDecisionForm .review-entry-context').innerText()).includes(entryReason));
       await page.locator('#detailReason').fill('작성 중인 새 이유');await page.locator('#detailContinueDecision').click();
       assert.equal(await page.locator('#detailReason').inputValue(),'작성 중인 새 이유','follow-up does not replace edits');
       await page.screenshot({path:`${out}/decision-followup-${width}.png`});
