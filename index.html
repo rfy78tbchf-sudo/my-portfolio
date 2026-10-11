@@ -3386,6 +3386,7 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
   };
   document.getElementById('demoBtn').onclick=showDemo;
   document.getElementById('loginForm').onsubmit=function(e){e.preventDefault();var email=document.getElementById('email').value.trim();var msg=document.getElementById('loginMsg');msg.textContent='로그인 링크 전송 중…';fetchTimeout(SUPABASE_URL+'/auth/v1/otp?redirect_to='+encodeURIComponent(PROD_URL),{method:'POST',headers:{'content-type':'application/json','apikey':SUPABASE_KEY},body:JSON.stringify({email:email,create_user:true})},7000).then(function(r){if(!r.ok)return r.json().catch(function(){return {}}).then(function(b){throw new Error(b.msg||b.message||'로그인 링크 전송에 실패했습니다.')});msg.textContent='메일함에서 새 로그인 링크를 열어 주세요. 네이버 앱 안에서 열리면 링크를 길게 눌러 복사한 뒤 Safari 주소창에 붙여넣으세요.'}).catch(function(err){msg.textContent=err&&err.message?err.message:'로그인 링크 전송에 실패했습니다.'})};
+  initDetailHistory();
   restoreLogin();
   // Check an already-open PWA too; never discard a decision draft by auto-reloading.
   var appBuild='2026-10-11-browser-back-188',updateCheckPending=false,lastUpdateCheck=0;
@@ -3413,7 +3414,6 @@ rpc('get_live_current_account_scope',{}).catch(function(){return null})
     navigator.serviceWorker.addEventListener('controllerchange',function(){window.portfolioCheckUpdate()});
     navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(reg){reg.update().catch(function(){})}).catch(function(){});
   })};
-  initDetailHistory();
   window.__MY_PORTFOLIO_READY__=true;
 })();
 </script>
