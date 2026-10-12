@@ -1,3 +1,4 @@
+import './build199_contribution_return.mjs';
 import './build198_home_period_link.mjs';
 import './build197_full_refresh.mjs';
 import './build196_home_retention.mjs';
@@ -650,7 +651,11 @@ try{
       await page.locator('.pnl-composition>summary').click();
       assert.match(await page.locator('.pnl-leaders').innerText(),/원화 계산 종목 중/);
       const returnButton=page.locator('[data-pnl-leader="ARM"]');
-      await returnButton.scrollIntoViewIfNeeded();await returnButton.focus();
+      await page.locator('#stockPnlSearch').fill('MRNA');
+      await page.locator('[data-pnl-scope="foreign"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      assert.match(await returnButton.innerText(),/종목 점검/);
+      await returnButton.scrollIntoViewIfNeeded();
       const returnY=await page.evaluate(()=>scrollY);
       const beforeReturn=await page.locator('.performance-hero').innerText();
       await returnButton.click();await page.locator('.performance-review-context').waitFor();
@@ -659,6 +664,12 @@ try{
       assert.ok(Math.abs(await page.evaluate(()=>scrollY)-returnY)<3,'return keeps scroll after background replacement');
       assert.equal(await page.locator('.performance-hero').innerText(),beforeReturn,'return keeps selected period and performance');
       assert.equal(await returnButton.evaluate(el=>el===document.activeElement),true,'return restores the replaced originating stock button');
+      assert.equal(await page.locator('#stockPnlSearch').inputValue(),'MRNA');
+      assert.equal(await page.locator('[data-pnl-scope="foreign"]').getAttribute('aria-pressed'),'true');
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').getAttribute('data-pnl-symbol'),'MRNA');
+      await page.screenshot({path:out+'/contribution-filter-return-'+width+'.png'});
+      await page.locator('#stockPnlReset').click();
       await page.screenshot({path:`${out}/performance-return-${width}.png`});
       await page.screenshot({path:`${out}/period-stock-${width}.png`});
       await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
