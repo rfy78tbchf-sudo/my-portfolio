@@ -1072,10 +1072,10 @@ try{
     await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/quick-return-recovered-'+width+'.png'});
 
 
-    const priorPnl=await page.locator('.hero .pnl').innerText();
+    const priorPnl=await page.locator('.hero .pnl').first().innerText();
     await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
     await page.locator('.home-performance-refreshing').waitFor();
-    assert.equal(await page.locator('.hero .pnl').innerText(),priorPnl,'full refresh retains confirmed period result while reconciliation waits');
+    assert.equal(await page.locator('.hero .pnl').first().innerText(),priorPnl,'full refresh retains confirmed period result while reconciliation waits');
     assert.ok(await page.locator('#homeTrend svg').count(),'full refresh retains chart before new performance arrives');
     assert.match(await page.locator('.home-performance-refreshing').innerText(),/갱신 중.*이전 확인값/);
     await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/full-refresh-retained-'+width+'.png',fullPage:true});
