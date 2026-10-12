@@ -798,6 +798,32 @@ try{
       await page.screenshot({path:`${out}/pnl-find-${width}.png`});
 
 
+    await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);
+    await page.evaluate(()=>window.__uiSelectHomePeriod('3M'));
+    await page.locator('[data-home-period-performance]').click();
+    await page.locator('#stockPnlSearch').waitFor();
+    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
+    assert.equal(await page.locator('#stockPnlSort').inputValue(),'impact');
+    assert.ok(await page.locator('[data-stock-pnl-row]').count());
+    await page.screenshot({path:out+'/home-selected-period-'+width+'.png'});
+    const periodDetail=page.locator('[data-performance-detail="ARM"]').first();
+    await periodDetail.scrollIntoViewIfNeeded();
+    const periodListScroll=await page.evaluate(()=>scrollY);
+    await periodDetail.click();
+    await page.locator('.performance-review-context').waitFor();
+    assert.match(await page.locator('.performance-review-context').innerText(),/3개월.*기간손익/);
+    await page.locator('#detailReturn').click();
+    await page.locator('#detailModal').waitFor({state:'hidden'});
+    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
+    assert.ok(Math.abs(await page.evaluate(()=>scrollY)-periodListScroll)<3);
+    assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('data-performance-detail')),'ARM');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+
+
       await page.locator('[data-stock-period="THIS_MONTH"]').click();
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
@@ -825,32 +851,6 @@ try{
       await page.screenshot({path:`${out}/ai-recovered-${width}.png`});
       await page.locator('#detailClose').click();
     }
-    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
-    await page.evaluate(()=>window.__uiSelectHomePeriod('3M'));
-    await page.locator('[data-home-period-performance]').click();
-    await page.locator('#stockPnlSearch').waitFor();
-    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
-    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
-    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
-    assert.equal(await page.locator('#stockPnlSort').inputValue(),'impact');
-    assert.ok(await page.locator('[data-stock-pnl-row]').count());
-    await page.screenshot({path:out+'/home-selected-period-'+width+'.png'});
-    const periodDetail=page.locator('[data-performance-detail="ARM"]').first();
-    await periodDetail.scrollIntoViewIfNeeded();
-    const periodListScroll=await page.evaluate(()=>scrollY);
-    await periodDetail.click();
-    await page.locator('.performance-review-context').waitFor();
-    assert.match(await page.locator('.performance-review-context').innerText(),/3개월.*기간손익/);
-    await page.locator('#detailReturn').click();
-    await page.locator('#detailModal').waitFor({state:'hidden'});
-    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
-    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
-    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
-    assert.ok(Math.abs(await page.evaluate(()=>scrollY)-periodListScroll)<3);
-    assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('data-performance-detail')),'ARM');
-    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
-
-
     const browsePrices=swingPoints(Array.from({length:160},(_,i)=>100+i),today);
     const todayJourney={...live,swingPrices:{...live.swingPrices,s0:browsePrices,s1:browsePrices,s3:browsePrices.slice(-2)},todayGate:null,todayStocks:{...live.todayStocks,pnl_krw:140000,candidate_count:4,krw_included_count:3,items:[
       {security_id:'s0',symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',end_quantity:32,pnl_krw:220000},
