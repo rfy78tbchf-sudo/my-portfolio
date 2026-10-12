@@ -811,7 +811,8 @@ try{
 
     await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiSelectHomePeriod('3M'));
-    await page.locator('[data-home-period-performance]').click();
+    assert.equal(await page.locator('#homePerformancePeriod').inputValue(),'3M');
+    await page.locator('[data-home-summary-performance]').click();
     await page.locator('#stockPnlSearch').waitFor();
     assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
     assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
@@ -1036,7 +1037,8 @@ try{
     await page.evaluate(()=>window.__uiRender('home'));
     await page.evaluate(data=>window.__uiHomePeriodProbe(data),live);
     await page.evaluate(()=>window.__periodHoldDetails=true);
-    await page.locator('[data-period="1W"]').click();
+    await page.locator('#homePerformancePeriod').selectOption('1W');
+    assert.equal(await page.locator('[data-home-summary-performance]').isVisible(),true,'stock route remains available while home loads');
     await page.waitForFunction(()=>window.__periodStatus().loaded==='1W');
     assert.equal((await page.evaluate(()=>window.__periodStatus())).salesLoading,true,'home renders while sales remain pending');
     assert.ok(await page.locator('.hero .pnl').count());
@@ -1050,6 +1052,8 @@ try{
     assert.equal((await page.evaluate(()=>window.__periodStatus())).reads,readsBefore,'revisited home period uses cache');
     await page.evaluate(()=>window.__periodFail=true);await page.locator('[data-period="6M"]').click();
     await page.getByRole('button',{name:'다시 확인',exact:true}).waitFor();
+    assert.equal(await page.locator('#homePerformancePeriod').inputValue(),'6M');
+    assert.equal(await page.locator('[data-home-summary-performance]').isVisible(),true,'home error does not block independent stock route');
     await page.screenshot({path:out+'/home-period-retry-'+width+'.png'});
     await page.evaluate(()=>window.__periodFail=false);await page.getByRole('button',{name:'다시 확인',exact:true}).click();
     await page.waitForFunction(()=>window.__periodStatus().loaded==='6M');
