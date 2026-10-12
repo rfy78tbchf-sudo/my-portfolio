@@ -1,3 +1,4 @@
+import './build197_full_refresh.mjs';
 import './build196_home_retention.mjs';
 import './build195_resume_retry.mjs';
 import './build194_resume_day.mjs';
@@ -1070,6 +1071,17 @@ try{
     assert.ok(await page.locator('#homeTrend svg').count(),'failed chart recovers on quick return');
     await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/quick-return-recovered-'+width+'.png'});
 
+
+    const priorPnl=await page.locator('.hero .pnl').innerText();
+    await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
+    await page.locator('.home-performance-refreshing').waitFor();
+    assert.equal(await page.locator('.hero .pnl').innerText(),priorPnl,'full refresh retains confirmed period result while reconciliation waits');
+    assert.ok(await page.locator('#homeTrend svg').count(),'full refresh retains chart before new performance arrives');
+    assert.match(await page.locator('.home-performance-refreshing').innerText(),/갱신 중.*이전 확인값/);
+    await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/full-refresh-retained-'+width+'.png',fullPage:true});
+    await page.evaluate(async()=>{window.__releaseHomeProbe({ok:true});await window.__homeProbe});
+    await page.locator('.home-performance-refreshing').waitFor({state:'detached'});
+    assert.ok(await page.locator('#homeTrend svg').count());
 
     const cachedTotal=await page.evaluate(()=>window.__uiSnapshotTotal());assert.ok(cachedTotal>0);
     await page.reload();
