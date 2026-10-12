@@ -1,3 +1,4 @@
+import './build198_home_period_link.mjs';
 import './build197_full_refresh.mjs';
 import './build196_home_retention.mjs';
 import './build195_resume_retry.mjs';
@@ -232,6 +233,7 @@ const injected=`
     };
     window.__uiLocalHistory=function(data){live=data;stockPeriod='ALL';stockView='total';currentTab='performance';render()};
     window.__uiHomeFailure=function(){liveError='synthetic refresh failure';live.performanceError='기간 성과 조회 실패';currentTab='home';render()};
+    window.__uiSelectHomePeriod=function(p){period=p;stockPnlQuery='unmatched-old-search';stockPnlScope='closed';stockView='realized';currentTab='home';render()};
     window.__uiRender=function(tab){currentTab=tab;render()};window.__uiDetail=openSecurityDetail;
     render();
   };
@@ -823,6 +825,17 @@ try{
       await page.screenshot({path:`${out}/ai-recovered-${width}.png`});
       await page.locator('#detailClose').click();
     }
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    await page.evaluate(()=>window.__uiSelectHomePeriod('3M'));
+    await page.locator('[data-home-period-performance]').click();
+    await page.locator('#stockPnlSearch').waitFor();
+    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
+    assert.equal(await page.locator('#stockPnlSort').inputValue(),'impact');
+    assert.ok(await page.locator('[data-stock-pnl-row]').count());
+    await page.screenshot({path:out+'/home-selected-period-'+width+'.png'});
+
     const browsePrices=swingPoints(Array.from({length:160},(_,i)=>100+i),today);
     const todayJourney={...live,swingPrices:{...live.swingPrices,s0:browsePrices,s1:browsePrices,s3:browsePrices.slice(-2)},todayGate:null,todayStocks:{...live.todayStocks,pnl_krw:140000,candidate_count:4,krw_included_count:3,items:[
       {security_id:'s0',symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',end_quantity:32,pnl_krw:220000},
