@@ -233,7 +233,7 @@ const injected=`
     };
     window.__uiLocalHistory=function(data){live=data;stockPeriod='ALL';stockView='total';currentTab='performance';render()};
     window.__uiHomeFailure=function(){liveError='synthetic refresh failure';live.performanceError='기간 성과 조회 실패';currentTab='home';render()};
-    window.__uiSelectHomePeriod=function(p){period=p;stockPnlQuery='unmatched-old-search';stockPnlScope='closed';stockView='realized';currentTab='home';render()};
+    window.__uiSelectHomePeriod=function(p){period=p;live.performancePeriod=p;stockPnlQuery='unmatched-old-search';stockPnlScope='closed';stockView='realized';currentTab='home';render()};
     window.__uiRender=function(tab){currentTab=tab;render()};window.__uiDetail=openSecurityDetail;
     render();
   };
@@ -835,6 +835,21 @@ try{
     assert.equal(await page.locator('#stockPnlSort').inputValue(),'impact');
     assert.ok(await page.locator('[data-stock-pnl-row]').count());
     await page.screenshot({path:out+'/home-selected-period-'+width+'.png'});
+    const periodDetail=page.locator('[data-performance-detail="ARM"]').first();
+    await periodDetail.scrollIntoViewIfNeeded();
+    const periodListScroll=await page.evaluate(()=>scrollY);
+    await periodDetail.click();
+    await page.locator('.performance-review-context').waitFor();
+    assert.match(await page.locator('.performance-review-context').innerText(),/3개월.*기간손익/);
+    await page.locator('#detailReturn').click();
+    await page.locator('#detailModal').waitFor({state:'hidden'});
+    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
+    assert.ok(Math.abs(await page.evaluate(()=>scrollY)-periodListScroll)<3);
+    assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('data-performance-detail')),'ARM');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+
 
     const browsePrices=swingPoints(Array.from({length:160},(_,i)=>100+i),today);
     const todayJourney={...live,swingPrices:{...live.swingPrices,s0:browsePrices,s1:browsePrices,s3:browsePrices.slice(-2)},todayGate:null,todayStocks:{...live.todayStocks,pnl_krw:140000,candidate_count:4,krw_included_count:3,items:[
