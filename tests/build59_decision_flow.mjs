@@ -39,7 +39,7 @@ vm.runInContext(html.slice(start,end),scope);
 scope.compare=compare;
 const view=vm.runInContext('comparisonHtml(compare)',scope);
 assert.match(view,/13주 매도 가정 · 23주 보유 · 14\.97%/);
-assert.match(view,/하락 영향은 547,262원 작아지고, 상승 참여도 547,262원 줄어듭니다/);
+assert.match(view,/하락 시 손실 감소 547,262원 · 상승 시 수익 감소 547,262원/);
 assert.match(view,/5,472,623원/);
 assert.match(view,/5,451,637원/);
 assert.match(view,/USD 현금 보유 가정/);

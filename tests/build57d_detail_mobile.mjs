@@ -139,13 +139,22 @@ try{
     await page.locator('#detailWeightRun').click();
     await page.screenshot({path:`mobile-artifacts/choice-detail-${width}.png`});
     assert.match(await page.locator('#detailWeightResult').innerText(),
-      /줄이면 하락 영향은 500원 작아지고, 상승 참여도 500원 줄어듭니다/);
-    assert.ok(await page.locator('#detailWeightResult').getByText(/매도대금 원화 현금/).isVisible());
+      /하락 시 손실 감소 500원 · 상승 시 수익 감소 500원/);
+    assert.ok(await page.locator('#detailWeightResult').getByText(/확보할 현금/).isVisible());
     assert.equal(await page.locator('#detailWeightResult details').first().evaluate(node=>node.open),false,
       'quantity and calculation policy remain available but collapsed');
+    await page.locator('#detailWeightResult .choice-money-detail > summary').click();
     assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('+1,000원').isVisible());
     assert.ok(await page.locator('#detailWeightResult .choice-cards').getByText('-500원').isVisible());
     assert.match(await page.locator('#detailComparisonNext').innerText(),/이 조건으로 AI 의견 받기/);
+    await page.locator('.choice-budget > summary').click();
+    await page.locator('#detailBudgetDown').fill('-10');
+    await page.locator('#detailLossBudget').fill('1');
+    await page.locator('#detailBudgetRun').click();
+    await page.locator('#detailComparisonNext').waitFor();
+    assert.equal(await page.locator('#detailWeightTarget').inputValue(),'10');
+    assert.ok(await page.locator('.choice-impact').isVisible());
+    assert.match(await page.locator('.choice-impact').innerText(),/전체 자산/);
     await page.locator('#detailWeightTarget').fill('9');
     assert.match(await page.locator('#detailWeightResult').innerText(),/조건이 바뀌었습니다. 다시 비교해 주세요/);
     await page.locator('#detailWeightTarget').fill('10');

@@ -40,7 +40,7 @@ test('server denominator text is escaped',()=>{
 });
 
 test('current value stays beside the input, outside extra disclosure and out of editable state',()=>{
-  const source=section('        \'<div class="choice-target">', '        \'<details class="more-list choice-settings">').trim().replace(/\+\s*$/,'');
+  const source=section('        \'<div class="choice-target">', '        \'<details class="more-list choice-budget">').trim().replace(/\+\s*$/,'');
   context.results=[null,null,null,null,metrics()];context.s={symbol:'TEST'};
   const out=vm.runInContext('('+source+')',context);
   assert.match(out,/choice-weight-entry/);assert.match(out,/비중 확인 중/);

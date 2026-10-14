@@ -26,7 +26,7 @@ assert.match(rendered,/-1,000원/);
 assert.match(rendered,/\+1,000원/);
 assert.match(rendered,/\-500원/);
 assert.match(rendered,/\+500원/);
-assert.match(rendered,/줄이면 하락 영향은 500원 작아지고, 상승 참여도 500원 줄어듭니다/);
+assert.match(rendered,/하락 시 손실 감소 500원 · 상승 시 수익 감소 500원/);
 assert.match(rendered,/5주 매도 가정 · 5주 보유/);
 assert.match(rendered,/매도대금 원화 현금 · 원화 상당액/);
 context.report={...report,position_currency:'USD',current_cash_kb_krw:400};

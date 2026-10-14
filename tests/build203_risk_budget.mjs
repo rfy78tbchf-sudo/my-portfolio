@@ -1,0 +1,14 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const html=fs.readFileSync('index.html','utf8');const c=vm.createContext({});
+vm.runInContext(html.slice(html.indexOf('  function riskBudgetTarget('),html.indexOf('  function comparisonHtml(')),c);
+assert.equal(c.riskBudgetTarget('3','-20'),15);
+assert.equal(c.riskBudgetTarget('0','-20'),0);
+assert.equal(c.riskBudgetTarget('2','-30'),6.6);
+assert.equal(c.riskBudgetTarget('100','-10'),100);
+for(const [b,d] of [['','-20'],[null,-20],[false,-20],[3,0],[3,10],[-1,-10],[101,-10],[3,-91],['abc',-20]])assert.equal(c.riskBudgetTarget(b,d),null);
+const events=[];const fields={detailLossBudget:{value:'3'},detailBudgetDown:{value:'-20'},detailBudgetStatus:{},detailWeightTarget:{value:'',dispatchEvent:e=>events.push(e.type)},detailDown:{value:'-10',dispatchEvent:e=>events.push(e.type)},detailBudgetRun:{}};
+Object.assign(c,{document:{getElementById:id=>fields[id]},num:String,Event:class{constructor(type){this.type=type}},scenarioClick:async kind=>events.push(kind)});
+const a=html.indexOf("      document.getElementById('detailBudgetRun').onclick=");vm.runInContext(html.slice(a,html.indexOf('      var pendingDetailRequest=',a)),c);
+await fields.detailBudgetRun.onclick();assert.equal(fields.detailWeightTarget.value,15);assert.equal(fields.detailDown.value,'-20');assert.deepEqual(events,['input','input','weight']);assert.equal(fields.detailBudgetRun.disabled,false);
+fields.detailLossBudget.value='';events.length=0;await fields.detailBudgetRun.onclick();assert.equal(events.length,0);assert.equal(fields.detailWeightTarget.value,15);
+console.log('Risk budget: bounded target, conservative rounding, zero, invalid input and shared comparison/invalidation path passed');
