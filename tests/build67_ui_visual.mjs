@@ -652,12 +652,14 @@ try{
       if(source.includes('period-summary-head')){
         const three={...stockData,stockPnl:{...stockData.stockPnl,complete:false,krw_included_count:3,candidate_count:4,items:[...stockData.stockPnl.items,{symbol:'SOXL',name:'DIREXION SEMICONDUCT LONG NAME',currency:'USD',pnl_krw:100000,end_quantity:0}]}};
         await page.evaluate(args=>window.__uiFixture(...args),[three,decision,analysis,comparison]);await page.evaluate(()=>{window.__uiRender('performance');scrollTo(0,0)});
+        await page.waitForFunction(()=>document.querySelectorAll('.pnl-leader').length===3);
         assert.equal(await page.locator('.pnl-leader').count(),3);
         const last=await page.locator('.pnl-leader').last().boundingBox(),nav=await page.locator('.nav').boundingBox();
         assert.ok(last.y+last.height<=nav.y,'three contributors fit above bottom navigation');
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         await page.screenshot({path:`${out}/period-summary-${width}.png`});
         await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+        await page.waitForFunction(()=>document.querySelectorAll('.pnl-leader').length===2);
       }
 
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
@@ -725,12 +727,14 @@ try{
       if(source.includes('period-summary-head')){
         const three={...stockData,stockPnl:{...stockData.stockPnl,complete:false,krw_included_count:3,candidate_count:4,items:[...stockData.stockPnl.items,{symbol:'SOXL',name:'DIREXION SEMICONDUCT LONG NAME',currency:'USD',pnl_krw:100000,end_quantity:0}]}};
         await page.evaluate(args=>window.__uiFixture(...args),[three,decision,analysis,comparison]);await page.evaluate(()=>{window.__uiRender('performance');scrollTo(0,0)});
+        await page.waitForFunction(()=>document.querySelectorAll('.pnl-leader').length===3);
         assert.equal(await page.locator('.pnl-leader').count(),3);
         const last=await page.locator('.pnl-leader').last().boundingBox(),nav=await page.locator('.nav').boundingBox();
         assert.ok(last.y+last.height<=nav.y,'three contributors fit above bottom navigation');
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         await page.screenshot({path:`${out}/period-summary-${width}.png`});
         await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+        await page.waitForFunction(()=>document.querySelectorAll('.pnl-leader').length===2);
       }
 
         if(source.includes('stockRealizedEvidenceHtml')){
