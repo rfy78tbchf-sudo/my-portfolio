@@ -1,0 +1,34 @@
+with tdata as (select * from jsonb_to_recordset('[{"id":"round","account_id":"fixture","provider_payload":{"stnd_is_cd":"USROUNDXXXXX","dl_dt":"20261008","dl_amt":"1234.57"},"trade_at":"2026-10-08T03:00:00Z","type":"buy","quantity":100,"price":12.345678,"source":"api","provider_revision":"SWQA2301","currency":"USD","net_amount":-1237.57,"fee":3.00,"tax":0},{"id":"wide","account_id":"fixture","provider_payload":{"stnd_is_cd":"USWIDEXXXXXX","dl_dt":"20261008","dl_amt":"1234.57"},"trade_at":"2026-10-08T03:00:00Z","type":"buy","quantity":100,"price":12.345679,"source":"api","provider_revision":"SWQA2301","currency":"USD","net_amount":-1237.57,"fee":3.00,"tax":0},{"id":"wrong_net","account_id":"fixture","provider_payload":{"stnd_is_cd":"USWRONG_NETX","dl_dt":"20261008","dl_amt":"1234.57"},"trade_at":"2026-10-08T03:00:00Z","type":"buy","quantity":100,"price":12.345678,"source":"api","provider_revision":"SWQA2301","currency":"USD","net_amount":-1237.58,"fee":3.00,"tax":0},{"id":"wrong_fee","account_id":"fixture","provider_payload":{"stnd_is_cd":"USWRONG_FEEX","dl_dt":"20261008","dl_amt":"1234.57"},"trade_at":"2026-10-08T03:00:00Z","type":"buy","quantity":100,"price":12.345678,"source":"api","provider_revision":"SWQA2301","currency":"USD","net_amount":-1237.57,"fee":2.99,"tax":0},{"id":"duplicate","account_id":"fixture","provider_payload":{"stnd_is_cd":"USDUPLICATEX","dl_dt":"20261008","dl_amt":"1234.57"},"trade_at":"2026-10-08T03:00:00Z","type":"buy","quantity":100,"price":12.345678,"source":"api","provider_revision":"SWQA2301","currency":"USD","net_amount":-1237.57,"fee":3.00,"tax":0}]') t(id text,account_id text,provider_payload jsonb,trade_at timestamptz,type text,quantity numeric,price numeric,source text,provider_revision text,currency text,net_amount numeric,fee numeric,tax numeric)),edata as(select * from jsonb_to_recordset('[{"id":"round","account_id":"fixture","asset_key":"USROUNDXXXXX","active":true,"source":"SPQM2205","currency":"USD","settlement_date":"2026-10-08","order_date":"2026-10-06","event_type":"buy","quantity":100,"price":12.345677,"gross_amount":1237.57,"evidence":{"source":"SPQM2205","occurrences":1,"order_date":"2026-10-06","settlement_date":"2026-10-08","trade_gross":1234.57}},{"id":"wide","account_id":"fixture","asset_key":"USWIDEXXXXXX","active":true,"source":"SPQM2205","currency":"USD","settlement_date":"2026-10-08","order_date":"2026-10-06","event_type":"buy","quantity":100,"price":12.345677,"gross_amount":1237.57,"evidence":{"source":"SPQM2205","occurrences":1,"order_date":"2026-10-06","settlement_date":"2026-10-08","trade_gross":1234.57}},{"id":"wrong_net","account_id":"fixture","asset_key":"USWRONG_NETX","active":true,"source":"SPQM2205","currency":"USD","settlement_date":"2026-10-08","order_date":"2026-10-06","event_type":"buy","quantity":100,"price":12.345677,"gross_amount":1237.57,"evidence":{"source":"SPQM2205","occurrences":1,"order_date":"2026-10-06","settlement_date":"2026-10-08","trade_gross":1234.57}},{"id":"wrong_fee","account_id":"fixture","asset_key":"USWRONG_FEEX","active":true,"source":"SPQM2205","currency":"USD","settlement_date":"2026-10-08","order_date":"2026-10-06","event_type":"buy","quantity":100,"price":12.345677,"gross_amount":1237.57,"evidence":{"source":"SPQM2205","occurrences":1,"order_date":"2026-10-06","settlement_date":"2026-10-08","trade_gross":1234.57}},{"id":"duplicate","account_id":"fixture","asset_key":"USDUPLICATEX","active":true,"source":"SPQM2205","currency":"USD","settlement_date":"2026-10-08","order_date":"2026-10-06","event_type":"buy","quantity":100,"price":12.345677,"gross_amount":1237.57,"evidence":{"source":"SPQM2205","occurrences":1,"order_date":"2026-10-06","settlement_date":"2026-10-08","trade_gross":1234.57}},{"id":"duplicate2","account_id":"fixture","asset_key":"USDUPLICATEX","active":true,"source":"SPQM2205","currency":"USD","settlement_date":"2026-10-08","order_date":"2026-10-06","event_type":"buy","quantity":100,"price":12.345677,"gross_amount":1237.57,"evidence":{"source":"SPQM2205","occurrences":1,"order_date":"2026-10-06","settlement_date":"2026-10-08","trade_gross":1234.57}}]') e(id text,account_id text,asset_key text,active boolean,source text,currency text,settlement_date date,order_date date,event_type text,quantity numeric,price numeric,gross_amount numeric,evidence jsonb)),candidates as (
+    select t.id transaction_id,e.order_date,e.settlement_date,
+      count(*) over(partition by t.id) transaction_matches,
+      count(*) over(partition by e.id) evidence_matches
+    from tdata t join edata e
+      on e.account_id=t.account_id and e.asset_key=trim(t.provider_payload->>'stnd_is_cd')
+      and e.active and e.source='SPQM2205' and e.currency='USD'
+      and e.settlement_date=(t.trade_at at time zone 'Asia/Seoul')::date
+      and e.event_type=t.type and e.quantity=t.quantity and (e.price=t.price or (
+        -- Reconcile one unit of average-price rounding at six decimals using cash evidence.
+        abs(e.price-t.price)<=0.000001
+        and e.gross_amount=abs(t.net_amount)
+        and t.fee>=0 and t.tax>=0
+        and abs(t.net_amount)=case t.type when 'buy' then (case when e.evidence->>'trade_gross' ~ '^[0-9]+([.][0-9]+)?$' then (e.evidence->>'trade_gross')::numeric end)+t.fee+t.tax else (case when e.evidence->>'trade_gross' ~ '^[0-9]+([.][0-9]+)?$' then (e.evidence->>'trade_gross')::numeric end)-t.fee-t.tax end
+        and abs((case when e.evidence->>'trade_gross' ~ '^[0-9]+([.][0-9]+)?$' then (e.evidence->>'trade_gross')::numeric end)-t.quantity*t.price)<=0.01
+      ))
+    where t.account_id='fixture' and t.source='api' and t.provider_revision='SWQA2301'
+      and t.currency='USD' and t.type in ('buy','sell') and t.quantity>0 and t.price>0
+      and e.asset_key ~ '^US[A-Z0-9]{10}$'
+      and to_char(t.trade_at at time zone 'Asia/Seoul','YYYYMMDD')=trim(t.provider_payload->>'dl_dt')
+      and e.evidence->>'source'='SPQM2205' and e.evidence->>'occurrences'='1'
+      and e.evidence->>'order_date'=e.order_date::text
+      and e.evidence->>'settlement_date'=e.settlement_date::text
+      and e.settlement_date between e.order_date and e.order_date+10
+      and e.evidence->>'trade_gross' ~ '^[0-9]+([.][0-9]+)?$'
+      and case when replace(trim(t.provider_payload->>'dl_amt'),',','') ~ '^[0-9]+([.][0-9]+)?$'
+        then replace(trim(t.provider_payload->>'dl_amt'),',','')::numeric end
+        =case when e.evidence->>'trade_gross' ~ '^[0-9]+([.][0-9]+)?$'
+          then (e.evidence->>'trade_gross')::numeric end
+      and abs(case when e.evidence->>'trade_gross' ~ '^[0-9]+([.][0-9]+)?$'
+          then (e.evidence->>'trade_gross')::numeric end-e.quantity*e.price)<=0.01
+  ), unique_pairs as (
+    select * from candidates where transaction_matches=1 and evidence_matches=1
+  ) select array_agg(transaction_id) matched, count(*)=1 and min(transaction_id)='round' passed from unique_pairs;
