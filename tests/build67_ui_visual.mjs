@@ -1,3 +1,4 @@
+import './build206_detail_next.mjs';
 import './build201_login_recovery.mjs';
 import './build199_contribution_return.mjs';
 import './build198_home_period_link.mjs';
@@ -51,6 +52,12 @@ import './build102_home_today.mjs';
 import './build98_holding_prices.mjs';
 import assert from 'node:assert/strict';
 async function openOptionalTools(page){
+ await page.locator('#detailNext').waitFor({state:'attached'});
+ await page.evaluate(()=>document.activeElement?.blur());
+ const next=page.locator('#detailNext');await next.waitFor({state:'visible'});
+ const rect=await next.boundingBox();assert.ok(rect.y>=0&&rect.y+rect.height<=page.viewportSize().height+1,'next action stays inside mobile viewport');
+ assert.ok(rect.width>=160&&rect.height>=44,'next action has a usable touch target');
+
  if(!await page.locator('#detailExtras').count())await page.locator('#detailExtras').waitFor({state:'attached'});
  const group=page.locator('#detailExtras');
  if(!await group.evaluate(el=>el.open)){
