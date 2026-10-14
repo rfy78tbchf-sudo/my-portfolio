@@ -1,3 +1,4 @@
+import './build207_period_summary.mjs';
 import './build206_detail_next.mjs';
 import './build201_login_recovery.mjs';
 import './build199_contribution_return.mjs';
@@ -648,6 +649,17 @@ try{
       await page.getByRole('heading',{name:'어디서 벌고 잃었나'}).waitFor();
       assert.match(await page.locator('.performance-hero').first().innerText(),/-1,500,000/);
       assert.equal(await page.locator('.performance-position').count(),2);
+      if(source.includes('period-summary-head')){
+        const three={...stockData,stockPnl:{...stockData.stockPnl,complete:false,krw_included_count:3,candidate_count:4,items:[...stockData.stockPnl.items,{symbol:'SOXL',name:'DIREXION SEMICONDUCT LONG NAME',currency:'USD',pnl_krw:100000,end_quantity:0}]}};
+        await page.evaluate(args=>window.__uiFixture(...args),[three,decision,analysis,comparison]);await page.evaluate(()=>{window.__uiRender('performance');scrollTo(0,0)});
+        assert.equal(await page.locator('.pnl-leader').count(),3);
+        const last=await page.locator('.pnl-leader').last().boundingBox(),nav=await page.locator('.nav').boundingBox();
+        assert.ok(last.y+last.height<=nav.y,'three contributors fit above bottom navigation');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        await page.screenshot({path:`${out}/period-summary-${width}.png`});
+        await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+      }
+
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
       if(source.includes('stockTotalPartsHtml')){assert.equal(await page.locator('.pnl-composition').evaluate(el=>el.open),false);await page.locator('.pnl-composition>summary').click();await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,650,000/)}
       if(source.includes('stockCalculationHtml')){if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.evaluate(()=>scrollTo(0,0));}
@@ -710,6 +722,17 @@ try{
         assert.match(await page.locator('.performance-hero').innerText(),/140,000/);
         assert.match(await page.locator('.performance-hero').innerText(),/일부 계산/);
         assert.equal(await page.locator('.performance-position').count(),2);
+      if(source.includes('period-summary-head')){
+        const three={...stockData,stockPnl:{...stockData.stockPnl,complete:false,krw_included_count:3,candidate_count:4,items:[...stockData.stockPnl.items,{symbol:'SOXL',name:'DIREXION SEMICONDUCT LONG NAME',currency:'USD',pnl_krw:100000,end_quantity:0}]}};
+        await page.evaluate(args=>window.__uiFixture(...args),[three,decision,analysis,comparison]);await page.evaluate(()=>{window.__uiRender('performance');scrollTo(0,0)});
+        assert.equal(await page.locator('.pnl-leader').count(),3);
+        const last=await page.locator('.pnl-leader').last().boundingBox(),nav=await page.locator('.nav').boundingBox();
+        assert.ok(last.y+last.height<=nav.y,'three contributors fit above bottom navigation');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        await page.screenshot({path:`${out}/period-summary-${width}.png`});
+        await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+      }
+
         if(source.includes('stockRealizedEvidenceHtml')){
           if(source.includes('quiet-realized')){
             assert.equal(await page.locator('.stock-component-detail').first().isVisible(),false);
