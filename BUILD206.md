@@ -5,3 +5,5 @@ Reuse the existing bottom return bar for a primary next action: fresh AI opinion
 The bar respects the bottom safe area, gives the primary action most of the width and hides while a text/select input is focused. Closing or replacing the detail disconnects its observer/listeners. Busy source actions disable the next button. No additional network calls occur merely by opening the detail or changing the button label.
 
 Validation: 73 targeted existing test entries passed; new next-action state checks passed. Added mobile viewport/touch-target assertions to the existing Chromium/WebKit browser workflow. Physical iPhone keyboard behavior remains to be confirmed. Runtime build and service-worker cache advanced to 206.
+
+Release verification: Mobile portfolio layout 38560721639 passed both jobs including Chromium/WebKit and the new mobile viewport checks. Pages 38560720058 succeeded. Inspected the 390px initial-detail screenshot: primary AI action and secondary return remain visible at the bottom with the chart above. Physical iPhone keyboard behavior remains unverified.
