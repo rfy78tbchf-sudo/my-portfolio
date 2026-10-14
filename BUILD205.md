@@ -9,3 +9,5 @@ Executed the existing tests/build59f_decision_save.sql fixture against productio
 Found a regression coverage gap: the mobile workflow did not run the newer receipt and next-visit review suites. Added a separate Node-only decision-regression job with seven existing suites. It runs independently of browser installation so browser setup failure cannot prevent these checks from running. Runtime UI, database schema and calculations are unchanged.
 
 Scope limits: a new live model generation and a real iPhone end-to-end save/reopen session were not performed in this pass. Existing AI links and production database behavior do not prove fresh model output or physical-device behavior. Roadmap 4/5 are partially verified, not declared fully complete. Financial-source gaps from Build204 remain separate.
+
+CI confirmation: Mobile portfolio layout run 38550341665 completed successfully, including both decision-regression and mobile jobs (Chromium/WebKit checks). Pages deployment run 38550340781 also succeeded. This confirms automated checks and publication; the physical-device and fresh live-model limits above remain.
