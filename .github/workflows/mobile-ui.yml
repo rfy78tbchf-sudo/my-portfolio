@@ -4,6 +4,25 @@ on:
     branches: [main]
   workflow_dispatch:
 jobs:
+  decision-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify saved decisions and next-visit review
+        run: >-
+          node --test
+          tests/build157_decision_receipt.mjs
+          tests/build158_review_consistency.mjs
+          tests/build159_decision_changes.mjs
+          tests/build162_quick_review.mjs
+          tests/build179_review_acknowledgements.mjs
+          tests/build191_review_entry.mjs
+          tests/build193_review_reload.mjs
   mobile:
     runs-on: ubuntu-latest
     permissions:
