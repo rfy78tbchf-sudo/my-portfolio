@@ -5,3 +5,5 @@ Preserve existing search, scope, period, sort and scroll behavior. After closing
 Touch activation of holding/analysis cards now explicitly focuses the origin before opening detail, so mobile browsers do not accidentally remember an unrelated input. Restored noninteractive cards get tabindex=-1 for programmatic focus without adding a tab stop.
 
 Six targeted Node regression files passed, covering return identity, marker lifecycle, browser history, unsaved input protection, contribution filters and existing next actions. The existing mobile browser suite now asserts the returned contributor is marked after a background rerender. No financial calculations or data writes changed. Physical iPhone behavior remains a separate check.
+
+Final verification: Mobile portfolio layout run 39122974431 passed both jobs, including Chromium and WebKit. Pages run 39122974029 succeeded. Inspected the 390px contribution-filter-return screenshot: the originating ARM row is highlighted, while the MRNA search and foreign scope remain intact. Screenshot data is synthetic.
