@@ -1,3 +1,4 @@
+import './build208_list_return.mjs';
 import './build207_period_summary.mjs';
 import './build206_detail_next.mjs';
 import './build201_login_recovery.mjs';
@@ -687,6 +688,7 @@ try{
       assert.ok(Math.abs(await page.evaluate(()=>scrollY)-returnY)<3,'return keeps scroll after background replacement');
       assert.equal(await page.locator('.performance-hero').innerText(),beforeReturn,'return keeps selected period and performance');
       assert.equal(await returnButton.evaluate(el=>el===document.activeElement),true,'return restores the replaced originating stock button');
+      assert.equal(await returnButton.evaluate(el=>el.classList.contains('detail-return-highlight')),true,'returned stock is briefly identified');
       assert.equal(await page.locator('#stockPnlSearch').inputValue(),'MRNA');
       assert.equal(await page.locator('[data-pnl-scope="foreign"]').getAttribute('aria-pressed'),'true');
       assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
