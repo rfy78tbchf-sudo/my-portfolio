@@ -151,6 +151,15 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     await page.waitForFunction(()=>window.__decisionBrowser.state().idle);
     await page.waitForFunction(()=>{const review=document.getElementById('detailDecisionReview'),rect=review?.getBoundingClientRect();return document.activeElement===review&&rect.top>=0&&rect.top<innerHeight-150},{},{timeout:5000});
   }
+  async function waitForSavedFooter(){
+    const action=page.locator('#detailNext[data-action="done"]:not([hidden])');
+    await action.waitFor({state:'visible'});
+    await page.locator('#detailDecisionDone').waitFor({state:'attached'});
+    assert.equal(await action.isEnabled(),true,'the confirmed save exposes the existing footer completion action');
+    assert.equal(await page.locator('#detailDecisionDone').isVisible(),false,'a real completed footer replaces the duplicate inline close control');
+    assert.equal(await page.locator('#detailReturn').isVisible(),false,'the completed footer shows one close action');
+    assert.equal(await page.locator('.detail-return-bar button:visible').count(),1);
+  }
   async function assertSaved(row,withComparison){
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'a confirmed server record must not reopen as an unfinished draft');
     const lines=await page.locator('#detailDecisionSummary .sub').allTextContents();
@@ -160,6 +169,8 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     else{assert.ok(lines.includes('비교 없이 기록한 판단'));assert.equal(await page.locator('#detailPreviousComparison').count(),0)}
     assert.equal(await page.locator('#detailWeightTarget').inputValue(),'','saved assumptions are presented as history, not an active new draft');
     assert.equal(await page.evaluate(key=>localStorage.getItem(key),draftKey(row.security_id)),null,'confirmed input is removed from the durable draft store');
+    assert.equal(await page.locator('#detailNext').getAttribute('data-action'),'review','the next visit exposes the current review action, not stale completion styling');
+    assert.equal(await page.locator('#detailReturn').isVisible(),true,'ordinary list navigation returns when reviewing a saved judgment');
   }
   async function calculateKnownComparison(){
     await page.locator('#detailChoiceGuide button').click();await page.locator('#detailWeightTarget').fill('8');
@@ -174,10 +185,10 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     const manualReason='매출과 이익이 함께 개선되는지 다음 실적에서 확인합니다.\n현금 흐름 < 목표여도 추가매수는 보류 & 현재 보유 유지.';
     const manualReview='다음 실적 발표에서 매출 성장과 영업 현금 흐름을 직접 확인';
     await page.locator('#detailReason').fill(manualReason);await page.locator('#detailReview').fill(manualReview);
-    await page.locator('#detailDecisionForm button[type="submit"]').click();await page.locator('#detailDecisionDone').waitFor();
+    await page.locator('#detailDecisionForm button[type="submit"]').click();await waitForSavedFooter();
     assert.equal(writes.length,1);assert.equal(decisions[0].reason,manualReason);assert.equal(decisions[0].review_condition,manualReview);
     assert.equal(Object.hasOwn(decisions[0].scenario_snapshot,'choice_comparison'),false,'server baseline observations are not a user-selected comparison');const manual=copy(decisions[0]);
-    await page.screenshot({path:resolve(output,name+'-manual-saved.png')});await page.locator('#detailDecisionDone').click();
+    await page.screenshot({path:resolve(output,name+'-manual-saved.png')});await page.locator('#detailNext[data-action="done"]').click();
     await newVisit();await openSaved(manual.security_id);await assertSaved(manual,false);assert.equal(writes.length,1);
     await page.screenshot({path:resolve(output,name+'-manual-reopened.png')});await page.locator('#detailReturn').click();
 
@@ -187,7 +198,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     const compareReason='6주 매도 가정의 현금 확보와 가격 하락 영향을 확인하고 일부 축소를 검토';
     const compareReview='종가 95 달러 이하';
     await page.locator('#detailReason').fill(compareReason);await page.locator('#detailReview').fill(compareReview);
-    await page.locator('#detailDecisionForm button[type="submit"]').click();await page.locator('#detailDecisionDone').waitFor();
+    await page.locator('#detailDecisionForm button[type="submit"]').click();await waitForSavedFooter();
     assert.equal(writes.length,2);const compared=copy(decisions[0]);assert.equal(compared.reason,compareReason);assert.equal(compared.review_condition,compareReview);assert.equal(compared.analysis_id,priorAnalysis.id);
     assert.equal(compared.scenario_snapshot.choice_comparison.reduce.shares_to_sell,6);
     await page.screenshot({path:resolve(output,name+'-comparison-saved.png')});
@@ -232,7 +243,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     await page.waitForFunction(()=>document.getElementById('detailNext')?.textContent==='이전 판단 저장 재시도',null,{timeout:5000});
     assert.equal(await retryFooter.isEnabled(),true,'the restored pending submission can be retried from the bottom action');
     await page.screenshot({path:resolve(output,name+'-comparison-retry-draft.png')});
-    recoverOnRetry=true;await retryFooter.click();await page.locator('#detailDecisionDone').waitFor();
+    recoverOnRetry=true;await retryFooter.click();await waitForSavedFooter();
     assert.equal(writes.length,5);assert.deepEqual(writes[4],originalPayload);assert.equal(decisions.length,4,'explicit retry returns the same stored row');
     assert.equal(decisions[0].id,awaitingReceipt.id);assert.equal(await page.evaluate(key=>localStorage.getItem(key),draftKey(awaitingReceipt.security_id)),null);
     await page.screenshot({path:resolve(output,name+'-comparison-retry-confirmed.png')});

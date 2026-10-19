@@ -77,6 +77,74 @@ async function openOptionalTools(page){
  }
 }
 
+async function assertPortfolioControlsReadable(page,label){
+ const originalScroll=await page.evaluate(()=>({x:scrollX,y:scrollY}));
+ await page.evaluate(()=>document.fonts.ready);
+ try{
+  for(const selector of ['#portfolioAccount','#portfolioSort']){
+   const control=page.locator(selector);await control.scrollIntoViewIfNeeded();
+   const size=await control.evaluate(el=>{
+    const rect=el.getBoundingClientRect(),style=getComputedStyle(el),scale=rect.width/el.offsetWidth;
+    const text=el.selectedOptions[0].textContent.trim(),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+    ctx.font=`${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    const textWidth=(ctx.measureText(text).width+(parseFloat(style.letterSpacing)||0)*Math.max(0,Array.from(text).length-1))*scale;
+    // Native selects reserve room for their arrow in addition to text padding.
+    const available=(el.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-20)*scale;
+    const hit=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
+    return {text,textWidth,available,width:rect.width,height:rect.height,inside:rect.left>=-1&&rect.right<=innerWidth+1&&rect.top>=-1&&rect.bottom<=innerHeight+1,actionable:!el.disabled&&(hit===el||el.contains(hit))};
+   });
+   assert.ok(size.inside,`${label} ${selector} stays inside the viewport: ${JSON.stringify(size)}`);
+   assert.ok(size.width>=44&&size.height>=44&&size.actionable,`${label} ${selector} remains touchable: ${JSON.stringify(size)}`);
+   assert.ok(size.textWidth<=size.available+1,`${label} ${selector} shows the complete selected value: ${JSON.stringify(size)}`);
+  }
+  const chips=page.locator('#portfolioControls .holdings-markets button');
+  assert.deepEqual(await chips.evaluateAll(xs=>xs.map(el=>el.dataset.scope)),['ALL','KR','OVERSEAS'],`${label} keeps all three market choices`);
+  for(let i=0;i<3;i++){
+   const chip=chips.nth(i);await chip.scrollIntoViewIfNeeded();
+   const size=await chip.evaluate(el=>{
+    const rect=el.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(el);
+    const text=range.getBoundingClientRect(),clip={left:0,right:innerWidth,top:0,bottom:innerHeight};
+    for(let parent=el.parentElement;parent;parent=parent.parentElement){
+     const style=getComputedStyle(parent),box=parent.getBoundingClientRect();
+     if(/hidden|clip|auto|scroll/.test(style.overflowX)){clip.left=Math.max(clip.left,box.left);clip.right=Math.min(clip.right,box.right)}
+     if(/hidden|clip|auto|scroll/.test(style.overflowY)){clip.top=Math.max(clip.top,box.top);clip.bottom=Math.min(clip.bottom,box.bottom)}
+    }
+    const hit=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
+    return {text:el.textContent.trim(),width:rect.width,height:rect.height,inside:rect.left>=-1&&rect.right<=innerWidth+1&&rect.top>=-1&&rect.bottom<=innerHeight+1,complete:text.width>0&&text.height>0&&text.left>=Math.max(rect.left,clip.left)-1&&text.right<=Math.min(rect.right,clip.right)+1&&text.top>=Math.max(rect.top,clip.top)-1&&text.bottom<=Math.min(rect.bottom,clip.bottom)+1,actionable:!el.disabled&&(hit===el||el.contains(hit))};
+   });
+   assert.match(size.text,[/^전체 \d+$/,/^국내 \d+$/,/^해외 \d+$/][i],`${label} retains each market label and count`);
+   assert.ok(size.inside&&size.complete,`${label} market chip is fully readable: ${JSON.stringify(size)}`);
+   assert.ok(size.width>=44&&size.height>=44&&size.actionable,`${label} market chip remains touchable: ${JSON.stringify(size)}`);
+  }
+ }finally{await page.evaluate(({x,y})=>window.scrollTo({left:x,top:y,behavior:'instant'}),originalScroll)}
+}
+
+async function assertPortfolioRowsReadable(page,label){
+ const rows=await page.locator('.portfolio-list .portfolio-row:visible').evaluateAll(xs=>xs.map(row=>{
+  const box=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};
+  const fields={};
+  for(const name of ['identity','name','quote','value','result','exception']){
+   const el=row.querySelector('.position-'+name);if(el)fields[name]={...box(el),text:el.textContent.trim(),visible:getComputedStyle(el).visibility==='visible',fits:el.scrollWidth<=el.clientWidth+1};
+  }
+  return {row:box(row),fields,viewport:innerWidth};
+ }));
+ assert.ok(rows.length>0,`${label} has holdings to inspect`);
+ for(const [index,{row,fields,viewport}] of rows.entries()){
+  const caption=`${label} holding ${index+1} (${fields.name?.text})`;
+  assert.ok(row.left>=-1&&row.right<=viewport+1,`${caption} stays inside the viewport`);
+  for(const name of ['identity','name','quote','value','result'])assert.ok(fields[name],`${caption} retains ${name}`);
+  for(const [name,field] of Object.entries(fields)){
+   assert.ok(field.visible&&field.width>0&&field.height>0&&field.fits,`${caption} ${name} is visible without clipped text: ${JSON.stringify(field)}`);
+   assert.ok(field.left>=row.left-1&&field.right<=row.right+1&&field.top>=row.top-1&&field.bottom<=row.bottom+1,`${caption} ${name} stays within its row: ${JSON.stringify(field)}`);
+  }
+  for(const [a,b] of [['identity','value'],['identity','result'],['value','result'],['exception','identity'],['exception','value'],['exception','result']]){
+   const first=fields[a],second=fields[b];if(!first||!second)continue;
+   const overlap=Math.min(first.right,second.right)-Math.max(first.left,second.left)>1&&Math.min(first.bottom,second.bottom)-Math.max(first.top,second.top)>1;
+   assert.equal(overlap,false,`${caption} ${a} does not cover ${b}: ${JSON.stringify({first,second})}`);
+  }
+ }
+}
+
 import vm from 'node:vm';
 import {readFileSync,mkdirSync,writeFileSync,existsSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
@@ -363,9 +431,15 @@ try{
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);
       if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeToday').isVisible());const box=await page.locator('#homeToday').boundingBox();assert.ok(box.y<500,`${width}px today summary is near top`);assert.match(await page.locator('#homeToday').innerText(),/326,840/)}
-      if(tab==='portfolio'&&!baseline){assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),false,'settings start collapsed');const rows=await page.locator('.portfolio-row').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().bottom));assert.ok(rows[3]<800,`${width}px four portfolio rows with prices visible`)}
+      if(tab==='portfolio'&&!baseline){
+        assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),false,'settings start collapsed');
+        const fourthBottom=await page.locator('.portfolio-row').nth(3).evaluate(el=>el.getBoundingClientRect().bottom);
+        const navTop=await page.locator('.nav').evaluate(el=>el.getBoundingClientRect().top);
+        assert.ok(fourthBottom<=navTop,`${width}px four portfolio rows with prices stay above navigation (${fourthBottom} <= ${navTop})`);
+      }
       if(tab==='portfolio'){
         const controls=page.locator('#portfolioControls');if(await controls.count()&&!await controls.evaluate(el=>el.open))await controls.locator('summary').click();
+        if(!baseline)await assertPortfolioControlsReadable(page,`portfolio ${width}px expanded settings`);
         await page.locator('#portfolioPriceView').selectOption('average');
         assert.match(await page.locator('.position-quote').first().innerText(),/평단|평균 매입가/);
         await page.locator('.portfolio-list').screenshot({path:out+'/portfolio-average-'+width+'.png'});
@@ -378,6 +452,7 @@ try{
         await page.locator('#portfolioSort').selectOption('profit');
         assert.equal(await page.locator('.portfolio-row').first().getAttribute('data-security-id'),'s2');
         await page.locator('#portfolioSort').selectOption('value');
+        if(!baseline)await assertPortfolioRowsReadable(page,`portfolio ${width}px`);
       }
       await page.screenshot({path:`${out}/${tab}-${width}.png`});
       if(tab==='performance'&&source.includes('brokerDayCard')){if(source.includes('quiet-realized'))await page.locator('#brokerDayCard>summary').click();await page.locator('#brokerDayResult').getByText('TEST',{exact:true}).waitFor();await page.locator('#brokerDayCard').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/sales-${width}.png`});}
@@ -407,11 +482,18 @@ try{
         await page.locator('#search').fill('');
       }
 
-      if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} 125% overflow`);await page.screenshot({path:`${out}/${tab}-390-large.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
+      if(width===390){
+        await page.evaluate(()=>document.documentElement.style.zoom='1.25');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} 125% overflow`);
+        if(tab==='portfolio'&&!baseline){await assertPortfolioControlsReadable(page,'portfolio 390px at 125%');await assertPortfolioRowsReadable(page,'portfolio 390px at 125%')}
+        await page.screenshot({path:`${out}/${tab}-390-large.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
+      }
     }
     if(denseUi){
       await page.evaluate(()=>{window.__uiRender('portfolio');document.querySelector('.position-name').textContent='아주 긴 국내 상장 종목 이름을 확인하는 화면';document.querySelector('.position-value').textContent='1,234,567,890원'});
-      await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'long names / billion amount / enlarged text');await page.screenshot({path:`${out}/stress-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
+      await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'long names / billion amount / enlarged text');
+      if(!baseline)await assertPortfolioRowsReadable(page,`long name / billion amount at ${width}px and 125%`);
+      await page.screenshot({path:`${out}/stress-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
     }
     if(source.includes('function allocationData')){
       const allocationFixture={...live,risk:{ok:true,official_assets_krw:63842170,as_of:now,largest_symbol:'ARM',largest_krw:12472000,top_three_krw:32911900,foreign_currency_krw:46633000,leveraged_etf_krw:0,known_positions_krw:54455100}};
@@ -988,7 +1070,7 @@ try{
     await page.locator('#detailReason').fill('매출 성장 근거를 다음 실적에서 다시 확인');
     await page.locator('#detailReview').fill('다음 실적 발표 후 확인');
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    await page.locator('#detailDecisionDone').waitFor().catch(async e=>{throw Error(e.message+'; save status: '+await page.locator('#detailDecisionStatus').innerText())});
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').waitFor().catch(async e=>{throw Error(e.message+'; save status: '+await page.locator('#detailDecisionStatus').innerText())});
     assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost response must not replay the write');
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
     const change=page.locator('#detailDecisionSummary .decision-change');
@@ -998,7 +1080,7 @@ try{
     assert.ok((await change.innerText()).includes(decision.reason));
     assert.ok((await change.innerText()).includes('매출 성장 근거를 다음 실적에서 다시 확인'));
     await page.screenshot({path:out+'/decision-recovered-'+width+'.png'});
-    await page.locator('#detailDecisionDone').click();
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').click();
     await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
     await page.locator('#detailClose').click();
@@ -1064,14 +1146,14 @@ try{
     await page.locator('#detailDecisionStatus').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
     await page.screenshot({path:out+'/save-with-newer-draft-'+width+'.png'});
     await page.locator('#detailDecisionForm button[type=submit]').click();
-    await page.locator('#detailDecisionDone').waitFor();
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').waitFor();
     assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(editedReason));
     await page.evaluate(()=>window.__releaseDetailMetrics());
     assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 다시 확인/);
     assert.equal(await page.evaluate(()=>window.__decisionWrites),2,'one write per explicitly submitted version, no lost-response duplicate');
     assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(checkpoint));
     await page.screenshot({path:out+'/first-decision-complete-'+width+'.png'});
-    await page.locator('#detailDecisionDone').click();
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').click();
     const homeReview=page.locator('.home-reviews');if(!await homeReview.evaluate(el=>el.open))await homeReview.locator(':scope>summary').click();
     await homeReview.locator('[data-decision-detail="s0"]').click();
     await page.locator('#detailDecisionReview').waitFor();
