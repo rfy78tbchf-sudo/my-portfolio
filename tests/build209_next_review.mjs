@@ -23,6 +23,7 @@ function fixture({saved=false,thesis=true}={}){
     document:{getElementById:id=>nodes.get(id)||null},
     body:{querySelector:()=>null},active:()=>true,
     lastComparisonDirty:false,lastComparison:null,lastDetailAnalysisId:null,lastAnalysisComparison:false,
+    pendingRetry:false,canRetryDecisionSubmission:()=>context.pendingRetry,decisionDraftValues:()=>({}),
     latestDecisionRows:saved?[{id:'saved-judgment'}]:[],thesisSaved:thesis,
     bindDetailNext(active,read,actions){binding={active,read,actions}},
     revealDetailTarget:node=>{if(node)calls.revealed.push(node.id)},
@@ -91,13 +92,34 @@ assert.deepEqual(unavailable.next(),['retry','저장한 판단 다시 불러오�
 unavailable.click();assert.equal(unavailable.calls.retry,1);
 assert.equal(unavailable.calls.ai,0);assert.equal(unavailable.calls.reason,0);assert.equal(unavailable.calls.save,0);
 
+// A restored comparison may be marked dirty only because calculation state was
+// cleared. The same production pending predicate used by inline submit decides
+// whether the footer may explicitly retry that original request.
+const pending=fixture({saved:true});pending.nodes.get('detailDecisionForm').hidden=false;
+pending.nodes.get('detailChoice').value='consider_reduction';pending.context.lastComparisonDirty=true;
+pending.context.pendingRetry=true;
+assert.deepEqual(pending.next(),['save','이전 판단 저장 재시도']);
+assert.equal(pending.calls.save,0,'restoring a pending request never auto-submits');
+pending.click();assert.equal(pending.calls.save,1,'pending footer uses the same validated form.requestSubmit path');
+assert.equal(pending.calls.ai,0);assert.equal(pending.calls.retry,0,'save retry does not switch to history lookup or request AI');
+pending.context.body.querySelector=()=>({disabled:true});
+assert.equal(pending.next()[0],'busy','an in-flight operation keeps priority over pending retry');
+pending.click();assert.equal(pending.calls.save,1);
+pending.context.body.querySelector=()=>null;
+pending.context.pendingRetry=false;
+assert.equal(pending.next()[0],'compare','edited inputs or refreshed evidence keep existing comparison guards');
+pending.context.pendingRetry=true;pending.nodes.get('detailDecisionForm').hidden=true;
+assert.notEqual(pending.next()[0],'save','pending retry is offered only for the open draft');
+pending.nodes.set('detailDecisionDone',{id:'detailDecisionDone'});
+assert.equal(pending.next()[0],'done','a closed completed judgment still returns to the list');
+
 const retryStart=html.indexOf('      async function retryDecisionHistory(){');
 const retrySource=html.slice(retryStart,html.indexOf('      function savedComparisonAssumption(',retryStart));
 function retryFixture(response){
   let pendingResponse=response;const calls={read:0,refresh:0,rendered:[],revealed:[]};
-  const button={disabled:false,textContent:''},form={hidden:true};
+  const button={disabled:false,textContent:'',isConnected:true},form={hidden:true};
   const ctx=vm.createContext({
-    active:()=>true,id:'saved-security',results:[],reviewRefreshFailed:true,d:{},p:[{close:10}],activity:{},
+    active:()=>true,id:'saved-security',results:[],reviewRefreshFailed:true,decisionHistoryEpoch:0,decisionHistorySaving:false,d:{},p:[{close:10}],activity:{},
     document:{getElementById:id=>id==='detailDecisionRetry'?button:id==='detailDecisionForm'?form:{id}},
     rpc:async(name,args)=>{assert.equal(name,'get_investment_decisions');assert.equal(args.p_security_id,'saved-security');calls.read++;if(pendingResponse instanceof Error)throw pendingResponse;return pendingResponse},
     renderDecisionHistory:rows=>{calls.rendered.push(rows);button.disabled=false},
@@ -121,4 +143,4 @@ assert.equal(left.calls.read,0);assert.equal(left.calls.rendered.length,0);
 const drafting=retryFixture([{id:'saved'}]);drafting.form.hidden=false;await drafting.ctx.retryDecisionHistory();
 assert.equal(drafting.calls.revealed.length,0,'a history retry does not move focus away from an open decision draft');
 
-console.log('Build209: saved review, unavailable-history retry, thesis entry, explicit save and next-action priority passed');
+console.log('Build209/211: saved review, unavailable-history retry, thesis entry, explicit save, pending-save footer and next-action priority passed');

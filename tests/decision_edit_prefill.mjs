@@ -5,6 +5,14 @@ import {test} from 'node:test';
 
 // Production handlers with isolated DOM/RPC doubles; never uses a real account.
 const html=readFileSync(process.env.PORTFOLIO_HTML||new URL('../index.html',import.meta.url),'utf8');
+// Use the getter's real projection: table rows used directly as RPC responses
+// previously hid a missing request_id in interrupted-save recovery.
+const decisionSql=readFileSync(process.env.PORTFOLIO_DECISION_SQL||new URL('../supabase/build211_decision_request_readback.sql',import.meta.url),'utf8');
+const getter=decisionSql.slice(decisionSql.indexOf('create or replace function public.get_investment_decisions'));
+const projection=getter.match(/from \(select ([\s\S]*?) from public\.investment_decisions d/);
+assert.ok(projection,'decision getter projection');
+const decisionFields=[...projection[1].matchAll(/d\.([a-z_]+)/g)].map(match=>match[1]);
+const decisionRows=rows=>rows.map(row=>Object.fromEntries(decisionFields.filter(key=>Object.hasOwn(row,key)).map(key=>[key,row[key]])));
 function section(start,end){const a=html.indexOf(start),b=html.indexOf(end,a);assert.ok(a>=0&&b>a,start);return html.slice(a,b);}
 const source=[
   section('  function decisionConditionState(', '  function officialPeriodKo('),
@@ -39,18 +47,18 @@ function fixture(rows=[saved()],options={}){
     document:{getElementById:element,createElement:()=>node('created-'+(++sequence)),querySelector:selector=>selector.includes('submit')?element('submit'):null,activeElement:null},
     session:options.session,atob,localStorage:options.storage,window:{},Event:class{constructor(type,options){this.type=type;Object.assign(this,options)}},
     body:node('body'),startPanel:element('detailStart'),active:()=>true,id:'held',s:{symbol:'TEST'},
-    results:[null,null,{thesis:null},clone(rows)],d:{},p:[{date:'2026-10-08',close:20}],activity:{items:[]},
+    results:[null,null,{thesis:null},clone(decisionRows(rows))],d:{},p:[{date:'2026-10-08',close:20}],activity:{items:[]},
     choiceLabels:{hold:'현재 유지',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류',revisit:'추가 확인 후 판단'},
     detailDirtyGroups:{},detailInputChanged:false,lastComparison:null,lastComparisonDirty:false,lastDetailAnalysisId:null,lastAnalysisComparison:false,
-    decisionRequestId:null,decisionRequestKey:null,live:{reviewDecisions:[]},decisionHomeDirty:false,
+    decisionRequestId:null,decisionRequestKey:null,pendingDecisionSubmission:null,live:{reviewDecisions:[]},decisionHomeDirty:false,
     crypto:{randomUUID:()=>`request-${++request}`},
     updateDetailStart(){},revealDetailTarget(){},closeSecurityDetail(){},aiSourceLinks(){},priceFocusedThesis:()=>false,
     decisionChangeHtml:()=>'',decisionReviewHtml:()=>'',kstStamp:String,kstDate:()=> '2026-10-09',esc:String,weightPct:String,
     SUPABASE_URL:'https://example.test',authFetch:async()=>({ok:true,json:async()=>[]}),
-    async saveDecisionReceipt(args){calls.push(clone(args));const row={id:`saved-${calls.length}`,security_id:args.p_security_id,choice:args.p_choice,reason:args.p_reason,review_condition:args.p_review_condition,analysis_id:args.p_analysis_id,created_at:'2026-10-09T01:00:00Z',scenario_snapshot:{}};
+    async saveDecisionReceipt(args){calls.push(clone(args));const row={id:`saved-${calls.length}`,security_id:args.p_security_id,request_id:args.p_request_id,choice:args.p_choice,reason:args.p_reason,review_condition:args.p_review_condition,analysis_id:args.p_analysis_id,created_at:'2026-10-09T01:00:00Z',scenario_snapshot:{}};
       if(args.p_target_pct!==null)row.scenario_snapshot.choice_comparison={target_pct:args.p_target_pct,price_assumptions:{down_pct:args.p_down_pct,up_pct:args.p_up_pct},observation_at:args.p_observation_at,hold:{value_krw:10000},reduce:{mode:'integer_shares'}};
       persisted.unshift(row);return {ok:true,id:row.id};},
-    async rpc(name){assert.equal(name,'get_investment_decisions');return clone(persisted)}
+    async rpc(name){assert.equal(name,'get_investment_decisions');return clone(decisionRows(persisted))}
   };
   ctx=vm.createContext(scope);vm.runInContext(source,ctx);
   const edit=()=>element('detailDecisionAction').onclick();
@@ -196,7 +204,7 @@ test('failed plain save preserves its request identity across navigation',async(
  const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','retry');f.input('detailReview','2027-01-01');f.ctx.saveDecisionReceipt=async()=>{throw Error('offline')};await f.submit();const request=f.ctx.decisionRequestId;f.ctx.allowDetailLeave('discard?');const back=reopenDraft(f);await back.submit();assert.equal(back.calls[0].p_request_id,request);
 });
 test('a confirmed formerly lost response is not restored as an unsaved draft',async()=>{
- const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','submitted');f.input('detailReview','2027-01-01');f.ctx.saveDecisionReceipt=async()=>{throw Error('lost')};await f.submit();f.ctx.allowDetailLeave('discard?');const row=saved('hold',{reason:'submitted',review_condition:'2027-01-01',request_id:f.ctx.decisionRequestId});const back=reopenDraft(f,[row]);assert.equal(back.element('detailDecisionForm').hidden,true);assert.equal(back.ctx.decisionDrafts.held,undefined);
+ const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','submitted');f.input('detailReview','2027-01-01');f.ctx.saveDecisionReceipt=async()=>{throw Error('lost')};await f.submit();f.ctx.allowDetailLeave('discard?');const row=saved('hold',{reason:'submitted',review_condition:'2027-01-01',analysis_id:null,request_id:f.ctx.decisionRequestId});const back=reopenDraft(f,[row]);assert.equal(back.element('detailDecisionForm').hidden,true);assert.equal(back.ctx.decisionDrafts.held,undefined);
 });
 test('other unfinished forms still require confirmation while decision draft is retained',()=>{
  const f=fixture([]);f.ctx.bindDecisionDraft();f.input('detailReason','retained');f.ctx.detailDirtyGroups.thesisForm=1;f.ctx.window.confirm=()=>false;assert.equal(f.ctx.allowDetailLeave('discard?'),false);assert.equal(f.ctx.decisionDrafts.held.values.detailReason,'retained');f.ctx.window.confirm=()=>true;assert.equal(f.ctx.allowDetailLeave('discard?'),true);
@@ -234,8 +242,29 @@ test('request identity survives interrupted save and matching readback prevents 
  const storage=durableStorage(),f=durableFixture(storage);f.input('detailReason','이유');f.input('detailReview','조건');
  f.ctx.saveDecisionReceipt=async()=>{throw Error('offline')};await f.submit();
  const reopened=durableFixture(storage);assert.equal(reopened.ctx.decisionRequestId,f.ctx.decisionRequestId);assert.ok(reopened.ctx.decisionRequestId);
- const row=saved('hold',{request_id:f.ctx.decisionRequestId,reason:'이유',review_condition:'조건'});
+ const row=saved('hold',{request_id:f.ctx.decisionRequestId,reason:'이유',review_condition:'조건',analysis_id:null});
  const confirmed=durableFixture(storage,'owner',[row]);assert.equal(confirmed.element('detailDecisionForm').hidden,true);assert.equal(storage.values.size,0);
+});
+for(const withComparison of [false,true])test(`actual getter resolves a lost saved ${withComparison?'comparison':'analysis-linked'} judgment on fresh runtime`,async()=>{
+ const storage=durableStorage(),f=durableFixture(storage);f.input('detailReason','분석을 확인한 이유');f.input('detailReview','다음 실적 발표 때 확인');
+ f.ctx.lastDetailAnalysisId='linked-ai';
+ if(withComparison){
+   f.input('detailChoice','consider_reduction');f.element('detailWeightTarget').value='15';
+   f.ctx.lastComparison={targetPct:15,downPct:-10,upPct:10,observationAt:'2026-10-09T01:00:00Z'};
+   f.ctx.lastAnalysisComparison=true;
+ }
+ const write=f.ctx.saveDecisionReceipt;
+ f.ctx.saveDecisionReceipt=async args=>{await write(args);throw Error('committed; receipt and recovery response unavailable')};
+ await f.submit();assert.equal(f.persisted.length,1);assert.equal(storage.values.size,1);
+ const before=clone(f.persisted),confirmed=durableFixture(storage,'owner',f.persisted);
+ assert.equal(confirmed.element('detailDecisionForm').hidden,true,'committed request must not reopen as an unsaved draft');
+ assert.equal(confirmed.ctx.decisionDrafts.held,undefined);assert.equal(storage.values.size,0);
+ assert.equal(confirmed.calls.length,0,'reopening must not write a second judgment');
+ assert.equal(confirmed.ctx.results[3][0].analysis_id,'linked-ai');
+ assert.equal(confirmed.ctx.results[3][0].request_id,f.calls[0].p_request_id);
+ assert.deepEqual(clone(confirmed.ctx.results[3][0].scenario_snapshot),before[0].scenario_snapshot);
+ confirmed.edit();assert.deepEqual(confirmed.values(),[before[0].choice,before[0].reason,before[0].review_condition]);
+ assert.deepEqual(f.persisted,before,'saved analysis and comparison remain immutable');
 });
 test('blocked storage reports non-durable state; malformed storage does not break detail',()=>{
  const blocked={getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}};const f=durableFixture(blocked);f.input('detailReason','보존');

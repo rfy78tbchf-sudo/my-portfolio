@@ -9,8 +9,10 @@ const html=readFileSync(process.env.PORTFOLIO_HTML||new URL('../index.html',impo
 function section(start,end){const a=html.indexOf(start),b=html.indexOf(end,a);assert.ok(a>=0&&b>a,start);return html.slice(a,b);}
 const sources=[
   section('  function decisionConditionState(', '  function officialPeriodKo('),
+  section('  function decisionDraftValues(', '  function readDecisionDraft('),
   section('  function detailCurrentWeightHtml(', '  function decisionImpactHtml('),
   section('      function updateDecisionGuide(){',"      document.getElementById('detailChoice').addEventListener"),
+  section('      function finishDecisionSubmission(', '      function resolvePendingDecision('),
   section("      ['detailWeightTarget','detailDown','detailUp'].forEach",'      var reviewAnalyses='),
   section("      var decisionForm=document.getElementById('detailDecisionForm');",'      var general='),
   section('      var scenarioClick=async function(kind){','      var pendingDetailRequest='),
@@ -34,9 +36,9 @@ function fixture(){
     window:{},crypto:{randomUUID:()=>`request-${++request}`},active:()=>true,id:'held',s:{symbol:'TEST'},
     choiceLabels:{hold:'현재 유지',revisit:'추가 확인 후 판단',consider_reduction:'일부 축소 검토',pause_addition:'추가매수 보류'},
     lastComparison:comparison(),lastComparisonDirty:false,lastDetailAnalysisId:'old-comparison-ai',lastAnalysisComparison:true,
-    comparisonEpoch:0,analysisEpoch:0,decisionRequestId:null,decisionRequestKey:null,
+    comparisonEpoch:0,analysisEpoch:0,decisionRequestId:null,decisionRequestKey:null,pendingDecisionSubmission:null,decisionHistoryEpoch:0,decisionHistorySaving:false,
     detailDirtyGroups:{detailDecisionForm:1},live:{reviewDecisions:[]},liveError:null,decisionHomeDirty:false,
-    decisionDraftStore:()=>({}),removeDecisionDraft(){},clearDetailDirty(){},renderDecisionHistory(){},revealDetailTarget(){},closeSecurityDetail(){},showComparisonNext(){},
+    decisionDraftStore:()=>({}),decisionDraftKey:()=>null,removeDecisionDraft(){},clearDetailDirty(){},renderDecisionHistory(){},revealDetailTarget(){},closeSecurityDetail(){},showComparisonNext(){},
     comparisonHtml:()=>'<div class="choice-result-head">comparison</div>',
     thesisSaved:true,thesisVersion:1,analyze:element('thesisAnalyze'),general:element('detailAiGeneral'),
     edgeSync:async()=>{},loadLive:async()=>{},money:String,signedMoney:String,kstStamp:String,kstDate:()=> '2026-10-09',num:String,esc:String,
@@ -44,7 +46,7 @@ function fixture(){
     aiOfficialEvidence(){},aiSourceLinks(){},compactDetailAnswer(){},decisionImpactHtml:()=>'',
     loadThesisPrior(){},refreshDecisionReview(){},detailOpinionError:error=>error.message,
     requestDetailOpinion:async()=>({answer:'new opinion',analysis_id:'new-comparison-ai',history_saved:true}),
-    async saveDecisionReceipt(args){calls.push(clone(args));const row={id:`saved-${calls.length}`,security_id:args.p_security_id,choice:args.p_choice,reason:args.p_reason,review_condition:args.p_review_condition,analysis_id:args.p_analysis_id,scenario_snapshot:{}};
+    async saveDecisionReceipt(args){calls.push(clone(args));const row={id:`saved-${calls.length}`,security_id:args.p_security_id,request_id:args.p_request_id,choice:args.p_choice,reason:args.p_reason,review_condition:args.p_review_condition,analysis_id:args.p_analysis_id,scenario_snapshot:{}};
       if(args.p_target_pct!==null)row.scenario_snapshot.choice_comparison={target_pct:args.p_target_pct,price_assumptions:{down_pct:args.p_down_pct,up_pct:args.p_up_pct},observation_at:args.p_observation_at,hold:{value_krw:10000},reduce:{mode:'integer_shares'}};
       rows.push(row);return {ok:true,id:row.id};},
     async rpc(name){if(name==='get_investment_decisions')return rows;
