@@ -664,6 +664,22 @@ try{
         assert.ok(last.y+last.height<=nav.y,'three contributors fit above bottom navigation');
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         await page.screenshot({path:`${out}/period-summary-${width}.png`});
+        if(source.includes('function stockPnlProvisionalCount')){
+          const pending={...three.stockPnl,all_items_displayed:false,provisional_count:1,
+            items:three.stockPnl.items.map(x=>x.symbol==='ARM'?{...x,provisional_amount:true}:x)};
+          await page.evaluate(data=>window.__uiPeriodSummary(data),pending);
+          assert.match(await page.locator('.performance-hero').first().innerText(),/일부 계산[\s\S]*결제 전 잠정 1종목 포함/);
+          assert.match(await page.locator('[data-pnl-leader="ARM"]').innerText(),/결제 전 잠정/);
+          assert.match(await page.locator('[data-pnl-symbol="ARM"] .contribution-pill').innerText(),/결제 전 잠정/);
+          const end=await page.locator('.pnl-leader').last().boundingBox(),bottom=await page.locator('.nav').boundingBox();
+          assert.ok(end.y+end.height<=bottom.y,'provisional context and three contributors remain above bottom navigation');
+          assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+          await page.screenshot({path:`${out}/period-provisional-${width}.png`});
+          await page.locator('[data-pnl-leader="ARM"]').click();
+          await page.locator('.performance-review-context').waitFor();
+          assert.match(await page.locator('.performance-review-context').innerText(),/-2,000,000원[\s\S]*일부 계산 · 결제 전 잠정/);
+          await page.locator('#detailReturn').click();
+        }
         await page.evaluate(data=>window.__uiPeriodSummary(data),stockData.stockPnl);
         await page.waitForFunction(()=>document.querySelectorAll('.pnl-leader').length===2);
       }
@@ -741,7 +757,7 @@ try{
             var reviewScroll=await page.evaluate(()=>scrollY);await page.locator('.quiet-realized [data-performance-detail="ARM"]').click();
             await page.locator('#detailClose').waitFor();
             assert.match(await page.locator('#detailBody').innerText(),/ARM|에이알엠/);
-            if(source.includes('performanceReviewContext')){await page.locator('.performance-review-context').waitFor();assert.match(await page.locator('.performance-review-context').innerText(),/이번 달 실현손익/);assert.match(await page.locator('.performance-review-context').innerText(),/140,000/);await page.screenshot({path:`${out}/performance-review-${width}.png`});}
+            if(source.includes('performanceReviewContext')){await page.locator('.performance-review-context').waitFor();assert.match(await page.locator('.performance-review-context').innerText(),/이번 달 실현손익/);assert.match(await page.locator('.performance-review-context').innerText(),/100(?:\.00)? USD/);await page.screenshot({path:`${out}/performance-review-${width}.png`});}
             await page.locator('#detailClose').click();if(source.includes('performanceReviewContext'))assert.ok(Math.abs((await page.evaluate(()=>scrollY))-reviewScroll)<3);
             await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();
             await page.locator('#brokerDayCard>summary').click();
