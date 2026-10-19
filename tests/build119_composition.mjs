@@ -23,7 +23,7 @@ assert.equal(ctx.stockTotalParts(p,{...r,items:[{symbol:'TEST',currency:'KRW',re
 
 // Transport timeout, retry and account/period races. Queue wait is not network time.
 const requests=[],timers=new Map();let timerId=0;
-const state={live:{},stockPeriod:'ALL',stockRealizedEpoch:0,render(){},
+const state={live:{},kstDate:()=> '2026-10-19',stockPeriod:'ALL',stockRealizedEpoch:0,render(){},
   setTimeout(fn){const id=++timerId;timers.set(id,fn);return id},
   clearTimeout(id){timers.delete(id)},
   rpc(){return new Promise((resolve,reject)=>requests.push({resolve,reject}))}};

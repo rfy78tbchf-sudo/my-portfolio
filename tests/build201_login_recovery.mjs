@@ -8,7 +8,7 @@ function setup(){
  readSession:()=>stored,consumeHash:()=>null,writeSession:x=>{stored=x;c.session=x;if(!x)c.liveAuthEpoch++},startLive:x=>{stored=x;c.session=x;c.liveAuthEpoch++;starts++;hidden=true},
  fetchTimeout:()=>{reads++;return new Promise((resolve,reject)=>{reply={resolve,reject}})}});
  vm.runInContext(s.slice(s.indexOf('  function sessionValid('),s.indexOf('  function ensureFreshSession(')),c);
- vm.runInContext(s.slice(s.indexOf('  var loginRestorePromise='),s.indexOf("  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&mode==='live'",s.indexOf('  var loginRestorePromise='))),c);
+ vm.runInContext(s.slice(s.indexOf('  var loginRestorePromise='),s.indexOf('  var liveResumePending=',s.indexOf('  var loginRestorePromise='))),c);
  return {c,events,msg,get stored(){return stored},get reads(){return reads},get starts(){return starts},fail:()=>reply.reject(Error('offline')),respond:(ok=true)=>reply.resolve({ok,status:ok?200:400,json:async()=>ok?{access_token:'new-fixture',refresh_token:'rotated-fixture',expires_in:3600}:{error_code:'refresh_token_not_found'}})};
 }
 const t=setup();let p=t.c.restoreLogin();t.fail();await p;assert.ok(t.stored);assert.equal(t.c.loginRecoveryPending,true);assert.equal(t.starts,0);

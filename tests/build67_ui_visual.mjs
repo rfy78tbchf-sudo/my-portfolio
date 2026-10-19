@@ -1,3 +1,4 @@
+import './build209_next_review.mjs';
 import './build208_list_return.mjs';
 import './build207_period_summary.mjs';
 import './build206_detail_next.mjs';
@@ -174,6 +175,9 @@ const injected=`
   window.__uiFixture=function(data,record,opinion,comparison){
     liveAuthEpoch++;live=data;liveError=null;mode='live';period='1M';session={accessToken:'test.'+btoa(JSON.stringify({sub:data.draftOwner||('fixture-'+crypto.randomUUID())}))+'.test'};
     var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
+    window.__uiSavedDecision=function(){return savedDecision?JSON.parse(JSON.stringify(savedDecision)):null};
+    window.__uiFailDecisionRead=function(value){data.failDecisionRead=value};
+    window.__decisionNetworkAttempts={model:0,sync:0};
     if(!crypto.randomUUID){let syntheticId=0;Object.defineProperty(crypto,'randomUUID',{value:()=> '00000000-0000-4000-8000-'+String(++syntheticId).padStart(12,'0')})}
     window.__uiFailStockOnce=function(){failStockOnce=true};
     window.__saleNotes=window.__saleNotes||{};
@@ -196,14 +200,14 @@ const injected=`
         if(data.deferDecisionSave){data.deferDecisionSave=false;await new Promise(resolve=>{window.__releaseDecisionSave=resolve})}
         throw Error('Synthetic response lost after commit');
       }
-      if(name==='get_investment_decisions')return savedDecision?[savedDecision,...(record?[record]:[])]:record?[record]:[];
+      if(name==='get_investment_decisions'){if(data.failDecisionRead)throw Error('Synthetic decision read failed');return savedDecision?[savedDecision,...(record?[record]:[])]:record?[record]:[]};
       if(name==='get_investment_breakout_rule')return null;
       if(name==='get_live_choice_comparison')return {...comparison,ok:true};
       if(name==='get_live_decision_metrics'){if(data.deferMetrics)return new Promise(resolve=>{window.__releaseDetailMetrics=()=>resolve({ok:false})});return {ok:false}};
       return {ok:false,items:[]};
     };
-    authFetch=async function(url,options){if(options&&options.method==='POST')throw Error('No model generation or writes allowed in UI capture');return {ok:true,json:async()=>url.includes('investment_decisions?')?(savedDecision?[savedDecision]:[]):[opinion]}};
-    loadLive=async()=>{};edgeSync=async(action)=>{if(action==='overseas-day-pnl')return {ok:true,available:false,items:[]};throw Error('No account sync during UI capture')};
+    authFetch=async function(url,options){if(options&&options.method==='POST'){window.__decisionNetworkAttempts.model++;throw Error('No model generation or writes allowed in UI capture')}return {ok:true,json:async()=>url.includes('investment_decisions?')?(savedDecision?[savedDecision]:[]):[opinion]}};
+    loadLive=async()=>{};edgeSync=async(action)=>{window.__decisionNetworkAttempts.sync++;if(action==='overseas-day-pnl')return {ok:true,available:false,items:[]};throw Error('No account sync during UI capture')};
     document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('refreshBtn').classList.remove('hidden');
     window.__reloadReviewRecords=async function(){
       const originalRest=rest,records=data.reviewDecisions||[];
@@ -620,7 +624,7 @@ try{
       }
       const noReason={...live,testThesis:{version:0,rationale:''}};
       await page.evaluate(args=>window.__uiFixture(...args),[noReason,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
-      await page.getByRole('button',{name:'먼저 보유 이유 적기'}).waitFor();await page.locator('#detailStartAction').click();assert.ok(await page.locator('[data-thesis-field="rationale"]').isVisible());assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-thesis-field')),'rationale');
+      await page.locator('#detailStartAction').waitFor({state:'visible'});assert.equal(await page.locator('#detailStartAction').innerText(),'먼저 보유 이유 적기');await page.locator('#detailStartAction').click();assert.ok(await page.locator('[data-thesis-field="rationale"]').isVisible());assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-thesis-field')),'rationale');
       if(source.includes('function openReasonEditor')){
         assert.equal(await page.locator('#detailStart #thesisGroup').count(),1);
         await page.locator('#thesisForm button[type=submit]').click();assert.match(await page.locator('#thesisStatus').innerText(),/한 줄/);
@@ -1057,6 +1061,68 @@ try{
     await page.locator('#detailDecisionReview').waitFor();
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/실적 발표 전까지 현재 보유/);
     assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    assert.equal(await page.locator('#detailNext').innerText(),'지난 결정과 이후 변화 보기');
+    await page.locator('[data-detail-jump="holding"]').click();
+    const reviewWrites=await page.evaluate(()=>window.__decisionWrites);
+    const reviewAttempts=await page.evaluate(()=>window.__decisionNetworkAttempts);
+    await page.locator('#detailNext').click();
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview','footer returns to the saved judgment from the holding section');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),reviewWrites);
+    assert.deepEqual(await page.evaluate(()=>window.__decisionNetworkAttempts),reviewAttempts,'reopening saved content does not request AI or synchronize accounts');
+    const committed=await page.evaluate(()=>window.__uiSavedDecision());
+    assert.equal(committed.reason,editedReason);
+    assert.equal(committed.review_condition,checkpoint);
+    assert.equal(committed.choice,'hold');
+    assert.deepEqual(committed.scenario_snapshot,{},'this manual decision has no comparison assumptions to inherit');
+    await page.locator('#detailReturn').click();
+
+    // The test driver retains the confirmed server fixture across a full runtime restart.
+    const returnVisit={...firstVisit,reviewDecisions:[committed],deferDecisionSave:false,deferMetrics:false};
+    await page.reload();
+    await page.evaluate(args=>window.__uiFixture(...args),[returnVisit,committed,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    const reloadedReview=page.locator('.home-reviews');
+    if(!await reloadedReview.evaluate(el=>el.open))await reloadedReview.locator(':scope>summary').click();
+    await reloadedReview.locator('[data-decision-detail="s0"]').click();
+    await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'a confirmed judgment is not restored as an unfinished draft');
+    assert.equal(await page.locator('#detailNext').innerText(),'지난 결정과 이후 변화 보기');
+    await page.locator('[data-detail-jump="holding"]').click();
+    await page.locator('#detailNext').click();
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    const reloadedSummary=await page.locator('#detailDecisionSummary .sub').allTextContents();
+    assert.ok(reloadedSummary.includes('이유: '+editedReason),'exact saved reason survives a new runtime');
+    assert.ok(reloadedSummary.includes('다시 볼 조건: '+checkpoint),'exact checkpoint survives a new runtime');
+    assert.ok(reloadedSummary.includes('비교 없이 기록한 판단'));
+    assert.equal(await page.locator('#detailWeightTarget').inputValue(),'');
+    assert.equal(await page.locator('#detailPreviousComparison').count(),0,'unrelated prior AI comparison is not restored as this judgment’s assumption');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'reopening after reload never writes a judgment');
+    assert.deepEqual(await page.evaluate(()=>window.__decisionNetworkAttempts),{model:0,sync:0});
+    await page.screenshot({path:out+'/saved-decision-reloaded-'+width+'.png'});
+    await page.locator('#detailReturn').click();
+
+    // A transient history read failure is not evidence that the user has no decisions.
+    await page.evaluate(args=>window.__uiFixture(...args),[{...returnVisit,failDecisionRead:true},committed,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    await page.locator('#homeHoldings [data-security-id="s0"]').click();
+    await page.locator('#detailDecisionRetry').waitFor({state:'attached'});
+    assert.equal(await page.locator('#detailStartAction').innerText(),'저장한 판단 다시 불러오기');
+    assert.equal(await page.locator('#detailNext').innerText(),'저장한 판단 다시 불러오기');
+    assert.equal(await page.locator('#detailDirectDecision').isVisible(),false);
+    assert.match(await page.locator('#detailDecisionSummary').textContent(),/불러오지 못했습니다/);
+    assert.doesNotMatch(await page.locator('#detailDecisionSummary').textContent(),/저장한 판단이 없습니다/);
+    await page.locator('#detailNext').click();
+    await page.waitForFunction(()=>document.getElementById('detailDecisionRetry')?.disabled===false);
+    assert.equal(await page.locator('#detailNext').innerText(),'저장한 판단 다시 불러오기','a failed retry still offers a read-only recovery');
+    await page.evaluate(()=>window.__uiFailDecisionRead(false));
+    await page.locator('#detailNext').click();
+    await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailNext').innerText(),'지난 결정과 이후 변화 보기');
+    assert.equal(await page.locator('#detailDecisionRetry').count(),0);
+    assert.ok((await page.locator('#detailDecisionSummary .sub').allTextContents()).includes('이유: '+editedReason));
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+    assert.deepEqual(await page.evaluate(()=>window.__decisionNetworkAttempts),{model:0,sync:0});
+    await page.screenshot({path:out+'/saved-decision-read-recovered-'+width+'.png'});
     await page.locator('#detailReturn').click();
 
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);

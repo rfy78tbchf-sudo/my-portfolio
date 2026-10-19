@@ -10,7 +10,11 @@ for(const held of [true,false]){
  const button={getAttribute:()=> 'ARM',focus:()=>{focused='leader'}};
  const detail={click:()=>{opened++;assert.equal(focused,'leader','explicit focus supports touch browsers')}};
  const row={getAttribute:()=> 'ARM',querySelector:()=>held?detail:null,setAttribute(){},scrollIntoView(){scrolled++},focus(){focused='row'}};
- const c=vm.createContext({stockPnlQuery:'MRNA',stockPnlScope:'foreign',applyStockPnlFilter(){filtered++},document:{querySelectorAll:q=>q==='[data-pnl-leader]'?[button]:[row],getElementById:()=>search}});
+ const c=vm.createContext({stockPnlQuery:'MRNA',stockPnlScope:'foreign',applyStockPnlFilter(){filtered++},
+  live:{holdings:[{security_id:'s0',quantity:1}],securityMap:{s0:{symbol:'ARM'}}},performanceReviewContext:()=>null,
+  openSecurityDetail(id){assert.equal(id,'s0');opened++;assert.equal(focused,'leader','summary leader remains the return origin')},
+  document:{querySelectorAll:q=>q==='[data-pnl-leader]'?[button]:[row],getElementById:()=>search}});
+ if(s.includes('  function openPerformanceDetail('))vm.runInContext(s.slice(s.indexOf('  function openPerformanceDetail('),s.indexOf('  function bindDrilldown(')),c);
  vm.runInContext(s.slice(start,end),c);button.onclick();
  assert.equal(opened,held?1:0);assert.equal(filtered,held?0:1);
  assert.equal(c.stockPnlQuery,held?'MRNA':'');assert.equal(c.stockPnlScope,held?'foreign':'all');

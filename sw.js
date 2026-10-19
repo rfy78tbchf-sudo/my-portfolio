@@ -1,4 +1,4 @@
-const CACHE='my-portfolio-shell-2026101801-208';
+const CACHE='my-portfolio-shell-2026101901-209';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon.png','./passkey.js','./app-enhancements.js?v=58c','./realized-sales-ui.js?v=56','./vendor/jszip.min.js'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
@@ -13,9 +13,14 @@ self.addEventListener('fetch',event=>{
   if(url.origin!==self.location.origin) return;
   if(url.searchParams.has('check_build')){event.respondWith(fetch(req,{cache:'no-store'}));return;}
   if(req.mode==='navigate'){
+    const cachedShell=fallback=>caches.match('./index.html').then(hit=>hit&&hit.ok?hit:fallback).catch(()=>fallback);
     event.respondWith(fetch(req,{cache:'no-cache'}).then(res=>{
-      const copy=res.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return res;
-    }).catch(()=>caches.match('./index.html')));
+      // A temporary server failure must not replace a working offline shell.
+      // Preserve 4xx responses so missing or denied paths are not hidden.
+      if(!res.ok)return res.status>=500?cachedShell(res):res;
+      const copy=res.clone();event.waitUntil(caches.open(CACHE).then(c=>c.put('./index.html',copy)).catch(()=>{}));return res;
+    // Without a good cached shell, retain the browser's normal network failure.
+    }).catch(()=>cachedShell(Response.error())));
     return;
   }
   // UI scripts must update without asking iPhone PWA users to clear their

@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const fn=source.slice(source.indexOf('  function loadStockRealized('),source.indexOf('  function stockSeparatedHtml('));
 const requests=[];
-const ctx={setTimeout,clearTimeout,stockPeriod:'THIS_MONTH',stockRealizedEpoch:0,live:{},num:String,render(){},rpc:(_,p)=>new Promise((resolve,reject)=>requests.push({p,resolve,reject}))};
+const ctx={setTimeout,clearTimeout,kstDate:()=> '2026-10-19',stockPeriod:'THIS_MONTH',stockRealizedEpoch:0,live:{},num:String,render(){},rpc:(_,p)=>new Promise((resolve,reject)=>requests.push({p,resolve,reject}))};
 vm.createContext(ctx);vm.runInContext(fn,ctx);
 const rows=ctx.stockRealizedRows({items:[{symbol:'A',currency:'USD',realized_local:10,historical_krw_estimate:14000,status:'calculated'},{symbol:'A',currency:'USD',realized_local:null,status:'cost_review'},{symbol:'B',currency:'KRW',realized_local:-300,status:'partial_date'},{symbol:'C',currency:'USD',realized_local:5,historical_krw_estimate:null}]});
 assert.equal(rows[0].amount,14000);assert.equal(rows[0].known,1);assert.equal(rows[0].count,2);
@@ -14,6 +14,6 @@ assert.equal(held.length,2);assert.equal(held[0].amount,-200);assert.equal(held[
 ctx.loadStockRealized();ctx.loadStockRealized();assert.equal(requests.length,1);
 ctx.stockPeriod='1W';ctx.loadStockRealized();requests[1].resolve({ok:true,period:'1W'});await new Promise(setImmediate);
 requests[0].resolve({ok:true,period:'THIS_MONTH'});await new Promise(setImmediate);assert.equal(ctx.live.stockRealized.period,'1W');
-ctx.loadStockRealized(true);requests[2].reject(Error('offline'));await new Promise(setImmediate);assert.equal(ctx.live.stockRealizedFailed,true);assert.equal(ctx.live.stockRealized,null);
+ctx.loadStockRealized(true);requests[2].reject(Error('offline'));await new Promise(setImmediate);assert.equal(ctx.live.stockRealizedFailed,true);assert.equal(ctx.live.stockRealized.period,'1W');assert.equal(ctx.live.stockRealizedPrevious,true,'same-day failed refresh retains a labelled result');
 ctx.loadStockRealized(true);const replacement={};ctx.live=replacement;requests[3].resolve({ok:true});await new Promise(setImmediate);assert.equal(ctx.live.stockRealized,undefined);
 console.log('Separated P&L: account scope, unknown versus zero, FX, partial sales, stale response and retry passed');

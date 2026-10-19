@@ -23,6 +23,14 @@ jobs:
           tests/build179_review_acknowledgements.mjs
           tests/build191_review_entry.mjs
           tests/build193_review_reload.mjs
+      - name: Verify daily access, retained performance and return actions
+        run: >-
+          node --test
+          tests/build209_resume.mjs
+          tests/build209_performance_refresh.mjs
+          tests/build209_next_review.mjs
+          tests/build209_touch_return.mjs
+          tests/build209_shell_recovery.mjs
   mobile:
     runs-on: ubuntu-latest
     permissions:
@@ -71,6 +79,8 @@ jobs:
       - run: node tests/build65_decision_completion.mjs
       - run: node tests/build67_ui_visual.mjs
       - run: UI_WEBKIT_NAV=1 UI_OUTPUT=mobile-artifacts/webkit-navigation node tests/build67_ui_visual.mjs
+      - name: Verify daily journey with production login and data-loading paths
+        run: node tests/build209_daily_browser.mjs
       - run: node tests/build90_chart_ma.mjs --browser
       - run: node tests/build93_review_conditions.mjs
       - uses: actions/upload-artifact@v4
