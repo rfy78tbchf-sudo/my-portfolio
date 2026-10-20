@@ -270,6 +270,7 @@ try{
     assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-NEXT');
     await page.evaluate(()=>window.openTestDetail('other'));await openOptionalTools(page);
     await page.locator('#detailDecisionSummary').waitFor({state:'attached'});
+    await page.locator('#detailDecisionSummary .decision-record-details>summary').click();
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/비교 없이 기록한 판단/);
     await page.evaluate(()=>{
       const original=window.rpc;

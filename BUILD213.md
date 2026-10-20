@@ -38,3 +38,7 @@ All browser fixtures intercept requests locally. No real account judgment, model
 - Existing visual suite retains numeric, save, filter and return assertions. Only obsolete presentation assumptions change: chart order, collapsed evidence, removed shortcuts and renamed uncertainty labels.
 
 Physical iPhone Face ID, home-screen relaunch, native keyboard and live account latency are not certified by these browser tests. No database/SQL migration is part of this release.
+
+## CI harness follow-up
+
+The first hosted mobile job stopped because four old isolated account-renderer fixtures omitted the new home review dependency. Those account tests now explicitly stub the unrelated review card, while the new full-browser tests exercise its actual implementation. The ISA mobile test opens the account disclosure by ID instead of selecting the first disclosure; the old detail test opens comparison metadata before asserting it. Their financial and save assertions are unchanged. All legacy workflow scripts then passed locally, including the ISA form, cross-security comparison and saved-detail checks. This follow-up changes tests/documentation only; the deployed application bytes remain identical.

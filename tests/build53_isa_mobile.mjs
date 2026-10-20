@@ -22,7 +22,7 @@ const empty=()=>'';
 const ctx=vm.createContext({live,liveError:null,period:'1M',isaNotice:'',
   latestManualRows:()=>[],completeSnapshotPeriod:()=>false,ledgerHeadlineReady:()=>false,
   esc:String,money,signedMoney:money,cls:empty,kstStamp:x=>String(x).slice(0,10),periods:empty,periodLabel:x=>x,
-  reconciliationHomeStatus:empty,assetChart:empty,metric:empty,homeBrowseCard:empty,kstDate:()=>"2026-10-01",
+  reconciliationHomeStatus:empty,assetChart:empty,metric:empty,homeCheckCard:()=>'',homeBrowseCard:empty,kstDate:()=>"2026-10-01",
   riskOverviewCard:empty,decisionHomeCard:empty,reviewHomeCard:empty,cashFlowAuditCard:empty,annualGoalCard:empty,tradeTargetCard:empty,
   dividendCard:empty,priceAlertCard:empty,upcomingAgenda:empty,dataStatusCard:empty});
 vm.runInContext(source.slice(start,end),ctx);
@@ -37,7 +37,7 @@ try{
   for(const width of [390,402,430]){
     const page=await browser.newPage({viewport:{width,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,locale:'ko-KR'});
     await page.setContent(doc);
-    await page.locator('details.card-group').first().evaluate(el=>el.open=true);
+    await page.locator('#homeAccounts').evaluate(el=>el.open=true);
     await page.locator('details.more-list').filter({has:page.locator('#isaTotalForm')}).evaluate(el=>el.open=true);
     const state=await page.evaluate(()=>{window.scrollTo(0,document.body.scrollHeight);
       const form=document.getElementById('isaTotalForm');
