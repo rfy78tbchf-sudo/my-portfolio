@@ -95,7 +95,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     await page.goto(site,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0);
     assert.equal(await page.locator('#login').isVisible(),false,'stored session reaches the real home without a login prompt');
-    assert.ok(await page.locator('#homeHoldings [data-security-id]').count());
+    assert.ok(await page.locator('#homeHoldings [data-asset-id]').count());
     assert.ok(await page.locator('#homeTrend svg').count(),'real home chart renders from mocked REST data');
     await page.screenshot({path:resolve(output,name+'-home.png')});
     await page.locator('#nav [data-tab="portfolio"]').click();

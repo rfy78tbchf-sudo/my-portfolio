@@ -7,7 +7,7 @@
 <main class="compare" id="concepts"></main>
 <script>
 const names=['오로라 테크','한빛 글로벌 ETF','푸른 에너지'];const values=['12,000,000원','7,200,000원','2,400,000원'];const ratios=[50,30,10];
-const descriptions=[['A · 자산 지도','전체 구성 → 비중 선택 → 같은 화면에서 판단','구성 파악이 빠름 · 작은 종목은 목록으로 보완'],['B · 종목 점검','자산 확인 → 한 종목 검토 → 저장 또는 다음 종목','추천 · 한 손으로 이어 보기 편함 · 전체 비교는 목록에서'],['C · 판단의 시간 흐름','지난 판단 → 확인된 변화 → 새 판단','보유 이유 복기에 좋음 · 기록이 적으면 목록으로 시작']];
+const descriptions=[['A · 자산 지도','홈에서 자산 구성 확인 → 내 종목에서 선택 → 판단','선택안 · 홈은 자산 현황에 집중 · 종목 판단은 내 종목에서'],['B · 종목 점검','자산 확인 → 한 종목 검토 → 저장 또는 다음 종목','한 손으로 이어 보기 편함 · 전체 비교는 목록에서'],['C · 판단의 시간 흐름','지난 판단 → 확인된 변화 → 새 판단','보유 이유 복기에 좋음 · 기록이 적으면 목록으로 시작']];
 const chart='<svg class="chart" viewBox="0 0 350 136" role="img" aria-label="가상 자산: 2376만원에서 2400만원으로 증가"><path d="M0 110L35 94L70 99L105 67L140 77L175 57L210 64L245 32L280 40L315 18L350 21L350 136L0 136Z" fill="#ee435f0a"/><path d="M0 110L35 94L70 99L105 67L140 77L175 57L210 64L245 32L280 40L315 18L350 21" fill="none" stroke="#ee435f" stroke-width="3"/></svg>';
 const common='<div class="eyebrow">내 자산</div><div class="asset">24,000,000원</div><div class="hint">가상 계좌 · 원화</div><div class="periods"><span>1주</span><span class="selected">1개월</span><span>3개월</span><span>전체</span></div><div class="change">자산 변화 +240,000원</div><div class="hint">입출금 포함</div>'+chart+'<div class="dates"><span>9. 20.</span><span>10. 20.</span></div>';
 function rows(){return '<div class="list">'+names.map((n,i)=>'<button data-open="'+i+'"><span>'+n+'<small>'+ratios[i]+'%</small></span><span>'+values[i]+' ›</span></button>').join('')+'</div>'}

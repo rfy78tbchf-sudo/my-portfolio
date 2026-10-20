@@ -10,7 +10,7 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const source=readFileSync(process.env.UI_SOURCE||resolve(root,'index.html'),'utf8');
 const apiOrigin=source.match(/var SUPABASE_URL='([^']+)'/)[1];
 const site='https://daily.portfolio.test/';
-const output=resolve(root,process.env.UI_OUTPUT||'mobile-artifacts/build213');
+const output=resolve(root,process.env.UI_OUTPUT||'mobile-artifacts/build214');
 mkdirSync(output,{recursive:true});
 const hook=`
   window.__dailyTest={
@@ -98,15 +98,16 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
       await page.setViewportSize({width,height:844});await page.evaluate(()=>scrollTo(0,0));
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       if(!process.env.UI_BASELINE){
-        const layout=await page.evaluate(()=>['.hero','#homeTrend','#homeCheck'].map(s=>document.querySelector(s).getBoundingClientRect().top));
+        const layout=await page.evaluate(()=>['.hero','#homeTrend','#homeHoldings'].map(s=>document.querySelector(s).getBoundingClientRect().top));
         assert.ok(layout[0]<layout[1]&&layout[1]<layout[2]);
-        const button=await page.locator('#homeCheck [data-decision-detail]').boundingBox();
+        const button=await page.locator('#homeHoldings [data-home-portfolio]').boundingBox();
         const nav=await page.locator('#nav').boundingBox();assert.ok(button.y+button.height<=nav.y,'review action visible above navigation');
         assert.equal(await page.locator('#content .periods').count(),1);
         assert.equal(await page.locator('.quick-links').count(),0);
         assert.match(await page.locator('#homeTrend .trend-change').innerText(),/자산 변화[\s\S]*70,000원[\s\S]*입출금 포함/);
       }
       await page.screenshot({path:resolve(output,name+'-home-'+width+'.png')});
+      if(width===390&&!process.env.UI_BASELINE)await page.locator('#homeHoldings').screenshot({path:resolve(output,name+'-map.png')});
       await page.locator('#nav [data-tab="portfolio"]').click();
       const rows=page.locator('.portfolio-list [data-security-id]');assert.equal(await rows.count(),4);
       const fourth=await rows.nth(3).boundingBox(),nav=await page.locator('#nav').boundingBox();assert.ok(fourth.y+fourth.height<=nav.y,'four readable holdings');
@@ -118,24 +119,22 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
       await page.locator('#nav [data-tab="home"]').click();
     }
     if(!process.env.UI_BASELINE){
-      const first=await page.locator('#homeCheckSelect').inputValue();
-      await page.locator('[data-home-check-next]').click();
-      const selected=await page.locator('#homeCheckSelect').inputValue();assert.notEqual(selected,first);
-      await page.reload();await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0);
-      assert.equal(await page.locator('#homeCheckSelect').inputValue(),selected,'next visit remembers browsing position');
-      await page.locator('#homeCheckSelect').selectOption(first);
-      await page.locator('#homeCheck [data-decision-detail]').click();await page.locator('#detailReturn').waitFor({state:'visible'});
-      await page.locator('#detailReturn').click();assert.equal(await page.locator('#homeCheckSelect').inputValue(),first);
+      assert.equal(await page.locator('#homeCheck,.home-reviews,[data-decision-detail]').count(),0,'home has no review workflow');
+      await page.locator('#homeHoldings [data-home-portfolio]').click();
+      const first=await page.locator('.portfolio-list [data-security-id]').first().getAttribute('data-security-id');
+      await page.locator('.portfolio-list [data-security-id]').first().click();await page.locator('#detailReturn').waitFor({state:'visible'});
+      await page.locator('#detailReturn').click();assert.ok(await page.locator('.portfolio-list [data-security-id="'+first+'"]').isVisible());
+      await page.locator('#nav [data-tab="home"]').click();
       await page.setViewportSize({width:390,height:844});
       await page.evaluate(()=>{document.documentElement.style.zoom='1.25';scrollTo(0,0)});
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'enlarged home fits');
-      await page.locator('#homeCheckSelect').scrollIntoViewIfNeeded();
-      assert.ok(await page.locator('#homeCheckSelect').isVisible());
+      await page.locator('#homeHoldings [data-home-portfolio]').scrollIntoViewIfNeeded();
+      assert.ok(await page.locator('#homeHoldings [data-home-portfolio]').isVisible());
       await page.screenshot({path:resolve(output,name+'-enlarged.png')});
       assert.equal(calls.filter(x=>/save_|upsert_|acknowledge/.test(x.path)).length,0,'browsing never saves or acknowledges a decision');
     }
     assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);
-    console.log('Build213 '+name+': three widths, first-screen asset/chart/review, four holdings, partial totals, cursor persistence, detail return and enlarged home passed');
+    console.log('Build214 '+name+': three widths, first-screen asset/chart/map, four holdings, partial totals, portfolio selection, detail return and enlarged home passed');
   }catch(error){await page.screenshot({path:resolve(output,name+'-failure.png')}).catch(()=>{});throw error}
   finally{await context.close();await browser.close()}
 }

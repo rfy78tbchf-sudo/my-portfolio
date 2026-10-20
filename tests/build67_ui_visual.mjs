@@ -387,6 +387,7 @@ try{
     await page.locator('#homeToday [data-security-id="s0"]').click();
     await page.locator('.detail-price-chart').waitFor();
     await page.locator('#detailClose').click();
+    await page.evaluate(()=>window.__uiRender('portfolio'));
     assert.match(await page.locator('#homePriceWatch').innerText(),/새 하락 알림 4개/);
     await page.locator('#swingAlertAck').click();
     assert.equal(await page.locator('#swingAlertAck').count(),0);
@@ -418,7 +419,7 @@ try{
     assert.ok(await pendingWatch.locator('button').first().isVisible());
     await pendingWatch.locator('summary').click();
     const statusFixture={...live,swingPrices:{...live.swingPrices,s0:swingPoints([...swingValues,120],today)}};
-    await page.evaluate(args=>window.__uiFixture(...args),[statusFixture,decision,analysis,comparison]);
+    await page.evaluate(args=>window.__uiFixture(...args),[statusFixture,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
     const formingWatch=page.locator('.price-watch-forming');
     assert.match(await formingWatch.locator('summary').innerText(),/새 전고점 형성 중 1종목/);
     assert.equal(await formingWatch.locator('button:visible').count(),0);
@@ -431,7 +432,7 @@ try{
     for(const tab of ['home','portfolio','performance']){
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);
-      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeCheck').isVisible());const box=await page.locator('#homeCheck').boundingBox();assert.ok(box.y<764,`${width}px review follows the chart on first screen`);assert.match(await page.locator('#homeToday').textContent(),/326,840/)}
+      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeHoldings').isVisible());const box=await page.locator('#homeHoldings').boundingBox();assert.ok(box.y<764,`${width}px review follows the chart on first screen`);assert.match(await page.locator('#homeToday').textContent(),/326,840/)}
       if(tab==='portfolio'&&!baseline){
         assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),false,'settings start collapsed');
         const fourthBottom=await page.locator('.portfolio-row').nth(3).evaluate(el=>el.getBoundingClientRect().bottom);
@@ -516,7 +517,8 @@ try{
       const midnightDecision={...decision,choice:'hold',review_condition:'2026-10-12',created_at:'2026-10-10T00:00:00Z'};
       const midnightData={...live,reviewDecisions:[midnightDecision]};
       await page.evaluate(args=>window.__uiFixture(...args),[midnightData,midnightDecision,analysis,comparison]);
-      const midnight=await page.evaluate(()=>window.__uiResumeMidnight());
+      await page.evaluate(()=>window.__uiRender('portfolio'));
+      const midnight=await page.evaluate(()=>window.__uiResumeMidnight());await page.evaluate(()=>window.__uiRender('portfolio'));
       assert.equal(midnight.before.attention,0,'checkpoint is not due before Korean midnight');
       assert.equal(midnight.reads,1,'one-minute return crossing midnight refreshes');
       assert.equal(midnight.after.attention,1,'checkpoint becomes due on return after midnight');
@@ -528,7 +530,7 @@ try{
 
       const contextDecision={...decision,choice:'hold',reason:'매출 성장을 다음 실적까지 확인',review_condition:'종가 100 달러 이하',created_at:'2026-09-27T00:00:00Z',price_snapshot:{price_date:'2026-09-26',currency:'USD'}};
       const contextData={...live,reviewDecisions:[contextDecision],priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:110}}}};
-      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false);
       assert.match(await page.locator('.home-review-brief').innerText(),/자동 조건에 해당하는 항목 없음/);
       await page.locator('.home-reviews>summary').click();
@@ -540,12 +542,12 @@ try{
       assert.match(await page.locator('#detailDecisionSummary').innerText(),/종가 100 달러 이하/);
       await page.locator('#detailClose').click();
       contextData.priceMeta.s0.latest.close=null;
-      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
       assert.match(await page.locator('.home-review-brief').innerText(),/자료·조건 확인 1개/);
 
       const ackDecision={...contextDecision};
       const ackData={...contextData,draftOwner:'ack-owner-'+width,decisionSaveFixture:true,priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:90}}}};
-      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history starts collapsed below the focused review');
       await page.locator('.home-reviews>summary').click();
       await page.locator('[data-home-review-ack="s0"]').click();
@@ -555,28 +557,25 @@ try{
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'last acknowledged item closes the completed review');
       assert.match(await page.locator('.home-reviews>summary').innerText(),/새로 점검할 판단 없음/);
       await page.locator('.home-reviews').screenshot({path:out+'/home-review-checked-'+width+'.png'});
-      await page.reload();await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      await page.reload();await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false);
       assert.match(await page.locator('.home-review-brief').innerText(),/새로 점검할 항목 없음/);
       await page.locator('.home-reviews>summary').click();await page.locator('[data-home-review-undo="s0"]').click();
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
       await page.locator('[data-home-review-ack="s0"]').click();
       ackData.priceMeta.s0.latest.price_date='2026-09-29';
-      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
       await page.locator('.home-reviews>summary').click();
       assert.equal(await page.locator('[data-home-review-ack="s0"]').isVisible(),true);
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
       await page.evaluate(()=>window.__reloadReviewRecords());
-      await page.evaluate(()=>window.__uiRender('home'));
-      assert.ok(await page.locator('#homeHoldings').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_PRECEDING)));
+      await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.ok(await page.locator('.portfolio-list').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_FOLLOWING)));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
       assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history remains collapsed; focused review follows the chart');
       await page.evaluate(()=>scrollTo(0,0));
-      assert.equal(await page.locator('#homeCheck').evaluate(el=>el.previousElementSibling.id),'homeTrend');
-      assert.equal(await page.locator('#homeCheck [data-decision-detail]').getAttribute('data-decision-detail'),'s1','due owner condition is the initial focused review');
-      assert.ok((await page.locator('#homeCheck h3').boundingBox()).y<764,'review entry remains on the first screen');
       await page.locator('.home-reviews>summary').click();
       await page.screenshot({path:`${out}/home-priority-${width}.png`});
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
@@ -1096,7 +1095,7 @@ try{
     firstVisit.testThesis={version:1,rationale:'매출 성장 근거를 다음 실적까지 확인하며 보유'};
     await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
-    const homeStock=page.locator('#homeHoldings [data-security-id="s0"]');await homeStock.click();
+    await page.evaluate(()=>window.__uiRender('portfolio'));const homeStock=page.locator('.portfolio-list [data-security-id="s0"]');await homeStock.click();
     await page.locator('#detailStart').waitFor();
     assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 확인 중/,'detail is ready while optional calculation remains unresolved');
     assert.equal(await page.locator('#detailBody>:first-child').getAttribute('id'),'detailStart');
@@ -1131,7 +1130,7 @@ try{
     // A new JavaScript runtime retains only localStorage, never the old draft map.
     await page.reload();
     await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
-    await page.evaluate(()=>window.__uiRender('home'));await page.locator('#homeHoldings [data-security-id="s0"]').click();
+    await page.evaluate(()=>window.__uiRender('home'));await page.evaluate(()=>window.__uiRender('portfolio'));await page.locator('.portfolio-list [data-security-id="s0"]').click();
     await page.locator('#detailDecisionForm').waitFor({state:'visible'});
     assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
     assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
@@ -1161,6 +1160,7 @@ try{
     assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(checkpoint));
     await page.screenshot({path:out+'/first-decision-complete-'+width+'.png'});
     await page.locator('#detailNext[data-action="done"]:not([hidden])').click();
+    await page.evaluate(()=>window.__uiRender('portfolio'));
     const homeReview=page.locator('.home-reviews');if(!await homeReview.evaluate(el=>el.open))await homeReview.locator(':scope>summary').click();
     await homeReview.locator('[data-decision-detail="s0"]').click();
     await page.locator('#detailDecisionReview').waitFor();
@@ -1186,6 +1186,7 @@ try{
     await page.reload();
     await page.evaluate(args=>window.__uiFixture(...args),[returnVisit,committed,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(()=>window.__uiRender('portfolio'));
     const reloadedReview=page.locator('.home-reviews');
     if(!await reloadedReview.evaluate(el=>el.open))await reloadedReview.locator(':scope>summary').click();
     await reloadedReview.locator('[data-decision-detail="s0"]').click();
@@ -1209,7 +1210,7 @@ try{
     // A transient history read failure is not evidence that the user has no decisions.
     await page.evaluate(args=>window.__uiFixture(...args),[{...returnVisit,failDecisionRead:true},committed,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
-    await page.locator('#homeHoldings [data-security-id="s0"]').click();
+    await page.evaluate(()=>window.__uiRender('portfolio'));await page.locator('.portfolio-list [data-security-id="s0"]').click();
     await page.locator('#detailDecisionRetry').waitFor({state:'attached'});
     assert.equal(await page.locator('#detailStartAction').innerText(),'저장한 판단 다시 불러오기');
     assert.equal(await page.locator('#detailNext').innerText(),'저장한 판단 다시 불러오기');
@@ -1266,12 +1267,13 @@ try{
     await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
     await page.evaluate(()=>window.__holdStartupExtras=true);
     await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
+    await page.evaluate(()=>window.__uiRender('portfolio'));
     await page.waitForFunction(()=>document.querySelector('.home-load-status'));
     await page.waitForFunction(()=>!document.querySelector('.home-load-status'));
-    assert.match(await page.locator('#homeCheck .home-check-state').innerText(),/저장한 가격 조건에 해당/);
+    assert.equal(await page.locator('#homeCheck').count(),0);
     await page.locator('.home-reviews>summary').click();
     assert.match(await page.locator('.review-home').innerText(),/저장한 가격 조건에 해당/);
-    assert.ok(await page.locator('.asset').first().innerText(),'account remains readable while enrichment is blocked');
+    assert.ok(await page.locator('.portfolio-list').isVisible(),'holdings remain readable while enrichment is blocked');
     await page.screenshot({path:out+'/home-before-analysis-'+width+'.png'});
     await page.evaluate(async()=>{window.__failHomeReview=true;await window.__retryHomeProbe()});
     await page.locator('[data-home-review-retry]').waitFor();
@@ -1286,6 +1288,7 @@ try{
     await page.evaluate(()=>window.__releaseHomeProbe({ok:true}));
     await page.waitForFunction(()=>window.__startupStatus().ready);
     assert.equal((await page.evaluate(()=>window.__startupStatus())).loading,true);
+    await page.evaluate(()=>window.__uiRender('home'));
     assert.ok(await page.locator('.hero .pnl').count());
     assert.ok(await page.locator('#homeTrend svg').count(),'startup chart visible while extras pending');
     await page.evaluate(()=>window.scrollTo(0,0));
@@ -1301,7 +1304,8 @@ try{
     await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});
     await page.evaluate(async()=>{window.__holdStartupExtras=false;window.__releaseStartupExtras({ok:true});await window.__homeProbe});
     await page.evaluate(async()=>{window.__failHomeReview=true;window.__failStartupChart=true;await Promise.all([window.__retryHomeProbe(),window.__retryStartup()])});
-    await page.locator('[data-home-review-retry]').waitFor();await page.locator('[data-home-startup-retry]').waitFor();
+    await page.evaluate(()=>window.__uiRender('portfolio'));await page.locator('[data-home-review-retry]').waitFor();
+    await page.evaluate(()=>window.__uiRender('home'));await page.locator('[data-home-startup-retry]').waitFor();
     const retryTotal=await page.locator('.hero .asset').innerText(),retryReads=await page.evaluate(()=>window.__homeProbeReads.length);
     await page.evaluate(async()=>{window.__failHomeReview=false;window.__failStartupChart=false;await window.__quickReturnProbe()});
     await page.locator('[data-home-review-retry]').waitFor({state:'detached'});await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});

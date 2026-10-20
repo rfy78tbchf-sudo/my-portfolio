@@ -44,12 +44,12 @@ const scope={live,liveError:'',period:'1M',portfolioMarket:'ALL',portfolioAccoun
 scope.portfolioQuery='';scope.portfolioPriceView='close';
 vm.createContext(scope);
 function include(start,end){const a=source.indexOf('  function '+start+'('),b=source.indexOf('  function '+end+'(',a+10);assert.ok(a>0&&b>a);vm.runInContext(source.slice(a,b),scope)}
-include('homeCheckItems','homeReviewTitle');include('periodLabel','chart');include('assetChart','securityChart');include('stockMark','cashFlowAuditCard');
+include('periodLabel','chart');include('assetChart','securityChart');include('stockMark','cashFlowAuditCard');
 include('performanceScopeHeader','observedPerformanceCard');
-scope.kstDate=()=> '2026-10-01';include('homeAssetBasis','demoPortfolio');include('livePortfolio','demoPerformance');include('performanceExplanationHtml','analysis');
+scope.kstDate=()=> '2026-10-01';include('homeAssetBasis','demoPortfolio');include('portfolioReviewSection','demoPerformance');include('performanceExplanationHtml','analysis');
 const home=vm.runInContext('liveHome()',scope),holdings=vm.runInContext('livePortfolio()',scope),performance=vm.runInContext('livePerformance()',scope);
-assert.ok(home.indexOf('64,000,000원')<home.indexOf('보유 종목'));
-assert.ok(home.indexOf('id="homeTrend"')<home.indexOf('id="homeCheck"'));
+assert.ok(home.indexOf('64,000,000원')<home.indexOf('자산 구성'));
+assert.ok(home.indexOf('id="homeTrend"')<home.indexOf('id="homeHoldings"'));
 assert.ok(home.includes('자산 변화')&&home.includes('투자손익과 다릅니다'));
 assert.ok(!home.includes('원금 60,000,000원'));
 scope.period='6M';scope.live.performanceGate={ok:true,state:'unavailable'};

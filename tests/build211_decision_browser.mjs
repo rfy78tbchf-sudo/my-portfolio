@@ -142,10 +142,11 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     await page.goto(site,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>window.__decisionBrowser?.state().idle&&window.__decisionBrowser.state().loadEpoch>0);
     assert.equal(await page.locator('#login').isVisible(),false);
-    assert.ok(await page.locator('#homeHoldings [data-security-id]').count());
+    assert.ok(await page.locator('#homeHoldings [data-asset-id]').count());
   }
-  async function openHolding(id){await page.locator('#homeHoldings [data-security-id="'+id+'"]').click();await page.locator('#detailDirectDecision').waitFor({state:'visible'})}
+  async function openHolding(id){await page.locator('#nav [data-tab="portfolio"]').click();await page.locator('.portfolio-list [data-security-id="'+id+'"]').click();await page.locator('#detailDirectDecision').waitFor({state:'visible'})}
   async function openSaved(id){
+    await page.locator('#nav [data-tab="portfolio"]').click();
     const reviews=page.locator('.home-reviews');if(!await reviews.evaluate(el=>el.open))await reviews.locator(':scope>summary').click();
     await reviews.locator('[data-decision-detail="'+id+'"]').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
     await page.waitForFunction(()=>window.__decisionBrowser.state().idle);
@@ -224,7 +225,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     // A comparison save also commits, but the next startup cannot read either home
     // or detail history. Retrying the unchanged restored input must retain all the
     // original payload, including its analysis and comparison, and create no new row.
-    await page.locator('#homeHoldings [data-security-id="'+securities[1].id+'"]').click();
+    await page.locator('#nav [data-tab="portfolio"]').click();await page.locator('.portfolio-list [data-security-id="'+securities[1].id+'"]').click();
     await page.locator('[data-detail-jump="decision"]').click();await page.locator('#detailDecisionAction').click();
     await calculateKnownComparison();
     const retryReason='같은 6주 매도 가정으로 현금과 변동 폭을 재확인한 판단';
@@ -234,7 +235,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     await page.waitForFunction(()=>document.getElementById('detailDecisionStatus')?.textContent.includes('판단 저장 실패'));
     assert.equal(writes.length,4);assert.equal(decisions.length,4);const awaitingReceipt=copy(decisions[0]),originalPayload=copy(writes[3]);
     failDecisionReads=true;await newVisit();
-    await page.locator('#homeHoldings [data-security-id="'+securities[1].id+'"]').click();
+    await page.locator('#nav [data-tab="portfolio"]').click();await page.locator('.portfolio-list [data-security-id="'+securities[1].id+'"]').click();
     await page.locator('#detailDecisionForm').waitFor({state:'visible'});
     assert.equal(await page.locator('#detailReason').inputValue(),retryReason);assert.equal(await page.locator('#detailReview').inputValue(),retryReview);
     assert.equal(await page.locator('#detailWeightTarget').inputValue(),'8');assert.equal(await page.locator('#detailDown').inputValue(),'-12.5');assert.equal(await page.locator('#detailUp').inputValue(),'17.5');

@@ -115,7 +115,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
   try{
     await page.goto(site,{waitUntil:'domcontentloaded'});await idle();
     await page.locator('#homeTrend .periods').scrollIntoViewIfNeeded();
-    const homeRows=await page.locator('#homeHoldings [data-security-id]').count();
+    const homeRows=await page.locator('#homeHoldings [data-asset-id]').count();
     const oldTotal=await page.locator('#homeTrend .trend-total').textContent();
     const hold=deferred();periodDelays.set('3M',hold);
     const before=await selectTrend('3M');await waitGate(hold,'three-month chart');
@@ -123,7 +123,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     assert.equal(await page.locator('#homeTrend svg').count(),0,'old chart cannot appear under the newly selected period');
     assert.match(await page.locator('#homeTrend .trend-placeholder').innerText(),/최근 3개월.*불러오는 중/);
     assert.equal(await page.locator('#homeTrend').getAttribute('aria-busy'),'true');
-    assert.equal(await page.locator('#homeHoldings [data-security-id]').count(),homeRows,'home holdings stay available while a chart is loading');
+    assert.equal(await page.locator('#homeHoldings [data-asset-id]').count(),homeRows,'home holdings stay available while a chart is loading');
     assert.equal(await page.locator('.hero .pnl').count(),0,'previous-period profit does not acquire the new period label');
     assert.equal(await page.locator('#content .periods').count(),1,'one home period control remains at the chart');
     await page.screenshot({path:resolve(output,name+'-trend-loading.png')});
@@ -138,7 +138,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     assert.match(await page.locator('#homeTrend .eyebrow').innerText(),/최근 6개월/);
     assert.equal(await page.locator('#homeTrend svg').count(),0);
     assert.equal(await page.locator('#homeTrend').getAttribute('aria-busy'),'false');
-    assert.equal(await page.locator('#homeHoldings [data-security-id]').count(),homeRows);
+    assert.equal(await page.locator('#homeHoldings [data-asset-id]').count(),homeRows);
     await page.screenshot({path:resolve(output,name+'-trend-retry.png')});
     failedPeriods.delete('6M');await retry.scrollIntoViewIfNeeded();const retryTop=await trendTop();await retry.click();await idle();
     await stableTrend(retryTop,'retried');assert.match(await page.locator('#homeTrend .trend-total').textContent(),/6,000,000/);
