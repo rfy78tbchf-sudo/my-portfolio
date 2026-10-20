@@ -33,6 +33,8 @@ jobs:
           tests/build209_shell_recovery.mjs
       - name: Verify provisional amounts and reconciliation scope
         run: node --test tests/build210_pnl_state.mjs
+      - name: Verify account-scoped browsing and saved-condition ordering
+        run: node tests/build213_review_cursor.mjs
       - name: Verify interrupted decision submission and persisted request identity
         run: node --test tests/decision_edit_prefill.mjs tests/build211_pending_decision.mjs tests/build211_review_race.mjs
   mobile:
@@ -85,6 +87,8 @@ jobs:
       - run: UI_WEBKIT_NAV=1 UI_OUTPUT=mobile-artifacts/webkit-navigation node tests/build67_ui_visual.mjs
       - name: Verify daily journey with production login and data-loading paths
         run: node tests/build209_daily_browser.mjs
+      - name: Verify asset-first review layout and browsing continuity
+        run: node tests/build213_browser.mjs
       - name: Verify trend period continuity
         run: node tests/build210_trend_browser.mjs
       - name: Verify detail actions during text entry and control selection

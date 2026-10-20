@@ -105,7 +105,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     await page.locator('[data-stock-period="THIS_MONTH"]').click();
     await page.waitForFunction(()=>window.__dailyTest.state().idle&&window.__dailyTest.state().period==='THIS_MONTH');
     await page.locator('[data-pnl-scope="foreign"]').click();
-    assert.match(await page.locator('.performance-hero').innerText(),/일부 계산/);
+    assert.match(await page.locator('.performance-hero').innerText(),/일부 미계산/);
     const originalPnl=await page.locator('.performance-hero .asset').innerText();
     const initialLoads=calls.filter(c=>c.path==='/rest/v1/accounts').length;
 
@@ -129,14 +129,14 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     await page.evaluate(()=>document.activeElement.blur());
     await waitGate(pnlDelay,'deferred performance');
     assert.match(await page.locator('#content').innerText(),/이전 조회 · 최신 손익 확인 중/);
-    assert.match(await page.locator('.performance-hero').innerText(),/일부 계산/);
+    assert.match(await page.locator('.performance-hero').innerText(),/일부 미계산/);
     assert.equal(await page.locator('.performance-hero .asset').innerText(),originalPnl);
     pnlDelay.release();pnlDelay=null;
     await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().renderPending&&window.__dailyTest.state().pnl===100000);
     assert.equal(await page.locator('#stockPnlSearch').inputValue(),'ARM');
     assert.equal(await page.locator('[data-pnl-scope="foreign"]').getAttribute('aria-pressed'),'true');
     assert.equal(await page.locator('[data-stock-period="THIS_MONTH"]').getAttribute('aria-pressed'),'true');
-    assert.match(await page.locator('.performance-hero').innerText(),/일부 계산/);
+    assert.match(await page.locator('.performance-hero').innerText(),/일부 미계산/);
     assert.ok(Math.abs(await page.evaluate(()=>scrollY)-listY)<3,'period, filtered list and scroll survive the completed resume');
     assert.equal(calls.filter(c=>c.path==='/rest/v1/accounts').length,initialLoads+1);
     await page.screenshot({path:resolve(output,name+'-performance-resumed.png')});

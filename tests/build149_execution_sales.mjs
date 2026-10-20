@@ -7,7 +7,7 @@ const rows=c.stockRealizedRows(data);assert.equal(rows.length,2);assert.equal(ro
 data.closed_cycles=[{symbol:'ARM',aliases:['ARM'],closed_realized:{method:'flat_to_flat_net_cash',realized_local:20,realized_krw:20000,sale_count:1}}];assert.equal(c.stockRealizedItems(data).length,3);
 Object.assign(c,{stockView:'realized',stockPeriod:'THIS_MONTH',live:{stockRealized:{...data,period_start:'2026-10-01',period_end:'2026-10-06',pending_settlement_count:2},stockRealizedPeriod:'THIS_MONTH'},stockViewButtons:()=>'',stockPeriodButtons:()=>'',stockPeriodLabel:()=> '이번 달',stockMark:()=>'',brokerDayCard:()=>'',cls:()=>'',signedMoney:String});
 vm.runInContext(s.slice(s.indexOf('  function stockSeparatedHtml('),s.indexOf("  var stockPeriod='THIS_MONTH'")),c);
-const html=c.stockSeparatedHtml();assert.match(html,/매도 3건 · 2종목/);assert.match(html,/결제 반영 대기/);assert.doesNotMatch(html,/계산 대기|일부 계산/);
+const html=c.stockSeparatedHtml();assert.match(html,/매도 3건 · 2종목/);assert.match(html,/결제 반영 대기/);assert.doesNotMatch(html,/계산 대기|일부 미계산/);
 console.log('Build149: pending sales grouped, dates visible, no fake zero, no unsafe closed-cycle replacement, render passed');
 
 const official={symbol:'KR',currency:'KRW',status:'broker_official',realized_local:155770,allocated_cost:2250000,quantity:200,trade_date:'2026-10-06'};

@@ -11,6 +11,6 @@ const view=c.stockPeriodPerformance(),leaders=view.match(/<section class="card p
 assert.equal((leaders.match(/data-pnl-leader=/g)||[]).length,3);
 assert.ok(leaders.indexOf('data-pnl-leader="ARM"')<leaders.indexOf('data-pnl-leader="SOXL"'));
 assert.match(leaders,/>SOXL</);assert.match(leaders,/>삼성전자</);
-assert.doesNotMatch(leaders,/LONG NAME|UNKNOWN|SMALL/);assert.match(view,/일부 계산/);
+assert.doesNotMatch(leaders,/LONG NAME|UNKNOWN|SMALL/);assert.match(view,/일부 미계산/);
 assert.match(view,/ISA·현금 별도/);assert.match(view,/수익 종목 합계/);
 console.log('Build207: three largest absolute contributors, short foreign ticker, domestic name, partial scope and unchanged breakdown passed');

@@ -7,6 +7,6 @@ assert.match(c.homeAssetBasis({...scope,current_isa_capture_at:null},{}),/ISA �
 assert.match(c.homeAssetBasis(null,{snapshot_date:'2025-10-11'}),/2025-10-11 \(시간 미기록\)/);
 assert.match(c.homeAssetBasis({ok:false}, {snapshot_at:'invalid'}),/시각 확인 필요/);
 const branch=s.slice(s.indexOf('  function liveHome('),s.indexOf('  function loadSwingPrices(',s.indexOf('  function liveHome(')));
-assert.ok(branch.includes("return homeStatus+startupStatus+'<section"),'period failure keeps account retry warning');
+assert.ok(branch.includes("+homeStatus+startupStatus+'</section>'+flow"),'period failure keeps account retry warning');
 assert.ok(branch.includes('homeAssetBasis(scope,last)'));
 console.log('Build190: source-aligned dates, KST, year, unknown timestamps and failure warning retained');

@@ -372,17 +372,18 @@ try{
     }
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiRender('home'));
-    assert.match(await page.locator('.hero .home-basis-time').innerText(),/KB .*ISA .*한국시간/);
-    assert.equal(await page.locator('.hero .balance-meta').evaluate(el=>el.open),false,'basis dates visible without opening details');
+    assert.match(await page.locator('.hero .home-basis-time').textContent(),/KB .*ISA .*한국시간/);
+    assert.equal(await page.locator('.hero .balance-meta').evaluate(el=>el.open),false,'basis dates retained inside account disclosure');
     await page.screenshot({path:out+'/home-basis-'+width+'.png'});
     const confirmedAssets=await page.locator('.hero .asset').innerText();
     await page.evaluate(()=>window.__uiHomeFailure());
     assert.equal(await page.locator('.hero .asset').innerText(),confirmedAssets);
     assert.equal(await page.locator('[data-home-load-retry]').isVisible(),true,'account retry remains visible alongside period failure');
-    assert.match(await page.locator('.hero .home-basis-time').innerText(),/KB .*ISA/);
+    assert.match(await page.locator('.hero .home-basis-time').textContent(),/KB .*ISA/);
     await page.screenshot({path:out+'/home-basis-failure-'+width+'.png'});
     await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
 
+    await page.locator('.home-today-details>summary').click();
     await page.locator('#homeToday [data-security-id="s0"]').click();
     await page.locator('.detail-price-chart').waitFor();
     await page.locator('#detailClose').click();
@@ -430,7 +431,7 @@ try{
     for(const tab of ['home','portfolio','performance']){
       await page.evaluate(tab=>window.__uiRender(tab),tab);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);
-      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeToday').isVisible());const box=await page.locator('#homeToday').boundingBox();assert.ok(box.y<500,`${width}px today summary is near top`);assert.match(await page.locator('#homeToday').innerText(),/326,840/)}
+      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeCheck').isVisible());const box=await page.locator('#homeCheck').boundingBox();assert.ok(box.y<764,`${width}px review follows the chart on first screen`);assert.match(await page.locator('#homeToday').textContent(),/326,840/)}
       if(tab==='portfolio'&&!baseline){
         assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),false,'settings start collapsed');
         const fourthBottom=await page.locator('.portfolio-row').nth(3).evaluate(el=>el.getBoundingClientRect().bottom);
@@ -519,7 +520,8 @@ try{
       assert.equal(midnight.before.attention,0,'checkpoint is not due before Korean midnight');
       assert.equal(midnight.reads,1,'one-minute return crossing midnight refreshes');
       assert.equal(midnight.after.attention,1,'checkpoint becomes due on return after midnight');
-      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true);
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history starts collapsed below the focused review');
+      await page.locator('.home-reviews>summary').click();
       assert.match(await page.locator('.review-home-item').first().innerText(),/점검 날짜 도래.*2026-10-12/);
       await page.evaluate(()=>scrollTo(0,0));
       await page.screenshot({path:out+'/midnight-resume-'+width+'.png'});
@@ -544,7 +546,8 @@ try{
       const ackDecision={...contextDecision};
       const ackData={...contextData,draftOwner:'ack-owner-'+width,decisionSaveFixture:true,priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:90}}}};
       await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
-      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true);
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history starts collapsed below the focused review');
+      await page.locator('.home-reviews>summary').click();
       await page.locator('[data-home-review-ack="s0"]').click();
       assert.match(await page.locator('.home-review-brief').innerText(),/확인한 항목 1개/);
       assert.doesNotMatch(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단/);
@@ -561,6 +564,7 @@ try{
       ackData.priceMeta.s0.latest.price_date='2026-09-29';
       await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      await page.locator('.home-reviews>summary').click();
       assert.equal(await page.locator('[data-home-review-ack="s0"]').isVisible(),true);
       const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
       await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
@@ -568,15 +572,12 @@ try{
       await page.evaluate(()=>window.__uiRender('home'));
       assert.ok(await page.locator('#homeHoldings').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_PRECEDING)));
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
-      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),true,'due reviews are visible without an extra tap');
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history remains collapsed; focused review follows the chart');
       await page.evaluate(()=>scrollTo(0,0));
-      const firstScreen=await page.locator('.home-reviews').evaluate(el=>({
-        followsAssets:el.previousElementSibling.matches('.hero'),
-        summaryBottom:el.querySelector('summary').getBoundingClientRect().bottom,
-        viewport:innerHeight
-      }));
-      assert.equal(firstScreen.followsAssets,true,'triggered review follows assets before other home sections');
-      assert.ok(firstScreen.summaryBottom<firstScreen.viewport-80,'review title and reason summary fit above bottom navigation');
+      assert.equal(await page.locator('#homeCheck').evaluate(el=>el.previousElementSibling.id),'homeTrend');
+      assert.equal(await page.locator('#homeCheck [data-decision-detail]').getAttribute('data-decision-detail'),'s1','due owner condition is the initial focused review');
+      assert.ok((await page.locator('#homeCheck h3').boundingBox()).y<764,'review entry remains on the first screen');
+      await page.locator('.home-reviews>summary').click();
       await page.screenshot({path:`${out}/home-priority-${width}.png`});
       const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
       assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
@@ -750,16 +751,16 @@ try{
           const pending={...three.stockPnl,all_items_displayed:false,provisional_count:1,
             items:three.stockPnl.items.map(x=>x.symbol==='ARM'?{...x,provisional_amount:true}:x)};
           await page.evaluate(data=>window.__uiPeriodSummary(data),pending);
-          assert.match(await page.locator('.performance-hero').first().innerText(),/일부 계산[\s\S]*결제 전 잠정 1종목 포함/);
-          assert.match(await page.locator('[data-pnl-leader="ARM"]').innerText(),/결제 전 잠정/);
-          assert.match(await page.locator('[data-pnl-symbol="ARM"] .contribution-pill').innerText(),/결제 전 잠정/);
+          assert.match(await page.locator('.performance-hero').first().innerText(),/일부 미계산[\s\S]*추정 1종목 포함/);
+          assert.match(await page.locator('[data-pnl-leader="ARM"]').innerText(),/추정/);
+          assert.match(await page.locator('[data-pnl-symbol="ARM"] .contribution-pill').innerText(),/추정/);
           const end=await page.locator('.pnl-leader').last().boundingBox(),bottom=await page.locator('.nav').boundingBox();
           assert.ok(end.y+end.height<=bottom.y,'provisional context and three contributors remain above bottom navigation');
           assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
           await page.screenshot({path:`${out}/period-provisional-${width}.png`});
           await page.locator('[data-pnl-leader="ARM"]').click();
           await page.locator('.performance-review-context').waitFor();
-          assert.match(await page.locator('.performance-review-context').innerText(),/-2,000,000원[\s\S]*일부 계산 · 결제 전 잠정/);
+          assert.match(await page.locator('.performance-review-context').innerText(),/-2,000,000원[\s\S]*일부 미계산 · 추정/);
           await page.locator('#detailReturn').click();
         }
         await page.evaluate(data=>window.__uiPeriodSummary(data),stockData.stockPnl);
@@ -827,7 +828,7 @@ try{
         await page.locator('[data-stock-view="realized"]').click();
         await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();
         assert.match(await page.locator('.performance-hero').innerText(),/140,000/);
-        assert.match(await page.locator('.performance-hero').innerText(),/일부 계산/);
+        assert.match(await page.locator('.performance-hero').innerText(),/일부 미계산/);
         assert.equal(await page.locator('.performance-position').count(),2);
 
 
@@ -887,7 +888,7 @@ try{
         const next={...localHistory,stockPnl:{...localHistory.stockPnl,all_items_displayed:true,source_candidate_count:4,provisional_count:basis==='pending'?1:0,items:localHistory.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,local_history_basis:basis,provisional_amount:basis==='pending',aliases:['OLDTEST','LOCAL'],corporate_cash_local:2,separate_cash_krw:basis==='corporate_group'?-1234:0}:x)}};
         await page.evaluate(data=>window.__uiLocalHistory(data),next);
         const row=page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'});
-        assert.match(await row.innerText(),basis==='pending'?/결제 전 잠정/:/별도 세금 -1,234원/);
+        assert.match(await row.innerText(),basis==='pending'?/추정/:/별도 세금 -1,234원/);
         await page.getByText('전체 4개 종목 기록 반영',{exact:false}).waitFor();
         await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
         assert.match(await row.innerText(),basis==='pending'?/결제 후 금액이 달라질 수 있는/:/OLDTEST · LOCAL/);
@@ -940,7 +941,12 @@ try{
 
     await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);
     await page.evaluate(()=>window.__uiSelectHomePeriod('3M'));
-    await page.locator('[data-home-period-performance]').click();
+    assert.equal(await page.locator('[data-home-period-performance]').count(),0,'home does not repeat the performance shortcut');
+    await page.locator('#nav [data-tab="performance"]').click();
+    await page.locator('[data-stock-view="total"]').click();
+    await page.locator('[data-stock-period="3M"]').click();
+    await page.locator('#stockPnlSearch').fill('');
+    await page.locator('#stockPnlSort').selectOption('impact');
     await page.locator('#stockPnlSearch').waitFor();
     assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
     assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
@@ -998,7 +1004,8 @@ try{
       {security_id:'s3',symbol:'LLY',name:'일라이 릴리',currency:'USD',end_quantity:3,pnl_krw:0},
       {security_id:'s2',symbol:'MRNA',name:'모더나',currency:'USD',end_quantity:40,pnl_krw:null,reason:'가격 확인 필요'}]}};
     await page.evaluate(args=>{window.__uiFixture(...args);window.__uiRender('home')},[todayJourney,decision,analysis,comparison]);
-    assert.match(await page.locator('#homeToday').innerText(),/집계 대기/);
+    assert.match(await page.locator('#homeToday').textContent(),/집계 대기/);
+    await page.locator('.home-today-details>summary').click();
     await page.locator('[data-home-today-performance]').click();
     assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
     assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
@@ -1261,6 +1268,8 @@ try{
     await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
     await page.waitForFunction(()=>document.querySelector('.home-load-status'));
     await page.waitForFunction(()=>!document.querySelector('.home-load-status'));
+    assert.match(await page.locator('#homeCheck .home-check-state').innerText(),/저장한 가격 조건에 해당/);
+    await page.locator('.home-reviews>summary').click();
     assert.match(await page.locator('.review-home').innerText(),/저장한 가격 조건에 해당/);
     assert.ok(await page.locator('.asset').first().innerText(),'account remains readable while enrichment is blocked');
     await page.screenshot({path:out+'/home-before-analysis-'+width+'.png'});

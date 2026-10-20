@@ -106,7 +106,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
   async function stableTrend(top,label){
     assert.ok(await page.locator('#homeTrend').count(),label+': trend remains mounted');
     assert.ok(Math.abs(await trendTop()-top)<3,label+': period control keeps its vertical position');
-    assert.ok(await page.evaluate(()=>scrollY)>500,label+': stays at trend instead of home top');
+    assert.ok(await trendTop()>=0&&await trendTop()<700,label+': chart periods stay within the mobile viewport');
   }
   async function visibleActive(selector){
     const rect=await page.locator(selector).evaluate(el=>{const a=el.getBoundingClientRect(),g=el.parentElement.getBoundingClientRect();return {left:a.left,right:a.right,groupLeft:g.left,groupRight:g.right,pressed:el.getAttribute('aria-pressed')}});
@@ -114,9 +114,9 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
   }
   try{
     await page.goto(site,{waitUntil:'domcontentloaded'});await idle();
-    await page.locator('.quick-links a[href="#homeTrend"]').click();
+    await page.locator('#homeTrend .periods').scrollIntoViewIfNeeded();
     const homeRows=await page.locator('#homeHoldings [data-security-id]').count();
-    const oldTotal=await page.locator('#homeTrend .trend-total').innerText();
+    const oldTotal=await page.locator('#homeTrend .trend-total').textContent();
     const hold=deferred();periodDelays.set('3M',hold);
     const before=await selectTrend('3M');await waitGate(hold,'three-month chart');
     await stableTrend(before,'loading');
@@ -129,8 +129,8 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     await page.screenshot({path:resolve(output,name+'-trend-loading.png')});
     hold.release();periodDelays.delete('3M');await idle();
     await stableTrend(before,'loaded');
-    assert.notEqual(await page.locator('#homeTrend .trend-total').innerText(),oldTotal);
-    assert.match(await page.locator('#homeTrend .trend-total').innerText(),/5,700,000/);
+    assert.notEqual(await page.locator('#homeTrend .trend-total').textContent(),oldTotal);
+    assert.match(await page.locator('#homeTrend .trend-total').textContent(),/5,700,000/);
 
     failedPeriods.add('6M');const errorTop=await selectTrend('6M');
     const retry=page.locator('#homeTrend').getByRole('button',{name:'다시 확인',exact:true});await retry.waitFor();
@@ -141,7 +141,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     assert.equal(await page.locator('#homeHoldings [data-security-id]').count(),homeRows);
     await page.screenshot({path:resolve(output,name+'-trend-retry.png')});
     failedPeriods.delete('6M');await retry.scrollIntoViewIfNeeded();const retryTop=await trendTop();await retry.click();await idle();
-    await stableTrend(retryTop,'retried');assert.match(await page.locator('#homeTrend .trend-total').innerText(),/6,000,000/);
+    await stableTrend(retryTop,'retried');assert.match(await page.locator('#homeTrend .trend-total').textContent(),/6,000,000/);
 
     // An older delayed response must not change the newer selected chart or its label.
     const older=deferred();periodDelays.set('ALL',older);await selectTrend('ALL');await waitGate(older,'older all-period chart');
@@ -149,7 +149,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     await selectTrend('1Y');await page.waitForFunction(()=>window.__dailyTest.state().loadedHomePeriod==='1Y');
     older.release();periodDelays.delete('ALL');await idle();
     await visibleActive('#homeTrend [data-period="1Y"]');
-    assert.match(await page.locator('#homeTrend .trend-total').innerText(),/6,600,000/);
+    assert.match(await page.locator('#homeTrend .trend-total').textContent(),/6,600,000/);
     assert.match(await page.locator('#homeTrend .eyebrow').innerText(),/최근 1년/);
 
     // Completing a chart after navigation cannot pull the user back into the chart.

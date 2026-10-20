@@ -39,17 +39,17 @@ function rowAmount(html,symbol){return html.match(new RegExp(`data-pnl-symbol="$
 test('priced pending amounts stay provisional in summary, leader, row and review when another item is missing',()=>{
   const c=fixture(),p=periodResult();c.live.stockPnl=p;
   const before=JSON.stringify(p),html=c.stockPeriodPerformance();
-  assert.match(hero(html),/일부 계산/);
-  assert.match(hero(html),/1\/2종목 · 결제 전 잠정 1종목 포함/);
-  assert.doesNotMatch(hero(html),/잠정 2종목/,'unpriced official-only entries are not included amounts');
-  assert.match(leaders(html),/aria-label="PENDING \+100원 결제 전 잠정 종목 점검"/);
-  assert.match(leaders(html),/<small class="partial-amount">결제 전 잠정<\/small>/);
-  assert.match(rowAmount(html,'PENDING'),/\+100원<small class="partial-amount">결제 전 잠정/);
-  assert.doesNotMatch(rowAmount(html,'MISSING'),/결제 전 잠정/,'an uncalculated amount stays uncalculated');
+  assert.match(hero(html),/일부 미계산/);
+  assert.match(hero(html),/1\/2종목 · 추정 1종목 포함/);
+  assert.doesNotMatch(hero(html),/추정 2종목/,'unpriced official-only entries are not included amounts');
+  assert.match(leaders(html),/aria-label="PENDING \+100원 추정 종목 점검"/);
+  assert.match(leaders(html),/<small class="partial-amount">추정<\/small>/);
+  assert.match(rowAmount(html,'PENDING'),/\+100원<small class="partial-amount">추정/);
+  assert.doesNotMatch(rowAmount(html,'MISSING'),/추정/,'an uncalculated amount stays uncalculated');
   const context=c.performanceReviewContext('PENDING');
   assert.equal(context.amount,100);assert.equal(context.currency,'KRW');
   assert.equal(context.partial,true);assert.equal(context.provisional,true);
-  assert.match(c.performanceReviewHtml(context,'PENDING'),/일부 계산 · 결제 전 잠정/);
+  assert.match(c.performanceReviewHtml(context,'PENDING'),/일부 미계산 · 추정/);
   assert.equal(JSON.stringify(p),before,'rendering cannot recalculate amounts or change completeness');
 });
 
@@ -57,14 +57,14 @@ test('zero, full calculation coverage and mixed currency retain their separate s
   const c=fixture(),p=periodResult([{...pending,pnl_krw:0,pnl_local:0}]);
   Object.assign(p,{complete:true,pnl_krw:0,krw_included_count:1,provisional_count:1,all_items_displayed:true});
   c.live.stockPnl=p;let html=c.stockPeriodPerformance();
-  assert.match(hero(html),/결제 전 잠정 1종목 포함/);assert.doesNotMatch(hero(html),/일부 계산/);
-  assert.match(rowAmount(html,'PENDING'),/0원<small class="partial-amount">결제 전 잠정/);
+  assert.match(hero(html),/추정 1종목 포함/);assert.doesNotMatch(hero(html),/일부 미계산/);
+  assert.match(rowAmount(html,'PENDING'),/0원<small class="partial-amount">추정/);
   assert.equal(p.complete,true,'coverage flag is not rewritten to infer settlement finality');
   const local={...pending,symbol:'LOCAL',pnl_krw:null,pnl_local:-2,local_cash_only:true,reason:'거래일 확인 필요'};
   c.live.stockPnl=periodResult([pending,local,missing]);html=c.stockPeriodPerformance();
   assert.match(hero(html),/전체 원화 합계는 아직 미확정/);
-  assert.match(hero(html),/결제 전 잠정 2종목 포함/);
-  assert.doesNotMatch(hero(html),/잠정 3종목/);
+  assert.match(hero(html),/추정 2종목 포함/);
+  assert.doesNotMatch(hero(html),/추정 3종목/);
   const context=c.performanceReviewContext('LOCAL');
   assert.equal(context.amount,-2);assert.equal(context.currency,'USD');assert.equal(context.provisional,true);
 });
@@ -85,8 +85,8 @@ test('realized detail keeps the list currency, partial amount and provisional st
   r.closed_cycles=[{symbol:'TEST',currency:'USD',aliases:['TEST'],closed_realized:{method:'flat_to_flat_net_cash',realized_local:-10,realized_krw:12000,sale_count:1,allocated_cost:100,provisional_settlement_count:1}}];
   const before=JSON.stringify(r);context=c.performanceReviewContext('TEST');
   assert.equal(context.amount,-10);assert.equal(context.provisional,true);assert.equal(context.partial,false);
-  assert.match(c.performanceReviewHtml(context,'TEST'),/결제 전 잠정/);
-  assert.match(hero(c.stockSeparatedHtml()),/결제 전 잠정 포함/);
+  assert.match(c.performanceReviewHtml(context,'TEST'),/추정/);
+  assert.match(hero(c.stockSeparatedHtml()),/추정 포함/);
   assert.equal(JSON.stringify(r),before);
 });
 

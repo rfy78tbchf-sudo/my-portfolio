@@ -14,7 +14,7 @@ for(const version of ['same','new','failed']){
 }
 assert.match(html,/body\.prepend\(startPanel\)/);
 assert.match(html,/detail-overview'\)\.after\(extras\)/);
-const change=html.slice(html.indexOf('    var chartChange='),html.indexOf('    var flow='));
+const change=html.slice(html.indexOf('    var chartChange='),html.indexOf('    var trendDetail='));
 assert.ok(!change.includes('입출금·계좌 편입'),'routine caveat is not in chart headline');
 console.log('Build72: resumed app checks version; explicit update preserves drafts; first action and quiet chart verified');
 
