@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';import vm from 'node:vm';import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-const block=source.slice(source.indexOf('  function loadLiveOnce('),source.indexOf('  function showApp('));
+const block=source.slice(source.indexOf('  var liveLoadPromise=null;'),source.indexOf('  function showApp('));
 const tick=()=>new Promise(r=>setImmediate(r));
 function fixture(){
  const calls=[];let release,fail=false;
@@ -21,3 +21,5 @@ const old=fixture();await old.c.loadLiveOnce(true);old.c.liveAuthEpoch++;const b
 const retry=fixture();await retry.c.loadLiveOnce(true);retry.fail=true;const failed=retry.c.live.ensureDetails();retry.release();await failed;assert.match(retry.c.live.enrichmentError,/offline/);const count=retry.calls.length;await retry.c.live.ensureDetails();assert.equal(retry.calls.length,count,'failed lazy request does not loop on every render');retry.fail=false;await retry.c.live.ensureDetails(true);assert.equal(retry.c.live.detailsDeferred,false);assert.equal(retry.c.live.snapshots[0].total_assets,90,'retry does not reverse the coherent history');
 const changed=fixture();await changed.c.loadLiveOnce(true);const prior=changed.c.live,late=prior.ensureDetails();await tick();changed.c.liveLoadEpoch++;changed.c.live={marker:'new'};changed.release();await late;assert.equal(changed.c.live.marker,'new');assert.equal(changed.c.live.benchmark,undefined,'late analysis cannot overwrite new balances');
 console.log('Build216: home completes without enrichment, single lazy request, full caller contract, error retry, ordering and account/load isolation passed');
+
+const shared=fixture();const fast=shared.c.loadLive(true),all=shared.c.loadLive();assert.equal(shared.c.loadLive(),all);assert.equal(shared.c.loadLive(true),fast);await fast;let allDone=false;all.then(()=>allDone=true);await tick();assert.equal(allDone,false);shared.release();await all;assert.equal(shared.c.live.detailsDeferred,false);

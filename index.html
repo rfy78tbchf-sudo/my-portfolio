@@ -2384,9 +2384,11 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
   function fetchAllLedger(){var all=[],offset=0,total=null;function page(){return rpc('get_live_ledger',{p_limit:500,p_offset:offset,p_type:null,p_search:null}).then(function(x){total=Number(x.total||0);var items=x.items||[];all=all.concat(items);offset+=items.length;if(items.length&&all.length<total)return page();return all})}return page()}
   var liveLoadPromise=null;
   function loadLive(homeOnly){
-    if(!liveLoadPromise)liveLoadPromise=loadLiveOnce(homeOnly===true).finally(function(){liveLoadPromise=null});
+    if(!liveLoadPromise){liveLoadPromise=loadLiveOnce(homeOnly===true).finally(function(){liveLoadPromise=null});liveLoadPromise.homeOnly=homeOnly===true}
     var pending=liveLoadPromise;
-    return homeOnly===true?pending:pending.then(function(){if(live&&live.ensureDetails)return live.ensureDetails()});
+    if(homeOnly===true||!pending.homeOnly)return pending;
+    if(!pending.withDetails)pending.withDetails=pending.then(function(result){if(live&&live.ensureDetails)return live.ensureDetails().then(function(){return result});return result});
+    return pending.withDetails;
   }
   var liveLoadEpoch=0,liveAuthEpoch=0;
   function loadLiveOnce(homeOnly){
