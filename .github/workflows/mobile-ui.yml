@@ -52,6 +52,7 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
+        timeout-minutes: 5
       - name: Verify position and saved judgment entry
         run: node tests/build217_browser.mjs
       - run: node tests/build49_ai_cache.mjs
