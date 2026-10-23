@@ -53,6 +53,8 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
+      - name: Verify decision save, interrupted receipt and next-visit readback
+        run: node tests/build211_decision_browser.mjs
       - name: Verify position and saved judgment entry
         run: node tests/build217_browser.mjs
       - run: node tests/build49_ai_cache.mjs
@@ -104,8 +106,6 @@ jobs:
         run: node tests/build210_trend_browser.mjs
       - name: Verify detail actions during text entry and control selection
         run: node tests/build210_detail_controls.mjs
-      - name: Verify decision save, interrupted receipt and next-visit readback
-        run: node tests/build211_decision_browser.mjs
       - run: node tests/build90_chart_ma.mjs --browser
       - run: node tests/build93_review_conditions.mjs
       - uses: actions/upload-artifact@v4

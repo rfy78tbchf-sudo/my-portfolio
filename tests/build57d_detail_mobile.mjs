@@ -225,7 +225,9 @@ try{
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
     assert.equal(await page.locator('#detailReview').inputValue(),'Recheck the reported operating result');
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/새 판단으로 기록/);
+    await page.locator('#detailRuleOptions > summary').click();
     assert.match(await page.locator('#detailReviewHelp').innerText(),/직접 확인할 조건으로 저장/);
+    await page.locator('#detailRuleOptions > summary').click();
     await page.locator('#detailDecisionForm').scrollIntoViewIfNeeded();
     await page.screenshot({path:`mobile-artifacts/build173-edit-prefill-${width}.png`});
     await page.locator('#detailChoice').selectOption('revisit');

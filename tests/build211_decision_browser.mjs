@@ -163,6 +163,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
   }
   async function assertSaved(row,withComparison){
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'a confirmed server record must not reopen as an unfinished draft');
+    assert.ok(await page.locator('#detailStart #detailDecisionSummary').isVisible(),'confirmed judgment replaces editing context');
     const lines=await page.locator('#detailDecisionSummary .sub').allTextContents();
     assert.ok(lines.includes('이유: '+row.reason),'the exact saved reason survives a fresh runtime');
     assert.ok(lines.includes('다시 볼 조건: '+row.review_condition),'the exact review condition survives a fresh runtime');
@@ -183,6 +184,22 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
   try{
     // Manual judgment: genuine DOM input -> production save -> RPC reread -> home -> new page.
     await newVisit();await openHolding(securities[0].id);await page.locator('#detailDirectDecision').click();
+    for(const width of [390,402,430]){
+      await page.setViewportSize({width,height:844});
+      await page.locator('#detailDecisionForm').scrollIntoViewIfNeeded();
+      assert.equal(await page.locator('#detailStartAction').isVisible(),false,'entry action yields to the active form');
+      assert.equal(await page.locator('#detailSavedReason').isVisible(),false,'rationale preview does not compete with input');
+      assert.ok(await page.locator('.decision-form-title').isVisible());
+      assert.equal(await page.locator('#detailRuleOptions').evaluate(e=>e.open),false);
+      assert.equal(await page.locator('#detailReviewHelp').isVisible(),false);
+      assert.ok(await page.locator('.detail-sheet').evaluate(e=>e.scrollWidth<=e.clientWidth));
+      await page.screenshot({path:resolve(output,name+'-focused-form-'+width+'.png')});
+    }
+    await page.setViewportSize({width:390,height:844});
+    await page.locator('#detailRuleOptions > summary').click();
+    assert.ok(await page.locator('#detailReviewHelp').isVisible());
+    assert.match(await page.locator('#detailReviewHelp').innerText(),/직접 확인할 조건/);
+    await page.locator('#detailRuleOptions > summary').click();
     const manualReason='매출과 이익이 함께 개선되는지 다음 실적에서 확인합니다.\n현금 흐름 < 목표여도 추가매수는 보류 & 현재 보유 유지.';
     const manualReview='다음 실적 발표에서 매출 성장과 영업 현금 흐름을 직접 확인';
     await page.locator('#detailReason').fill(manualReason);await page.locator('#detailReview').fill(manualReview);
