@@ -1,3 +1,8 @@
+async function saveJudgment(page){
+  const inline=page.locator('#detailDecisionForm button[type="submit"]');
+  if(await inline.isVisible())await inline.click();
+  else await page.locator('#detailNext[data-action="save"]').click();
+}
 import assert from 'node:assert/strict';
 async function openOptionalTools(page){
  if(!await page.locator('#detailExtras').count())await page.locator('#detailExtras').waitFor({state:'attached'});
@@ -162,12 +167,12 @@ try{
     await page.locator('#detailDecisionAction').click();
     await page.locator('#detailReason').fill('I can absorb this exposure');
     await page.locator('#detailReview').fill('Recheck the reported operating result');
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/다시 비교하거나 목표 비중을 지워/);
     await page.locator('#detailWeightRun').click();
     await page.locator('#thesisAnalyze').click();
     await page.getByText('저장됨 · 계좌 관측').last().waitFor({state:'attached'});
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/비교 조건으로 AI 의견/,
       'a generic thesis answer cannot authorize a different comparison');
     await page.locator('#detailComparisonNext').click();
@@ -191,13 +196,13 @@ try{
     await page.locator('#detailComparisonNext').click();
     assert.ok(await page.locator('#detailDecisionForm').isVisible(),
       'after the linked AI opinion, one tap opens the decision form');
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     await page.waitForFunction(()=>/판단 저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
     assert.equal(await page.locator('#detailDecisionDone').count(),0,'unverified save must not show completion');
     assert.equal(await page.locator('#detailReview').inputValue(),'Recheck the reported operating result');
     await page.evaluate(()=>document.getElementById('detailDecisionStatus').textContent='');
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     await page.waitForFunction(()=>/저장 완료|저장 실패/.test(document.getElementById('detailDecisionStatus').textContent));
     const saveMessage=await page.locator('#detailDecisionStatus').textContent();
     assert.match(saveMessage,/내 판단 저장 완료/,saveMessage);
@@ -266,7 +271,7 @@ try{
     await page.locator('#detailDecisionAction').click();
     await page.locator('#detailReason').fill('Second stock hold, no target');
     await page.locator('#detailReview').fill('Review source evidence again');
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     await page.waitForFunction(()=>/내 판단 저장 완료/.test(document.getElementById('detailDecisionStatus').textContent));
     assert.equal(await page.evaluate(()=>stored[0].p_target_pct),null,'hold can be saved without a comparison target');
     assert.equal(await page.evaluate(()=>stored[0].p_analysis_id),'analysis-for-NEXT');

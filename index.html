@@ -514,6 +514,10 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
 .detail-sheet #detailRuleOptions{margin:12px 0 16px}
 .detail-sheet #detailRuleOptions>summary{min-height:44px}
 .detail-sheet #detailDecisionStatus{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+
+/* Keep one save action visible; text entry retains a reachable inline action. */
+.detail-sheet:has(> .detail-return-bar > #detailNext[data-action="save"]:not([hidden])) #detailDecisionForm:not(:has(textarea:focus,input[type="number"]:focus,button[type="submit"]:focus)) > button[type="submit"]{display:none}
+.detail-sheet:has(#detailDecisionForm > button[type="submit"]:focus) .detail-return-bar{visibility:hidden;pointer-events:none}
 </style>
 </head>
 <body>

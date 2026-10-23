@@ -1,3 +1,8 @@
+async function saveJudgment(page){
+  const inline=page.locator('#detailDecisionForm button[type="submit"]');
+  if(await inline.isVisible())await inline.click();
+  else await page.locator('#detailNext[data-action="save"]').click();
+}
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync,mkdirSync,readdirSync} from 'node:fs';
 import {dirname,resolve,extname} from 'node:path';
@@ -190,6 +195,8 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
       assert.equal(await page.locator('#detailStartAction').isVisible(),false,'entry action yields to the active form');
       assert.equal(await page.locator('#detailSavedReason').isVisible(),false,'rationale preview does not compete with input');
       assert.ok(await page.locator('.decision-form-title').isVisible());
+      assert.equal(await page.locator('#detailDecisionForm button[type=submit]').isVisible(),false,'one save action with keyboard closed');
+      assert.ok(await page.locator('#detailNext[data-action=save]').isVisible());
       assert.equal(await page.locator('#detailRuleOptions').evaluate(e=>e.open),false);
       assert.equal(await page.locator('#detailReviewHelp').isVisible(),false);
       assert.ok(await page.locator('.detail-sheet').evaluate(e=>e.scrollWidth<=e.clientWidth));
@@ -203,7 +210,9 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     const manualReason='매출과 이익이 함께 개선되는지 다음 실적에서 확인합니다.\n현금 흐름 < 목표여도 추가매수는 보류 & 현재 보유 유지.';
     const manualReview='다음 실적 발표에서 매출 성장과 영업 현금 흐름을 직접 확인';
     await page.locator('#detailReason').fill(manualReason);await page.locator('#detailReview').fill(manualReview);
-    await page.locator('#detailDecisionForm button[type="submit"]').click();await waitForSavedFooter();
+    assert.ok(await page.locator('#detailDecisionForm button[type=submit]').isVisible(),'inline save remains available while typing');
+    assert.equal(await page.locator('.detail-return-bar').isVisible(),false,'typing hides the footer');
+    await saveJudgment(page);await waitForSavedFooter();
     assert.equal(writes.length,1);assert.equal(decisions[0].reason,manualReason);assert.equal(decisions[0].review_condition,manualReview);
     assert.equal(Object.hasOwn(decisions[0].scenario_snapshot,'choice_comparison'),false,'server baseline observations are not a user-selected comparison');const manual=copy(decisions[0]);
     await page.screenshot({path:resolve(output,name+'-manual-saved.png')});await page.locator('#detailNext[data-action="done"]').click();
@@ -216,7 +225,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     const compareReason='6주 매도 가정의 현금 확보와 가격 하락 영향을 확인하고 일부 축소를 검토';
     const compareReview='종가 95 달러 이하';
     await page.locator('#detailReason').fill(compareReason);await page.locator('#detailReview').fill(compareReview);
-    await page.locator('#detailDecisionForm button[type="submit"]').click();await waitForSavedFooter();
+    await saveJudgment(page);await waitForSavedFooter();
     assert.equal(writes.length,2);const compared=copy(decisions[0]);assert.equal(compared.reason,compareReason);assert.equal(compared.review_condition,compareReview);assert.equal(compared.analysis_id,priorAnalysis.id);
     assert.equal(compared.scenario_snapshot.choice_comparison.reduce.shares_to_sell,6);
     await page.screenshot({path:resolve(output,name+'-comparison-saved.png')});
@@ -229,7 +238,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     await page.locator('#detailChoice').selectOption('revisit');
     await page.locator('#detailReason').fill('자료가 모자라 판단을 유보하고 다음 공시를 확인');
     await page.locator('#detailReview').fill('다음 공시에서 투자 전제를 직접 확인');
-    loseNextSave=true;await page.locator('#detailDecisionForm button[type="submit"]').click();
+    loseNextSave=true;await saveJudgment(page);
     await page.waitForFunction(()=>document.getElementById('detailDecisionStatus')?.textContent.includes('판단 저장 실패'));
     assert.equal(writes.length,3);const recovered=copy(decisions[0]);
     assert.ok(await page.evaluate(key=>localStorage.getItem(key),draftKey(recovered.security_id)),'an uncertain response retains the durable draft');
@@ -248,7 +257,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     const retryReason='같은 6주 매도 가정으로 현금과 변동 폭을 재확인한 판단';
     const retryReview='종가 97 달러 이하';
     await page.locator('#detailReason').fill(retryReason);await page.locator('#detailReview').fill(retryReview);
-    loseNextSave=true;await page.locator('#detailDecisionForm button[type="submit"]').click();
+    loseNextSave=true;await saveJudgment(page);
     await page.waitForFunction(()=>document.getElementById('detailDecisionStatus')?.textContent.includes('판단 저장 실패'));
     assert.equal(writes.length,4);assert.equal(decisions.length,4);const awaitingReceipt=copy(decisions[0]),originalPayload=copy(writes[3]);
     failDecisionReads=true;await newVisit();

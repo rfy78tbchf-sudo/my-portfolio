@@ -1,3 +1,8 @@
+async function saveJudgment(page){
+  const inline=page.locator('#detailDecisionForm button[type="submit"]');
+  if(await inline.isVisible())await inline.click();
+  else await page.locator('#detailNext[data-action="save"]').click();
+}
 import './build209_next_review.mjs';
 import './build208_list_return.mjs';
 import './build207_period_summary.mjs';
@@ -1075,7 +1080,7 @@ try{
     assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'shortcuts only edit the draft');
     await page.locator('#detailReason').fill('매출 성장 근거를 다음 실적에서 다시 확인');
     await page.locator('#detailReview').fill('다음 실적 발표 후 확인');
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     await page.locator('#detailNext[data-action="done"]:not([hidden])').waitFor().catch(async e=>{throw Error(e.message+'; save status: '+await page.locator('#detailDecisionStatus').innerText())});
     assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost response must not replay the write');
     assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
@@ -1138,7 +1143,7 @@ try{
     await page.screenshot({path:out+'/decision-draft-reloaded-'+width+'.png'});
     await page.screenshot({path:out+'/decision-draft-restored-'+width+'.png'});
     await page.screenshot({path:out+'/decision-while-weight-pending-'+width+'.png'});
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     await page.waitForFunction(()=>typeof window.__releaseDecisionSave==='function');
     const editedReason='실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인 · 새로 수정한 초안';
     await page.locator('#detailReason').fill(editedReason);
@@ -1151,7 +1156,7 @@ try{
     assert.ok(!(await page.locator('#detailDecisionSummary').innerText()).includes('새로 수정한 초안'));
     await page.locator('#detailDecisionStatus').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
     await page.screenshot({path:out+'/save-with-newer-draft-'+width+'.png'});
-    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await saveJudgment(page);
     await page.locator('#detailNext[data-action="done"]:not([hidden])').waitFor();
     assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(editedReason));
     await page.evaluate(()=>window.__releaseDetailMetrics());
