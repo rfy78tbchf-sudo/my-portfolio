@@ -86,6 +86,6 @@ test('saved checkpoint text is escaped in home and detail',()=>{
 test('input guidance distinguishes manual review from supported data comparisons',()=>{
   assert.match(html,/id="detailReview" aria-describedby="detailReviewHelp"/);
   assert.match(html,/id="detailReviewHelp"[^>]*>실적·공시 등은 직접 확인할 조건으로 저장합니다/);
-  assert.match(html,/날짜·가격·이평선 비교 조건 설정/);
+  assert.match(html,/조건 설정·도움말/);
   assert.match(html,/직접 확인할 조건으로 기록했습니다\. 자료를 보고 직접 판단해 주세요/);
 });
