@@ -76,9 +76,9 @@ try{
       throw Error(`${width}px stock detail did not render: ${pageErrors.join('; ')||'no browser error'}`)});
     const sections=await page.locator('#detailBody').evaluate(node=>Array.from(node.children).flatMap(x=>x.id==='detailExtras'?Array.from(x.children).filter(y=>y.tagName!=='SUMMARY'):x).filter(x=>x.id!=='detailStart').map(x=>x.querySelector('h3')?.textContent||x.querySelector('summary')?.textContent||''));
     const position=label=>sections.findIndex(x=>x.includes(label));
-    assert.ok(position('현재 상태')<position('내 보유 이유')&&position('내 보유 이유')<position('AI 의견')&&
+    assert.ok(position('보유 현황')<position('내 보유 이유')&&position('내 보유 이유')<position('AI 의견')&&
       position('AI 의견')<position('일부 팔면')&&position('일부 팔면')<position('내 결정 기록')&&
-      position('내 결정 기록')<position('기술지표와 평가 기준')&&position('가격 차트')<position('현재 상태'),`${width}px: reason, AI opinion, comparison, decision precede detailed evidence`);
+      position('내 결정 기록')<position('기술지표와 평가 기준')&&position('보유 현황')<position('가격 차트'),`${width}px: reason, AI opinion, comparison, decision precede detailed evidence`);
     assert.ok(await page.locator('.detail-overview').getByText('10,000원').isVisible());
     await page.screenshot({path:`mobile-artifacts/build62-detail-overview-${width}.png`});
     const close=await page.locator('#detailClose').boundingBox();

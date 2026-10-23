@@ -52,6 +52,8 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify position and saved judgment entry
+        run: node tests/build217_browser.mjs
       - run: node tests/build49_ai_cache.mjs
       - run: node tests/build49c_ai_error.mjs
       - run: node tests/build49d_ai_readability.mjs
@@ -87,8 +89,6 @@ jobs:
       - run: node tests/build63_journey.mjs
       - run: node tests/build64a_unconfirmed_close.mjs
       - run: node tests/build65_decision_completion.mjs
-      - name: Verify position and saved judgment entry
-        run: node tests/build217_browser.mjs
       - name: Verify refresh completion and lazy data in both browsers
         run: node tests/build216_browser.mjs
       - name: Verify early assets, refresh failure and retry in both browsers
