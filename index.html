@@ -1532,7 +1532,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       shortcuts.querySelector('[data-detail-jump="reason"]').onclick=function(){revealDetailTarget(reasonSection)};
       shortcuts.querySelector('[data-detail-jump="decision"]').onclick=function(){var saved=document.getElementById('detailDecisionReview')||document.getElementById('detailDecisionSummary');if(saved)revealDetailTarget(saved);else{revealDetailTarget(decisionSection);openDecisionForm()}};
       function updateDetailStart(rows){var button=document.getElementById('detailStartAction'),hint=document.getElementById('detailStartHint');if(!button||!active())return;
-        var reasonPreview=document.getElementById('detailSavedReason');if(reasonPreview){var reasonText=results[2]&&results[2].thesis&&results[2].thesis.rationale;reasonPreview.textContent=reasonText?'내 보유 이유: '+reasonText:'';reasonPreview.hidden=!reasonText||!!(Array.isArray(rows)&&rows.length)}
+        var reasonPreview=document.getElementById('detailSavedReason');if(reasonPreview){var reasonText=results[2]&&results[2].thesis&&results[2].thesis.rationale;reasonPreview.hidden=!reasonText||!!(Array.isArray(rows)&&rows.length);reasonPreview.textContent=reasonPreview.hidden?'':'내 보유 이유: '+reasonText}
         shortcuts.querySelector('[data-detail-jump="decision"]').textContent=Array.isArray(rows)&&rows.length?'지난 판단':'판단 기록';
         var unavailable=!!(rows&&rows.unavailable),direct=document.getElementById('detailDirectDecision');if(direct)direct.hidden=unavailable||!!(Array.isArray(rows)&&rows.length);
         if(unavailable){hint.textContent='저장한 판단을 아직 불러오지 못했습니다.';button.textContent='저장한 판단 다시 불러오기';button.onclick=retryDecisionHistory}
