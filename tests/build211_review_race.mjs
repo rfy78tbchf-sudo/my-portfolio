@@ -37,7 +37,7 @@ function fixture({unavailable=false}={}){
     dispatchEvent(event){if(event.type==='input')ctx.body.oninput({target:this});this.listeners[event.type]?.call(this,event)},
     querySelector(selector){if(selector.includes('submit'))return nodes.get('submit');if(selector==='.review-status b')return {textContent:'아직 조건 미도달'};return null}
   };if(id)nodes.set(id,el);return el;}
-  for(const id of ['detailStart','detailChoice','detailReason','detailReview','detailDecisionForm','detailChoiceGuide','detailDecisionStatus','detailDecisionHistory','detailReuseReason','detailWeightTarget','detailDown','detailUp','submit'])node(id);
+  for(const id of ['detailStart','detailStartHint','detailChoice','detailReason','detailReview','detailDecisionForm','detailChoiceGuide','detailDecisionStatus','detailDecisionHistory','detailReuseReason','detailWeightTarget','detailDown','detailUp','submit'])node(id);
   const element=id=>nodes.get(id);
   element('detailChoice').value='hold';element('detailDown').value='-10';element('detailUp').value='10';element('detailDecisionForm').hidden=true;
   const initial=unavailable?Object.assign([],{unavailable:true}):project(persisted);

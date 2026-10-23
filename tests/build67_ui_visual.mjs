@@ -617,7 +617,7 @@ try{
     await page.locator('#detailStartAction').waitFor({state:'visible'});
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
     assert.equal(await page.locator('#detailStart').evaluate(el=>el.parentElement.id),'detailBody');
-    assert.match(await page.locator('#detailStartHint').innerText(),/지난 결정:/);
+    assert.ok(await page.locator('#detailStart #detailDecisionSummary').isVisible());
     assert.equal(await page.locator('[data-chart-period="3"]').getAttribute('aria-pressed'),'true','reopened detail remembers chosen chart period');
     await page.locator('[data-chart-period="all"]').click();
     assert.equal(await page.locator('.detail-shortcuts').count(),1);
@@ -633,7 +633,7 @@ try{
     assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
     await page.screenshot({path:`${out}/detail-${width}.png`});
     if(source.includes('detail-price-chart')){
-      assert.equal(await page.locator('#detailBody > :first-child').getAttribute('id'),'detailStart');
+      assert.equal(await page.locator('#detailBody > :first-child').getAttribute('id'),'detailOverview');
       assert.equal(await page.locator('.detail-price-chart').evaluate(el=>!!el.closest('details:not([open])')),false);
       assert.equal(await page.locator('.detail-price-chart .security-chart-hit').count(),1);
     }
@@ -1098,7 +1098,7 @@ try{
     await page.evaluate(()=>window.__uiRender('portfolio'));const homeStock=page.locator('.portfolio-list [data-security-id="s0"]');await homeStock.click();
     await page.locator('#detailStart').waitFor();
     assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 확인 중/,'detail is ready while optional calculation remains unresolved');
-    assert.equal(await page.locator('#detailBody>:first-child').getAttribute('id'),'detailStart');
+    assert.equal(await page.locator('#detailBody>:first-child').getAttribute('id'),'detailOverview');
     assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
     assert.match(await page.locator('#detailSavedReason').innerText(),/매출 성장 근거/);
     await page.locator('#detailDirectDecision').click();
