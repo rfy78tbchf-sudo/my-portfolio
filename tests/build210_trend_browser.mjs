@@ -173,7 +173,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
         const coverage=page.locator('.performance-hero .pnl-coverage');
         const summary=coverage.locator('summary');
         assert.match(await page.locator('.performance-hero').innerText(),/계산된 종목 합계/);
-        assert.match(await summary.innerText(),/미계산 1종목 · 추정 1종목/);
+        assert.match(await summary.innerText(),/계산 범위 · 3\/4종목 · 추정 1종목 포함/);
         if(await coverage.getAttribute('open')!==null)await summary.click();
         await summary.scrollIntoViewIfNeeded();
         const box=await summary.boundingBox();assert.ok(box.height>=44,'coverage control has a 44px touch target');

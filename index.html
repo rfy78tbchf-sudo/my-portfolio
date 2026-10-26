@@ -510,7 +510,8 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
 .detail-sheet .detail-overview .more-list>summary{min-height:44px;padding:10px 0}
 @media(max-width:350px){.detail-sheet .detail-overview-values{grid-template-columns:minmax(0,1fr)}.detail-sheet .detail-overview-result strong{font-size:15px}}
 /* Build219: expose missing and provisional scope next to the period subtotal. */
-.pnl-coverage>summary{min-height:44px;padding:12px 0;cursor:pointer;line-height:1.6;overflow-wrap:anywhere}
+.performance-hero .pnl-coverage{margin:0;border:0;padding:0}
+.pnl-coverage>summary{min-height:44px;padding:10px 0;cursor:pointer;line-height:1.6;overflow-wrap:anywhere}
 .pnl-coverage-body{padding:0 12px 12px;border-left:2px solid var(--line);overflow-wrap:anywhere}
 .pnl-coverage-group{margin-top:14px;font-size:14px;line-height:1.6}
 .pnl-coverage-group ul{margin:6px 0 0;padding-left:20px}
@@ -3538,7 +3539,7 @@ scopeRead
     if(pending.length)labels.push('추정 '+pending.length+'종목');
     if(unmapped)labels.push('종목 연결 대기 '+unmapped+'건');
     if(!labels.length&&p.complete)return '';
-    var h='<details class="more-list pnl-coverage"><summary>계산 범위'+(labels.length?' · '+labels.join(' · '):' 확인')+'</summary><div class="pnl-coverage-body">';
+    var h='<details class="more-list pnl-coverage"><summary>계산 범위 · '+Number(p.krw_included_count||0)+'/'+Number(p.candidate_count||items.length)+'종목'+(pending.length?' · 추정 '+pending.length+'종목 포함':'')+'</summary><div class="pnl-coverage-body"><p class="sub">평가 변화 + 매매 + 배당'+(labels.length?' · '+labels.join(' · '):'')+'</p>';
     if(!p.complete)h+='<p class="sub">표시 금액은 계산 가능한 종목의 합계입니다. 미계산 종목의 손익을 0원으로 간주하지 않습니다.</p>';
     function rows(list,title,note){
       if(!list.length)return '';
@@ -3595,7 +3596,7 @@ scopeRead
     if(!p||!p.ok)return head+'<section class="card" role="status">기간 손익을 불러오지 못했습니다.<div class="sub">해당 기간만 다시 조회할 수 있어요.</div><button id="stockPnlRetry" type="button" class="btn secondary">손익 다시 불러오기</button></section>';
     var overview=stockPnlOverview(p),provisional=stockPnlProvisionalCount(p),items=sortedStockPnl(p.items,stockPnlSort,p.comparison_fx),valid=items.filter(function(x){return !x.reason&&x.pnl_krw!=null&&String(x.pnl_krw).trim()!==''&&Number.isFinite(Number(x.pnl_krw))}),up=valid.reduce(function(n,x){return n+Math.max(0,Number(x.pnl_krw))},0),down=valid.reduce(function(n,x){return n+Math.min(0,Number(x.pnl_krw))},0);
     var headline=p.pnl_krw==null?'—':signedMoney(p.pnl_krw);
-    var html=head+'<section class="card performance-hero"><div class="sub">'+esc(stockPeriodLabel(stockPeriod))+' '+(p.complete?'주식 손익':'계산된 종목 합계 · 일부 미계산')+' · 원화 환산</div><div class="asset '+(p.pnl_krw==null?'muted':cls(p.pnl_krw))+'">'+headline+'</div><div class="sub">'+esc(p.period_start||'')+' ~ '+esc(p.period_end||'')+'</div><div class="stock-profit-split"><span>수익 종목 합계 <b class="up">'+(valid.length?signedMoney(up):'—')+'</b></span><span>손실 종목 합계 <b class="down">'+(valid.length?signedMoney(down):'—')+'</b></span></div><div class="sub">평가 변화 + 매매 + 배당 · '+p.krw_included_count+'/'+p.candidate_count+'종목'+(p.local_only_count?' · 외화만 '+p.local_only_count+'종목':'')+(provisional?' · 추정 '+provisional+'종목 포함':'')+'</div>'+stockPnlCoverageHtml(p)+'</section>';
+    var html=head+'<section class="card performance-hero"><div class="sub">'+esc(stockPeriodLabel(stockPeriod))+' '+(p.complete?'주식 손익':'계산된 종목 합계 · 일부 미계산')+' · 원화 환산</div><div class="asset '+(p.pnl_krw==null?'muted':cls(p.pnl_krw))+'">'+headline+'</div><div class="sub">'+esc(p.period_start||'')+' ~ '+esc(p.period_end||'')+'</div><div class="stock-profit-split"><span>수익 종목 합계 <b class="up">'+(valid.length?signedMoney(up):'—')+'</b></span><span>손실 종목 합계 <b class="down">'+(valid.length?signedMoney(down):'—')+'</b></span></div>'+(stockPnlCoverageHtml(p)||'<div class="sub">평가 변화 + 매매 + 배당 · '+p.krw_included_count+'/'+p.candidate_count+'종목</div>')+'</section>';
     if(overview.localRows)html=head+stockMixedHero(p,overview);
     if(p.all_items_displayed)html+='<div class="sub">조회 대상 '+Number(p.source_candidate_count||p.candidate_count)+'개 종목 기록'+(p.source_candidate_count>p.candidate_count?' · 합병·병합 연결 후 '+Number(p.candidate_count)+'개 항목':'')+'</div>';
     var leaders=valid.filter(function(x){return Number(x.pnl_krw)!==0}).sort(function(a,b){return Math.abs(Number(b.pnl_krw))-Math.abs(Number(a.pnl_krw))||String(a.symbol).localeCompare(String(b.symbol))}).slice(0,3);

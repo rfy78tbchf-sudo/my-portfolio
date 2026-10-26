@@ -109,7 +109,7 @@ test('partial subtotal exposes excluded names and reasons beside the amount with
   const c=fixture(),p=periodResult([{...pending,name:'계산된 종목'},{...missing,name:'누락 <종목>',reason:'시작 보유수량 확인 필요'}]);
   c.live.stockPnl=p;const before=JSON.stringify(p),html=c.stockPeriodPerformance(),scope=c.stockPnlCoverageHtml(p);
   assert.match(hero(html),/계산된 종목 합계 · 일부 미계산/);
-  assert.match(hero(html),/계산 범위 · 미계산 1종목 · 추정 1종목/);
+  assert.match(hero(html),/계산 범위 · 1\/2종목 · 추정 1종목 포함/);
   assert.match(scope,/누락 &lt;종목&gt;/);assert.match(scope,/시작 보유수량 확인 필요/);
   assert.match(scope,/0원으로 간주하지 않습니다/);
   assert.doesNotMatch(scope,/누락 <종목>/);
