@@ -40,13 +40,13 @@ const chartFor=p=>({items:snapshots.slice().reverse().map((s,i)=>({date:s.snapsh
 const gate={ok:true,state:'estimated',partial:false,reliable_start:before(30),observed_through:day,investment_pnl:90000,return_estimate_pct:1.7,opening_assets:5310000,closing_assets:5400000,external_flow:0,as_of:now};
 const summary={ok:true,return_ready:true,investment_pnl:90000,return_pct:1.7,period_start:before(30),period_end:day,realized_pnl:0,dividends_net:0};
 function stockResult(period,generation){
-  const items=securities.map((s,i)=>({...s,security_id:s.id,end_quantity:10,start_quantity:10,pnl_krw:i===3?null:[110000+generation*10000,-20000,0][i],reason:i===3?'가격 자료 확인 필요':null}));
+  const items=securities.map((s,i)=>({...s,security_id:s.id,provisional_amount:i===0,end_quantity:10,start_quantity:10,pnl_krw:i===3?null:[110000+generation*10000,-20000,0][i],reason:i===3?'가격 자료 확인 필요':null}));
   return {ok:true,period,period_start:period==='오늘'?day:before(30),period_end:day,basis_at:now,complete:false,all_items_displayed:true,candidate_count:4,source_candidate_count:4,krw_included_count:3,local_only_count:0,pnl_krw:items.slice(0,3).reduce((n,x)=>n+x.pnl_krw,0),items};
 }
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
+for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.UI_BROWSER||name===process.env.UI_BROWSER)){
   const browser=await engine.launch({headless:true});
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
@@ -165,6 +165,30 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     await visibleActive('[data-stock-period="ALL"]');
     assert.ok(Math.abs(await page.evaluate(()=>scrollY)-performanceY)<3,'revealing the active chip changes horizontal scroll only');
     await page.screenshot({path:resolve(output,name+'-active-period.png')});
+    // Build219: the subtotal's missing/estimated scope is inspectable without the long contribution list.
+    for(const width of [390,402,430]){
+      await page.setViewportSize({width,height:844});
+      for(const zoom of [1,1.25]){
+        await page.evaluate(z=>document.documentElement.style.zoom=String(z),zoom);
+        const coverage=page.locator('.performance-hero .pnl-coverage');
+        const summary=coverage.locator('summary');
+        assert.match(await page.locator('.performance-hero').innerText(),/계산된 종목 합계/);
+        assert.match(await summary.innerText(),/미계산 1종목 · 추정 1종목/);
+        if(await coverage.getAttribute('open')!==null)await summary.click();
+        await summary.scrollIntoViewIfNeeded();
+        const box=await summary.boundingBox();assert.ok(box.height>=44,'coverage control has a 44px touch target');
+        await summary.click();
+        assert.match(await coverage.innerText(),/국내 검증 종목/);
+        assert.match(await coverage.innerText(),/가격 자료 확인 필요/);
+        assert.match(await coverage.innerText(),/0원으로 간주하지 않습니다/);
+        assert.match(await coverage.innerText(),/ARM 검증 종목/);
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'no horizontal page overflow');
+        const bounds=await coverage.locator('li').evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,width:innerWidth}}));
+        assert.ok(bounds.every(b=>b.left>=0&&b.right<=b.width+1),'missing names and reasons remain inside viewport');
+        await page.screenshot({path:resolve(output,name+'-coverage-'+width+'-'+zoom+'.png')});
+        await summary.click();
+      }
+    }
     assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);
     console.log('Build210 trend '+name+': chart loading/error/retry stays in place; labels, delayed responses, navigation and horizontal active-period visibility passed');
   }catch(error){await page.screenshot({path:resolve(output,name+'-failure.png')}).catch(()=>{});throw error}

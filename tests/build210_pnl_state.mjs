@@ -12,7 +12,7 @@ function block(start,end){
 function fixture(){
   const c=vm.createContext({
     live:{},stockView:'total',stockPeriod:'THIS_MONTH',stockPnlSort:'impact',period:'오늘',
-    esc:String,num:(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}),
+    esc:v=>String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\"','&quot;'),num:(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}),
     signedMoney:n=>`${n>0?'+':''}${Number(n).toLocaleString('en-US')}원`,cls:n=>n<0?'down':'up',
     stockMark:()=>'',stockViewButtons:()=>'',stockPeriodButtons:()=>'',stockPeriodLabel:()=> '이번 달',
     stockTotalPartsHtml:()=>'',kstStamp:()=>''
@@ -102,4 +102,37 @@ test('quantity reconciliation reports only its scope and never treats zero cover
   assert.match(html,/12 \/ 13종목 일치/);assert.doesNotMatch(html,/✓/);
   c.live.reconciliation={ok:true,quantity_matched:14,quantity_total:13};
   assert.match(c.reconciliationHomeStatus(),/자료 확인 필요/);
+});
+
+
+test('partial subtotal exposes excluded names and reasons beside the amount without counting them as zero',()=>{
+  const c=fixture(),p=periodResult([{...pending,name:'계산된 종목'},{...missing,name:'누락 <종목>',reason:'시작 보유수량 확인 필요'}]);
+  c.live.stockPnl=p;const before=JSON.stringify(p),html=c.stockPeriodPerformance(),scope=c.stockPnlCoverageHtml(p);
+  assert.match(hero(html),/계산된 종목 합계 · 일부 미계산/);
+  assert.match(hero(html),/계산 범위 · 미계산 1종목 · 추정 1종목/);
+  assert.match(scope,/누락 &lt;종목&gt;/);assert.match(scope,/시작 보유수량 확인 필요/);
+  assert.match(scope,/0원으로 간주하지 않습니다/);
+  assert.doesNotMatch(scope,/누락 <종목>/);
+  assert.equal(JSON.stringify(p),before);
+  c.stockPnlQuery='계산된 종목';assert.equal(c.stockPnlCoverageHtml(p),scope,'list filtering cannot narrow the reported calculation scope');
+});
+
+test('coverage separates missing, foreign-only and included provisional items, plus unlinked trades',()=>{
+  const c=fixture(),local={...pending,symbol:'LOCAL',name:'외화 종목',pnl_krw:null,local_cash_only:true,reason:'체결일 확인 필요'};
+  const p=periodResult([pending,local,missing]);p.unmapped_count=2;
+  const scope=c.stockPnlCoverageHtml(p);
+  assert.match(scope,/미계산 1종목 · 원화 환산 대기 1종목 · 추정 2종목 · 종목 연결 대기 2건/);
+  assert.doesNotMatch(scope,/추정 3종목/);
+  assert.match(scope,/외화 손익은 별도로 표시/);
+  assert.match(scope,/결제·자료 확인 후 달라질 수/);
+  c.live.stockPnl=p;assert.match(hero(c.stockPeriodPerformance()),/계산 범위/);
+});
+
+test('full coverage with estimates is provisional; a settled zero total needs no missing-data disclosure',()=>{
+  const c=fixture(),p=periodResult([{...pending,pnl_krw:0}]);Object.assign(p,{complete:true,pnl_krw:0});
+  assert.match(c.stockPnlCoverageHtml(p),/추정 1종목/);
+  assert.doesNotMatch(c.stockPnlCoverageHtml(p),/미계산|0원으로 간주/);
+  p.items[0].provisional_amount=false;assert.equal(c.stockPnlCoverageHtml(p),'');
+  p.complete=false;p.unmapped_count=1;assert.match(c.stockPnlCoverageHtml(p),/종목 연결 대기 1건/);
+  delete p.unmapped_count;assert.match(c.stockPnlCoverageHtml(p),/종목별 계산 근거를 확인 중/);
 });
