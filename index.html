@@ -2197,7 +2197,7 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
         ai:function(){var b=document.getElementById('detailFreshReview');revealDetailTarget(b);if(!b.disabled)b.click()},
         compare:function(){var field=document.getElementById('detailWeightTarget');revealDetailTarget(compareSection);if(field.value.trim())document.getElementById('detailWeightRun').click();else field.focus({preventScroll:true})},
         record:openDecisionForm,
-        save:function(){var form=document.getElementById('detailDecisionForm'),missing=['detailReason','detailReview'].map(function(id){return document.getElementById(id)}).find(function(x){return !x.value.trim()});if(missing){revealDetailTarget(missing,'instant');return}form.requestSubmit()},
+        save:function(){var form=document.getElementById('detailDecisionForm'),missing=['detailReason','detailReview'].map(function(id){return document.getElementById(id)}).find(function(x){return !x.value.trim()});if(missing){missing.scrollIntoView({block:'start',behavior:'instant'});missing.focus({preventScroll:true});return}form.requestSubmit()},
         done:closeSecurityDetail
       });
       bindThesisPeriods();

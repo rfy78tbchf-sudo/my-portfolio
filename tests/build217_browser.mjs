@@ -158,6 +158,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     await page.locator('#detailDirectDecision').click();
     await page.locator('#detailNext').click();
     assert.equal(await page.locator('#detailReason').evaluate(e=>e===document.activeElement),true,'missing reason receives focus');
+    assert.equal(await page.locator('#detailReason').getAttribute('tabindex'),null,'required-field navigation preserves native keyboard tab order');
     const reason=await page.locator('#detailReason').boundingBox();
     const enlargedHead=await page.locator('.detail-head').boundingBox();
     assert.ok(reason.y>=enlargedHead.y+enlargedHead.height&&reason.y+reason.height<=844,'missing reason remains visible at 125%');
