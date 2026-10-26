@@ -43,12 +43,12 @@ function stockResult(period,generation){
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
+for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.UI_BROWSER||name===process.env.UI_BROWSER)){
   const browser=await engine.launch({headless:true});
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
   await context.addInitScript(({token,key})=>localStorage.setItem(key,JSON.stringify({accessToken:token,refreshToken:'synthetic-local-refresh',expiresAt:Date.now()+3600000})),{token:jwt,key:'my_portfolio_session_v2'});
-  const calls=[],forbidden=[],errors=[];let generation=0,coreDelay=null,pnlDelay=null,hasDecision=true;
+  const calls=[],forbidden=[],errors=[];let generation=0,coreDelay=null,pnlDelay=null,analysisDelay=null,hasDecision=true;
   const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)});
   await context.route('**/*',async route=>{
     const request=route.request(),url=new URL(request.url()),method=request.method();
@@ -86,6 +86,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     }
     if(method!=='GET'){forbidden.push(path);return json(route,{message:'Writes are blocked'},403)}
     const table=path.split('/').pop();
+    if(table==='ai_analysis_history'&&analysisDelay&&url.searchParams.get('select')==='id,created_at,official_evidence'){const pending=analysisDelay;pending.entered();await pending.wait}
     if(table==='accounts'&&coreDelay){const pending=coreDelay;pending.entered();await pending.wait}
     const tables={accounts,securities,holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
     return json(route,tables[table]||[]);
@@ -103,6 +104,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
       const fourth=await rows.nth(3).boundingBox(),nav=await page.locator('#nav').boundingBox();
       assert.ok(fourth.y+fourth.height<=nav.y,'four holdings fit');
       await page.screenshot({path:resolve(output,name+'-list-'+width+'.png')});
+      analysisDelay=deferred();
       await rows.first().click();await page.locator('#detailStart #detailDecisionSummary').waitFor();
       if(!process.env.UI_BASELINE){
         const positions=await page.evaluate(()=>['#detailOverview','#detailStart','.detail-price-chart'].map(s=>document.querySelector(s).getBoundingClientRect().top));
@@ -118,6 +120,25 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
       }
       await page.screenshot({path:resolve(output,name+'-detail-'+width+'.png')});
       await page.locator('#detailStartAction').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+      await page.locator('#detailDecisionAction').click();
+      const editor=await page.locator('#detailDecisionForm').boundingBox();
+      const oldReview=await page.locator('#detailDecisionReview').boundingBox();
+      assert.ok(editor.y<oldReview.y,'active judgment precedes the long saved review');
+      const choice=await page.locator('#detailChoice').boundingBox();
+      const head=await page.locator('.detail-head').boundingBox();
+      const actionBar=await page.locator('.detail-return-bar').boundingBox();
+      assert.ok(choice.y>=head.y+head.height&&choice.y+choice.height<=actionBar.y,'focused choice is between header and actions');
+      assert.equal(await page.locator('#detailReason').inputValue(),'다음 실적에서 매출 성장 확인');
+      await page.locator('#detailReason').focus();
+      const beforeRead=await page.locator('#detailReason').boundingBox();
+      const reviewBefore=await page.locator('#detailDecisionReview').elementHandle();
+      await waitGate(analysisDelay,'late review');analysisDelay.release();analysisDelay=null;
+      await page.waitForFunction(old=>!old.isConnected,reviewBefore);
+      assert.equal(await page.locator('#detailReason').evaluate(e=>document.activeElement===e),true,'late review keeps keyboard focus');
+      const afterRead=await page.locator('#detailReason').boundingBox();
+      assert.ok(Math.abs(afterRead.y-beforeRead.y)<2,'late review cannot push the editor down');
+      await page.locator('#detailReason').evaluate(e=>e.blur());
+      await page.screenshot({path:resolve(output,name+'-edit-'+width+'.png')});
       await page.locator('#detailReturn').click();
       assert.ok(await rows.first().isVisible());
     }
@@ -134,6 +155,12 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
     await page.locator('.portfolio-list [data-security-id]').first().click();
     await page.locator('#detailStart').waitFor();
     assert.ok(await page.locator('.detail-sheet').evaluate(e=>e.scrollWidth<=e.clientWidth),'enlarged detail fits');
+    await page.locator('#detailDirectDecision').click();
+    await page.locator('#detailNext').click();
+    assert.equal(await page.locator('#detailReason').evaluate(e=>e===document.activeElement),true,'missing reason receives focus');
+    const reason=await page.locator('#detailReason').boundingBox();
+    const enlargedHead=await page.locator('.detail-head').boundingBox();
+    assert.ok(reason.y>=enlargedHead.y+enlargedHead.height&&reason.y+reason.height<=844,'missing reason remains visible at 125%');
     await page.screenshot({path:resolve(output,name+'-enlarged.png')});
     assert.equal(calls.filter(x=>/save_|upsert_|acknowledge/.test(x.path)).length,0);
     assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);

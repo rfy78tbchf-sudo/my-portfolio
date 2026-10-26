@@ -243,6 +243,11 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     const retryFooter=page.locator('#detailNext');
     await page.waitForFunction(()=>document.getElementById('detailNext')?.textContent==='이전 판단 저장 재시도',null,{timeout:5000});
     assert.equal(await retryFooter.isEnabled(),true,'the restored pending submission can be retried from the bottom action');
+    assert.equal(await page.locator('#detailEditorTitle').innerText(),'저장 확인이 필요한 판단');
+    const retryChoice=await page.locator('#detailChoice').boundingBox();
+    const retryHead=await page.locator('.detail-head').boundingBox();
+    const retryBar=await page.locator('.detail-return-bar').boundingBox();
+    assert.ok(retryChoice.y>=retryHead.y+retryHead.height&&retryChoice.y+retryChoice.height<=retryBar.y,'restored choice stays above the footer');
     await page.screenshot({path:resolve(output,name+'-comparison-retry-draft.png')});
     recoverOnRetry=true;await retryFooter.click();await waitForSavedFooter();
     assert.equal(writes.length,5);assert.deepEqual(writes[4],originalPayload);assert.equal(decisions.length,4,'explicit retry returns the same stored row');
