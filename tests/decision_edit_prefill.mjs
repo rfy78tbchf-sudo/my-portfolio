@@ -166,7 +166,7 @@ test('cleared review text remains required and never writes a blank manual condi
 });
 test('structured date keeps its own saved summary instead of a manual-review label',async()=>{
   const f=fixture([saved('hold',{review_condition:'2026-11-01'})]);f.edit();await f.submit();
-  assert.match(f.element('detailDecisionSummary').innerHTML,/저장한 조건과 이후 자료/);
+  assert.match(f.element('detailDecisionSummary').innerHTML,/다음 접속에서도 이 판단을 확인/);
   assert.doesNotMatch(f.element('detailDecisionSummary').innerHTML,/직접 확인할 조건으로 기록했습니다/);
 });
 

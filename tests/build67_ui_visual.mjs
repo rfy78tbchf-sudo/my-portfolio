@@ -647,7 +647,12 @@ try{
       if(source.includes("result('manual'")){
         assert.equal(await page.locator('#detailDecisionReview .review-status b').innerText(),'직접 확인할 조건');
         assert.equal(await page.locator('#detailSetupRule').count(),0,'manual text must not be presented as an invalid condition');
-        assert.match(await page.locator('#detailDecisionReview .review-condition-result').innerText(),/자동으로 판정하지 않습니다/);
+        const evidence=page.locator('#detailDecisionReview .review-evidence');
+        assert.equal(await evidence.evaluate(el=>el.open),false);
+        assert.doesNotMatch(await page.locator('#detailDecisionReview').innerText(),/자동으로 판정하지 않습니다/);
+        await evidence.locator('summary').click();
+        assert.match(await evidence.innerText(),/자동으로 판정하지 않습니다/);
+        await evidence.locator('summary').click();
         await page.locator('#detailDecisionAction').click();
         assert.equal(await page.locator('#detailReview').inputValue(),decision.review_condition,'manual condition remains exact when editing');
         await page.locator('#detailRuleOptions > summary').click();

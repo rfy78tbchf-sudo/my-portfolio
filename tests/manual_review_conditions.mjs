@@ -87,5 +87,25 @@ test('input guidance distinguishes manual review from supported data comparisons
   assert.match(html,/id="detailReview" aria-describedby="detailReviewHelp"/);
   assert.match(html,/id="detailReviewHelp"[^>]*>실적·공시 등은 직접 확인할 조건으로 저장합니다/);
   assert.match(html,/날짜·가격·이평선 비교 조건 설정/);
-  assert.match(html,/직접 확인할 조건으로 기록했습니다\. 자료를 보고 직접 판단해 주세요/);
+  assert.match(html,/직접 확인할 조건으로 기록했습니다\./);
+});
+
+
+test('manual guidance is folded while the saved reason and checkpoint remain in the primary review',()=>{
+  const d=decision('다음 실적 발표 때 확인'),snapshot=JSON.stringify(d),detail=render(d);
+  const main=detail.split('<details class="more-list review-evidence">')[0];
+  assert.match(main,/직접 확인할 조건/);assert.match(main,/원래 기대한 변화를 확인하려고/);
+  assert.match(main,/다음 실적 발표 때 확인/);assert.doesNotMatch(main,/자동으로 판정|저장한 문장을 기준/);
+  assert.match(detail,/<details class="more-list review-evidence"><summary>판단 근거 자세히<\/summary>/);
+  assert.match(detail,/충족 여부를 자동으로 판정하지 않습니다/);assert.equal(JSON.stringify(d),snapshot);
+});
+
+test('quiet guidance never hides refresh failures, observed quantity changes or met price conditions',()=>{
+  const d=decision('다음 실적 발표 때 확인');
+  const primary=h=>h.split('<details class="more-list review-evidence">')[0];
+  assert.match(primary(render(d,[quote],[],true)),/일부 최신 자료를 불러오지 못했습니다/);
+  const changed={...d,scenario_snapshot:{choice_comparison:{hold:{quantity:3}}}};
+  assert.match(primary(render(changed,[quote],[],false,false,{items:[],current_quantity:2})),/보유 수량이 다릅니다/);
+  assert.match(primary(render(decision('종가 100 달러 이하'))),/현재 종가가 저장한 기준에 해당합니다/);
+  assert.match(primary(render(d,[quote],[analysis()])),/보유 전제 약화/);
 });

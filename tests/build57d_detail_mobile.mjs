@@ -217,15 +217,35 @@ try{
     await page.locator('#detailDecisionReview').waitFor({state:'attached'});
     assert.match(await page.locator('#detailDecisionReview').textContent(),/I can absorb this exposure/);
     assert.equal(await page.locator('#detailDecisionReview .review-status b').innerText(),'직접 확인할 조건');
-    assert.match(await page.locator('#detailDecisionReview').innerText(),/충족 여부를 자동으로 판정하지 않습니다/);
+    const evidence=page.locator('#detailDecisionReview .review-evidence');
+    assert.equal(await evidence.evaluate(el=>el.open),false);
+    assert.doesNotMatch(await page.locator('#detailDecisionReview').innerText(),/충족 여부를 자동으로 판정하지 않습니다/);
+    await evidence.locator('summary').click();
+    assert.match(await evidence.innerText(),/충족 여부를 자동으로 판정하지 않습니다/);
+    await evidence.locator('summary').click();
     assert.doesNotMatch(await page.locator('#detailDecisionReview').innerText(),/조건 구체화 필요/);
     assert.match(await page.locator('#detailDecisionSummary').textContent(),/현재 유지.*Recheck the reported operating result/);
+    for(const zoom of [1,1.25]){
+      await page.evaluate(z=>document.documentElement.style.zoom=String(z),zoom);
+      await evidence.locator('summary').scrollIntoViewIfNeeded();
+      const target=await evidence.locator('summary').boundingBox();
+      assert.ok(target.height>=44,'secondary evidence keeps a touchable target');
+      assert.ok(await page.locator('.detail-sheet').evaluate(el=>el.scrollWidth<=el.clientWidth),'quiet review fits at 125%');
+      await page.screenshot({path:`mobile-artifacts/build220-review-${width}-${zoom}.png`});
+    }
+    await page.evaluate(()=>document.documentElement.style.zoom='1');
+
     await page.locator('#detailDecisionAction').click();
     assert.equal(await page.locator('#detailChoice').inputValue(),'hold');
     assert.equal(await page.locator('#detailReason').inputValue(),'I can absorb this exposure');
     assert.equal(await page.locator('#detailReview').inputValue(),'Recheck the reported operating result');
     assert.match(await page.locator('#detailDecisionStatus').innerText(),/새 판단으로 기록/);
+    const inputHelp=page.locator('.decision-input-help');
+    assert.equal(await inputHelp.evaluate(el=>el.open),false);
+    assert.equal(await page.locator('#detailReviewHelp').isVisible(),false);
+    await inputHelp.locator('summary').click();
     assert.match(await page.locator('#detailReviewHelp').innerText(),/직접 확인할 조건으로 저장/);
+    await inputHelp.locator('summary').click();
     await page.locator('#detailDecisionForm').scrollIntoViewIfNeeded();
     await page.screenshot({path:`mobile-artifacts/build173-edit-prefill-${width}.png`});
     await page.locator('#detailChoice').selectOption('revisit');
