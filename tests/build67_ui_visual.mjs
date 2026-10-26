@@ -888,7 +888,7 @@ try{
         await page.evaluate(data=>window.__uiLocalHistory(data),next);
         const row=page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'});
         assert.match(await row.innerText(),basis==='pending'?/추정/:/별도 세금 -1,234원/);
-        await page.getByText('전체 4개 종목 기록 반영',{exact:false}).waitFor();
+        await page.getByText('조회 대상 4개 종목 기록',{exact:false}).waitFor();
         await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
         assert.match(await row.innerText(),basis==='pending'?/결제 후 금액이 달라질 수 있는/:/OLDTEST · LOCAL/);
         assert.match(await page.locator('.performance-hero').innerText(),basis==='corporate_group'?/-1,501,234/:/-1,500,000/);
