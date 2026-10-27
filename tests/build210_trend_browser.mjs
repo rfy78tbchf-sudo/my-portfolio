@@ -115,6 +115,29 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
   try{
     await page.goto(site,{waitUntil:'domcontentloaded'});await idle();
     await page.locator('#homeTrend .periods').scrollIntoViewIfNeeded();
+    for(const width of [390,402,430]){
+      await page.setViewportSize({width,height:844});
+      for(const zoom of [1,1.25]){
+        await page.evaluate(z=>document.body.style.zoom=String(z),zoom);
+        const hit=page.locator('#assetChartHit'),clear=page.getByRole('button',{name:'차트 선택 해제'});
+        await hit.scrollIntoViewIfNeeded();
+        assert.equal(await clear.isVisible(),false,'no extra action before selection');
+        await hit.tap();
+        assert.equal(await page.locator('#assetChartTip').isVisible(),true);
+        assert.match(await page.locator('#assetChartTip').innerText(),/5,\d{3},000/);
+        const rect=await clear.boundingBox();assert.ok(rect.width>=44&&rect.height>=44&&rect.x>=0&&rect.x+rect.width<=width+1);
+        await page.screenshot({path:resolve(output,name+'-chart-selected-'+width+'-'+zoom+'.png')});
+        await clear.tap();
+        assert.equal(await page.locator('#assetChartTip').isVisible(),false,'one tap clears date and amount');
+        assert.equal(await page.locator('#assetChartGuide').isVisible(),false);
+        await hit.tap();await hit.dispatchEvent('pointercancel',{pointerType:'touch'});
+        assert.equal(await clear.isVisible(),false,'native scrolling cancels selection');
+        assert.equal(await hit.evaluate(el=>getComputedStyle(el.closest('.asset-chart')).touchAction),'pan-y');
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+      }
+    }
+    await page.evaluate(()=>document.body.style.zoom='1');await page.setViewportSize({width:390,height:844});
+    await page.locator('#homeTrend .periods').scrollIntoViewIfNeeded();
     const homeRows=await page.locator('#homeHoldings [data-asset-id]').count();
     const oldTotal=await page.locator('#homeTrend .trend-total').textContent();
     const hold=deferred();periodDelays.set('3M',hold);
