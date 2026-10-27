@@ -258,13 +258,13 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     await page.locator('#detailDecisionAction').click();
     await page.evaluate(()=>{window.__originalSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key.startsWith('portfolio_decision_draft_v1:'))throw new Error('synthetic quota');return window.__originalSetItem.call(this,key,value)}});
     await page.locator('#detailReason').fill('보관 실패 시 유지할 합성 초안');
-    await page.locator('#detailReturn').click();
+    await page.locator('#detailClose').click();
     assert.equal(await page.locator('#detailModal').isVisible(),true);
     assert.match(await page.locator('#detailDecisionStatus').textContent(),/초안을 보관하지 못했습니다/);
     assert.equal(await page.locator('#detailReason').inputValue(),'보관 실패 시 유지할 합성 초안');
     assert.equal(writes.length,5,'failed close does not submit a judgment');
     await page.evaluate(()=>{Storage.prototype.setItem=window.__originalSetItem});
-    await page.locator('#detailReturn').click();
+    await page.locator('#detailClose').click();
     assert.equal(await page.locator('#detailModal').isVisible(),false);
     assert.deepEqual(forbidden,[],'no production mutation, model generation or external request is attempted');
     assert.deepEqual(errors,[]);assert.deepEqual(dialogs,[],'finishing and reopening the reviewed paths does not require an unexpected leave confirmation');
