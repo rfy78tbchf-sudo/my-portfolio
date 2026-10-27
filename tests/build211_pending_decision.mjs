@@ -222,3 +222,31 @@ test('failed device writes cannot replace a newer in-memory draft with an older 
   assert.equal(back.calls.length,0);assert.match(back.element('detailDecisionStatus').textContent,/기기에 보관하지 못해 이 화면에만/);
 });
 
+
+test('failed draft retention keeps the editor open until device storage recovers',()=>{
+  const storage=durableStorage(),f=durableFixture(storage),write=storage.setItem;
+  f.ctx.openDecisionForm();f.input('detailReason','다음 실적을 확인');f.input('detailReview','매출 발표');
+  storage.setItem=()=>{throw Error('quota full')};
+  f.input('detailReason','보관에 실패한 최신 이유');
+  assert.equal(f.ctx.allowDetailLeave('leave?'),false);
+  assert.match(f.element('detailDecisionStatus').textContent,/초안을 보관하지 못했습니다/);
+  assert.equal(f.values()[1],'보관에 실패한 최신 이유');assert.equal(f.calls.length,0);
+  storage.setItem=write;
+  assert.equal(f.ctx.allowDetailLeave('leave?'),true);
+  assert.equal(readDraft(storage,f).values.detailReason,'보관에 실패한 최신 이유');
+});
+test('pending request stays visible when its draft cannot be retained',async()=>{
+  const {storage,f,args}=await interrupted();storage.setItem=()=>{throw Error('blocked')};
+  assert.equal(f.ctx.allowDetailLeave('leave?'),false);
+  assert.equal(f.ctx.pendingDecisionSubmission.args.p_request_id,args.p_request_id);
+  assert.match(f.element('detailDecisionStatus').textContent,/초안을 보관하지 못했습니다/);
+});
+test('restored ordinary memory draft exposes failed device retention',()=>{
+  const storage=durableStorage(),f=durableFixture(storage);
+  f.ctx.openDecisionForm();f.input('detailReason','이유');f.input('detailReview','조건');
+  storage.setItem=()=>{throw Error('blocked')};
+  const back=fixture([],{storage,session:draftSession('owner')});
+  back.ctx.decisionDrafts=f.ctx.decisionDrafts;back.ctx.decisionDraftOwner=f.ctx.decisionDraftOwner;back.ctx.bindDecisionDraft();
+  assert.match(back.element('detailDecisionStatus').textContent,/초안을 보관하지 못했습니다/);
+  assert.equal(back.calls.length,0);
+});
