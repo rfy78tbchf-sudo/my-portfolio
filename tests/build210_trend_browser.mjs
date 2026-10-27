@@ -127,7 +127,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
         assert.match(await page.locator('#assetChartTip').innerText(),/5,\d{3},000/);
         const rect=await clear.boundingBox();assert.ok(rect.width>=44&&rect.height>=44&&rect.x>=0&&rect.x+rect.width<=width+1);
         await page.screenshot({path:resolve(output,name+'-chart-selected-'+width+'-'+zoom+'.png')});
-        await clear.tap();
+        await clear.click();
         assert.equal(await page.locator('#assetChartTip').isVisible(),false,'one tap clears date and amount');
         assert.equal(await page.locator('#assetChartGuide').isVisible(),false);
         await hit.tap();await hit.dispatchEvent('pointercancel',{pointerType:'touch'});
