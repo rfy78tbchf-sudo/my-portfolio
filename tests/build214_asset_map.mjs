@@ -9,7 +9,7 @@ let html=c.homeBrowseCard(9999,100);
 assert.match(html,/30원/);assert.match(html,/30.0%/);assert.match(html,/50원/);assert.match(html,/&lt;Beta>/);
 assert.equal((html.match(/data-asset-id="a"/g)||[]).length,1);assert.doesNotMatch(html,/data-security-id|data-decision-detail|sold/);
 const rects=[...html.matchAll(/<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"/g)];
-assert.equal(rects.length,3);assert.ok(Math.abs(rects.reduce((n,r)=>n+Number(r[3])*Number(r[4]),0)-320*180)<0.001,'rectangles preserve proportional area');
+assert.equal(rects.length,3);assert.ok(Math.abs(rects.reduce((n,r)=>n+Number(r[3])*Number(r[4]),0)-320*140)<0.001,'rectangles preserve proportional area');
 c.live.holdingBasis.pop();html=c.homeBrowseCard(0,100);assert.match(html,/일부 미확인/);assert.match(html,/평가액 확인 필요/);assert.match(html,/70원/);assert.doesNotMatch(html,/0원<\/span><strong>0.0%/);
 html=c.homeBrowseCard(0,10);assert.match(html,/확인된 종목끼리 비교/);assert.match(html,/100.0%/);assert.doesNotMatch(html,/<b>그 외 자산·차이/);
 c.live.holdingBasis=[];html=c.homeBrowseCard(0,0);assert.match(html,/평가액이 확인되면/);assert.doesNotMatch(html,/NaN|Infinity/);

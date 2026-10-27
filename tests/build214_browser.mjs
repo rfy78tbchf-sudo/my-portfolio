@@ -106,6 +106,12 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
         assert.equal(await page.locator('.quick-links').count(),0);
         assert.match(await page.locator('#homeTrend .trend-change').innerText(),/자산 변화[\s\S]*70,000원[\s\S]*입출금 포함/);
       }
+      const density=await page.evaluate(()=>({chart:document.querySelector('.asset-map').getBoundingClientRect().height,firstAmount:document.querySelector('.asset-map-row').getBoundingClientRect().top,trend:document.querySelector('#homeTrend').getBoundingClientRect().height}));
+      console.log(name,width,JSON.stringify(density));
+      if(!process.env.UI_BASELINE){
+        assert.equal(await page.locator('#homeTrend>.eyebrow').count(),0,'selected chip already names the period');
+        assert.ok(density.chart<=175,'composition map leaves room for amounts');
+      }
       await page.screenshot({path:resolve(output,name+'-home-'+width+'.png')});
       if(width===390&&!process.env.UI_BASELINE)await page.locator('#homeHoldings').screenshot({path:resolve(output,name+'-map.png')});
       await page.locator('#nav [data-tab="portfolio"]').click();
