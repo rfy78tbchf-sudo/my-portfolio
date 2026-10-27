@@ -19,3 +19,5 @@ Account tools are already folded. No new home review queue, smaller type, reduce
 - After branch CI: recheck main SHA, fast-forward only if unchanged, verify main CI/Pages and HTML/cache markers `2026-10-28-home-density-222` / `2026102801-222`.
 
 Next: chart-touch audit and existing performance-to-detail return verification. Do not repeat home re-layout without new evidence; preserve BUILD220 Standing UI content priority.
+
+CI follow-up: initial dependency download timed out; retry passed both-engine home and broad layout checks. Trend continuity still queried the removed duplicate label; changed those assertions to the actual aria-pressed period button, preserving latest-period/late-response and amount checks. Next final commit must pass the complete workflow. Local Korean-font map and 125% screenshots inspected. Return/MA Node checks also passed.

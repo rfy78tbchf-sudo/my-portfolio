@@ -135,7 +135,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     failedPeriods.add('6M');const errorTop=await selectTrend('6M');
     const retry=page.locator('#homeTrend').getByRole('button',{name:'다시 확인',exact:true});await retry.waitFor();
     await stableTrend(errorTop,'failed');
-    assert.match(await page.locator('#homeTrend .eyebrow').innerText(),/최근 6개월/);
+    assert.match(await page.locator('#homeTrend .chip[aria-pressed="true"]').innerText(),/최근 6개월/);
     assert.equal(await page.locator('#homeTrend svg').count(),0);
     assert.equal(await page.locator('#homeTrend').getAttribute('aria-busy'),'false');
     assert.equal(await page.locator('#homeHoldings [data-asset-id]').count(),homeRows);
@@ -150,7 +150,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     older.release();periodDelays.delete('ALL');await idle();
     await visibleActive('#homeTrend [data-period="1Y"]');
     assert.match(await page.locator('#homeTrend .trend-total').textContent(),/6,600,000/);
-    assert.match(await page.locator('#homeTrend .eyebrow').innerText(),/최근 1년/);
+    assert.match(await page.locator('#homeTrend .chip[aria-pressed="true"]').innerText(),/최근 1년/);
 
     // Completing a chart after navigation cannot pull the user back into the chart.
     const leaving=deferred();periodDelays.set('YTD',leaving);await selectTrend('YTD');await waitGate(leaving,'chart before navigation');
