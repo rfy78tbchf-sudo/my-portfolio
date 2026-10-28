@@ -250,6 +250,7 @@ const injected=`
     window.__uiFailStockOnce=function(){failStockOnce=true};
     window.__saleNotes=window.__saleNotes||{};
     rpc=async function(name,p){
+      if(name==='get_wealth_growth')return {year:p.p_year,revision:0,base:null,months:{}};
       var saleKey=p&&[p.p_security_id,p.p_start,p.p_end].join('|');
       if(name==='get_sale_review')return {ok:true,security_id:p.p_security_id,period_start:p.p_start,period_end:p.p_end,note:window.__saleNotes[saleKey]||null,before:null,during:[],history:[{period_start:'2026-08-01',period_end:'2026-08-31',reason:'이전 기간 복기',lesson:'이전 교훈',next_action:'이전 기준'}]};
       if(name==='save_sale_review'){if(window.__saleFail)throw Error('Synthetic save failure');window.__saleNotes[saleKey]={reason:p.p_reason,lesson:p.p_lesson,next_action:p.p_next_action,revision:p.p_revision+1,updated_at:'2026-10-06T00:00:00Z'};return {ok:true,revision:p.p_revision+1}};
@@ -500,6 +501,7 @@ try{
     if(source.includes('function allocationData')){
       const allocationFixture={...live,risk:{ok:true,official_assets_krw:63842170,as_of:now,largest_symbol:'ARM',largest_krw:12472000,top_three_krw:32911900,foreign_currency_krw:46633000,leveraged_etf_krw:0,known_positions_krw:54455100}};
       await page.evaluate(args=>window.__uiFixture(...args),[allocationFixture,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('analysis'));
+      if(await page.locator('#wealthLegacy').count())await page.locator('#wealthLegacy>summary').click();
       const allocation=page.locator('.allocation-card');await allocation.waitFor();
       assert.equal(await allocation.locator('button.allocation-row').count(),7);
       assert.match(await allocation.locator('button.allocation-row').first().innerText(),/19.5%/);

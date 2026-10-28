@@ -119,6 +119,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
       await page.screenshot({path:resolve(output,name+'-refresh-'+width+'.png')});
     }
     await page.locator('#nav [data-tab="analysis"]').click();await waitGate(extraDelay,'analysis');
+    if(await page.locator('#wealthLegacy').count())await page.locator('#wealthLegacy>summary').click();
     assert.match(await page.locator('#content').innerText(),/추가 자료 확인 중/);
     assert.doesNotMatch(await page.locator('#content').innerText(),/기술지표 데이터 없음/);
     await page.locator('#nav [data-tab="home"]').click();await page.locator('#nav [data-tab="analysis"]').click();
