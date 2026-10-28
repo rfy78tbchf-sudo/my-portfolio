@@ -14,10 +14,11 @@ const hook=`
       Object.assign(t.db.plan,{std_rate:payload.p_std,best_rate:payload.p_best,revision:t.db.plan.revision+1});return Promise.resolve(JSON.parse(JSON.stringify(t.db.plan)));
     }
     if(name==='get_live_period_stock_pnl')return Promise.resolve({ok:true,period_start:'2026-01-01',period_end:'2026-10-27',scope:'KB 종합위탁 · 주식',complete:false,krw_included_count:3,candidate_count:4,items:[{symbol:'A',name:'합성 종목 A',pnl_krw:3000000},{symbol:'B',name:'합성 종목 B',pnl_krw:-5000000,provisional_amount:true},{symbol:'C',name:'합성 종목 C',pnl_krw:null},{symbol:'D',name:'합성 종목 D',pnl_krw:1000000}]});
+    if(name==='get_investment_decisions')return Promise.resolve([]);
     return Promise.resolve({});
   };
   resumeLiveView=function(){return Promise.resolve()};
-  currentTab='analysis';live={holdings:[],settings:{}};showApp('live');
+  currentTab='analysis';live={holdings:[{security_id:'test-A',quantity:1},{security_id:'test-B',quantity:2}],securityMap:{'test-A':{symbol:'A',name:'합성 종목 A',currency:'USD'},'test-B':{symbol:'B',name:'합성 종목 B',currency:'USD'}},settings:{}};showApp('live');
   window.__wealthTest.reload=function(){wealthAuto=null;render()};
   window.__wealthTest.redraw=function(){render(true)};
 `;
@@ -42,6 +43,20 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
   assert.notEqual(await page.locator('.wealth-target').first().innerText(),before);assert.match(await page.locator('#wealthBase>summary').innerText(),/100,000,000/);
   await page.evaluate(()=>window.__wealthTest.reload());await page.locator('.wealth-total').waitFor();assert.match(await page.locator('.wealth-scenario-title').first().innerText(),/15%/);
   await page.locator('#wealthImpactLoad').click();await page.locator('.wealth-impact-row').first().waitFor();assert.match(await page.locator('.wealth-impact-row').first().innerText(),/종목 B/);
+  const impact=page.locator('.wealth-impact-row').first();
+  assert.equal(await impact.getAttribute('data-security-id'),'test-B');
+  assert.equal(await page.locator('.wealth-impact-row').last().getAttribute('role'),null,'unheld stock has no dead action');
+  await impact.scrollIntoViewIfNeeded();const impactY=await page.evaluate(()=>window.scrollY),ranking=await page.locator('.wealth-impact').innerText();
+  assert.ok((await impact.boundingBox()).height>=44);
+  await impact.tap();await page.locator('#detailOverview').waitFor();
+  assert.match(await page.locator('.detail-head b').innerText(),/합성 종목 B/);
+  await page.locator('#detailReturn').click();await page.locator('#detailModal').waitFor({state:'hidden'});
+  assert.equal(await page.locator('.wealth-impact').innerText(),ranking);
+  assert.ok(Math.abs(await page.evaluate(()=>window.scrollY)-impactY)<3,'return retains scroll');
+  assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-security-id')),'test-B');
+  await impact.press('Enter');await page.locator('#detailOverview').waitFor();
+  await page.goBack();await page.locator('#detailModal').waitFor({state:'hidden'});
+  assert.ok(Math.abs(await page.evaluate(()=>window.scrollY)-impactY)<3,'browser back retains scroll');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1),false,`${name} ${width}/${zoom} overflow`);
   if(width===390)await page.screenshot({path:`mobile-artifacts/build227/${name}-${width}-${zoom}.png`,fullPage:true});
   await page.locator('#wealthScenario>summary').click();await page.locator('#wealthStd').fill('18');await page.locator('#wealthBest').fill('28');await page.evaluate(()=>window.__wealthTest.conflict=true);await page.locator('#wealthScenarioForm button').click();await page.waitForFunction(()=>document.querySelector('#wealthStatus')?.textContent.includes('다른 화면'));

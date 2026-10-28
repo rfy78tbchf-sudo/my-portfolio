@@ -30,3 +30,13 @@ scope.wealthState().data=data;const panel=scope.wealthPanel();assert.match(panel
 assert.match(panel,/id="wealthBase"><summary/);assert.match(panel,/id="wealthScenario"><summary/);
 const before=scope.wealthState();before.draft={std:'15',best:'25'};scope.liveAuthEpoch=2;assert.notEqual(scope.wealthState(),before);assert.equal(scope.wealthState().draft,null);
 console.log('Build227: partial first year, leap dates, annual compounding, milestones, zero/loss, monthly rollover, no asset inputs and owner isolation passed');
+// Navigation identity: never guess between same-symbol securities or stale IDs.
+scope.live={securityMap:{a:{symbol:'A'},b:{symbol:'B'},other:{symbol:'A'}},holdings:[{security_id:'a',quantity:1},{security_id:'a',quantity:2},{security_id:'b',quantity:0}]};
+assert.equal(scope.wealthImpactSecurityId({symbol:'A'}),'a');
+assert.equal(scope.wealthImpactSecurityId({symbol:'B'}),null);
+assert.equal(scope.wealthImpactSecurityId({symbol:'A',security_id:'unknown'}),null);
+assert.equal(scope.wealthImpactSecurityId({symbol:'B',security_id:'a'}),null);
+scope.live.holdings.push({security_id:'other',quantity:1});
+assert.equal(scope.wealthImpactSecurityId({symbol:'A'}),null);
+assert.equal(scope.wealthImpactSecurityId({symbol:'A',security_id:'a'}),'a');
+console.log('Build228: duplicate-account identity, ambiguous symbols, unheld/stale/mismatched securities passed');
