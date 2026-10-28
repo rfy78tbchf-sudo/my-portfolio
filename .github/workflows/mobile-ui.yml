@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify update manifest matches HTML and cached shell
+        run: node tests/build72_app_update.mjs
       - name: Verify saved decisions and next-visit review
         run: >-
           node --test
@@ -57,6 +59,8 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
+      - name: Verify cold and warm update checks with real service workers
+        run: node tests/build232_update_latency.mjs --verify
       - name: Verify wealth only requests visible data and reuses cached results
         run: node tests/build231_wealth_latency.mjs --verify
       - name: Verify lazy Excel parsing, shared loading and retry
