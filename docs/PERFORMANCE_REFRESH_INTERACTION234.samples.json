@@ -1,0 +1,336 @@
+{
+  "conditions": "5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes",
+  "samples": [
+    {
+      "run": 1,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 112
+          },
+          {
+            "tab": "home",
+            "callbackMs": 110
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 103
+          },
+          {
+            "tab": "home",
+            "callbackMs": 115
+          }
+        ],
+        "longTasks": [
+          60,
+          71,
+          83
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 75
+          },
+          {
+            "tab": "home",
+            "callbackMs": 73
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 59
+          },
+          {
+            "tab": "home",
+            "callbackMs": 88
+          }
+        ],
+        "longTasks": [
+          51,
+          58,
+          67
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 2,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 66
+          },
+          {
+            "tab": "home",
+            "callbackMs": 102
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 91
+          },
+          {
+            "tab": "home",
+            "callbackMs": 100
+          }
+        ],
+        "longTasks": [
+          68,
+          77
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 84
+          },
+          {
+            "tab": "home",
+            "callbackMs": 124
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 59
+          },
+          {
+            "tab": "home",
+            "callbackMs": 128
+          }
+        ],
+        "longTasks": [
+          87,
+          105
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 3,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 99
+          },
+          {
+            "tab": "home",
+            "callbackMs": 71
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 89
+          },
+          {
+            "tab": "home",
+            "callbackMs": 91
+          }
+        ],
+        "longTasks": [
+          54,
+          62,
+          61
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 101
+          },
+          {
+            "tab": "home",
+            "callbackMs": 74
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 75
+          },
+          {
+            "tab": "home",
+            "callbackMs": 93
+          }
+        ],
+        "longTasks": [
+          58,
+          60,
+          58
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 4,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 73
+          },
+          {
+            "tab": "home",
+            "callbackMs": 90
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 74
+          },
+          {
+            "tab": "home",
+            "callbackMs": 79
+          }
+        ],
+        "longTasks": [
+          58,
+          61
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 77
+          },
+          {
+            "tab": "home",
+            "callbackMs": 75
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 60
+          },
+          {
+            "tab": "home",
+            "callbackMs": 88
+          }
+        ],
+        "longTasks": [
+          54,
+          56
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 5,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 83
+          },
+          {
+            "tab": "home",
+            "callbackMs": 91
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 103
+          },
+          {
+            "tab": "home",
+            "callbackMs": 69
+          }
+        ],
+        "longTasks": [
+          62,
+          74,
+          53
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "tab": "portfolio",
+            "callbackMs": 96
+          },
+          {
+            "tab": "home",
+            "callbackMs": 77
+          },
+          {
+            "tab": "analysis",
+            "callbackMs": 75
+          },
+          {
+            "tab": "home",
+            "callbackMs": 75
+          }
+        ],
+        "longTasks": [
+          51,
+          51,
+          51
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    }
+  ]
+}
