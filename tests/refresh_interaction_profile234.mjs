@@ -40,19 +40,22 @@ const html=measured.replace('  restoreLogin();',hook+'  restoreLogin();');
 const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
 const before=n=>new Date(Date.parse(day+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);
 const now=day+'T00:00:00Z';
+const holdingCount=Number(process.env.SYNTHETIC_HOLDINGS||4);assert.ok([4,20,50].includes(holdingCount));
 const securities=[['ARM','ARM 검증 종목','USD'],['MRNA','MRNA 검증 종목','USD'],['MU','MU 검증 종목','USD'],['005930','국내 검증 종목','KRW']]
   .map(([symbol,name,currency],i)=>({id:'daily-'+i,symbol,name,currency,market:currency==='KRW'?'KRX':'NAS',country:currency==='KRW'?'KR':'US'}));
+for(let i=4;i<holdingCount;i++)securities.push({id:'daily-'+i,symbol:'SYN'+String(i).padStart(3,'0'),name:'합성 종목 '+i,currency:'USD',market:'NAS',country:'US'});
 const accounts=[{id:'daily-account',name:'검증용 계좌',provider:'kb_securities',base_currency:'KRW',mode:'live',is_active:true}];
-const holdings=securities.map((s,i)=>({account_id:accounts[0].id,security_id:s.id,quantity:10,as_of:now,currency:s.currency,market_value:1000000-i*100000,avg_cost:90000,market_price:100000,unrealized_pnl:100000,fx_rate_to_base:1}));
+const holdings=securities.map((s,i)=>({account_id:accounts[0].id,security_id:s.id,quantity:10,as_of:now,currency:s.currency,market_value:1000000-i*1000,avg_cost:90000,market_price:100000,unrealized_pnl:100000,fx_rate_to_base:1}));
 const basis=holdings.map(h=>({...h,valuation_krw:h.market_value,cost_krw:h.market_value-100000,pnl_krw:100000,rate_pct:10,average_unit_krw:(h.market_value-100000)/10,valued_unit_krw:h.market_value/10}));
-const snapshots=Array.from({length:8},(_,i)=>({snapshot_date:before(i*3),snapshot_at:before(i*3)+'T00:00:00Z',total_assets:5400000-i*10000,cash:2000000,securities_value:3400000-i*10000,unrealized_pnl:400000,external_flow:0}));
-const scope={ok:true,current_display_total:5400000,current_primary_value:5400000,current_isa_value:0,current_primary_observed_at:now,snapshot_at:now,broker_account_overlap_verified:true};
-const prices=securities.flatMap((s,i)=>Array.from({length:24},(_,n)=>({security_id:s.id,price_date:before(n),observed_at:before(n)+'T00:00:00Z',close:120-i*10-n,currency:s.currency})));
-const gate={ok:true,state:'estimated',partial:false,reliable_start:before(30),observed_through:day,investment_pnl:90000,return_estimate_pct:1.7,opening_assets:5310000,closing_assets:5400000,external_flow:0,as_of:now};
+const fixtureTotal=2000000+holdings.reduce((sum,h)=>sum+h.market_value,0);
+const snapshots=Array.from({length:8},(_,i)=>({snapshot_date:before(i*3),snapshot_at:before(i*3)+'T00:00:00Z',total_assets:fixtureTotal-i*10000,cash:2000000,securities_value:fixtureTotal-2000000-i*10000,unrealized_pnl:400000,external_flow:0}));
+const scope={ok:true,current_display_total:fixtureTotal,current_primary_value:fixtureTotal,current_isa_value:0,current_primary_observed_at:now,snapshot_at:now,broker_account_overlap_verified:true};
+const prices=securities.flatMap((s,i)=>Array.from({length:24},(_,n)=>({security_id:s.id,price_date:before(n),observed_at:before(n)+'T00:00:00Z',close:500-i*3-n,currency:s.currency})));
+const gate={ok:true,state:'estimated',partial:false,reliable_start:before(30),observed_through:day,investment_pnl:90000,return_estimate_pct:1.7,opening_assets:fixtureTotal-90000,closing_assets:fixtureTotal,external_flow:0,as_of:now};
 const summary={ok:true,return_ready:true,investment_pnl:90000,return_pct:1.7,period_start:before(30),period_end:day,realized_pnl:0,dividends_net:0};
 function stockResult(period,generation){
-  const items=securities.map((s,i)=>({...s,security_id:s.id,end_quantity:10,start_quantity:10,pnl_krw:i===3?null:[110000+generation*10000,-20000,0][i],reason:i===3?'가격 자료 확인 필요':null}));
-  return {ok:true,period,period_start:period==='오늘'?day:before(30),period_end:day,basis_at:now,complete:false,all_items_displayed:true,candidate_count:4,source_candidate_count:4,krw_included_count:3,local_only_count:0,pnl_krw:items.slice(0,3).reduce((n,x)=>n+x.pnl_krw,0),items};
+  const items=securities.map((s,i)=>({...s,security_id:s.id,end_quantity:10,start_quantity:10,pnl_krw:i===3?null:(i<3?[110000+generation*10000,-20000,0][i]:0),reason:i===3?'가격 자료 확인 필요':null}));
+  return {ok:true,period,period_start:period==='오늘'?day:before(30),period_end:day,basis_at:now,complete:false,all_items_displayed:true,candidate_count:holdingCount,source_candidate_count:holdingCount,krw_included_count:holdingCount-1,local_only_count:0,pnl_krw:items.slice(0,3).reduce((n,x)=>n+x.pnl_krw,0),items};
 }
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
@@ -60,7 +63,7 @@ async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,n
 const samples=[],verify=process.argv.includes('--verify');
 for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
  const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
-  scope.current_display_total=5400000; // Each browser starts with its own baseline value.
+  scope.current_display_total=fixtureTotal; // Each browser starts with its own baseline value.
   const browser=await engine.launch({headless:true});
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
@@ -96,7 +99,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       if(rpc==='get_live_period_stock_pnl'){if(pnlDelay){const pending=pnlDelay;pending.entered();await pending.wait}return json(route,stockResult(body.p_period,generation))}
       if(rpc==='get_live_benchmark_comparison'&&extraDelay){extraDelay.entered();await extraDelay.wait}
       const security=securities.find(s=>s.id===body.p_security_id)||securities[0];
-      const values={get_wealth_dashboard:{ok:true,plan:{base_amount:5000000,base_date:day,std_rate:20,best_rate:30,revision:0},current:{amount:5400000,as_of:day},records:[]},get_app_settings:{},reconcile_live_cash_flows:{ok:true},get_live_current_account_scope:scope,
+      const values={get_wealth_dashboard:{ok:true,plan:{base_amount:5000000,base_date:day,std_rate:20,best_rate:30,revision:0},current:{amount:fixtureTotal,as_of:day},records:[]},get_app_settings:{},reconcile_live_cash_flows:{ok:true},get_live_current_account_scope:scope,
         get_live_performance_summary:summary,get_live_reliable_performance:gate,
         get_live_home_chart:{items:snapshots.slice().reverse().map(s=>({date:s.snapshot_date,total_assets:s.total_assets}))},
         get_live_security_performance:{ok:true,items:[]},get_live_technical_summary:{ok:true,items:[]},get_live_monthly_performance:{ok:true,items:[]},
@@ -111,6 +114,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(table==='holdings'&&failCore)return json(route,{message:'synthetic offline'},503);
     if(table==='transactions'&&failExtra)return json(route,{message:'synthetic extra failure'},503);
     const tables={accounts,securities,holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
+    if(table==='daily_security_prices'){let rows=prices;const filter=url.searchParams.get('security_id');if(filter?.startsWith('eq.'))rows=rows.filter(p=>p.security_id===filter.slice(3));return json(route,rows.slice().sort((a,b)=>b.price_date.localeCompare(a.price_date)).slice(0,Number(url.searchParams.get('limit')||rows.length)));}
     return json(route,tables[table]||[]);
   });
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
@@ -138,7 +142,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       const longTasks=await page.evaluate(()=>{if(window.__observer){window.__observer.disconnect();return window.__longTasks}return null});
       return {tabs,longTasks};
     }
-    const idle=await interactions();calls.length=0;coreDelay=deferred();scope.current_display_total=5500000;
+    const idle=await interactions();calls.length=0;coreDelay=deferred();scope.current_display_total=fixtureTotal+100000;
     await page.locator('#refreshBtn').click();await waitGate(coreDelay,'refresh holdings');
     assert.equal(await page.locator('#refreshBtn').getAttribute('aria-busy'),'true');
     await page.evaluate(()=>document.querySelector('#refreshBtn').click());
@@ -151,9 +155,9 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     assert.equal(await page.locator('#search').inputValue(),'ARM','pending response preserves search input');
     assert.equal(await page.evaluate(()=>document.activeElement?.id),'search','pending response preserves focus');
     await page.locator('#search').blur();await page.locator('#nav [data-tab="home"]').click();
-    await page.waitForFunction(()=>document.querySelector('.hero .asset')?.textContent.includes('5,500,000'));
+    await page.waitForFunction(expected=>document.querySelector('.hero .asset')?.textContent.includes(expected),(fixtureTotal+100000).toLocaleString('en-US'));
     samples.push({run:run+1,engine:name,idle,pending,pendingReads,totalReads:calls.length,syncCalls:calls.filter(c=>c.body.action==='sync-current').length});
     assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);
   }finally{if(coreDelay)coreDelay.release();if(wealthGate)wealthGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
-console.log(JSON.stringify({conditions:'5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes',samples},null,2));
+console.log(JSON.stringify({holdingCount,conditions:'5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes',samples},null,2));
