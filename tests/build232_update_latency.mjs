@@ -9,7 +9,7 @@ import {chromium,webkit} from 'playwright';
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 let dispatch,transfers=[],versionOverride=null,versionStatus=200,fallbackBuild=null,updateUnavailable=false,navigationUnavailable=false;
-const verify=process.argv.includes('--verify'),profileStartup=process.argv.includes('--profile-startup');
+const verify=process.argv.includes('--verify'),profileStartup=process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup');
 const server=http.createServer(async(req,res)=>{
  let body='';for await(const chunk of req)body+=chunk;
  const url='http://'+req.headers.host+req.url;
@@ -36,7 +36,15 @@ const hook=`
   };
 `;
 assert.ok(source.includes('  restoreLogin();'));
-const html=source.replace('  restoreLogin();',hook+'  restoreLogin();');
+let served=source;
+if(traceStartup){
+  const start=served.indexOf('  function render(preserveScroll)'),end=served.indexOf('  function renderNav()',start);assert.ok(start>=0&&end>start);
+  let block=served.slice(start,end);
+  block=block.replace('contentRenderPending=false;',"contentRenderPending=false;performance.mark('startupRenderStart:'+currentTab+':'+(live?'data':'empty'));");
+  block=block.replace('window.scrollTo(0,scrollY)}',"window.scrollTo(0,scrollY);performance.mark('startupRenderEnd')}");
+  served=served.slice(0,start)+block+served.slice(end);
+}
+const html=served.replace('  restoreLogin();',hook+'  restoreLogin();');
 const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
 const before=n=>new Date(Date.parse(day+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);
 const now=day+'T00:00:00Z';
@@ -122,7 +130,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(PerformanceObserver.supportedEntryTypes.includes('longtask'))new PerformanceObserver(list=>window.__startup.longTasks.push(...list.getEntries().map(e=>({start:e.startTime,duration:e.duration})))).observe({type:'longtask'});
     let scheduled=false;const observer=new MutationObserver(()=>{
       if(!scheduled&&document.querySelector('.hero .asset')?.textContent.includes('5,400,000')){
-        scheduled=true;requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__startup.assetMs=performance.now();observer.disconnect()}));
+        scheduled=true;requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__startup.assetMs=performance.now();performance.mark('startupAssetReady');observer.disconnect()}));
       }
     });observer.observe(document,{subtree:true,childList:true,characterData:true});
   });
@@ -132,6 +140,9 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   try{
     for(const cache of ['cold','warm']){
       transfers=[];calls.length=0;
+      let traceEvents=[],traceListener;
+      if(traceStartup&&metrics){traceListener=x=>traceEvents.push(...x.value);metrics.on('Tracing.dataCollected',traceListener);await metrics.send('Tracing.start',{categories:'devtools.timeline,blink.user_timing,toplevel',transferMode:'ReportEvents'});}
+
       const cpuBefore=metrics?(await metrics.send('Performance.getMetrics')).metrics:[];
       if(cache==='cold')await page.goto(site,{waitUntil:'load'});else await page.reload({waitUntil:'load'});
       await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0&&!window.__dailyTest.state().updatePending);
@@ -145,6 +156,12 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         startup={...await page.evaluate(()=>({...window.__startup,idleObservedMs:performance.now()})),reads:calls.length,
           scriptMs:metrics?1000*((cpuAfter.find(m=>m.name==='ScriptDuration')?.value||0)-(cpuBefore.find(m=>m.name==='ScriptDuration')?.value||0)):null,
           responses:transfers.map(x=>({path:new URL(x.url).pathname,bytes:x.bytes}))};
+      }
+      if(traceStartup&&metrics){
+        const done=new Promise(r=>metrics.once('Tracing.tracingComplete',r));await metrics.send('Tracing.end');await done;metrics.off('Tracing.dataCollected',traceListener);
+        const asset=traceEvents.find(e=>e.name==='startupAssetReady');assert.ok(asset,'asset trace mark exists');
+        startup.renderMarks=traceEvents.filter(e=>e.pid===asset.pid&&e.tid===asset.tid&&e.name.startsWith('startupRender')).map(e=>({name:e.name,startFromAssetMs:(e.ts-asset.ts)/1000}));
+        startup.trace=traceEvents.filter(e=>e.pid===asset.pid&&e.tid===asset.tid&&e.dur&&['RunTask','Layout','UpdateLayoutTree','ParseHTML','EvaluateScript','FunctionCall','CompileScript','Paint'].includes(e.name)).map(e=>({name:e.name,startFromAssetMs:(e.ts-asset.ts)/1000,durationMs:e.dur/1000,...(['FunctionCall','EvaluateScript','Layout'].includes(e.name)?{data:e.args?.data}:{} )}));
       }
       samples.push({run:run+1,cache,...(startup?{startup}:{}),updateBytes:updates.reduce((n,x)=>n+x.bytes,0),updateRequests:updates.length,networkResponses:transfers.length,decodedBytes:transfers.reduce((n,x)=>n+x.bytes,0),controlled:await page.evaluate(()=>!!navigator.serviceWorker.controller)});
       if(profileStartup){
