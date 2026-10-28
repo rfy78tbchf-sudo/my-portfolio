@@ -21,7 +21,13 @@ for(let run=0;run<(retention?1:verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   const result=await page.evaluate(async points=>{
    const root=document.querySelector('.security-price-interactive');bindSecurityChart(root,points,'USD',{period:'all',ma:[20,60]});
    const hit=root.querySelector('.security-chart-hit'),box=hit.getBoundingClientRect(),x=box.x+box.width/2,y=box.y+box.height/2;
-   const touch=(type,distance)=>hit.dispatchEvent(new TouchEvent(type,{bubbles:true,cancelable:true,touches:type==='touchend'?[]:[new Touch({identifier:1,target:hit,clientX:x-distance/2,clientY:y}),new Touch({identifier:2,target:hit,clientX:x+distance/2,clientY:y})]}));
+   const touch=(type,distance)=>{
+    const touches=type==='touchend'?[]:[{identifier:1,target:hit,clientX:x-distance/2,clientY:y},{identifier:2,target:hit,clientX:x+distance/2,clientY:y}];
+    let event;
+    try{event=new TouchEvent(type,{bubbles:true,cancelable:true,touches:touches.map(t=>new Touch(t))})}
+    catch(e){event=new Event(type,{bubbles:true,cancelable:true});Object.defineProperty(event,'touches',{value:touches})}
+    return hit.dispatchEvent(event);
+   };
    const durations=[],paints=[];let redraws=0;
    const observer=new MutationObserver(records=>redraws+=records.filter(r=>r.type==='childList'&&r.target===root.querySelector('.security-ma-lines')).length);observer.observe(root,{childList:true,subtree:true});
    touch('touchstart',100);
