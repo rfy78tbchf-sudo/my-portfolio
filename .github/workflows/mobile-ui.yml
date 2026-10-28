@@ -33,6 +33,8 @@ jobs:
           tests/build209_shell_recovery.mjs
       - name: Verify provisional amounts and reconciliation scope
         run: node --test tests/build210_pnl_state.mjs
+      - name: Verify daily five-day moving average crossings
+        run: node tests/build224_ma_cross.mjs
       - name: Verify on-demand refresh data and isolation
         run: node tests/build216_refresh.mjs
       - name: Verify early assets and staged loading
@@ -53,6 +55,8 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
+      - name: Verify moving average crossing display in both browsers
+        run: node tests/build224_ma_cross.mjs --browser
       - name: Verify position and saved judgment entry
         run: node tests/build217_browser.mjs
       - run: node tests/build49_ai_cache.mjs
