@@ -59,6 +59,8 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
+      - name: Verify chart window reuse preserves selection and new prices
+        run: node tests/build233_chart_latency.mjs --verify
       - name: Verify cold and warm update checks with real service workers
         run: node tests/build232_update_latency.mjs --verify
       - name: Verify wealth only requests visible data and reuses cached results
