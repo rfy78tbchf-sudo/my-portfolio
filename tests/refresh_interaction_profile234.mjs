@@ -3,6 +3,7 @@ import {readFileSync,existsSync,mkdirSync} from 'node:fs';
 import {dirname,resolve,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium,webkit} from 'playwright';
+import {inspectPortfolioRows} from './portfolio_row_geometry234.mjs';
 
 // Actual startup, stored-session authentication, API queue, resume events and renderers.
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
@@ -126,6 +127,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       await page.locator('#nav [data-tab="'+tab+'"]').click();
       await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().wealthLoading);
     }
+    const geometry=process.argv.includes('--row-geometry')?await inspectPortfolioRows(page,holdingCount):null;
     const metricSession=profile&&name==='chromium'?await context.newCDPSession(page):null;if(metricSession)await metricSession.send('Performance.enable');
     async function interactions(){
       await page.evaluate(()=>{window.__longTasks=[];if(PerformanceObserver.supportedEntryTypes.includes('longtask')){window.__observer=new PerformanceObserver(list=>window.__longTasks.push(...list.getEntries().map(e=>e.duration)));window.__observer.observe({type:'longtask'});}});
@@ -156,7 +158,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     assert.equal(await page.evaluate(()=>document.activeElement?.id),'search','pending response preserves focus');
     await page.locator('#search').blur();await page.locator('#nav [data-tab="home"]').click();
     await page.waitForFunction(expected=>document.querySelector('.hero .asset')?.textContent.includes(expected),(fixtureTotal+100000).toLocaleString('en-US'));
-    samples.push({run:run+1,engine:name,idle,pending,pendingReads,totalReads:calls.length,syncCalls:calls.filter(c=>c.body.action==='sync-current').length});
+    samples.push({run:run+1,engine:name,...(geometry?{geometry}:{}),idle,pending,pendingReads,totalReads:calls.length,syncCalls:calls.filter(c=>c.body.action==='sync-current').length});
     assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);
   }finally{if(coreDelay)coreDelay.release();if(wealthGate)wealthGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
