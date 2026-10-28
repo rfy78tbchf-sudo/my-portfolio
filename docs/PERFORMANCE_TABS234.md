@@ -24,3 +24,29 @@ After each home return/forced GC, all15 samples retain documents2/nodes817/liste
 `node tests/tab_runtime_profile234.mjs` runs the five-session baseline. `--verify` runs one session per Chromium/WebKit plus the gated rapid-navigation case; CHROMIUM_ONLY=1 restricts local verification. Local Chromium passed. Local WebKit cannot launch because OS libraries are missing; CI installs both and now runs this test. Check the diagnostic commit CI next; no main promotion is intended. Previous main and previous measurement-branch CI passed both engines.
 
 Next: isolate portfolio's actual price/technical dependencies from the shared31-request enrichment and compare a targeted split under the same sequence, including first performance/wealth use. Preserve retry, load epochs, data timestamps, search/sort/currency and detail return. Reject a split that merely shifts equal work into the next required action without a supported benefit. No actual user DB writes, balances, identities or judgments were used.
+
+## Dependency audit and early-price experiment — 2026-10-29 KST
+Starting branch3496c8a passed both-engine CI40729069769. Main remains716448a/Build234 and all three live deployment markers match. Continued the same branch without a new release.
+
+The list's valuation/quantity/P&L uses core holdings and display basis; quote dates use priceMeta populated by loadHomeReviewData. app-enhancements only adds its panel on more. However livePortfolio ALSO appends portfolioReviewSection and homePriceWatchCard. The latter calls homePriceWatchData, which requires per-security160-point swingPrices (not merely latest21-day quotes). loadSwingPrices issues one request per positive holding security, and updateSwingAlerts computes state/notifications from those histories. The visible four-row fixture must not be mistaken for the entire portfolio dependency graph. A blanket removal of enrichment would leave the price-watch section incomplete.
+
+Candidates: (1) drop all31 portfolio reads: rejected by this dependency audit; (2) start independent swing price reads at enrich entry and reuse that promise at the existing completion join: measured below and rejected for uncertain benefit; (3) new cache/cancellation: still unwarranted given zero repeat reads and already guarded late wealth response. No calculation or alert definition changed.
+
+Candidate2 was tested only in a temporary HTML file via UI_SOURCE. Exact transformation: in loadLiveDetails change `function enrich(){return Promise.all([` to `function enrich(){var earlySwing=loadSwingPrices(target);return Promise.all([`; replace the completion join's `loadSwingPrices(live)` with `earlySwing`. No new calls or concurrency limit change. The three-worker price loader shares the existing bounded request queue with other reads, so moving its start does not eliminate total work.
+
+Five fresh Chromium sessions before and five after, each three tab rounds, same390x844/CPU4x/50ms mock delays/cache/SW/fixture and harness, sequential batches. Metric ranges overlap:
+
+| First-round metric, median(range) ms | Current app | Temporary early swing |
+|---|---:|---:|
+| Holding content plus two rAF | 148 (142–183) | 157 (121–251) |
+| Four swing histories loaded | 899 (853–946) | 854 (792–1025) |
+| Portfolio idle plus two rAF | 917 (881–974) | 940 (884–1133) |
+| Next performance idle plus two rAF | 494 (397–501) | 463 (406–527) |
+| Next wealth ready plus two rAF | 244 (241–289) | 275 (225–293) |
+| Portfolio request count | 31 every run | 31 every run |
+
+Swing readiness is the test hook observing four populated result keys, not a presented frame, proof of valid history, or real network latency. The fixture is synthetic and does not certify financial/alert correctness; those existing regressions were not replaced. Overall readiness and first displayed holdings do not improve. Do not claim the45ms median difference in swing completion is a reliable benefit. App code and release markers remain unchanged. Raw results are in PERFORMANCE_PORTFOLIO_DEPENDENCIES234.samples.json.
+
+Local Chromium tab/late-response verification was rerun against the unchanged app. CI runs the diagnostic harness in both engines; check this commit's result at next start. No main merge/deployment is intended. Existing main and preceding branch CI remain successful.
+
+Handoff: mark blanket portfolio deferral and early-swing scheduling as closed candidates unless new evidence changes the workload. The next useful measurement is refresh/resume under a controlled slow response and rapid tab changes, capturing click responsiveness/long tasks while requests remain pending, rather than more idle-only tab benchmarks. Preserve shared request owners, failure/retry and actual timestamps. A more invasive enrichment partition needs a concrete consumer map and demonstrated user-flow benefit before product implementation.

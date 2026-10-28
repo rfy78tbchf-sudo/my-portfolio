@@ -16,7 +16,7 @@ const hook=`
   window.__dailyTest={
     refresh:function(){return refreshLive(true,false)},
     age:function(){lastLiveLoadAt=Date.now()-4*60*1000},
-    state:function(){return {wealthLoading:wealthState().loading,tab:currentTab,period:stockPeriod,query:stockPnlQuery,scope:stockPnlScope,
+    state:function(){return {swingLoaded:Object.keys(live&&live.swingPrices||{}).length,wealthLoading:wealthState().loading,tab:currentTab,period:stockPeriod,query:stockPnlQuery,scope:stockPnlScope,
       resumePending:liveResumePending,renderPending:contentRenderPending,loadEpoch:liveLoadEpoch,
       idle:!liveRefreshPromise&&!liveLoadPromise&&!liveResumePromise&&!liveReadsActive&&!liveReadQueue.length,
       pnl:live&&live.stockPnl&&live.stockPnl.pnl_krw,error:liveError,deferred:!!(live&&live.detailsDeferred),enrichment:!!(live&&live.enrichmentLoading),background:!!backgroundSyncPromise}}
@@ -116,9 +116,14 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
           await page.waitForFunction(()=>document.querySelectorAll('.portfolio-list [data-security-id]').length===4&&document.querySelector('.portfolio-list').textContent.includes('1,000,000'));
           firstContentMs=Math.round(await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__tabStart))))));
         }
+        let swingReadyMs=null;
+        if(tab==='portfolio'){
+          await page.waitForFunction(()=>window.__dailyTest.state().swingLoaded===4);
+          swingReadyMs=Math.round(await page.evaluate(()=>performance.now()-window.__tabStart));
+        }
         await page.waitForFunction(tab=>{const s=window.__dailyTest.state();return s.tab===tab&&s.idle&&!s.wealthLoading&&(tab!=='portfolio'||!s.deferred)&&(tab!=='analysis'||document.querySelector('.wealth-total')?.textContent.includes('5,400,000'))},tab);
         const readyMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__tabStart)))));
-        transitions.push({round:round+1,tab,readyMs:Math.round(readyMs),firstContentMs,requests:calls.length,names:calls.map(c=>c.path.split('/').pop())});
+        transitions.push({round:round+1,tab,readyMs:Math.round(readyMs),firstContentMs,swingReadyMs,requests:calls.length,names:calls.map(c=>c.path.split('/').pop())});
         assert.equal(await page.locator('#nav [aria-current="page"]').getAttribute('data-tab'),tab);
       }
       if(cdp){await cdp.send('HeapProfiler.collectGarbage');retained.push(await cdp.send('Memory.getDOMCounters'));}
