@@ -66,7 +66,7 @@ jobs:
       - name: Verify chart window reuse preserves selection and new prices
         run: node tests/build233_chart_latency.mjs --verify
       - name: Verify cold and warm update checks with real service workers
-        run: node tests/build232_update_latency.mjs --verify
+        run: node tests/build232_update_latency.mjs --verify --profile-startup
       - name: Verify wealth only requests visible data and reuses cached results
         run: node tests/build231_wealth_latency.mjs --verify
       - name: Verify lazy Excel parsing, shared loading and retry

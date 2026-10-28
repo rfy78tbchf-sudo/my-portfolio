@@ -9,7 +9,7 @@ import {chromium,webkit} from 'playwright';
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 let dispatch,transfers=[],versionOverride=null,versionStatus=200,fallbackBuild=null,updateUnavailable=false,navigationUnavailable=false;
-const verify=process.argv.includes('--verify');
+const verify=process.argv.includes('--verify'),profileStartup=process.argv.includes('--profile-startup');
 const server=http.createServer(async(req,res)=>{
  let body='';for await(const chunk of req)body+=chunk;
  const url='http://'+req.headers.host+req.url;
@@ -117,17 +117,48 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     const tables={accounts,securities,holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
     return json(route,tables[table]||[]);
   };
+  if(profileStartup)await context.addInitScript(()=>{
+    window.__startup={assetMs:null,longTasks:PerformanceObserver.supportedEntryTypes.includes('longtask')?[]:null};
+    if(PerformanceObserver.supportedEntryTypes.includes('longtask'))new PerformanceObserver(list=>window.__startup.longTasks.push(...list.getEntries().map(e=>({start:e.startTime,duration:e.duration})))).observe({type:'longtask'});
+    let scheduled=false;const observer=new MutationObserver(()=>{
+      if(!scheduled&&document.querySelector('.hero .asset')?.textContent.includes('5,400,000')){
+        scheduled=true;requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__startup.assetMs=performance.now();observer.disconnect()}));
+      }
+    });observer.observe(document,{subtree:true,childList:true,characterData:true});
+  });
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
   if(name==='chromium'){const cdp=await context.newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});}
+  const metrics=profileStartup&&name==='chromium'?await context.newCDPSession(page):null;if(metrics)await metrics.send('Performance.enable');
   try{
     for(const cache of ['cold','warm']){
-      transfers=[];
+      transfers=[];calls.length=0;
+      const cpuBefore=metrics?(await metrics.send('Performance.getMetrics')).metrics:[];
       if(cache==='cold')await page.goto(site,{waitUntil:'load'});else await page.reload({waitUntil:'load'});
       await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0&&!window.__dailyTest.state().updatePending);
       await page.evaluate(()=>navigator.serviceWorker.ready);
       const updates=transfers.filter(x=>x.url.includes('check_build='));
       assert.equal(updates.length,1);
-      samples.push({run:run+1,cache,updateBytes:updates.reduce((n,x)=>n+x.bytes,0),updateRequests:updates.length,networkResponses:transfers.length,decodedBytes:transfers.reduce((n,x)=>n+x.bytes,0),controlled:await page.evaluate(()=>!!navigator.serviceWorker.controller)});
+      let startup=null;
+      if(profileStartup){
+        await page.waitForFunction(()=>window.__startup.assetMs!==null);
+        const cpuAfter=metrics?(await metrics.send('Performance.getMetrics')).metrics:[];
+        startup={...await page.evaluate(()=>({...window.__startup,idleObservedMs:performance.now()})),reads:calls.length,
+          scriptMs:metrics?1000*((cpuAfter.find(m=>m.name==='ScriptDuration')?.value||0)-(cpuBefore.find(m=>m.name==='ScriptDuration')?.value||0)):null,
+          responses:transfers.map(x=>({path:new URL(x.url).pathname,bytes:x.bytes}))};
+      }
+      samples.push({run:run+1,cache,...(startup?{startup}:{}),updateBytes:updates.reduce((n,x)=>n+x.bytes,0),updateRequests:updates.length,networkResponses:transfers.length,decodedBytes:transfers.reduce((n,x)=>n+x.bytes,0),controlled:await page.evaluate(()=>!!navigator.serviceWorker.controller)});
+      if(profileStartup){
+        calls.length=0;
+        await page.evaluate(()=>{window.__firstTabStart=performance.now();document.querySelector('#nav [data-tab="portfolio"]').click()});
+        startup.firstPortfolioCallbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__firstTabStart)))));
+        await page.waitForFunction(()=>window.__dailyTest.state().idle);
+        startup.firstPortfolioIdleMs=await page.evaluate(()=>performance.now()-window.__firstTabStart);
+        startup.firstPortfolioReads=calls.length;
+        assert.ok(Number.isFinite(startup.assetMs)&&startup.assetMs>0);
+        if(metrics)assert.ok(startup.scriptMs>=0,'CDP script counter delta is nonnegative');
+        assert.equal(await page.locator('.portfolio-list .portfolio-row').count(),4);
+        await page.locator('#nav [data-tab="home"]').click();
+      }
     }
     if(verify){
       assert.ok(samples.slice(-2).every(x=>x.updateBytes===readFileSync(resolve(root,'version.json')).length),'cold and warm service-worker paths use the manifest');
