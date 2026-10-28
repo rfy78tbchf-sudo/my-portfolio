@@ -32,8 +32,25 @@
     if(type==='inlineStr')return Array.prototype.map.call(cell.getElementsByTagName('t'),function(n){return n.textContent}).join('');
     var value=node?node.textContent:'';return type==='s'?strings[Number(value)]||'':value;
   }
+  var zipLoadPromise=null;
+  function ensureZip(){
+    if(window.JSZip)return Promise.resolve(window.JSZip);
+    if(zipLoadPromise)return zipLoadPromise;
+    zipLoadPromise=new Promise(function(resolve,reject){
+      var script=document.createElement('script');
+      script.src='./vendor/jszip.min.js';script.async=true;
+      function finish(error){
+        script.onload=script.onerror=null;script.remove();
+        if(error)reject(error);else resolve(window.JSZip);
+      }
+      script.onload=function(){finish(window.JSZip?null:Error('엑셀 읽기 구성요소를 불러오지 못했습니다. 다시 시도해 주세요.'))};
+      script.onerror=function(){finish(Error('엑셀 읽기 구성요소를 불러오지 못했습니다. 다시 시도해 주세요.'))};
+      document.head.appendChild(script);
+    }).catch(function(error){zipLoadPromise=null;throw error});
+    return zipLoadPromise;
+  }
   async function parseXlsx(file){
-    if(!window.JSZip)throw Error('엑셀 읽기 구성요소를 불러오지 못했습니다.');
+    await ensureZip();
     var zip=await window.JSZip.loadAsync(await file.arrayBuffer());
     var sheet=zip.file('xl/worksheets/sheet1.xml');if(!sheet)throw Error('첫 번째 시트를 찾지 못했습니다.');
     if(sheet._data&&sheet._data.uncompressedSize>20*1024*1024)throw Error('엑셀 시트가 너무 큽니다. 여러 파일로 나눠 주세요.');
