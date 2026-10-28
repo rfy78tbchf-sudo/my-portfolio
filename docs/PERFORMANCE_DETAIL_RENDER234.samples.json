@@ -1,0 +1,520 @@
+{
+  "baseline": {
+    "conditions": "Timing baseline; 5 fresh Chromium sessions x1 detail entry; 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return",
+    "samples": [
+      {
+        "run": 1,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 482,
+            "renderMs": 241,
+            "cpu": {
+              "LayoutDuration": 0.209776,
+              "RecalcStyleDuration": 0.021734,
+              "ScriptDuration": 0.018172,
+              "TaskDuration": 0.46472199999999997,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              253
+            ],
+            "phases": {
+              "html": 2580.699999999255,
+              "chart": 2616,
+              "structure": 2631,
+              "reorder": 2632.699999999255,
+              "shortcuts": 2633.5,
+              "controls": 2633.5,
+              "scrollReset": 2635.10000000149,
+              "setup": 2778.699999999255,
+              "decisions": 2780.10000000149
+            },
+            "phaseStart": 2580.60000000149,
+            "historyMs": 14,
+            "historyNodes": 620,
+            "openMs": 37,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 500,
+            "renderMs": 245,
+            "cpu": {
+              "LayoutDuration": 0.228521,
+              "RecalcStyleDuration": 0.029374,
+              "ScriptDuration": 0.016779,
+              "TaskDuration": 0.507821,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              259
+            ],
+            "phases": {
+              "html": 2537.2999999970198,
+              "chart": 2562.599999997765,
+              "structure": 2575.89999999851,
+              "reorder": 2576.7999999970198,
+              "shortcuts": 2577.89999999851,
+              "controls": 2577.89999999851,
+              "scrollReset": 2578.699999999255,
+              "setup": 2739.2999999970198,
+              "decisions": 2741.2999999970198
+            },
+            "phaseStart": 2536.2999999970198,
+            "historyMs": 19,
+            "historyNodes": 620,
+            "openMs": 50,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 462,
+            "renderMs": 205,
+            "cpu": {
+              "LayoutDuration": 0.205257,
+              "RecalcStyleDuration": 0.023786,
+              "ScriptDuration": 0.024693,
+              "TaskDuration": 0.465177,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              216
+            ],
+            "phases": {
+              "html": 2600.300000000745,
+              "chart": 2626.800000000745,
+              "structure": 2641.10000000149,
+              "reorder": 2641.900000002235,
+              "shortcuts": 2642.10000000149,
+              "controls": 2642.900000002235,
+              "scrollReset": 2643.800000000745,
+              "setup": 2772.7000000029802,
+              "decisions": 2773.800000000745
+            },
+            "phaseStart": 2599.800000000745,
+            "historyMs": 16,
+            "historyNodes": 620,
+            "openMs": 44,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 525,
+            "renderMs": 251,
+            "cpu": {
+              "LayoutDuration": 0.259057,
+              "RecalcStyleDuration": 0.023758,
+              "ScriptDuration": 0.016996,
+              "TaskDuration": 0.527159,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              260
+            ],
+            "phases": {
+              "html": 2643.300000000745,
+              "chart": 2649.5,
+              "structure": 2652.60000000149,
+              "reorder": 2652.699999999255,
+              "shortcuts": 2652.800000000745,
+              "controls": 2652.800000000745,
+              "scrollReset": 2653,
+              "setup": 2842.699999999255,
+              "decisions": 2844.699999999255
+            },
+            "phaseStart": 2643.10000000149,
+            "historyMs": 17,
+            "historyNodes": 620,
+            "openMs": 41,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 511,
+            "renderMs": 248,
+            "cpu": {
+              "LayoutDuration": 0.180877,
+              "RecalcStyleDuration": 0.022813,
+              "ScriptDuration": 0.025676,
+              "TaskDuration": 0.49937000000000004,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              260
+            ],
+            "phases": {
+              "html": 2458.2000000029802,
+              "chart": 2501.10000000149,
+              "structure": 2524.900000002235,
+              "reorder": 2527.400000002235,
+              "shortcuts": 2528,
+              "controls": 2528.2000000029802,
+              "scrollReset": 2536.10000000149,
+              "setup": 2661,
+              "decisions": 2664.10000000149
+            },
+            "phaseStart": 2457.7000000029802,
+            "historyMs": 27,
+            "historyNodes": 620,
+            "openMs": 37,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      }
+    ]
+  },
+  "rejectedScrollResetRemoval": {
+    "conditions": "Timing baseline; 5 fresh Chromium sessions x1 detail entry; 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return",
+    "samples": [
+      {
+        "run": 1,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 650,
+            "renderMs": 93,
+            "cpu": {
+              "LayoutDuration": 0.222054,
+              "RecalcStyleDuration": 0.031333,
+              "ScriptDuration": 0.024791,
+              "TaskDuration": 0.519931,
+              "LayoutCount": 5
+            },
+            "longTasks": [
+              106,
+              204
+            ],
+            "phases": {
+              "html": 2581.60000000149,
+              "chart": 2613.5,
+              "structure": 2635,
+              "reorder": 2637.199999999255,
+              "shortcuts": 2637.900000002235,
+              "controls": 2638.10000000149,
+              "scrollReset": 2638.900000002235,
+              "setup": 2639.5,
+              "decisions": 2640.10000000149
+            },
+            "phaseStart": 2581,
+            "historyMs": 24,
+            "historyNodes": 620,
+            "openMs": 45,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 697,
+            "renderMs": 90,
+            "cpu": {
+              "LayoutDuration": 0.286549,
+              "RecalcStyleDuration": 0.025786,
+              "ScriptDuration": 0.026686,
+              "TaskDuration": 0.581646,
+              "LayoutCount": 5
+            },
+            "longTasks": [
+              104,
+              249
+            ],
+            "phases": {
+              "html": 2676.199999999255,
+              "chart": 2703.199999999255,
+              "structure": 2720,
+              "reorder": 2722.099999997765,
+              "shortcuts": 2722.89999999851,
+              "controls": 2723,
+              "scrollReset": 2723.800000000745,
+              "setup": 2725.39999999851,
+              "decisions": 2725.5
+            },
+            "phaseStart": 2675.699999999255,
+            "historyMs": 20,
+            "historyNodes": 620,
+            "openMs": 66,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 648,
+            "renderMs": 98,
+            "cpu": {
+              "LayoutDuration": 0.31687,
+              "RecalcStyleDuration": 0.026403,
+              "ScriptDuration": 0.019653,
+              "TaskDuration": 0.652656,
+              "LayoutCount": 5
+            },
+            "longTasks": [
+              53,
+              114,
+              279
+            ],
+            "phases": {
+              "html": 2810.7000000029802,
+              "chart": 2842.10000000149,
+              "structure": 2856.7000000029802,
+              "reorder": 2857.900000002235,
+              "shortcuts": 2859.900000002235,
+              "controls": 2860.10000000149,
+              "scrollReset": 2861.60000000149,
+              "setup": 2862.300000000745,
+              "decisions": 2862.5
+            },
+            "phaseStart": 2810.7000000029802,
+            "historyMs": 24,
+            "historyNodes": 620,
+            "openMs": 42,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 782,
+            "renderMs": 139,
+            "cpu": {
+              "LayoutDuration": 0.414116,
+              "RecalcStyleDuration": 0.031524,
+              "ScriptDuration": 0.034273,
+              "TaskDuration": 0.817869,
+              "LayoutCount": 5
+            },
+            "longTasks": [
+              111,
+              61,
+              146,
+              309
+            ],
+            "phases": {
+              "html": 3430,
+              "chart": 3481,
+              "structure": 3498.900000002235,
+              "reorder": 3499.199999999255,
+              "shortcuts": 3502.5,
+              "controls": 3502.60000000149,
+              "scrollReset": 3503.300000000745,
+              "setup": 3504.10000000149,
+              "decisions": 3504.300000000745
+            },
+            "phaseStart": 3429,
+            "historyMs": 31,
+            "historyNodes": 620,
+            "openMs": 43,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 605,
+            "renderMs": 101,
+            "cpu": {
+              "LayoutDuration": 0.31469,
+              "RecalcStyleDuration": 0.024349,
+              "ScriptDuration": 0.022373,
+              "TaskDuration": 0.600996,
+              "LayoutCount": 5
+            },
+            "longTasks": [
+              114,
+              278
+            ],
+            "phases": {
+              "html": 2574.7000000029802,
+              "chart": 2601.900000002235,
+              "structure": 2624.10000000149,
+              "reorder": 2625.800000000745,
+              "shortcuts": 2626.7000000029802,
+              "controls": 2627.7000000029802,
+              "scrollReset": 2628.800000000745,
+              "setup": 2629,
+              "decisions": 2629.800000000745
+            },
+            "phaseStart": 2574.400000002235,
+            "historyMs": 20,
+            "historyNodes": 620,
+            "openMs": 40,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3259,
+            "jsEventListeners": 145
+          }
+        ]
+      }
+    ]
+  }
+}
