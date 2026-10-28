@@ -50,7 +50,7 @@ const savedDecisions=Array.from({length:10},(_,i)=>({id:'decision-'+i,security_i
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-const samples=[],verify=process.argv.includes('--verify');
+const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace');
 for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
  const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
   scope.current_display_total=5400000; // Each browser starts with its own baseline value.
@@ -120,6 +120,9 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       const metricsBefore=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
       await page.evaluate(()=>{window.__longTasks=[];window.__longObserver=new PerformanceObserver(l=>window.__longTasks.push(...l.getEntries().map(e=>e.duration)));try{window.__longObserver.observe({type:'longtask'})}catch(e){}});
       if(verify){await page.setViewportSize({width:[390,402,430][visit%3],height:844});await page.evaluate(zoom=>document.documentElement.style.zoom=zoom,visit<3?'1':'1.25');}
+      const traceEvents=[];
+      const collectTrace=event=>traceEvents.push(...event.value);
+      if(trace&&cdp){cdp.on('Tracing.dataCollected',collectTrace);await cdp.send('Tracing.start',{categories:'devtools.timeline,disabled-by-default-devtools.timeline.stack',transferMode:'ReportEvents'});}
       calls.length=0;
       await page.evaluate(()=>{window.__start=performance.now();document.querySelector('.portfolio-list [data-security-id="daily-0"]').click()});
       await page.locator('#detailOverview').waitFor();
@@ -127,6 +130,11 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       await page.waitForFunction(()=>window.__dailyTest.state().idle);
       await page.waitForFunction(()=>document.querySelectorAll('#thesisPrevious .ai-history-item').length===10);
       const metricsAfter=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
+      let timeline;
+      if(trace&&cdp){
+        const done=new Promise(resolve=>cdp.once('Tracing.tracingComplete',resolve));await cdp.send('Tracing.end');await done;cdp.off('Tracing.dataCollected',collectTrace);
+        timeline=traceEvents.filter(e=>['Layout','UpdateLayoutTree','FunctionCall'].includes(e.name)&&e.dur).map(e=>({name:e.name,durationMs:e.dur/1000,args:e.args}));
+      }
       const cpu=Object.fromEntries(['LayoutDuration','RecalcStyleDuration','ScriptDuration','TaskDuration','LayoutCount'].map(k=>[k,(metricsAfter.find(m=>m.name===k)?.value||0)-(metricsBefore.find(m=>m.name===k)?.value||0)]));
       const longTasks=await page.evaluate(()=>{window.__longObserver.disconnect();return window.__longTasks});
       if(verify){
@@ -146,7 +154,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       await page.locator('.detail-sheet').evaluate(e=>e.scrollTop=e.scrollHeight);
       if(verify&&visit%2)await page.goBack();else await page.locator('#detailReturn').click();await page.locator('#detailModal').waitFor({state:'hidden'});
       if(cdp)await cdp.send('HeapProfiler.collectGarbage');
-      entries.push({visit:visit+1,readyMs:Math.round(readyMs),renderMs,cpu,longTasks,...history,openMs:Math.round(openMs),openedNodes,requests:calls.length,requestNames,...(cdp?await cdp.send('Memory.getDOMCounters'):{})});
+      entries.push({visit:visit+1,readyMs:Math.round(readyMs),renderMs,cpu,longTasks,...(timeline?{timeline}:{}),...history,openMs:Math.round(openMs),openedNodes,requests:calls.length,requestNames,...(cdp?await cdp.send('Memory.getDOMCounters'):{})});
     }
     if(verify){
       assert.equal(entries[0].requestNames.filter(n=>n==='ai_analysis_history').length,1);

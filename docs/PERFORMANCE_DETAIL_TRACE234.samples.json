@@ -1,0 +1,2154 @@
+{
+  "baseline": {
+    "conditions": "Timing baseline; 5 fresh Chromium sessions x1 detail entry;  365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return",
+    "samples": [
+      {
+        "run": 1,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 509,
+            "renderMs": 241,
+            "cpu": {
+              "LayoutDuration": 0.243341,
+              "RecalcStyleDuration": 0.02196,
+              "ScriptDuration": 0.022634,
+              "TaskDuration": 0.530177,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              52,
+              251
+            ],
+            "phases": {
+              "html": 2695.099999997765,
+              "chart": 2723.099999997765,
+              "structure": 2739.199999999255,
+              "reorder": 2740.300000000745,
+              "shortcuts": 2741.300000000745,
+              "controls": 2741.599999997765,
+              "scrollReset": 2742.099999997765,
+              "setup": 2895,
+              "decisions": 2897.599999997765
+            },
+            "phaseStart": 2695,
+            "historyMs": 26,
+            "historyNodes": 620,
+            "openMs": 40,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 551,
+            "renderMs": 282,
+            "cpu": {
+              "LayoutDuration": 0.259793,
+              "RecalcStyleDuration": 0.027177,
+              "ScriptDuration": 0.027468,
+              "TaskDuration": 0.555758,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              295
+            ],
+            "phases": {
+              "html": 2700.60000000149,
+              "chart": 2726.900000002235,
+              "structure": 2744,
+              "reorder": 2745.5,
+              "shortcuts": 2747,
+              "controls": 2747.199999999255,
+              "scrollReset": 2747.900000002235,
+              "setup": 2933.10000000149,
+              "decisions": 2934.800000000745
+            },
+            "phaseStart": 2700,
+            "historyMs": 21,
+            "historyNodes": 620,
+            "openMs": 37,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 582,
+            "renderMs": 299,
+            "cpu": {
+              "LayoutDuration": 0.273202,
+              "RecalcStyleDuration": 0.030649,
+              "ScriptDuration": 0.019782,
+              "TaskDuration": 0.590491,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              312,
+              55
+            ],
+            "phases": {
+              "html": 2616.099999997765,
+              "chart": 2642.599999997765,
+              "structure": 2658.2999999970198,
+              "reorder": 2660.099999997765,
+              "shortcuts": 2660.7999999970198,
+              "controls": 2661.5,
+              "scrollReset": 2662.2999999970198,
+              "setup": 2854.89999999851,
+              "decisions": 2857.39999999851
+            },
+            "phaseStart": 2615.5,
+            "historyMs": 21,
+            "historyNodes": 620,
+            "openMs": 57,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 879,
+            "renderMs": 455,
+            "cpu": {
+              "LayoutDuration": 0.432955,
+              "RecalcStyleDuration": 0.036104,
+              "ScriptDuration": 0.03549,
+              "TaskDuration": 0.9053800000000001,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              64,
+              79,
+              475,
+              86
+            ],
+            "phases": {
+              "html": 2990.7999999970198,
+              "chart": 3051.39999999851,
+              "structure": 3073.099999997765,
+              "reorder": 3077,
+              "shortcuts": 3077.199999999255,
+              "controls": 3078.2999999970198,
+              "scrollReset": 3079.2999999970198,
+              "setup": 3362.599999997765,
+              "decisions": 3364.7999999970198
+            },
+            "phaseStart": 2990.699999999255,
+            "historyMs": 32,
+            "historyNodes": 620,
+            "openMs": 53,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 549,
+            "renderMs": 268,
+            "cpu": {
+              "LayoutDuration": 0.236033,
+              "RecalcStyleDuration": 0.022825,
+              "ScriptDuration": 0.02417,
+              "TaskDuration": 0.547289,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              281
+            ],
+            "phases": {
+              "html": 3332.10000000149,
+              "chart": 3365.300000000745,
+              "structure": 3384.10000000149,
+              "reorder": 3386.800000000745,
+              "shortcuts": 3387.699999999255,
+              "controls": 3388.10000000149,
+              "scrollReset": 3388.300000000745,
+              "setup": 3553.199999999255,
+              "decisions": 3555.699999999255
+            },
+            "phaseStart": 3331.300000000745,
+            "historyMs": 17,
+            "historyNodes": 620,
+            "openMs": 42,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      }
+    ]
+  },
+  "rejectedContainLayout": {
+    "conditions": "Timing baseline; 5 fresh Chromium sessions x1 detail entry;  365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return",
+    "samples": [
+      {
+        "run": 1,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 570,
+            "renderMs": 268,
+            "cpu": {
+              "LayoutDuration": 0.268514,
+              "RecalcStyleDuration": 0.032843,
+              "ScriptDuration": 0.022457,
+              "TaskDuration": 0.597958,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              284,
+              66
+            ],
+            "phases": {
+              "html": 2713.900000002235,
+              "chart": 2744.199999999255,
+              "structure": 2760.900000002235,
+              "reorder": 2763.10000000149,
+              "shortcuts": 2764,
+              "controls": 2764.60000000149,
+              "scrollReset": 2764.699999999255,
+              "setup": 2940.300000000745,
+              "decisions": 2941.60000000149
+            },
+            "phaseStart": 2713.900000002235,
+            "historyMs": 29,
+            "historyNodes": 620,
+            "openMs": 50,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 599,
+            "renderMs": 298,
+            "cpu": {
+              "LayoutDuration": 0.273302,
+              "RecalcStyleDuration": 0.026069,
+              "ScriptDuration": 0.032458,
+              "TaskDuration": 0.622733,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              316,
+              68
+            ],
+            "phases": {
+              "html": 2719,
+              "chart": 2746.5,
+              "structure": 2769.300000000745,
+              "reorder": 2773,
+              "shortcuts": 2773.89999999851,
+              "controls": 2774.39999999851,
+              "scrollReset": 2774.5,
+              "setup": 2956.599999997765,
+              "decisions": 2959
+            },
+            "phaseStart": 2718.599999997765,
+            "historyMs": 24,
+            "historyNodes": 620,
+            "openMs": 48,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 600,
+            "renderMs": 294,
+            "cpu": {
+              "LayoutDuration": 0.275588,
+              "RecalcStyleDuration": 0.027413,
+              "ScriptDuration": 0.023968,
+              "TaskDuration": 0.609716,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              311,
+              61
+            ],
+            "phases": {
+              "html": 2898.300000000745,
+              "chart": 2939.300000000745,
+              "structure": 2962.699999999255,
+              "reorder": 2964,
+              "shortcuts": 2965.900000002235,
+              "controls": 2966.199999999255,
+              "scrollReset": 2966.400000002235,
+              "setup": 3146.60000000149,
+              "decisions": 3151.900000002235
+            },
+            "phaseStart": 2898.199999999255,
+            "historyMs": 19,
+            "historyNodes": 620,
+            "openMs": 38,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 678,
+            "renderMs": 344,
+            "cpu": {
+              "LayoutDuration": 0.340819,
+              "RecalcStyleDuration": 0.026739,
+              "ScriptDuration": 0.02896,
+              "TaskDuration": 0.700132,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              52,
+              359,
+              59
+            ],
+            "phases": {
+              "html": 3053.5,
+              "chart": 3084.199999999255,
+              "structure": 3099.800000000745,
+              "reorder": 3100.89999999851,
+              "shortcuts": 3101.699999999255,
+              "controls": 3101.800000000745,
+              "scrollReset": 3102.5,
+              "setup": 3341,
+              "decisions": 3343
+            },
+            "phaseStart": 3052.599999997765,
+            "historyMs": 28,
+            "historyNodes": 620,
+            "openMs": 48,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "entries": [
+          {
+            "visit": 1,
+            "readyMs": 630,
+            "renderMs": 322,
+            "cpu": {
+              "LayoutDuration": 0.287664,
+              "RecalcStyleDuration": 0.029474,
+              "ScriptDuration": 0.02831,
+              "TaskDuration": 0.6593789999999999,
+              "LayoutCount": 6
+            },
+            "longTasks": [
+              339,
+              53
+            ],
+            "phases": {
+              "html": 3108.400000002235,
+              "chart": 3153.199999999255,
+              "structure": 3175.300000000745,
+              "reorder": 3178.5,
+              "shortcuts": 3179.800000000745,
+              "controls": 3180.5,
+              "scrollReset": 3181.300000000745,
+              "setup": 3378,
+              "decisions": 3380.10000000149
+            },
+            "phaseStart": 3105.60000000149,
+            "historyMs": 22,
+            "historyNodes": 620,
+            "openMs": 47,
+            "openedNodes": 620,
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ],
+            "documents": 2,
+            "nodes": 3260,
+            "jsEventListeners": 145
+          }
+        ]
+      }
+    ]
+  },
+  "diagnosticLayouts": [
+    {
+      "run": 1,
+      "layouts": [
+        {
+          "name": "Layout",
+          "durationMs": 18.985,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 16,
+              "frame": "FBE38C8361EACE646BEBF5EEA742957C",
+              "partialLayout": false,
+              "sampleTraceId": 5269060483508245,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 177
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 7.574,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "FBE38C8361EACE646BEBF5EEA742957C",
+              "partialLayout": false,
+              "sampleTraceId": 5269060483508225,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 193
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 23.983,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 31,
+              "frame": "FBE38C8361EACE646BEBF5EEA742957C",
+              "partialLayout": false,
+              "sampleTraceId": 5269060483508314,
+              "totalObjects": 197
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 120.054,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 203,
+              "frame": "FBE38C8361EACE646BEBF5EEA742957C",
+              "partialLayout": false,
+              "sampleTraceId": 5269060483508691,
+              "stackTrace": [
+                {
+                  "columnNumber": 52,
+                  "functionName": "",
+                  "lineNumber": 1651,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                }
+              ],
+              "totalObjects": 391
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 28.088,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 37,
+              "frame": "FBE38C8361EACE646BEBF5EEA742957C",
+              "partialLayout": false,
+              "sampleTraceId": 5269060483508754,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 5.081,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "FBE38C8361EACE646BEBF5EEA742957C",
+              "partialLayout": false,
+              "sampleTraceId": 5269060483509191,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "layouts": [
+        {
+          "name": "Layout",
+          "durationMs": 10.604,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 16,
+              "frame": "22A45F7472D660E09FF17C29FC3D3679",
+              "partialLayout": false,
+              "sampleTraceId": 2892880106390120,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 177
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 6.272,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "22A45F7472D660E09FF17C29FC3D3679",
+              "partialLayout": false,
+              "sampleTraceId": 2892880106390173,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 193
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 19.569,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 31,
+              "frame": "22A45F7472D660E09FF17C29FC3D3679",
+              "partialLayout": false,
+              "sampleTraceId": 2892880106390176,
+              "totalObjects": 197
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 119.477,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 203,
+              "frame": "22A45F7472D660E09FF17C29FC3D3679",
+              "partialLayout": false,
+              "sampleTraceId": 2892880106390317,
+              "stackTrace": [
+                {
+                  "columnNumber": 52,
+                  "functionName": "",
+                  "lineNumber": 1651,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                }
+              ],
+              "totalObjects": 391
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 27.953,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 37,
+              "frame": "22A45F7472D660E09FF17C29FC3D3679",
+              "partialLayout": false,
+              "sampleTraceId": 2892880106389614,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 3.836,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "22A45F7472D660E09FF17C29FC3D3679",
+              "partialLayout": false,
+              "sampleTraceId": 2892880106389827,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "layouts": [
+        {
+          "name": "Layout",
+          "durationMs": 12.948,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 16,
+              "frame": "6DFA43AC70AA5704D583FF9B2E1C5A28",
+              "partialLayout": false,
+              "sampleTraceId": 7186527292701173,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 177
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 9.691,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "6DFA43AC70AA5704D583FF9B2E1C5A28",
+              "partialLayout": false,
+              "sampleTraceId": 7186527292700958,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 193
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 23.555,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 31,
+              "frame": "6DFA43AC70AA5704D583FF9B2E1C5A28",
+              "partialLayout": false,
+              "sampleTraceId": 7186527292700976,
+              "totalObjects": 197
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 158.405,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 203,
+              "frame": "6DFA43AC70AA5704D583FF9B2E1C5A28",
+              "partialLayout": false,
+              "sampleTraceId": 7186527292700878,
+              "stackTrace": [
+                {
+                  "columnNumber": 52,
+                  "functionName": "",
+                  "lineNumber": 1651,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                }
+              ],
+              "totalObjects": 391
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 27.29,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 37,
+              "frame": "6DFA43AC70AA5704D583FF9B2E1C5A28",
+              "partialLayout": false,
+              "sampleTraceId": 7186527292701452,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 6.658,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "6DFA43AC70AA5704D583FF9B2E1C5A28",
+              "partialLayout": false,
+              "sampleTraceId": 7186527292701395,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "layouts": [
+        {
+          "name": "Layout",
+          "durationMs": 8.2,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 16,
+              "frame": "37A80588EEFF05E8E79E7D6A2F4E1177",
+              "partialLayout": false,
+              "sampleTraceId": 7857255917656530,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 177
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 8.864,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "37A80588EEFF05E8E79E7D6A2F4E1177",
+              "partialLayout": false,
+              "sampleTraceId": 7857255917656512,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 193
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 24.965,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 31,
+              "frame": "37A80588EEFF05E8E79E7D6A2F4E1177",
+              "partialLayout": false,
+              "sampleTraceId": 7857255917656474,
+              "totalObjects": 197
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 176.476,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 203,
+              "frame": "37A80588EEFF05E8E79E7D6A2F4E1177",
+              "partialLayout": false,
+              "sampleTraceId": 7857255917656083,
+              "stackTrace": [
+                {
+                  "columnNumber": 52,
+                  "functionName": "",
+                  "lineNumber": 1651,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                }
+              ],
+              "totalObjects": 391
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 33.289,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 37,
+              "frame": "37A80588EEFF05E8E79E7D6A2F4E1177",
+              "partialLayout": false,
+              "sampleTraceId": 7857255917657036,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 4.465,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "37A80588EEFF05E8E79E7D6A2F4E1177",
+              "partialLayout": false,
+              "sampleTraceId": 7857255917656595,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "layouts": [
+        {
+          "name": "Layout",
+          "durationMs": 10.836,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 16,
+              "frame": "5690C3B105BD08A501A3AB814FB8A7B5",
+              "partialLayout": false,
+              "sampleTraceId": 8406264769776733,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 177
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 8.553,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "5690C3B105BD08A501A3AB814FB8A7B5",
+              "partialLayout": false,
+              "sampleTraceId": 8406264769776808,
+              "stackTrace": [
+                {
+                  "columnNumber": 14,
+                  "functionName": "",
+                  "lineNumber": 1458,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 135,
+                  "functionName": "detailBrowseItems",
+                  "lineNumber": 1457,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 106,
+                  "functionName": "openSecurityDetail",
+                  "lineNumber": 1536,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 1919,
+                  "functionName": "x.onclick",
+                  "lineNumber": 4142,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                },
+                {
+                  "columnNumber": 110,
+                  "functionName": "eval",
+                  "lineNumber": 1,
+                  "scriptId": "50",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 16,
+                  "functionName": "evaluate",
+                  "lineNumber": 293,
+                  "scriptId": "11",
+                  "url": ""
+                },
+                {
+                  "columnNumber": 44,
+                  "functionName": "",
+                  "lineNumber": 1,
+                  "scriptId": "18",
+                  "url": ""
+                }
+              ],
+              "totalObjects": 193
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 33.131,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 31,
+              "frame": "5690C3B105BD08A501A3AB814FB8A7B5",
+              "partialLayout": false,
+              "sampleTraceId": 8406264769776773,
+              "totalObjects": 197
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 161.642,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 203,
+              "frame": "5690C3B105BD08A501A3AB814FB8A7B5",
+              "partialLayout": false,
+              "sampleTraceId": 8406264769776922,
+              "stackTrace": [
+                {
+                  "columnNumber": 52,
+                  "functionName": "",
+                  "lineNumber": 1651,
+                  "scriptId": "9",
+                  "url": "https://daily.portfolio.test/"
+                }
+              ],
+              "totalObjects": 391
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 40.573,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 37,
+              "frame": "5690C3B105BD08A501A3AB814FB8A7B5",
+              "partialLayout": false,
+              "sampleTraceId": 8406264769777241,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Layout",
+          "durationMs": 4.395,
+          "args": {
+            "beginData": {
+              "dirtyObjects": 32,
+              "frame": "5690C3B105BD08A501A3AB814FB8A7B5",
+              "partialLayout": false,
+              "sampleTraceId": 8406264769777513,
+              "totalObjects": 412
+            },
+            "endData": {
+              "layoutRoots": [
+                {
+                  "depth": 1,
+                  "nodeId": 2,
+                  "nodeName": "#document",
+                  "quads": [
+                    [
+                      0,
+                      0,
+                      390,
+                      0,
+                      390,
+                      844,
+                      0,
+                      844
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "refresh": {
+    "basis": "Synthetic three-read queue: 40ms reads, 180ms valuation, 250ms reconciliation; not live KB or iPhone measurements",
+    "samples": [
+      {
+        "asset": 46,
+        "trend": 518,
+        "reads": 17,
+        "complete": 518
+      },
+      {
+        "asset": 43,
+        "trend": 515,
+        "reads": 17,
+        "complete": 515
+      },
+      {
+        "asset": 42,
+        "trend": 514,
+        "reads": 17,
+        "complete": 514
+      }
+    ],
+    "median": {
+      "asset": 43,
+      "trend": 515,
+      "complete": 515,
+      "reads": 17
+    }
+  }
+}

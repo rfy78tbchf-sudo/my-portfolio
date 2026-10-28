@@ -30,3 +30,28 @@ Readiness starts at programmatic portfolio-item click, ends after overview exist
 `node tests/detail_render_profile234.mjs` reproduces five samples. `UI_SOURCE=/path/to/index.html` supports an alternate source without modifying the app. `--verify` checks Chromium/WebKit at 390/402/430px and 100%/125%, repeated entry after scrolling, top position, overview amount fitting, horizontal overflow, detail return and browser Back, complete history text and fresh reopen; it also retains Build234 request-sharing checks. Locally use CHROMIUM_ONLY=1; CI installs both engines. The workflow includes this verification. Existing app code is unchanged, so this measurement branch is not a deployment candidate.
 
 Next: use a Chromium timeline trace to attribute the first layout's cost, then compare a layout batching strategy with whole-entry task/layout metrics and cold/warm/repeated entry. Do not equate fewer forced layouts or lower handler duration with a speedup. Keep initial scroll positioning and review-entry focus intact. Measure ordinary refresh again when evaluating any data-path change; the prior synthetic refresh was not live server latency. Keep Build234 live until a new candidate shows a repeatable benefit.
+
+## Follow-up: timeline attribution and containment experiment (2026-10-28)
+Continued the same branch after its CI 40700580614 passed. Main remained 716448a and the live HTML/SW/manifest still matched Build234. No duplicate branch or release was created.
+
+Added optional `--trace` mode, using Chromium CDP timeline events and stack traces. Five diagnostic runs showed a dominant document-root layout with 203 dirty / 391 total layout objects, 119–176ms. Its stack points to the instrumented mid-construction scroll reset. This attributes when layout is forced, not which individual CSS selector is expensive. Trace instrumentation adds overhead; an independent VM refresh diagnostic overlapped these traces, so their times are diagnostic only and must not be compared with the controlled samples.
+
+Candidate 1 was layout isolation: tested only `.detail-sheet{contain:layout}` in a temporary HTML copy via UI_SOURCE, preserving the existing scroll reset. Candidate 2 (remove reset) remains rejected by the prior experiment; candidate 3 (defer closed history bodies) remains deferred for weak end-to-end evidence. No additional product change was made.
+
+Five fresh sessions before and five after, run sequentially without competing local benchmark work, tracing disabled, same fixture/browser/390px/CPU4x/mock delays/cache conditions as above:
+
+| Metric, median (range) | Current Build234 | Temporary layout containment |
+|---|---:|---:|
+| Overview readiness, ms | 551 (509–879) | 600 (570–678) |
+| Synchronous block, ms | 282 (241–455) | 298 (268–344) |
+| Layout duration, ms | 260 (236–433) | 276 (269–341) |
+| Task duration, ms | 556 (530–905) | 623 (598–700) |
+| First history opening, ms | 42 (37–57) | 48 (38–50) |
+| Requests | 8 in every run | 8 in every run |
+| Layout count | 6 in every run | 6 in every run |
+
+Ranges overlap; no repeatable benefit supports adopting containment. No app source/markers changed and no deployment is needed. Raw samples and diagnostic layout events are in PERFORMANCE_DETAIL_TRACE234.samples.json. The refresh fixture was rerun alone after both browser batches; its raw three samples and medians are included there. It models 40ms ordinary reads, 180ms valuation, 250ms reconciliation; it does not measure actual network/server/iPhone refresh latency or validate the old approximately-five-second claim.
+
+Validation: optional tracing completed five sessions, baseline and candidate completed five each; run `CHROMIUM_ONLY=1 node tests/detail_render_profile234.mjs --verify` for the unchanged mobile/back/scroll/history checks. WebKit app regressions remain covered by the previously successful main and measurement-branch CI; this commit only extends diagnostics. Check its CI result at the next start. No main merge is intended for a measurement-only result.
+
+Next: prioritize cold/warm detail timeline comparison to distinguish one-time browser text/layout setup from repeat-entry cost. Only test a targeted batching strategy if that trace identifies redundant work. Keep the rejected reset removal and generic containment out of product code. Preserve request freshness, saved-decision generation guards and scroll/focus semantics.
