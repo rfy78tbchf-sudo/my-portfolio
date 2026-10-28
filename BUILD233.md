@@ -22,7 +22,7 @@ Five fresh Chromium pages per version, 365 synthetic daily points, mobile 390x84
 The callback interval is not a guaranteed presented-frame timestamp/INP; period-switch difference is too small to claim a benefit. Before/after select the same final range: start 272, count 93. The reliable improvement is eliminating 169 identical geometry rebuilds in this input sequence and reducing its handler CPU time. No claim about real iPhone speed or initial loading.
 
 ## Validation and continuation
-The initial CI attempt exposed WebKit’s unsupported Touch constructor in the test fixture. The fixture now falls back to an Event with the same touch coordinates on that engine; Chromium timing still uses native TouchEvent construction. Production handlers were unchanged by this test fix.
+The initial CI attempt exposed WebKit’s unsupported Touch constructor in the test fixture. The fixture now falls back to an Event with the same touch coordinates on that engine; Chromium timing still uses native TouchEvent construction. Production handlers were unchanged by this test fix. WebKit produced 70 rather than Chromium’s 71 rounded-window changes; the regression checks one geometry rebuild per actual changed window, not a browser-specific hardcoded count.
 
 New browser verification checks pinch results, same-window reset after keyboard selection, geometry identity and redraw when price data changes. Existing cross-focus regression passes locally in Chromium at 390/402/430px and 100%/125% with marker accuracy, clear/restore, touch/keyboard and saved settings unchanged. Final-commit CI runs these plus WebKit and all existing navigation, wealth and saved-judgment tests before main promotion. Version.json/HTML/SW release consistency passed locally.
 

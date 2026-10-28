@@ -28,19 +28,19 @@ for(let run=0;run<(retention?1:verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     catch(e){event=new Event(type,{bubbles:true,cancelable:true});Object.defineProperty(event,'touches',{value:touches})}
     return hit.dispatchEvent(event);
    };
-   const durations=[],paints=[];let redraws=0;
+   const durations=[],paints=[];let redraws=0,windowChanges=0,lastWindow=root.dataset.chartStart+':'+root.dataset.chartCount;
    const observer=new MutationObserver(records=>redraws+=records.filter(r=>r.type==='childList'&&r.target===root.querySelector('.security-ma-lines')).length);observer.observe(root,{childList:true,subtree:true});
    touch('touchstart',100);
    for(let frame=0;frame<60;frame++){
     const start=performance.now();
     // Four subpixel moves per frame exercise high-frequency pinch samples, including rounded repeats.
-    for(let i=0;i<4;i++)touch('touchmove',100+frame*0.4+i*0.05);
+    for(let i=0;i<4;i++){touch('touchmove',100+frame*0.4+i*0.05);const current=root.dataset.chartStart+':'+root.dataset.chartCount;if(current!==lastWindow)windowChanges++;lastWindow=current;}
     durations.push(performance.now()-start);
     await new Promise(r=>requestAnimationFrame(()=>r()));paints.push(performance.now()-start);
    }
    touch('touchend',0);observer.disconnect();
    const periodStart=performance.now();root.querySelector('[data-chart-period="3"]').click();const periodMs=performance.now()-periodStart;
-   return {handlerTotalMs:Math.round(durations.reduce((a,b)=>a+b,0)),handlerMaxMs:Math.round(Math.max(...durations)),frameMedianMs:Math.round(paints.sort((a,b)=>a-b)[30]),redraws,periodMs:Math.round(periodMs),count:root.dataset.chartCount,start:root.dataset.chartStart};
+   return {handlerTotalMs:Math.round(durations.reduce((a,b)=>a+b,0)),handlerMaxMs:Math.round(Math.max(...durations)),frameMedianMs:Math.round(paints.sort((a,b)=>a-b)[30]),redraws,windowChanges,periodMs:Math.round(periodMs),count:root.dataset.chartCount,start:root.dataset.chartStart};
   },points);
   if(retention){
     const cdp=await page.context().newCDPSession(page);result.retention=[];
@@ -52,7 +52,7 @@ for(let run=0;run<(retention?1:verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   }
   samples.push({run:run+1,...result});
   if(verify){
-    assert.equal(result.count,'93');assert.equal(result.start,'272');assert.equal(result.redraws,71);
+    assert.equal(result.count,'93');assert.equal(result.start,'272');assert.equal(result.redraws,result.windowChanges,'geometry is rebuilt exactly for changed windows');assert.ok(result.redraws<240);
     await page.evaluate(points=>{
       const root=document.querySelector('.security-price-interactive'),hit=root.querySelector('.security-chart-hit'),reset=root.querySelector('[data-chart-zoom="reset"]');
       reset.click();const geometry=root.querySelector('.security-ma-lines').firstChild;
