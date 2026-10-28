@@ -57,6 +57,8 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
+      - name: Verify wealth only requests visible data and reuses cached results
+        run: node tests/build231_wealth_latency.mjs --verify
       - name: Verify lazy Excel parsing, shared loading and retry
         run: node tests/build230_lazy_xlsx.mjs
       - name: Verify automatic wealth, scenarios, retry and mobile layout

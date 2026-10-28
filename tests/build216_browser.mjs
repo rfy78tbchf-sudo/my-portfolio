@@ -118,8 +118,11 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
       await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.screenshot({path:resolve(output,name+'-refresh-'+width+'.png')});
     }
-    await page.locator('#nav [data-tab="analysis"]').click();await waitGate(extraDelay,'analysis');
+    await page.locator('#nav [data-tab="analysis"]').click();
+    await page.waitForFunction(()=>window.__dailyTest.state().idle);
+    assert.equal(count('get_live_benchmark_comparison'),0,'collapsed legacy analysis does not fetch hidden data');
     if(await page.locator('#wealthLegacy').count())await page.locator('#wealthLegacy>summary').click();
+    await waitGate(extraDelay,'analysis');
     assert.match(await page.locator('#content').innerText(),/추가 자료 확인 중/);
     assert.doesNotMatch(await page.locator('#content').innerText(),/기술지표 데이터 없음/);
     await page.locator('#nav [data-tab="home"]').click();await page.locator('#nav [data-tab="analysis"]').click();

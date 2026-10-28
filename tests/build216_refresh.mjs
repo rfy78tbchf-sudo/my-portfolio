@@ -23,3 +23,12 @@ const changed=fixture();await changed.c.loadLiveOnce(true);const prior=changed.c
 console.log('Build216: home completes without enrichment, single lazy request, full caller contract, error retry, ordering and account/load isolation passed');
 
 const shared=fixture();const fast=shared.c.loadLive(true),all=shared.c.loadLive();assert.equal(shared.c.loadLive(),all);assert.equal(shared.c.loadLive(true),fast);await fast;let allDone=false;all.then(()=>allDone=true);await tick();assert.equal(allDone,false);shared.release();await all;assert.equal(shared.c.live.detailsDeferred,false);
+
+// Build231: entering wealth during the home load must not start hidden analysis.
+const collapsed=fixture();collapsed.c.currentTab='analysis';collapsed.c.wealthState=()=>({legacyOpen:false});
+await collapsed.c.loadLiveOnce(true);assert.equal(collapsed.c.live.detailsDeferred,true);
+assert.ok(!collapsed.calls.includes('get_live_technical_summary'));
+const expanded=fixture();expanded.c.currentTab='analysis';expanded.c.wealthState=()=>({legacyOpen:true});expanded.release();
+await expanded.c.loadLiveOnce(true);assert.equal(expanded.c.live.detailsDeferred,false);
+assert.equal(expanded.calls.filter(n=>n==='get_live_technical_summary').length,1);
+console.log('Build231: mid-load wealth navigation defers closed legacy analysis and loads restored open analysis');
