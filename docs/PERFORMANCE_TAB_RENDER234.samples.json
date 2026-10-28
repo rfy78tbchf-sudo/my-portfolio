@@ -1,0 +1,1324 @@
+{
+  "conditions": "5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes",
+  "samples": [
+    {
+      "run": 1,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.031257,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.003343,
+              "ScriptDuration": 0.016427,
+              "TaskDuration": 0.065706
+            },
+            "tab": "portfolio",
+            "callbackMs": 85,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 14.700000002980232,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.5,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 1.1000000014901161,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.018829,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.003323,
+              "ScriptDuration": 0.018198999999999996,
+              "TaskDuration": 0.053392999999999996
+            },
+            "tab": "home",
+            "callbackMs": 51,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.5,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.9000000059604645,
+                  "page": 0.5999999940395355,
+                  "wealth": 0,
+                  "otherBindings": 1.3000000044703484,
+                  "periodVisibility": 23.899999998509884,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.019721999999999996,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.002406,
+              "ScriptDuration": 0.012479000000000004,
+              "TaskDuration": 0.05529200000000001
+            },
+            "tab": "analysis",
+            "callbackMs": 72,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 10.399999998509884,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.10000000149011612,
+                  "page": 0.7999999970197678,
+                  "wealth": 0.6000000014901161,
+                  "otherBindings": 0.5,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.023260000000000003,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.003365999999999999,
+              "ScriptDuration": 0.020751,
+              "TaskDuration": 0.060988000000000014
+            },
+            "tab": "home",
+            "callbackMs": 82,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.399999998509884,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.19999999552965164,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 27.80000000447035,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": []
+      },
+      "pending": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.029925000000000007,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.002464000000000001,
+              "ScriptDuration": 0.015408000000000005,
+              "TaskDuration": 0.07387700000000003
+            },
+            "tab": "portfolio",
+            "callbackMs": 67,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 12.5,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.10000000149011612,
+                  "page": 0.10000000149011612,
+                  "wealth": 0,
+                  "otherBindings": 1.0999999940395355,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0.4000000059604645
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.018144999999999994,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.003952999999999998,
+              "ScriptDuration": 0.023747000000000004,
+              "TaskDuration": 0.05760500000000002
+            },
+            "tab": "home",
+            "callbackMs": 65,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.799999997019768,
+                  "restore": 1.2000000029802322,
+                  "deferred": 0,
+                  "nav": 1.1000000014901161,
+                  "page": 0.8999999985098839,
+                  "wealth": 0,
+                  "otherBindings": 2.600000001490116,
+                  "periodVisibility": 23,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.016848000000000002,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0036300000000000013,
+              "ScriptDuration": 0.013250999999999999,
+              "TaskDuration": 0.04473000000000005
+            },
+            "tab": "analysis",
+            "callbackMs": 74,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 10.299999997019768,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.20000000298023224,
+                  "page": 1,
+                  "wealth": 0.19999999552965164,
+                  "otherBindings": 1.1000000014901161,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0.29999999701976776
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.028123999999999982,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0032960000000000003,
+              "ScriptDuration": 0.02288599999999999,
+              "TaskDuration": 0.06848699999999996
+            },
+            "tab": "home",
+            "callbackMs": 91,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.30000000447035,
+                  "restore": 0.6999999955296516,
+                  "deferred": 0.5,
+                  "nav": 0.30000000447034836,
+                  "page": 0.6999999955296516,
+                  "wealth": 0.10000000149011612,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 32.399999998509884,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          54
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 2,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.030702,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.002756,
+              "ScriptDuration": 0.009801,
+              "TaskDuration": 0.057807000000000004
+            },
+            "tab": "portfolio",
+            "callbackMs": 52,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 7.799999997019768,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000014901161,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 0.6000000014901161,
+                  "periodVisibility": 0.10000000149011612,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.021202,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0027519999999999997,
+              "ScriptDuration": 0.017429,
+              "TaskDuration": 0.053341
+            },
+            "tab": "home",
+            "callbackMs": 54,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.399999998509884,
+                  "restore": 0.5,
+                  "deferred": 0,
+                  "nav": 0.6000000014901161,
+                  "page": 0.10000000149011612,
+                  "wealth": 0,
+                  "otherBindings": 2.2999999970197678,
+                  "periodVisibility": 25.400000005960464,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.021557,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0046500000000000005,
+              "ScriptDuration": 0.017011999999999996,
+              "TaskDuration": 0.062667
+            },
+            "tab": "analysis",
+            "callbackMs": 71,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 13.299999997019768,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 1,
+                  "wealth": 0.8999999985098839,
+                  "otherBindings": 0.8000000044703484,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.020495,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.002359,
+              "ScriptDuration": 0.018228,
+              "TaskDuration": 0.054064999999999974
+            },
+            "tab": "home",
+            "callbackMs": 55,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.200000002980232,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.10000000149011612,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 1.1999999955296516,
+                  "periodVisibility": 23.600000001490116,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": []
+      },
+      "pending": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.03158,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0022910000000000014,
+              "ScriptDuration": 0.010262999999999994,
+              "TaskDuration": 0.058753
+            },
+            "tab": "portfolio",
+            "callbackMs": 72,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 8,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.2000000029802322,
+                  "page": 0.10000000149011612,
+                  "wealth": 0,
+                  "otherBindings": 0.09999999403953552,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.021699999999999997,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0034140000000000004,
+              "ScriptDuration": 0.020072000000000007,
+              "TaskDuration": 0.05769000000000002
+            },
+            "tab": "home",
+            "callbackMs": 75,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.799999997019768,
+                  "restore": 1,
+                  "deferred": 0,
+                  "nav": 0.20000000298023224,
+                  "page": 0.8999999985098839,
+                  "wealth": 0,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 26.299999997019768,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.02053000000000002,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.002905999999999999,
+              "ScriptDuration": 0.012400999999999995,
+              "TaskDuration": 0.047411999999999954
+            },
+            "tab": "analysis",
+            "callbackMs": 56,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 9.699999995529652,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.10000000149011612,
+                  "page": 1,
+                  "wealth": 0.10000000149011612,
+                  "otherBindings": 0.8999999985098839,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.023964999999999986,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.004178999999999999,
+              "ScriptDuration": 0.02856099999999999,
+              "TaskDuration": 0.06865499999999991
+            },
+            "tab": "home",
+            "callbackMs": 90,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 22.30000000447035,
+                  "restore": 1.2999999970197678,
+                  "deferred": 0,
+                  "nav": 0.7000000029802322,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 1.6999999955296516,
+                  "periodVisibility": 29,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          57
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 3,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.055141,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.004799,
+              "ScriptDuration": 0.012943,
+              "TaskDuration": 0.09046900000000001
+            },
+            "tab": "portfolio",
+            "callbackMs": 104,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 9.699999995529652,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000014901161,
+                  "page": 0.10000000149011612,
+                  "wealth": 0,
+                  "otherBindings": 1,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0.10000000149011612
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.024529000000000002,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.005359999999999999,
+              "ScriptDuration": 0.022531,
+              "TaskDuration": 0.06946100000000001
+            },
+            "tab": "home",
+            "callbackMs": 70,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.599999994039536,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000014901161,
+                  "page": 0.10000000149011612,
+                  "wealth": 0,
+                  "otherBindings": 3.2999999970197678,
+                  "periodVisibility": 30.100000001490116,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.022421999999999997,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.003510000000000001,
+              "ScriptDuration": 0.01752,
+              "TaskDuration": 0.069137
+            },
+            "tab": "analysis",
+            "callbackMs": 84,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 14.100000001490116,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.10000000149011612,
+                  "page": 0.19999999552965164,
+                  "wealth": 0.8999999985098839,
+                  "otherBindings": 1.1000000014901161,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.026407,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.005985000000000001,
+              "ScriptDuration": 0.026226,
+              "TaskDuration": 0.08085700000000001
+            },
+            "tab": "home",
+            "callbackMs": 102,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.19999999552965,
+                  "restore": 0.30000000447034836,
+                  "deferred": 0,
+                  "nav": 0.29999999701976776,
+                  "page": 1.2000000029802322,
+                  "wealth": 0,
+                  "otherBindings": 2.600000001490116,
+                  "periodVisibility": 32.599999994039536,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          61,
+          53,
+          63
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.048147999999999996,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0035069999999999962,
+              "ScriptDuration": 0.010546,
+              "TaskDuration": 0.08994799999999992
+            },
+            "tab": "portfolio",
+            "callbackMs": 101,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 10,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.20000000298023224,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 0.20000000298023224,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.04394300000000001,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.005024000000000001,
+              "ScriptDuration": 0.038984000000000005,
+              "TaskDuration": 0.11986400000000008
+            },
+            "tab": "home",
+            "callbackMs": 113,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 27.19999999552965,
+                  "restore": 2.600000001490116,
+                  "deferred": 0,
+                  "nav": 2.2999999970197678,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 3.600000001490116,
+                  "periodVisibility": 50.600000001490116,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.026973999999999998,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0042179999999999995,
+              "ScriptDuration": 0.02026900000000001,
+              "TaskDuration": 0.061760999999999955
+            },
+            "tab": "analysis",
+            "callbackMs": 65,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 14.900000005960464,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.29999999701976776,
+                  "page": 2.7000000029802322,
+                  "wealth": 0.6999999955296516,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 0.10000000149011612,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.03761199999999998,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.005403000000000005,
+              "ScriptDuration": 0.03495999999999999,
+              "TaskDuration": 0.09729200000000005
+            },
+            "tab": "home",
+            "callbackMs": 109,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 25.19999999552965,
+                  "restore": 2.9000000059604645,
+                  "deferred": 0.09999999403953552,
+                  "nav": 0.8000000044703484,
+                  "page": 0.8999999985098839,
+                  "wealth": 0,
+                  "otherBindings": 3.5,
+                  "periodVisibility": 44,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          61,
+          90,
+          79
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "get_live_current_account_scope",
+        "accounts",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 4,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.039175,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.004805,
+              "ScriptDuration": 0.018673,
+              "TaskDuration": 0.082948
+            },
+            "tab": "portfolio",
+            "callbackMs": 101,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 15.600000001490116,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.8000000044703484,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 1,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.022232000000000002,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.004281,
+              "ScriptDuration": 0.02643,
+              "TaskDuration": 0.06633900000000001
+            },
+            "tab": "home",
+            "callbackMs": 82,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.8000000044703484,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 4.699999995529652,
+                  "periodVisibility": 27.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.020838999999999996,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0029169999999999995,
+              "ScriptDuration": 0.014913000000000003,
+              "TaskDuration": 0.062608
+            },
+            "tab": "analysis",
+            "callbackMs": 80,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 11.900000005960464,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.3999999985098839,
+                  "page": 0.19999999552965164,
+                  "wealth": 0.10000000149011612,
+                  "otherBindings": 1,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0.10000000149011612
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.036601999999999996,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0031020000000000006,
+              "ScriptDuration": 0.020752999999999994,
+              "TaskDuration": 0.07467300000000002
+            },
+            "tab": "home",
+            "callbackMs": 72,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.7000000029802322,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 40.79999999701977,
+                  "anchor": 0.10000000149011612,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          52,
+          61
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.037646999999999986,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0027849999999999993,
+              "ScriptDuration": 0.012911000000000006,
+              "TaskDuration": 0.07377700000000004
+            },
+            "tab": "portfolio",
+            "callbackMs": 83,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 10.299999997019768,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.9000000059604645,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.025372000000000006,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.004334000000000001,
+              "ScriptDuration": 0.02511999999999999,
+              "TaskDuration": 0.06776499999999996
+            },
+            "tab": "home",
+            "callbackMs": 86,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.400000005960464,
+                  "restore": 2,
+                  "deferred": 0,
+                  "nav": 0.5,
+                  "page": 0.09999999403953552,
+                  "wealth": 0,
+                  "otherBindings": 4.700000002980232,
+                  "periodVisibility": 30.100000001490116,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.023640999999999995,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0043289999999999995,
+              "ScriptDuration": 0.014657000000000003,
+              "TaskDuration": 0.0543769999999999
+            },
+            "tab": "analysis",
+            "callbackMs": 68,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 12.200000002980232,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.0999999940395355,
+                  "page": 0.10000000149011612,
+                  "wealth": 0.8999999985098839,
+                  "otherBindings": 0.20000000298023224,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.028034000000000003,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0055619999999999975,
+              "ScriptDuration": 0.027630000000000016,
+              "TaskDuration": 0.07657499999999995
+            },
+            "tab": "home",
+            "callbackMs": 89,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.299999997019768,
+                  "restore": 1.1000000014901161,
+                  "deferred": 0,
+                  "nav": 2.5,
+                  "page": 0.10000000149011612,
+                  "wealth": 0,
+                  "otherBindings": 3.2999999970197678,
+                  "periodVisibility": 33.70000000298023,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          55,
+          62
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    },
+    {
+      "run": 5,
+      "engine": "chromium",
+      "idle": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.036197,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.003483,
+              "ScriptDuration": 0.025184,
+              "TaskDuration": 0.081942
+            },
+            "tab": "portfolio",
+            "callbackMs": 95,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 20.899999998509884,
+                  "restore": 0.10000000149011612,
+                  "deferred": 0,
+                  "nav": 2.5,
+                  "page": 0.29999999701976776,
+                  "wealth": 0,
+                  "otherBindings": 0.3999999985098839,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.020886000000000002,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.004543,
+              "ScriptDuration": 0.028743,
+              "TaskDuration": 0.07013699999999999
+            },
+            "tab": "home",
+            "callbackMs": 87,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 22.19999999552965,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.2000000029802322,
+                  "page": 0.6999999955296516,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 26.400000005960464,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.023477999999999992,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.008797000000000001,
+              "ScriptDuration": 0.019568000000000002,
+              "TaskDuration": 0.07819899999999999
+            },
+            "tab": "analysis",
+            "callbackMs": 88,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 14.899999998509884,
+                  "restore": 1.3000000044703484,
+                  "deferred": 0.10000000149011612,
+                  "nav": 2,
+                  "page": 0.09999999403953552,
+                  "wealth": 1,
+                  "otherBindings": 0.10000000149011612,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.029339000000000004,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0030279999999999994,
+              "ScriptDuration": 0.02521899999999999,
+              "TaskDuration": 0.07486100000000001
+            },
+            "tab": "home",
+            "callbackMs": 85,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.299999997019768,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.10000000149011612,
+                  "page": 0.8999999985098839,
+                  "wealth": 0,
+                  "otherBindings": 2.8000000044703484,
+                  "periodVisibility": 34.19999999552965,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          55,
+          59
+        ]
+      },
+      "pending": {
+        "tabs": [
+          {
+            "cpu": {
+              "LayoutDuration": 0.03985899999999998,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.003365,
+              "ScriptDuration": 0.016406000000000004,
+              "TaskDuration": 0.08343499999999998
+            },
+            "tab": "portfolio",
+            "callbackMs": 103,
+            "renders": [
+              {
+                "tab": "portfolio",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 11.600000001490116,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 2.100000001490116,
+                  "page": 0.10000000149011612,
+                  "wealth": 0,
+                  "otherBindings": 1.0999999940395355,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0.8000000044703484
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.028143,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.007186999999999999,
+              "ScriptDuration": 0.025990999999999986,
+              "TaskDuration": 0.086731
+            },
+            "tab": "home",
+            "callbackMs": 97,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.399999998509884,
+                  "restore": 1.7000000029802322,
+                  "deferred": 0,
+                  "nav": 0.7999999970197678,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 2.8000000044703484,
+                  "periodVisibility": 36,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.024285,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.0022080000000000016,
+              "ScriptDuration": 0.015298000000000006,
+              "TaskDuration": 0.06020599999999998
+            },
+            "tab": "analysis",
+            "callbackMs": 83,
+            "renders": [
+              {
+                "tab": "analysis",
+                "periodGroups": 0,
+                "parts": {
+                  "html": 12.199999995529652,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.5,
+                  "page": 0.5,
+                  "wealth": 1.1000000014901161,
+                  "otherBindings": 1,
+                  "periodVisibility": 0,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ]
+          },
+          {
+            "cpu": {
+              "LayoutDuration": 0.044675999999999993,
+              "LayoutCount": 1,
+              "RecalcStyleDuration": 0.009843999999999999,
+              "ScriptDuration": 0.032088000000000005,
+              "TaskDuration": 0.110591
+            },
+            "tab": "home",
+            "callbackMs": 116,
+            "renders": [
+              {
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.600000001490116,
+                  "restore": 1.1999999955296516,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 1.5,
+                  "wealth": 0,
+                  "otherBindings": 8.900000005960464,
+                  "periodVisibility": 54.599999994039536,
+                  "anchor": 0,
+                  "scroll": 0.8000000044703484
+                }
+              }
+            ]
+          }
+        ],
+        "longTasks": [
+          62,
+          86
+        ]
+      },
+      "pendingReads": [
+        "kb-sync-worker",
+        "accounts",
+        "get_live_current_account_scope",
+        "live_holding_display_basis",
+        "securities",
+        "holdings",
+        "daily_account_snapshots",
+        "manual_subaccount_snapshots",
+        "live_position_settlement_basis"
+      ],
+      "totalReads": 50,
+      "syncCalls": 1
+    }
+  ]
+}

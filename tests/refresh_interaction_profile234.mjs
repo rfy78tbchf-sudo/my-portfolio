@@ -23,7 +23,20 @@ const hook=`
   };
 `;
 assert.ok(source.includes('  restoreLogin();'));
-const html=source.replace('  restoreLogin();',hook+'  restoreLogin();');
+const profile=process.argv.includes('--profile-render');
+let measured=source;
+if(profile){
+ const start=source.indexOf('  function render(preserveScroll)'),end=source.indexOf('  function renderNav()',start);
+ assert.ok(start>=0&&end>start);
+ let block=source.slice(start,end);
+ block=block.replace('contentRenderPending=false;',"contentRenderPending=false;var __last=performance.now(),__parts={};function __mark(name){var now=performance.now();__parts[name]=now-__last;__last=now}");
+ for(const [anchor,label] of [['renderQuickAsset(content);','html'],['bindDeferredDetails(content);','restore'],['renderNav();','deferred'],['bindPage();','nav'],['bindWealth();','page'],['bindDrilldown();','wealth'],['keepActivePeriodsVisible(content);','otherBindings'],['if(trendAnchor){','periodVisibility'],['window.scrollTo(0,scrollY)','anchor']]){
+   assert.ok(block.includes(anchor),anchor);block=block.replace(anchor,"__mark('"+label+"');"+anchor);
+ }
+ block=block.replace('window.scrollTo(0,scrollY)}',"window.scrollTo(0,scrollY);__mark('scroll');(window.__renderSamples||(window.__renderSamples=[])).push({tab:currentTab,periodGroups:content.querySelectorAll('.periods').length,parts:__parts})}");
+ measured=source.slice(0,start)+block+source.slice(end);
+}
+const html=measured.replace('  restoreLogin();',hook+'  restoreLogin();');
 const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
 const before=n=>new Date(Date.parse(day+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);
 const now=day+'T00:00:00Z';
@@ -109,14 +122,18 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       await page.locator('#nav [data-tab="'+tab+'"]').click();
       await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().wealthLoading);
     }
+    const metricSession=profile&&name==='chromium'?await context.newCDPSession(page):null;if(metricSession)await metricSession.send('Performance.enable');
     async function interactions(){
       await page.evaluate(()=>{window.__longTasks=[];if(PerformanceObserver.supportedEntryTypes.includes('longtask')){window.__observer=new PerformanceObserver(list=>window.__longTasks.push(...list.getEntries().map(e=>e.duration)));window.__observer.observe({type:'longtask'});}});
       const tabs=[];
       for(const tab of ['portfolio','home','analysis','home']){
-        await page.evaluate(tab=>{window.__tabStart=performance.now();document.querySelector('#nav [data-tab="'+tab+'"]').click()},tab);
+        const beforeMetrics=metricSession?(await metricSession.send('Performance.getMetrics')).metrics:[];
+        await page.evaluate(tab=>{window.__renderSamples=[];window.__tabStart=performance.now();document.querySelector('#nav [data-tab="'+tab+'"]').click()},tab);
         const ms=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__tabStart)))));
         assert.equal(await page.locator('#nav [aria-current="page"]').getAttribute('data-tab'),tab);
-        tabs.push({tab,callbackMs:Math.round(ms)});
+        const afterMetrics=metricSession?(await metricSession.send('Performance.getMetrics')).metrics:[];
+        const cpu=metricSession?Object.fromEntries(['LayoutDuration','LayoutCount','RecalcStyleDuration','ScriptDuration','TaskDuration'].map(k=>[k,(afterMetrics.find(x=>x.name===k)?.value||0)-(beforeMetrics.find(x=>x.name===k)?.value||0)])):null;
+        tabs.push({...(profile?{cpu}:{}),tab,callbackMs:Math.round(ms),...(profile?{renders:await page.evaluate(()=>window.__renderSamples)}:{})});
       }
       const longTasks=await page.evaluate(()=>{if(window.__observer){window.__observer.disconnect();return window.__longTasks}return null});
       return {tabs,longTasks};
