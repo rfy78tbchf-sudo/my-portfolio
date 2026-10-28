@@ -57,6 +57,8 @@ jobs:
         timeout-minutes: 5
       - name: Verify moving average crossing display in both browsers
         run: node tests/build224_ma_cross.mjs --browser
+      - name: Verify on-demand crossing focus and restore in both browsers
+        run: node tests/build225_cross_focus.mjs
       - name: Verify position and saved judgment entry
         run: node tests/build217_browser.mjs
       - run: node tests/build49_ai_cache.mjs
