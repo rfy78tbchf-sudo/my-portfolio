@@ -50,7 +50,7 @@ const savedDecisions=Array.from({length:10},(_,i)=>({id:'decision-'+i,security_i
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace');
+const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace'),repeat=process.argv.includes('--repeat');
 for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
  const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
   scope.current_display_total=5400000; // Each browser starts with its own baseline value.
@@ -116,7 +116,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().deferred);
     const cdp=name==='chromium'?await context.newCDPSession(page):null,entries=[];
     if(cdp)await cdp.send('Performance.enable');
-    for(let visit=0;visit<(verify?6:1);visit++){
+    for(let visit=0;visit<(verify?6:repeat?3:1);visit++){
       const metricsBefore=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
       await page.evaluate(()=>{window.__longTasks=[];window.__longObserver=new PerformanceObserver(l=>window.__longTasks.push(...l.getEntries().map(e=>e.duration)));try{window.__longObserver.observe({type:'longtask'})}catch(e){}});
       if(verify){await page.setViewportSize({width:[390,402,430][visit%3],height:844});await page.evaluate(zoom=>document.documentElement.style.zoom=zoom,visit<3?'1':'1.25');}
@@ -168,7 +168,14 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       await page.locator('#detailReturn').click();await page.locator('#detailModal').waitFor({state:'hidden'});
       console.log(name+': saved decision refresh shares in-flight history; reopening reads changed data');
     }
+    if(repeat){
+      for(const entry of entries){
+        assert.equal(entry.requests,8,'every entry performs fresh detail reads');
+        assert.equal(entry.requestNames.filter(n=>n==='ai_analysis_history').length,1);
+        for(const key of ['documents','nodes','jsEventListeners'])assert.equal(entry[key],entries[0][key],'bounded retained DOM count: '+key);
+      }
+    }
     samples.push({run:run+1,entries});assert.deepEqual(errors,[]);
   }finally{if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
-console.log(JSON.stringify({conditions:(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':'5 fresh Chromium sessions x1 detail entry; ')+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));
+console.log(JSON.stringify({conditions:(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':(repeat?'5 fresh Chromium sessions x3 same-detail entries; ':'5 fresh Chromium sessions x1 detail entry; '))+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));

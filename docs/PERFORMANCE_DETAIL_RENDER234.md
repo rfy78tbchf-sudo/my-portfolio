@@ -55,3 +55,27 @@ Ranges overlap; no repeatable benefit supports adopting containment. No app sour
 Validation: optional tracing completed five sessions, baseline and candidate completed five each; run `CHROMIUM_ONLY=1 node tests/detail_render_profile234.mjs --verify` for the unchanged mobile/back/scroll/history checks. WebKit app regressions remain covered by the previously successful main and measurement-branch CI; this commit only extends diagnostics. Check its CI result at the next start. No main merge is intended for a measurement-only result.
 
 Next: prioritize cold/warm detail timeline comparison to distinguish one-time browser text/layout setup from repeat-entry cost. Only test a targeted batching strategy if that trace identifies redundant work. Keep the rejected reset removal and generic containment out of product code. Preserve request freshness, saved-decision generation guards and scroll/focus semantics.
+
+## Follow-up: first versus repeated detail entry (2026-10-29 KST)
+Main is still 716448a (Build234); prior diagnostic commit afba1f3 passed full CI 40704583492. Live HTML, SW and version.json again match the deployed release. Continued this existing branch; no app change or new release.
+
+Added `--repeat` to the existing harness: five fresh Chromium sessions, three entries of the same security per session. Same synthetic ten saved judgments / ten long histories / 365 prices, viewport390x844, CPU4x, 50ms mocks, SW blocked. Each entry waits for idle/history, opens a history body, scrolls down, returns, and collects garbage. This compares first detail use within an already-loaded app against reuse in that same page; it is NOT a cold versus cached site-navigation benchmark. Browser routing serves fixtures locally. No real user data is read or written.
+
+One five-session trace batch attributed the largest layout: per-visit medians 187ms,91ms,113ms. Tracing perturbs performance and those diagnostic timings are kept separate. A subsequent untraced batch gave:
+
+| Metric, median (range) | First entry, n=5 | Second, n=5 | Third, n=5 |
+|---|---:|---:|---:|
+| Overview readiness, ms | 644 (443–837) | 393 (333–468) | 414 (340–587) |
+| Synchronous render block, ms | 296 (217–439) | 188 (147–231) | 193 (137–297) |
+| Layout duration, ms | 279 (184–417) | 132 (96–151) | 136 (99–264) |
+| Task duration, ms | 603 (453–888) | 386 (341–472) | 411 (352–707) |
+| History opening, ms | 52 (42–54) | 43 (35–48) | 43 (36–64) |
+| Requests | 8 each | 8 each | 8 each |
+
+After each close/forced-GC: documents2, nodes3260, event listeners145 in all15 samples. Stable bounded DOM counts do not prove no heap/timer leaks; three repetitions are not a long-session soak. Readiness and opening metrics still end at rAF callbacks, not presented paint/INP. This is a within-session baseline comparison, NOT a before/after optimization result, and not actual iPhone or live server time. Raw untraced samples and compact trace summaries are in PERFORMANCE_DETAIL_REPEAT234.samples.json.
+
+Candidate decisions (no more than three): (1) prewarming/caching detail layout is not selected: first-use overhead is visible, but prewarming shifts CPU into startup and cached detail DOM risks stale records and state; evidence does not support that tradeoff. (2) removing the reset or adding generic layout containment remains rejected by the controlled previous experiments. (3) deferred closed-history bodies remains low priority: their cost does not explain most first-entry latency, and deferral can slow first opening. No speculative product edit was made.
+
+Validation: repeated fresh reads and stable retained DOM counters now have assertions in --repeat; the final harness is rerun with these assertions. Prior main/branch Chromium and WebKit CI passed; no product code changed. New diagnostic-commit CI can be checked at next start; no main promotion/deployment is intended for this record.
+
+Handoff: stop repeating the same rejected detail-layout experiments. Next measure home/portfolio/performance/wealth tab round trips with request counts and click-to-ready timing under the same isolated fixture, especially rapid navigation and obsolete responses. Only change request cancellation/caching if correctness and a measurable avoidable cost are demonstrated. Preserve saved decisions, period/search/sort/scroll state and all valuation definitions.
