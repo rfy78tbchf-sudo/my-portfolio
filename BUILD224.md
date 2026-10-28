@@ -20,3 +20,11 @@ Baseline: main 710a516 (Build223). User requested daily five-day MA crossings ag
 
 Build markers: `2026-10-28-ma-cross-224` / `2026102803-224`.
 Physical iPhone validation remains separate from browser emulation.
+
+## Continuation audit — 2026-10-28
+
+- Reused the existing Build224 worktree; no duplicate implementation. Remote main was still 710a516 and the prior Build223 audit branch 4d3d7a0 had successful CI.
+- Candidates: (1) finish the explicitly requested dated MA crossing display; (2) stock-chart viewport/MA continuity; (3) position and saved-judgment entry/return. Selected (1) because the requested event/date was absent from the deployed chart. Candidates (2)/(3) passed existing synthetic Chromium suites in this run; no additional UI change justified.
+- Before: a user must visually compare MA lines to infer a crossing and date. After: the latest observed event/date is visible without an extra tap; all three pair states take one disclosure tap. Existing detail entry and return actions remain unchanged. Home remains untouched. Calculation details are collapsed and no external requests or financial writes are added.
+- Reran arithmetic oracle and all six Chromium width/zoom combinations; inspected 390px/125% capture. Existing chart pinch/pan/toggle regression and position/saved-judgment entry/return regression also passed locally. Remote decision regression passed on d916150; mobile CI was installing browser dependencies at this checkpoint.
+- Next: require final branch CI (both Chromium/WebKit), re-read main SHA, fast-forward only if unchanged, verify Pages plus live build/cache markers. Then inspect short-history/price-retry to chart return flow; do not alter layout without a reproduced issue. Physical iPhone checks remain separate.
