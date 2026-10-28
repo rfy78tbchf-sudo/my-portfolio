@@ -33,7 +33,7 @@ jobs:
           tests/build209_shell_recovery.mjs
       - name: Verify provisional amounts and reconciliation scope
         run: node --test tests/build210_pnl_state.mjs
-      - name: Verify annual wealth and monthly achievement calculations
+      - name: Verify automatic wealth, projections and milestone calculations
         run: node tests/build226_wealth.mjs
       - name: Verify daily five-day moving average crossings
         run: node tests/build224_ma_cross.mjs
@@ -57,7 +57,7 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
-      - name: Verify wealth records, retry, year switching and mobile layout
+      - name: Verify automatic wealth, scenarios, retry and mobile layout
         run: node tests/build226_browser.mjs
       - name: Verify moving average crossing display in both browsers
         run: node tests/build224_ma_cross.mjs --browser

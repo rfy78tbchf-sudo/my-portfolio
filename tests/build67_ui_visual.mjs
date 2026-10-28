@@ -250,7 +250,7 @@ const injected=`
     window.__uiFailStockOnce=function(){failStockOnce=true};
     window.__saleNotes=window.__saleNotes||{};
     rpc=async function(name,p){
-      if(name==='get_wealth_growth')return {year:p.p_year,revision:0,base:null,months:{}};
+      if(name==='get_wealth_dashboard')return {ok:true,today:kstDate(),plan:{version:2,base_amount:63842170,base_date:kstDate(),std_rate:20,best_rate:30,revision:0},current:{amount:63842170,as_of:kstDate()},records:[]};
       var saleKey=p&&[p.p_security_id,p.p_start,p.p_end].join('|');
       if(name==='get_sale_review')return {ok:true,security_id:p.p_security_id,period_start:p.p_start,period_end:p.p_end,note:window.__saleNotes[saleKey]||null,before:null,during:[],history:[{period_start:'2026-08-01',period_end:'2026-08-31',reason:'이전 기간 복기',lesson:'이전 교훈',next_action:'이전 기준'}]};
       if(name==='save_sale_review'){if(window.__saleFail)throw Error('Synthetic save failure');window.__saleNotes[saleKey]={reason:p.p_reason,lesson:p.p_lesson,next_action:p.p_next_action,revision:p.p_revision+1,updated_at:'2026-10-06T00:00:00Z'};return {ok:true,revision:p.p_revision+1}};
