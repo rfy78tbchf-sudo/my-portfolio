@@ -86,7 +86,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     }
     if(method!=='GET'){forbidden.push(path);return json(route,{message:'Writes are blocked'},403)}
     const table=path.split('/').pop();
-    if(table==='ai_analysis_history'&&analysisDelay&&url.searchParams.get('select')==='id,created_at,official_evidence'){const pending=analysisDelay;pending.entered();await pending.wait}
+    if(table==='ai_analysis_history'&&analysisDelay&&url.searchParams.get('symbol')){const pending=analysisDelay;pending.entered();await pending.wait}
     if(table==='accounts'&&coreDelay){const pending=coreDelay;pending.entered();await pending.wait}
     const tables={accounts,securities,holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
     return json(route,tables[table]||[]);

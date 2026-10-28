@@ -22,6 +22,8 @@ Five fresh Chromium sessions per version, 390x844 CPU4x, synthetic 50ms API resp
 Timing ranges overlap and the sync rendering algorithm is unchanged: do not attribute the CPU difference or claim a reliable latency gain from these samples. The deterministic gain is one duplicate request removed. Readiness includes selector observation and two animation callbacks, not a presented frame/INP. The sync mark covers the four-core-response handler through its initial renderDecisionHistory call, not every subsequent callback or the full detail lifecycle. These are not actual iPhone/server timings.
 
 ## Validation and next work
+The first CI attempt found the existing late-review fixture waiting on the now-eliminated slim history request. It now delays the symbol-scoped history response (shared or standalone), retaining all input-focus and scroll-position assertions.
+
 Local checks: new browser fixture verifies one history read with saved decisions, continued second decision read, and updated history on reopening. The sharing unit test verifies concurrency, no completed-result cache, failure clearing, retry and independent detail instances. Existing eight save/review race cases pass. Version consistency passes. Final CI runs Chromium/WebKit plus existing 390/402/430px, 125%, return navigation, chart and wealth regressions.
 
 Keep main unchanged until final-commit required CI passes; then recheck main SHA and fast-forward. Verify deployed HTML/SW/version.json markers 2026-10-28-detail-reads-234 and 2026102813-234.
