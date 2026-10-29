@@ -4198,8 +4198,8 @@ scopeRead
       if(!active())return;
       return edgeSync(step.action,step.payload).then(function(){if(active()){backgroundSyncTimes[step.key]=Date.now();changed=true}}).catch(function(){errors.push(step.key)});
     })},Promise.resolve()).then(function(){
-      // loadLive renders the refreshed data (or its error); do not redraw the same home again.
-      if(changed&&active())return loadLive(typeof currentTab!=='undefined'&&currentTab==='home');
+      // Successful loads render their data; retain the final error render for an interrupted detail load.
+      if(changed&&active())return loadLive(typeof currentTab!=='undefined'&&currentTab==='home').then(function(){if(active()&&live&&live.detailsError)render(true)});
     }).finally(function(){
       if(active()&&badge)badge.textContent=errors.length?'내역 일부 미갱신':'동기화';
       backgroundSyncPromise=null;

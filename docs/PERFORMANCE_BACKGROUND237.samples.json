@@ -1822,175 +1822,135 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.0999999998603,
-                  "restore": 0.9000000001396984,
-                  "deferred": 0.6999999999534339,
-                  "nav": 0.6999999999534339,
-                  "page": 0.6999999999534339,
+                  "html": 13.899999999906868,
+                  "restore": 1.8000000000465661,
+                  "deferred": 0,
+                  "nav": 0.19999999995343387,
+                  "page": 0.8000000000465661,
                   "wealth": 0,
-                  "otherBindings": 3,
-                  "periodVisibility": 27.600000000093132,
-                  "anchor": 0.5,
-                  "scroll": 0.09999999986030161
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 27.4000000001397,
+                  "anchor": 0.8999999999068677,
+                  "scroll": 0.10000000009313226
                 }
               },
               {
                 "background": false,
                 "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.9000000001397,
+                  "restore": 0.39999999990686774,
+                  "deferred": 0,
+                  "nav": 1.8000000000465661,
+                  "page": 0.6000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 4.399999999906868,
+                  "periodVisibility": 28.300000000046566,
+                  "anchor": 0.30000000004656613,
+                  "scroll": 0.19999999995343387
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.600000000093132,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 0.4000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 2.8999999999068677,
+                  "periodVisibility": 31.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.100000000093132,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.6999999999534339,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 3.300000000046566,
+                  "periodVisibility": 26.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13,
+                  "restore": 0.09999999986030161,
+                  "deferred": 1.3000000000465661,
+                  "nav": 0,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 0.4000000001396984,
+                  "periodVisibility": 20.800000000046566,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.099999999860302,
+                  "restore": 2.199999999953434,
+                  "deferred": 0,
+                  "nav": 0.20000000018626451,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 0.7999999998137355,
+                  "periodVisibility": 27,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
                 "detailsLoading": true,
                 "sameHtml": false,
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
                   "html": 16,
-                  "restore": 0,
+                  "restore": 0.6000000000931323,
                   "deferred": 0,
-                  "nav": 1.0999999998603016,
-                  "page": 1.2000000001862645,
+                  "nav": 1.5999999998603016,
+                  "page": 0.20000000018626451,
                   "wealth": 0,
-                  "otherBindings": 1.3999999999068677,
-                  "periodVisibility": 29.5,
-                  "anchor": 0,
-                  "scroll": 0.10000000009313226
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": true,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 19.5,
-                  "restore": 0,
-                  "deferred": 0,
-                  "nav": 1.1000000000931323,
-                  "page": 0.10000000009313226,
-                  "wealth": 0,
-                  "otherBindings": 2.699999999953434,
-                  "periodVisibility": 31.199999999953434,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 14.300000000046566,
-                  "restore": 0,
-                  "deferred": 0,
-                  "nav": 1,
-                  "page": 0.09999999986030161,
-                  "wealth": 0,
-                  "otherBindings": 2.800000000046566,
-                  "periodVisibility": 26,
-                  "anchor": 0,
-                  "scroll": 0.10000000009313226
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": false,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.5,
-                  "restore": 0.10000000009313226,
-                  "deferred": 0.39999999990686774,
-                  "nav": 0.39999999990686774,
-                  "page": 0.4000000001396984,
-                  "wealth": 0.09999999986030161,
-                  "otherBindings": 0.10000000009313226,
-                  "periodVisibility": 24.899999999906868,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": false,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 15.699999999953434,
-                  "restore": 2.199999999953434,
-                  "deferred": 0.10000000009313226,
-                  "nav": 0.6999999999534339,
-                  "page": 0.10000000009313226,
-                  "wealth": 0,
-                  "otherBindings": 0,
-                  "periodVisibility": 27.5,
-                  "anchor": 0,
-                  "scroll": 0.6999999999534339
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 15.800000000046566,
-                  "restore": 0.39999999990686774,
-                  "deferred": 0,
-                  "nav": 0.10000000009313226,
-                  "page": 1,
-                  "wealth": 0,
-                  "otherBindings": 1.3999999999068677,
+                  "otherBindings": 2.3999999999068677,
                   "periodVisibility": 26.100000000093132,
-                  "anchor": 0.6999999999534339,
-                  "scroll": 0.10000000009313226
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": true,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 15,
-                  "restore": 0.10000000009313226,
-                  "deferred": 0,
-                  "nav": 0.8000000000465661,
-                  "page": 0,
-                  "wealth": 0,
-                  "otherBindings": 1.8000000000465661,
-                  "periodVisibility": 26.5,
-                  "anchor": 0.09999999986030161,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 13.899999999906868,
-                  "restore": 0,
-                  "deferred": 0.4000000001396984,
-                  "nav": 0.5999999998603016,
-                  "page": 0.9000000001396984,
-                  "wealth": 0,
-                  "otherBindings": 2,
-                  "periodVisibility": 22.800000000046566,
-                  "anchor": 0,
+                  "anchor": 1,
                   "scroll": 0.09999999986030161
                 }
               },
@@ -1998,33 +1958,73 @@
                 "background": true,
                 "refresh": false,
                 "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.900000000139698,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 8.600000000093132,
+                  "periodVisibility": 23.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
                 "sameHtml": false,
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 12.400000000139698,
+                  "html": 23.399999999906868,
                   "restore": 0,
-                  "deferred": 0.6999999999534339,
-                  "nav": 0.09999999986030161,
-                  "page": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.2000000001862645,
+                  "page": 0.09999999986030161,
                   "wealth": 0,
-                  "otherBindings": 0.8999999999068677,
-                  "periodVisibility": 23.200000000186265,
-                  "anchor": 0.09999999986030161,
-                  "scroll": 0
+                  "otherBindings": 3.300000000046566,
+                  "periodVisibility": 31.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0.9000000001396984
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.899999999906868,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.3000000000465661,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 1.3000000000465661,
+                  "periodVisibility": 33.39999999990687,
+                  "anchor": 0,
+                  "scroll": 0.9000000001396984
                 }
               }
             ],
-            "assetMs": 181.9000000001397,
-            "foregroundMs": 707.9000000001397,
-            "allIdleMs": 1453.2000000001863,
+            "assetMs": 179.29999999981374,
+            "foregroundMs": 700.3999999999069,
+            "allIdleMs": 1516.1999999999534,
             "longTasks": [
-              55,
-              63,
+              50,
+              69,
               56,
-              96,
-              58,
-              82
+              92,
+              59,
+              122
             ],
             "requests": 37,
             "decodedJsonBytes": 33731
@@ -2040,16 +2040,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.199999999953434,
-                  "restore": 1.5,
-                  "deferred": 0.30000000004656613,
-                  "nav": 0.19999999995343387,
-                  "page": 0.8999999999068677,
+                  "html": 17.5,
+                  "restore": 1.6000000000931323,
+                  "deferred": 0.6000000000931323,
+                  "nav": 0.7999999998137355,
+                  "page": 0.5,
                   "wealth": 0,
                   "otherBindings": 0.10000000009313226,
-                  "periodVisibility": 26.300000000046566,
-                  "anchor": 0,
-                  "scroll": 0.09999999986030161
+                  "periodVisibility": 27.800000000046566,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0.5
                 }
               },
               {
@@ -2060,16 +2060,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.699999999953434,
-                  "restore": 0.19999999995343387,
+                  "html": 15.199999999953434,
+                  "restore": 0.8000000000465661,
                   "deferred": 0,
-                  "nav": 0.6000000000931323,
-                  "page": 0.5,
+                  "nav": 0.6999999999534339,
+                  "page": 0.6000000000931323,
                   "wealth": 0,
-                  "otherBindings": 1.3999999999068677,
-                  "periodVisibility": 30.5,
-                  "anchor": 0,
-                  "scroll": 0
+                  "otherBindings": 1.5,
+                  "periodVisibility": 25.5999999998603,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0.8000000000465661
                 }
               },
               {
@@ -2080,16 +2080,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 18.9000000001397,
+                  "html": 19,
                   "restore": 0,
                   "deferred": 0,
-                  "nav": 0.8999999999068677,
-                  "page": 0.8000000000465661,
+                  "nav": 1.3999999999068677,
+                  "page": 0.6999999999534339,
                   "wealth": 0,
-                  "otherBindings": 3.0999999998603016,
-                  "periodVisibility": 22.700000000186265,
-                  "anchor": 1,
-                  "scroll": 0.09999999986030161
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 29.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
                 }
               },
               {
@@ -2100,14 +2100,14 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 19.399999999906868,
-                  "restore": 0.10000000009313226,
+                  "html": 17.600000000093132,
+                  "restore": 0.8000000000465661,
                   "deferred": 0,
-                  "nav": 0.10000000009313226,
-                  "page": 1.2999999998137355,
+                  "nav": 1.0999999998603016,
+                  "page": 0.10000000009313226,
                   "wealth": 0,
-                  "otherBindings": 1.7000000001862645,
-                  "periodVisibility": 24.5,
+                  "otherBindings": 3.199999999953434,
+                  "periodVisibility": 34.60000000009313,
                   "anchor": 0,
                   "scroll": 0
                 }
@@ -2120,25 +2120,27 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 12.199999999953434,
-                  "restore": 0,
-                  "deferred": 0.10000000009313226,
-                  "nav": 1.8000000000465661,
-                  "page": 0.09999999986030161,
+                  "html": 25.300000000046566,
+                  "restore": 0.19999999995343387,
+                  "deferred": 0.4000000001396984,
+                  "nav": 0.8999999999068677,
+                  "page": 0.10000000009313226,
                   "wealth": 0,
-                  "otherBindings": 0.10000000009313226,
-                  "periodVisibility": 24.300000000046566,
-                  "anchor": 0.09999999986030161,
+                  "otherBindings": 6.399999999906868,
+                  "periodVisibility": 36.199999999953434,
+                  "anchor": 0,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 171.19999999995343,
-            "foregroundMs": 677.8000000000466,
-            "allIdleMs": 715.9000000001397,
+            "assetMs": 175.5,
+            "foregroundMs": 746.5,
+            "allIdleMs": 778.6999999999534,
             "longTasks": [
-              60,
-              92
+              52,
+              58,
+              54,
+              140
             ],
             "requests": 18,
             "decodedJsonBytes": 16860
@@ -2160,136 +2162,136 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 20,
-                  "restore": 1.3000000000465661,
+                  "html": 14.5,
+                  "restore": 0.8000000000465661,
                   "deferred": 0,
-                  "nav": 0.6000000000931323,
-                  "page": 1,
+                  "nav": 0.8000000000465661,
+                  "page": 0.19999999995343387,
                   "wealth": 0,
-                  "otherBindings": 2,
-                  "periodVisibility": 46.699999999953434,
+                  "otherBindings": 3.3999999999068677,
+                  "periodVisibility": 27.4000000001397,
+                  "anchor": 0,
+                  "scroll": 0.8000000000465661
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.399999999906868,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.7000000001862645,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 3.199999999953434,
+                  "periodVisibility": 27.5,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0.6000000000931323
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 25.300000000046566,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.3000000000465661,
+                  "page": 0.39999999990686774,
+                  "wealth": 0.30000000004656613,
+                  "otherBindings": 2.699999999953434,
+                  "periodVisibility": 27.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.399999999906868,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 31.899999999906868,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0.5
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 23.399999999906868,
+                  "restore": 1,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.0999999998603016,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 0,
+                  "periodVisibility": 32.10000000009313,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.699999999953434,
+                  "restore": 2,
+                  "deferred": 0,
+                  "nav": 1.5,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 27.100000000093132,
                   "anchor": 0.09999999986030161,
                   "scroll": 0.10000000009313226
                 }
               },
               {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.199999999953434,
-                  "restore": 0.09999999986030161,
-                  "deferred": 0,
-                  "nav": 0.10000000009313226,
-                  "page": 1.1999999999534339,
-                  "wealth": 0,
-                  "otherBindings": 2.199999999953434,
-                  "periodVisibility": 28.600000000093132,
-                  "anchor": 0,
-                  "scroll": 0.8999999999068677
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": true,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.100000000093132,
-                  "restore": 0.5999999998603016,
-                  "deferred": 0,
-                  "nav": 0.10000000009313226,
-                  "page": 1.0999999998603016,
-                  "wealth": 0,
-                  "otherBindings": 2.1000000000931323,
-                  "periodVisibility": 25.5,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.5,
-                  "restore": 0.30000000004656613,
-                  "deferred": 0,
-                  "nav": 1,
-                  "page": 0.6000000000931323,
-                  "wealth": 0,
-                  "otherBindings": 2.199999999953434,
-                  "periodVisibility": 24.300000000046566,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": false,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 15.899999999906868,
-                  "restore": 0,
-                  "deferred": 0,
-                  "nav": 1.1000000000931323,
-                  "page": 0.09999999986030161,
-                  "wealth": 0,
-                  "otherBindings": 0.8000000000465661,
-                  "periodVisibility": 27.100000000093132,
-                  "anchor": 0,
-                  "scroll": 0.09999999986030161
-                }
-              },
-              {
                 "background": true,
                 "refresh": false,
-                "detailsLoading": false,
+                "detailsLoading": true,
                 "sameHtml": false,
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 15.700000000186265,
-                  "restore": 1.2999999998137355,
-                  "deferred": 0.20000000018626451,
-                  "nav": 0.5,
+                  "html": 16.100000000093132,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
                   "page": 0,
                   "wealth": 0,
-                  "otherBindings": 0.19999999995343387,
-                  "periodVisibility": 24.300000000046566,
+                  "otherBindings": 2,
+                  "periodVisibility": 25.199999999953434,
                   "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 20.699999999953434,
-                  "restore": 0,
-                  "deferred": 0,
-                  "nav": 1.9000000001396984,
-                  "page": 0.39999999990686774,
-                  "wealth": 0,
-                  "otherBindings": 3.3999999999068677,
-                  "periodVisibility": 28.5,
-                  "anchor": 0,
-                  "scroll": 0
+                  "scroll": 0.5
                 }
               },
               {
@@ -2300,14 +2302,14 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 19.799999999813735,
-                  "restore": 0,
+                  "html": 14.800000000046566,
+                  "restore": 0.5,
                   "deferred": 0,
-                  "nav": 0.20000000018626451,
-                  "page": 0.8999999999068677,
+                  "nav": 0.6999999999534339,
+                  "page": 0.19999999995343387,
                   "wealth": 0,
-                  "otherBindings": 2.1000000000931323,
-                  "periodVisibility": 25.0999999998603,
+                  "otherBindings": 2.6000000000931323,
+                  "periodVisibility": 25.199999999953434,
                   "anchor": 0,
                   "scroll": 0
                 }
@@ -2320,15 +2322,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 15.799999999813735,
-                  "restore": 0.30000000004656613,
+                  "html": 13,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 0.10000000009313226,
-                  "page": 0.8999999999068677,
+                  "nav": 0.8000000000465661,
+                  "page": 0.5999999998603016,
                   "wealth": 0,
-                  "otherBindings": 1.8000000000465661,
-                  "periodVisibility": 32.199999999953434,
-                  "anchor": 1.8000000000465661,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 22.100000000093132,
+                  "anchor": 0.09999999986030161,
                   "scroll": 0
                 }
               },
@@ -2340,28 +2342,29 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 22,
-                  "restore": 0.5,
-                  "deferred": 0.10000000009313226,
-                  "nav": 0.8000000000465661,
-                  "page": 0.09999999986030161,
+                  "html": 16,
+                  "restore": 0,
+                  "deferred": 0.7000000001862645,
+                  "nav": 1.3999999999068677,
+                  "page": 0.10000000009313226,
                   "wealth": 0,
-                  "otherBindings": 0.6000000000931323,
-                  "periodVisibility": 27.600000000093132,
-                  "anchor": 0.09999999986030161,
+                  "otherBindings": 0.5999999998603016,
+                  "periodVisibility": 24,
+                  "anchor": 0,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 215.69999999995343,
-            "foregroundMs": 750.2999999998137,
-            "allIdleMs": 1566.5999999998603,
+            "assetMs": 179,
+            "foregroundMs": 733.1000000000931,
+            "allIdleMs": 1515.3000000000466,
             "longTasks": [
-              76,
-              64,
-              102,
-              69,
-              109
+              54,
+              59,
+              58,
+              125,
+              53,
+              84
             ],
             "requests": 37,
             "decodedJsonBytes": 33731
@@ -2377,55 +2380,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.600000000093132,
-                  "restore": 1.1000000000931323,
-                  "deferred": 0.09999999986030161,
-                  "nav": 0.10000000009313226,
-                  "page": 0.8999999999068677,
+                  "html": 17.800000000046566,
+                  "restore": 1.5999999998603016,
+                  "deferred": 0,
+                  "nav": 1.6000000000931323,
+                  "page": 0.19999999995343387,
                   "wealth": 0,
-                  "otherBindings": 0.19999999995343387,
-                  "periodVisibility": 28,
+                  "otherBindings": 1.1000000000931323,
+                  "periodVisibility": 25.399999999906868,
                   "anchor": 0,
-                  "scroll": 0.5
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 15.899999999906868,
-                  "restore": 0.6999999999534339,
-                  "deferred": 0,
-                  "nav": 0.7000000001862645,
-                  "page": 0.09999999986030161,
-                  "wealth": 0,
-                  "otherBindings": 2.4000000001396984,
-                  "periodVisibility": 25,
-                  "anchor": 0.09999999986030161,
-                  "scroll": 0.6999999999534339
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": true,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 16.800000000046566,
-                  "restore": 0,
-                  "deferred": 0,
-                  "nav": 1.1999999999534339,
-                  "page": 0.6999999999534339,
-                  "wealth": 0,
-                  "otherBindings": 1.8000000000465661,
-                  "periodVisibility": 25.0999999998603,
-                  "anchor": 0.10000000009313226,
                   "scroll": 0
                 }
               },
@@ -2437,16 +2400,56 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 15.599999999860302,
-                  "restore": 0.10000000009313226,
+                  "html": 18.399999999906868,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 0.10000000009313226,
-                  "page": 1.3999999999068677,
+                  "nav": 1.5,
+                  "page": 0.4000000001396984,
                   "wealth": 0,
-                  "otherBindings": 1.5,
-                  "periodVisibility": 21.899999999906868,
+                  "otherBindings": 2.5999999998603016,
+                  "periodVisibility": 29.600000000093132,
                   "anchor": 0,
-                  "scroll": 0.20000000018626451
+                  "scroll": 0.39999999990686774
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.9000000001397,
+                  "restore": 0.5,
+                  "deferred": 0,
+                  "nav": 0.5,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 26.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.9000000001397,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 8.199999999953434,
+                  "periodVisibility": 43.89999999990687,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
                 }
               },
               {
@@ -2457,26 +2460,26 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 15.200000000186265,
-                  "restore": 0,
+                  "html": 26.600000000093132,
+                  "restore": 0.8000000000465661,
                   "deferred": 0,
-                  "nav": 2,
-                  "page": 0.09999999986030161,
+                  "nav": 1.3000000000465661,
+                  "page": 0.19999999995343387,
                   "wealth": 0,
-                  "otherBindings": 0.6000000000931323,
-                  "periodVisibility": 22.5999999998603,
-                  "anchor": 1.3000000000465661,
-                  "scroll": 0.19999999995343387
+                  "otherBindings": 0.8000000000465661,
+                  "periodVisibility": 37,
+                  "anchor": 0,
+                  "scroll": 0
                 }
               }
             ],
-            "assetMs": 173.5,
-            "foregroundMs": 675.8999999999069,
-            "allIdleMs": 712,
+            "assetMs": 171.30000000004657,
+            "foregroundMs": 749.8000000000466,
+            "allIdleMs": 797,
             "longTasks": [
-              50,
-              59,
-              89
+              52,
+              70,
+              147
             ],
             "requests": 18,
             "decodedJsonBytes": 16860
@@ -2498,14 +2501,14 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16,
-                  "restore": 1.1999999999534339,
+                  "html": 16.800000000046566,
+                  "restore": 0.5,
                   "deferred": 0,
-                  "nav": 1.1000000000931323,
-                  "page": 0.30000000004656613,
+                  "nav": 2.699999999953434,
+                  "page": 0,
                   "wealth": 0,
                   "otherBindings": 2.8999999999068677,
-                  "periodVisibility": 32.4000000001397,
+                  "periodVisibility": 25.4000000001397,
                   "anchor": 0,
                   "scroll": 0
                 }
@@ -2518,16 +2521,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.100000000093132,
-                  "restore": 0.10000000009313226,
+                  "html": 17.600000000093132,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 1,
-                  "page": 0.39999999990686774,
+                  "nav": 0.19999999995343387,
+                  "page": 1,
                   "wealth": 0,
                   "otherBindings": 2,
-                  "periodVisibility": 29.100000000093132,
+                  "periodVisibility": 22.199999999953434,
                   "anchor": 0,
-                  "scroll": 0.09999999986030161
+                  "scroll": 0.8000000000465661
                 }
               },
               {
@@ -2538,96 +2541,96 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 19.800000000046566,
-                  "restore": 0.6000000000931323,
+                  "html": 14.199999999953434,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 1.1999999999534339,
+                  "nav": 0.8000000000465661,
+                  "page": 0.4000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 1.8999999999068677,
+                  "periodVisibility": 24.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.899999999906868,
+                  "restore": 0.8000000000465661,
+                  "deferred": 0,
+                  "nav": 0.19999999995343387,
+                  "page": 0.9000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 1.8999999999068677,
+                  "periodVisibility": 28.9000000001397,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.4000000001397,
+                  "restore": 0,
+                  "deferred": 0.8999999999068677,
+                  "nav": 6.800000000046566,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 1.1000000000931323,
+                  "periodVisibility": 26.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.099999999860302,
+                  "restore": 1.3000000000465661,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.8999999999068677,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 0.5999999998603016,
+                  "periodVisibility": 21.600000000093132,
+                  "anchor": 0.8000000000465661,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.699999999953434,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
                   "page": 1,
                   "wealth": 0,
                   "otherBindings": 1.6999999999534339,
-                  "periodVisibility": 33,
-                  "anchor": 0.8000000000465661,
-                  "scroll": 0.19999999995343387
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 19.0999999998603,
-                  "restore": 0,
-                  "deferred": 0,
-                  "nav": 1,
-                  "page": 0.20000000018626451,
-                  "wealth": 0,
-                  "otherBindings": 3.699999999953434,
-                  "periodVisibility": 33.5,
-                  "anchor": 0,
-                  "scroll": 0.09999999986030161
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": false,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 20,
-                  "restore": 0.8999999999068677,
-                  "deferred": 0,
-                  "nav": 0.20000000018626451,
-                  "page": 0.6999999999534339,
-                  "wealth": 0,
-                  "otherBindings": 0.5,
-                  "periodVisibility": 29.199999999953434,
+                  "periodVisibility": 22.100000000093132,
                   "anchor": 0,
                   "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": false,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.5,
-                  "restore": 1.1000000000931323,
-                  "deferred": 0.10000000009313226,
-                  "nav": 1.1999999999534339,
-                  "page": 0.09999999986030161,
-                  "wealth": 0,
-                  "otherBindings": 0.7000000001862645,
-                  "periodVisibility": 33.5,
-                  "anchor": 0,
-                  "scroll": 0.09999999986030161
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 15,
-                  "restore": 0.8999999999068677,
-                  "deferred": 0,
-                  "nav": 0.10000000009313226,
-                  "page": 1.1000000000931323,
-                  "wealth": 0,
-                  "otherBindings": 2.2999999998137355,
-                  "periodVisibility": 34.4000000001397,
-                  "anchor": 0.8000000000465661,
-                  "scroll": 0.09999999986030161
                 }
               },
               {
@@ -2638,15 +2641,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.200000000186265,
-                  "restore": 1,
+                  "html": 14.899999999906868,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 0.09999999986030161,
+                  "nav": 0.20000000018626451,
                   "page": 1,
                   "wealth": 0,
-                  "otherBindings": 2.300000000046566,
-                  "periodVisibility": 34,
-                  "anchor": 0.10000000009313226,
+                  "otherBindings": 1.7999999998137355,
+                  "periodVisibility": 25.200000000186265,
+                  "anchor": 0,
                   "scroll": 0
                 }
               },
@@ -2658,16 +2661,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17,
+                  "html": 18.600000000093132,
                   "restore": 0.10000000009313226,
                   "deferred": 0,
-                  "nav": 2,
-                  "page": 0.30000000004656613,
+                  "nav": 0.8999999999068677,
+                  "page": 0.5,
                   "wealth": 0,
-                  "otherBindings": 2.8999999999068677,
-                  "periodVisibility": 32.60000000009313,
-                  "anchor": 0,
-                  "scroll": 0.09999999986030161
+                  "otherBindings": 2.6000000000931323,
+                  "periodVisibility": 22.799999999813735,
+                  "anchor": 0.4000000001396984,
+                  "scroll": 0
                 }
               },
               {
@@ -2678,31 +2681,27 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.800000000046566,
-                  "restore": 0.09999999986030161,
-                  "deferred": 0,
-                  "nav": 1.3000000000465661,
-                  "page": 0.10000000009313226,
+                  "html": 14.400000000139698,
+                  "restore": 0.5999999998603016,
+                  "deferred": 0.19999999995343387,
+                  "nav": 0,
+                  "page": 0.9000000001396984,
                   "wealth": 0,
-                  "otherBindings": 1.0999999998603016,
-                  "periodVisibility": 58.199999999953434,
-                  "anchor": 0,
+                  "otherBindings": 0.5,
+                  "periodVisibility": 20.5999999998603,
+                  "anchor": 0.10000000009313226,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 187.0999999998603,
-            "foregroundMs": 739.8999999999069,
-            "allIdleMs": 1608.0999999998603,
+            "assetMs": 176.5999999998603,
+            "foregroundMs": 696.5999999998603,
+            "allIdleMs": 1463.5,
             "longTasks": [
-              57,
-              63,
-              59,
-              123,
-              57,
-              66,
-              55,
-              143
+              51,
+              53,
+              116,
+              85
             ],
             "requests": 37,
             "decodedJsonBytes": 33731
@@ -2718,15 +2717,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.5,
-                  "restore": 1.1999999999534339,
-                  "deferred": 0.39999999990686774,
-                  "nav": 0.10000000009313226,
-                  "page": 0.8000000000465661,
+                  "html": 13.099999999860302,
+                  "restore": 1.4000000001396984,
+                  "deferred": 0.19999999995343387,
+                  "nav": 0.6999999999534339,
+                  "page": 0.10000000009313226,
                   "wealth": 0,
-                  "otherBindings": 0.19999999995343387,
-                  "periodVisibility": 27.5,
-                  "anchor": 0.19999999995343387,
+                  "otherBindings": 0.09999999986030161,
+                  "periodVisibility": 25.199999999953434,
+                  "anchor": 0,
                   "scroll": 0
                 }
               },
@@ -2738,16 +2737,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 20.600000000093132,
+                  "html": 14.099999999860302,
                   "restore": 0,
                   "deferred": 0,
-                  "nav": 1.0999999998603016,
-                  "page": 0.8000000000465661,
+                  "nav": 1.1000000000931323,
+                  "page": 0.6000000000931323,
                   "wealth": 0,
-                  "otherBindings": 1.8999999999068677,
-                  "periodVisibility": 33.9000000001397,
-                  "anchor": 1,
-                  "scroll": 0
+                  "otherBindings": 1.6999999999534339,
+                  "periodVisibility": 20,
+                  "anchor": 0,
+                  "scroll": 0.5
                 }
               },
               {
@@ -2758,15 +2757,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 20.899999999906868,
-                  "restore": 0,
+                  "html": 15.699999999953434,
+                  "restore": 0.5999999998603016,
                   "deferred": 0,
-                  "nav": 1.1000000000931323,
-                  "page": 0,
+                  "nav": 1.3000000000465661,
+                  "page": 0.6000000000931323,
                   "wealth": 0,
                   "otherBindings": 2.300000000046566,
-                  "periodVisibility": 27.0999999998603,
-                  "anchor": 0,
+                  "periodVisibility": 23.0999999998603,
+                  "anchor": 0.8000000000465661,
                   "scroll": 0
                 }
               },
@@ -2778,16 +2777,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 14.899999999906868,
-                  "restore": 0.9000000001396984,
+                  "html": 12.399999999906868,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 0.8999999999068677,
-                  "page": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0.10000000009313226,
                   "wealth": 0,
-                  "otherBindings": 1.8000000000465661,
-                  "periodVisibility": 29.199999999953434,
+                  "otherBindings": 2.0999999998603016,
+                  "periodVisibility": 20.100000000093132,
                   "anchor": 0,
-                  "scroll": 0.10000000009313226
+                  "scroll": 0.09999999986030161
                 }
               },
               {
@@ -2798,27 +2797,24 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.0999999998603,
-                  "restore": 0.10000000009313226,
+                  "html": 12.600000000093132,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 1.3000000000465661,
-                  "page": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 0.09999999986030161,
                   "wealth": 0,
-                  "otherBindings": 1.1999999999534339,
-                  "periodVisibility": 26.699999999953434,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 19.5,
                   "anchor": 0,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 184.5,
-            "foregroundMs": 724.9000000001397,
-            "allIdleMs": 759.3000000000466,
+            "assetMs": 165.4000000001397,
+            "foregroundMs": 636.4000000001397,
+            "allIdleMs": 649.1000000000931,
             "longTasks": [
-              50,
-              74,
-              53,
-              100
+              75
             ],
             "requests": 18,
             "decodedJsonBytes": 16860
@@ -2840,74 +2836,14 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 20.5,
+                  "html": 19.5999999998603,
                   "restore": 1.1000000000931323,
                   "deferred": 0,
-                  "nav": 0.8000000000465661,
-                  "page": 0.8000000000465661,
-                  "wealth": 0,
-                  "otherBindings": 1.7999999998137355,
-                  "periodVisibility": 33.800000000046566,
-                  "anchor": 0,
-                  "scroll": 1.1000000000931323
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 19.199999999953434,
-                  "restore": 0.10000000009313226,
-                  "deferred": 0,
-                  "nav": 1.3999999999068677,
-                  "page": 0.5,
-                  "wealth": 0,
-                  "otherBindings": 3.2000000001862645,
-                  "periodVisibility": 35.5,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": true,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 18.5999999998603,
-                  "restore": 0.10000000009313226,
-                  "deferred": 0,
-                  "nav": 1.3999999999068677,
-                  "page": 0.6999999999534339,
-                  "wealth": 0,
-                  "otherBindings": 5.600000000093132,
-                  "periodVisibility": 29.699999999953434,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": false,
-                "refresh": true,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.4000000001397,
-                  "restore": 1.0999999998603016,
-                  "deferred": 0,
                   "nav": 1,
-                  "page": 0.10000000009313226,
+                  "page": 0.09999999986030161,
                   "wealth": 0,
                   "otherBindings": 2.800000000046566,
-                  "periodVisibility": 27.399999999906868,
+                  "periodVisibility": 30.5,
                   "anchor": 0,
                   "scroll": 0
                 }
@@ -2915,44 +2851,104 @@
               {
                 "background": false,
                 "refresh": true,
-                "detailsLoading": false,
+                "detailsLoading": true,
                 "sameHtml": false,
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.700000000186265,
+                  "html": 15.599999999860302,
                   "restore": 0,
-                  "deferred": 0.7999999998137355,
+                  "deferred": 0,
                   "nav": 1,
-                  "page": 0.20000000018626451,
+                  "page": 0.19999999995343387,
                   "wealth": 0,
-                  "otherBindings": 0.7999999998137355,
-                  "periodVisibility": 23.800000000046566,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": false,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 16.199999999953434,
-                  "restore": 1,
-                  "deferred": 0.19999999995343387,
-                  "nav": 0.6000000000931323,
-                  "page": 0,
-                  "wealth": 0,
-                  "otherBindings": 0.8000000000465661,
-                  "periodVisibility": 24.899999999906868,
+                  "otherBindings": 2.2000000001862645,
+                  "periodVisibility": 28.799999999813735,
                   "anchor": 0,
                   "scroll": 0.10000000009313226
                 }
               },
               {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.5,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.5,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 1.9000000001396984,
+                  "periodVisibility": 20.399999999906868,
+                  "anchor": 0,
+                  "scroll": 0.6999999999534339
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.6999999999534339,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 23.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 11.599999999860302,
+                  "restore": 0,
+                  "deferred": 0.9000000001396984,
+                  "nav": 0.09999999986030161,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 1,
+                  "periodVisibility": 20.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.800000000046566,
+                  "restore": 1.5,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.8000000000465661,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.8000000000465661,
+                  "periodVisibility": 22.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
                 "background": true,
                 "refresh": false,
                 "detailsLoading": true,
@@ -2960,15 +2956,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 13.699999999953434,
-                  "restore": 0,
+                  "html": 14,
+                  "restore": 0.39999999990686774,
                   "deferred": 0,
-                  "nav": 1.2000000001862645,
-                  "page": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 0.8999999999068677,
                   "wealth": 0,
-                  "otherBindings": 2.3999999999068677,
-                  "periodVisibility": 23.5,
-                  "anchor": 0,
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 25.0999999998603,
+                  "anchor": 0.8000000000465661,
                   "scroll": 0
                 }
               },
@@ -2980,34 +2976,34 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 15.5,
-                  "restore": 0.10000000009313226,
-                  "deferred": 0,
-                  "nav": 1,
-                  "page": 0.39999999990686774,
-                  "wealth": 0,
-                  "otherBindings": 2.5,
-                  "periodVisibility": 26.899999999906868,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 19.399999999906868,
+                  "html": 16.600000000093132,
                   "restore": 0,
                   "deferred": 0,
-                  "nav": 0.5,
-                  "page": 1,
+                  "nav": 0.8999999999068677,
+                  "page": 0.6000000000931323,
                   "wealth": 0,
-                  "otherBindings": 3.2000000001862645,
-                  "periodVisibility": 30.399999999906868,
+                  "otherBindings": 2,
+                  "periodVisibility": 26.5,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.599999999860302,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 33.9000000001397,
                   "anchor": 0,
                   "scroll": 0
                 }
@@ -3020,29 +3016,28 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.5,
-                  "restore": 0.10000000009313226,
-                  "deferred": 0.09999999986030161,
-                  "nav": 0.6999999999534339,
-                  "page": 0.10000000009313226,
+                  "html": 14.600000000093132,
+                  "restore": 0.6999999999534339,
+                  "deferred": 0,
+                  "nav": 0.19999999995343387,
+                  "page": 2.1000000000931323,
                   "wealth": 0,
-                  "otherBindings": 1.6000000000931323,
-                  "periodVisibility": 23.699999999953434,
-                  "anchor": 0,
+                  "otherBindings": 0.6999999999534339,
+                  "periodVisibility": 25.800000000046566,
+                  "anchor": 0.8000000000465661,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 204.0999999998603,
-            "foregroundMs": 757.1999999999534,
-            "allIdleMs": 1551.1999999999534,
+            "assetMs": 179.19999999995343,
+            "foregroundMs": 664.4000000001397,
+            "allIdleMs": 1435.8000000000466,
             "longTasks": [
-              65,
-              77,
               58,
-              104,
-              52,
-              103
+              59,
+              86,
+              59,
+              98
             ],
             "requests": 37,
             "decodedJsonBytes": 33731
@@ -3058,16 +3053,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.800000000046566,
-                  "restore": 1.6000000000931323,
-                  "deferred": 0.8000000000465661,
-                  "nav": 0.19999999995343387,
-                  "page": 1,
+                  "html": 13.5,
+                  "restore": 1.5,
+                  "deferred": 0.30000000004656613,
+                  "nav": 0.5,
+                  "page": 0.5,
                   "wealth": 0,
                   "otherBindings": 0.09999999986030161,
-                  "periodVisibility": 26.200000000186265,
-                  "anchor": 0,
-                  "scroll": 0
+                  "periodVisibility": 24.4000000001397,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0.10000000009313226
                 }
               },
               {
@@ -3078,16 +3073,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 15.5,
-                  "restore": 0.9000000001396984,
+                  "html": 16.399999999906868,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 0.8999999999068677,
-                  "page": 0.10000000009313226,
+                  "nav": 0.19999999995343387,
+                  "page": 0.9000000001396984,
                   "wealth": 0,
-                  "otherBindings": 1.8999999999068677,
-                  "periodVisibility": 26.600000000093132,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 28.799999999813735,
                   "anchor": 0,
-                  "scroll": 0.09999999986030161
+                  "scroll": 0.10000000009313226
                 }
               },
               {
@@ -3098,15 +3093,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17,
-                  "restore": 0.10000000009313226,
+                  "html": 14.699999999953434,
+                  "restore": 0,
                   "deferred": 0,
-                  "nav": 0.6000000000931323,
-                  "page": 0.19999999995343387,
+                  "nav": 0.19999999995343387,
+                  "page": 0.8000000000465661,
                   "wealth": 0,
-                  "otherBindings": 2.5999999998603016,
-                  "periodVisibility": 29.200000000186265,
-                  "anchor": 0,
+                  "otherBindings": 1.6999999999534339,
+                  "periodVisibility": 22.100000000093132,
+                  "anchor": 0.09999999986030161,
                   "scroll": 0
                 }
               },
@@ -3118,14 +3113,14 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.300000000046566,
+                  "html": 19.100000000093132,
                   "restore": 0,
                   "deferred": 0,
-                  "nav": 0.9000000001396984,
-                  "page": 1.5999999998603016,
+                  "nav": 1.1999999999534339,
+                  "page": 1,
                   "wealth": 0,
-                  "otherBindings": 2.1000000000931323,
-                  "periodVisibility": 27.300000000046566,
+                  "otherBindings": 1.6000000000931323,
+                  "periodVisibility": 28.699999999953434,
                   "anchor": 0,
                   "scroll": 0
                 }
@@ -3138,27 +3133,25 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 14.100000000093132,
-                  "restore": 1,
-                  "deferred": 0,
+                  "html": 12.299999999813735,
+                  "restore": 0,
+                  "deferred": 0.7000000001862645,
                   "nav": 0.19999999995343387,
-                  "page": 1,
+                  "page": 0.6999999999534339,
                   "wealth": 0,
-                  "otherBindings": 0,
-                  "periodVisibility": 27.600000000093132,
-                  "anchor": 0.5999999998603016,
+                  "otherBindings": 0.6000000000931323,
+                  "periodVisibility": 23.899999999906868,
+                  "anchor": 0,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 176.20000000018626,
-            "foregroundMs": 699.7000000001863,
-            "allIdleMs": 736.2000000001863,
+            "assetMs": 163.30000000004657,
+            "foregroundMs": 662.3000000000466,
+            "allIdleMs": 687.0999999998603,
             "longTasks": [
-              50,
-              60,
-              52,
-              102
+              59,
+              96
             ],
             "requests": 18,
             "decodedJsonBytes": 16860
@@ -3180,15 +3173,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17,
-                  "restore": 1.3000000000465661,
+                  "html": 14.099999999860302,
+                  "restore": 1.8000000000465661,
                   "deferred": 0,
-                  "nav": 1.1999999999534339,
-                  "page": 0.10000000009313226,
-                  "wealth": 0,
-                  "otherBindings": 3,
-                  "periodVisibility": 28.5,
-                  "anchor": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1,
+                  "wealth": 0.09999999986030161,
+                  "otherBindings": 2.2000000001862645,
+                  "periodVisibility": 29.299999999813735,
+                  "anchor": 0.10000000009313226,
                   "scroll": 0
                 }
               },
@@ -3200,15 +3193,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 17.699999999953434,
-                  "restore": 0.5,
+                  "html": 16.800000000046566,
+                  "restore": 0.39999999990686774,
                   "deferred": 0,
-                  "nav": 1.1000000000931323,
-                  "page": 0.8999999999068677,
+                  "nav": 0.20000000018626451,
+                  "page": 0.7999999998137355,
                   "wealth": 0,
-                  "otherBindings": 2.9000000001396984,
-                  "periodVisibility": 30.399999999906868,
-                  "anchor": 0,
+                  "otherBindings": 2.6000000000931323,
+                  "periodVisibility": 25.199999999953434,
+                  "anchor": 0.6000000000931323,
                   "scroll": 0
                 }
               },
@@ -3220,16 +3213,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 19.800000000046566,
-                  "restore": 0,
+                  "html": 19.5,
+                  "restore": 0.2999999998137355,
                   "deferred": 0,
-                  "nav": 1.1000000000931323,
-                  "page": 0.09999999986030161,
+                  "nav": 0.6000000000931323,
+                  "page": 0.6000000000931323,
                   "wealth": 0,
-                  "otherBindings": 3.1000000000931323,
-                  "periodVisibility": 24.800000000046566,
-                  "anchor": 0.7999999998137355,
-                  "scroll": 0
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 23.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
                 }
               },
               {
@@ -3240,16 +3233,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 14.799999999813735,
-                  "restore": 0.8000000000465661,
-                  "deferred": 0,
-                  "nav": 1.4000000001396984,
-                  "page": 0.09999999986030161,
+                  "html": 17.100000000093132,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.6000000000931323,
+                  "page": 0.5,
                   "wealth": 0,
-                  "otherBindings": 3.4000000001396984,
-                  "periodVisibility": 22.199999999953434,
-                  "anchor": 0,
-                  "scroll": 0.09999999986030161
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 22.0999999998603,
+                  "anchor": 0.5,
+                  "scroll": 0
                 }
               },
               {
@@ -3260,13 +3253,53 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 15.300000000046566,
+                  "html": 14.199999999953434,
                   "restore": 0,
-                  "deferred": 0.09999999986030161,
-                  "nav": 1.6999999999534339,
-                  "page": 0.20000000018626451,
+                  "deferred": 0.5,
+                  "nav": 0.5,
+                  "page": 0.10000000009313226,
                   "wealth": 0,
                   "otherBindings": 0.6999999999534339,
+                  "periodVisibility": 21.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.800000000046566,
+                  "restore": 0.7999999998137355,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.6999999999534339,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 0.39999999990686774,
+                  "periodVisibility": 21.9000000001397,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.399999999906868,
+                  "restore": 0.5,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.8000000000465661,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 2.7999999998137355,
                   "periodVisibility": 25.800000000046566,
                   "anchor": 0,
                   "scroll": 0
@@ -3275,116 +3308,75 @@
               {
                 "background": true,
                 "refresh": false,
-                "detailsLoading": false,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.800000000046566,
-                  "restore": 2,
-                  "deferred": 0,
-                  "nav": 0.8999999999068677,
-                  "page": 0.6999999999534339,
-                  "wealth": 0,
-                  "otherBindings": 0.5,
-                  "periodVisibility": 26.300000000046566,
-                  "anchor": 0,
-                  "scroll": 0.10000000009313226
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 17.199999999953434,
-                  "restore": 0.10000000009313226,
-                  "deferred": 0,
-                  "nav": 1.5,
-                  "page": 0,
-                  "wealth": 0,
-                  "otherBindings": 2.8999999999068677,
-                  "periodVisibility": 29.4000000001397,
-                  "anchor": 0,
-                  "scroll": 0.39999999990686774
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
                 "detailsLoading": true,
                 "sameHtml": true,
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.5,
-                  "restore": 0.7999999998137355,
-                  "deferred": 0.10000000009313226,
-                  "nav": 0.8000000000465661,
-                  "page": 1.6999999999534339,
-                  "wealth": 0,
-                  "otherBindings": 4.100000000093132,
-                  "periodVisibility": 26.799999999813735,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 21.9000000001397,
-                  "restore": 0.09999999986030161,
+                  "html": 19.100000000093132,
+                  "restore": 0.6999999999534339,
                   "deferred": 0,
-                  "nav": 1,
-                  "page": 1.1000000000931323,
-                  "wealth": 0,
-                  "otherBindings": 3.5,
-                  "periodVisibility": 24.5999999998603,
-                  "anchor": 0,
-                  "scroll": 0
-                }
-              },
-              {
-                "background": true,
-                "refresh": false,
-                "detailsLoading": true,
-                "sameHtml": false,
-                "tab": "home",
-                "periodGroups": 1,
-                "parts": {
-                  "html": 16,
-                  "restore": 0,
-                  "deferred": 0.6999999999534339,
-                  "nav": 0.09999999986030161,
+                  "nav": 0.19999999995343387,
                   "page": 0.8000000000465661,
                   "wealth": 0,
-                  "otherBindings": 0.10000000009313226,
-                  "periodVisibility": 30.800000000046566,
+                  "otherBindings": 2.300000000046566,
+                  "periodVisibility": 26.199999999953434,
+                  "anchor": 0.8999999999068677,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.100000000093132,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.0999999998603016,
+                  "page": 0.7000000001862645,
+                  "wealth": 0,
+                  "otherBindings": 2.2999999998137355,
+                  "periodVisibility": 23.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0.6999999999534339
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.099999999860302,
+                  "restore": 0.5,
+                  "deferred": 1.3000000000465661,
+                  "nav": 0.6000000000931323,
+                  "page": 0.39999999990686774,
+                  "wealth": 0,
+                  "otherBindings": 0.19999999995343387,
+                  "periodVisibility": 25.9000000001397,
                   "anchor": 0,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 176.5,
-            "foregroundMs": 691.5,
-            "allIdleMs": 1505.0999999998603,
+            "assetMs": 174.5,
+            "foregroundMs": 686.6000000000931,
+            "allIdleMs": 1447.3999999999069,
             "longTasks": [
-              54,
-              65,
-              52,
-              97,
-              52,
-              62,
-              52,
-              105
+              51,
+              59,
+              53,
+              89,
+              56,
+              51,
+              88
             ],
             "requests": 37,
             "decodedJsonBytes": 33731
@@ -3400,14 +3392,14 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 22.300000000046566,
-                  "restore": 1.6999999999534339,
-                  "deferred": 0.09999999986030161,
-                  "nav": 0.8000000000465661,
-                  "page": 0.6999999999534339,
+                  "html": 16.899999999906868,
+                  "restore": 1.4000000001396984,
+                  "deferred": 0.5,
+                  "nav": 0.5,
+                  "page": 0,
                   "wealth": 0,
-                  "otherBindings": 0,
-                  "periodVisibility": 26.9000000001397,
+                  "otherBindings": 0.5999999998603016,
+                  "periodVisibility": 30.600000000093132,
                   "anchor": 0,
                   "scroll": 0.09999999986030161
                 }
@@ -3420,15 +3412,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.699999999953434,
-                  "restore": 0.09999999986030161,
+                  "html": 16.5999999998603,
+                  "restore": 0.10000000009313226,
                   "deferred": 0,
                   "nav": 1,
-                  "page": 0.10000000009313226,
+                  "page": 0.8000000000465661,
                   "wealth": 0,
-                  "otherBindings": 3.1000000000931323,
-                  "periodVisibility": 29,
-                  "anchor": 0.09999999986030161,
+                  "otherBindings": 2.3999999999068677,
+                  "periodVisibility": 27.899999999906868,
+                  "anchor": 0,
                   "scroll": 0
                 }
               },
@@ -3440,15 +3432,15 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 18.200000000186265,
-                  "restore": 0.09999999986030161,
+                  "html": 17.199999999953434,
+                  "restore": 0.10000000009313226,
                   "deferred": 0,
-                  "nav": 2,
-                  "page": 1,
+                  "nav": 1.6999999999534339,
+                  "page": 0.19999999995343387,
                   "wealth": 0,
-                  "otherBindings": 3.1000000000931323,
-                  "periodVisibility": 25.300000000046566,
-                  "anchor": 0.09999999986030161,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 23.100000000093132,
+                  "anchor": 0,
                   "scroll": 0
                 }
               },
@@ -3460,16 +3452,16 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.5,
+                  "html": 14.800000000046566,
                   "restore": 0,
                   "deferred": 0,
-                  "nav": 1.3000000000465661,
+                  "nav": 0.8000000000465661,
                   "page": 0.10000000009313226,
                   "wealth": 0,
-                  "otherBindings": 2.3999999999068677,
-                  "periodVisibility": 25.4000000001397,
-                  "anchor": 0,
-                  "scroll": 0.2999999998137355
+                  "otherBindings": 2.0999999998603016,
+                  "periodVisibility": 20,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0.30000000004656613
                 }
               },
               {
@@ -3480,27 +3472,26 @@
                 "tab": "home",
                 "periodGroups": 1,
                 "parts": {
-                  "html": 16.100000000093132,
-                  "restore": 0.5999999998603016,
-                  "deferred": 0.10000000009313226,
-                  "nav": 0.19999999995343387,
-                  "page": 0.8999999999068677,
+                  "html": 12.800000000046566,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0.8000000000465661,
+                  "nav": 0.5999999998603016,
+                  "page": 0,
                   "wealth": 0,
-                  "otherBindings": 0.10000000009313226,
-                  "periodVisibility": 28.399999999906868,
-                  "anchor": 0.30000000004656613,
+                  "otherBindings": 0.9000000001396984,
+                  "periodVisibility": 28,
+                  "anchor": 0,
                   "scroll": 0
                 }
               }
             ],
-            "assetMs": 174.80000000004657,
-            "foregroundMs": 688,
-            "allIdleMs": 712.5,
+            "assetMs": 173.9000000001397,
+            "foregroundMs": 668.6999999999534,
+            "allIdleMs": 712.6999999999534,
             "longTasks": [
-              55,
+              53,
               61,
-              51,
-              98
+              88
             ],
             "requests": 18,
             "decodedJsonBytes": 16860
