@@ -124,6 +124,8 @@ jobs:
         run: node tests/refresh_interaction_profile234.mjs --verify
       - name: Verify tab cache reuse and late wealth response isolation
         run: node tests/tab_runtime_profile234.mjs --verify
+      - name: Verify delayed saved history preserves chart and decision draft
+        run: node tests/detail_render_profile234.mjs --verify --late-history
       - name: Verify late detail response preserves return position and active chart
         run: node tests/detail_render_profile234.mjs --verify --pending-return
       - name: Verify detail rendering profile and repeated entry positions

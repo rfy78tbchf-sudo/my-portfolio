@@ -50,7 +50,8 @@ const savedDecisions=Array.from({length:10},(_,i)=>({id:'decision-'+i,security_i
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace'),repeat=process.argv.includes('--repeat'),pendingReturn=process.argv.includes('--pending-return');
+const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace'),repeat=process.argv.includes('--repeat'),pendingReturn=process.argv.includes('--pending-return'),lateHistory=process.argv.includes('--late-history');
+assert.ok(!(pendingReturn&&lateHistory),'choose one gated scenario');
 for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
  const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
   scope.current_display_total=5400000; // Each browser starts with its own baseline value.
@@ -58,7 +59,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
   await context.addInitScript(({token,key})=>localStorage.setItem(key,JSON.stringify({accessToken:token,refreshToken:'synthetic-local-refresh',expiresAt:Date.now()+3600000})),{token:jwt,key:'my_portfolio_session_v2'});
-  const calls=[],forbidden=[],errors=[];let detailGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
+  const calls=[],forbidden=[],errors=[];let historyGate=null,reviewGate=null,decisionReads=0,detailGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
   const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)});
   await context.route('**/*',async route=>{
     const request=route.request(),url=new URL(request.url()),method=request.method();
@@ -74,7 +75,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(path==='/auth/v1/passkeys/authentication/options')return json(route,{error_code:'passkey_disabled'},400);
     if(path==='/auth/v1/token')return json(route,{access_token:jwt,refresh_token:'synthetic-local-refresh',expires_in:3600});
     assert.equal(request.headers().authorization,'Bearer '+jwt,'real authFetch supplies the isolated stored-session token');
-    calls.push({path,body,...(pendingReturn?{query:url.searchParams.toString()}: {})});await new Promise(r=>setTimeout(r,50));
+    calls.push({path,body,...((pendingReturn||lateHistory)?{query:url.searchParams.toString()}: {})});await new Promise(r=>setTimeout(r,50));
     if(path.startsWith('/functions/')){
       if(body.action==='sync-current')return json(route,{ok:true});
       if(body.action==='sync-history-month'||body.action==='sync-prices'){await backgroundDelay.wait;return json(route,{ok:true})}
@@ -86,6 +87,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(path.startsWith('/rest/v1/rpc/')){
       const rpc=path.split('/').pop();
       if(rpc==='get_live_security_detail'&&body.p_security_id==='daily-0'&&detailGate){detailGate.entered();await detailGate.wait;}
+      if(lateHistory&&rpc==='get_investment_decisions'&&body.p_security_id==='daily-0'){decisionReads++;if(decisionReads===2&&reviewGate){reviewGate.entered();await reviewGate.wait;}}
       if(!rpc.startsWith('get_')&&rpc!=='reconcile_live_cash_flows'){forbidden.push(rpc);return json(route,{message:'Writes are blocked'},403)}
       if(rpc==='get_live_period_stock_pnl'){if(pnlDelay){const pending=pnlDelay;pending.entered();await pending.wait}return json(route,stockResult(body.p_period,generation))}
       if(rpc==='get_live_benchmark_comparison'&&extraDelay){extraDelay.entered();await extraDelay.wait}
@@ -101,6 +103,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     }
     if(method!=='GET'){forbidden.push(path);return json(route,{message:'Writes are blocked'},403)}
     const table=path.split('/').pop();
+    if(table==='ai_analysis_history'&&historyGate){historyGate.entered();await historyGate.wait;}
     if(table==='holdings'&&coreDelay){const pending=coreDelay;pending.entered();await pending.wait}
     if(table==='holdings'&&failCore)return json(route,{message:'synthetic offline'},503);
     if(table==='transactions'&&failExtra)return json(route,{message:'synthetic extra failure'},503);
@@ -116,6 +119,64 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0);
     await page.locator('#nav [data-tab="portfolio"]').click();
     await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().deferred);
+    if(lateHistory){
+      const attempts=[],cdp=name==='chromium'?await context.newCDPSession(page):null;
+      if(cdp)await cdp.send('Performance.enable');
+      const chartSnapshot=()=>page.evaluate(()=>{const r=document.querySelector('.security-price-interactive');return {date:r.querySelector('[data-price-date]').textContent,start:r.dataset.chartStart,count:r.dataset.chartCount,period:r.querySelector('[data-chart-period][aria-pressed="true"]')?.dataset.chartPeriod,selected:r.querySelector('.security-chart-hit').getAttribute('aria-valuenow')}});
+      for(let visit=0;visit<(verify?6:1);visit++){
+        if(verify){await page.setViewportSize({width:[390,402,430][visit%3],height:844});await page.evaluate(z=>document.documentElement.style.zoom=z,visit<3?'1':'1.25');}
+        calls.length=0;decisionReads=0;historyGate=deferred();reviewGate=deferred();
+        await page.evaluate(()=>{window.__lateStart=performance.now();document.querySelector('.portfolio-list [data-security-id="daily-0"]').click()});
+        await page.locator('#detailOverview').waitFor();await waitGate(historyGate,'saved history');
+        const readyMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__lateStart)))));
+        const period=page.locator('[data-chart-period="3"]');await period.scrollIntoViewIfNeeded();
+        await page.evaluate(()=>window.__inputStart=performance.now());await period.tap();
+        const periodCallbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__inputStart)))));
+        await page.locator('.security-chart-hit').press('Home');
+        const selected=await chartSnapshot();assert.equal(selected.period,'3');
+        await page.evaluate(()=>{window.__lateChart=document.querySelector('.security-price-interactive');window.__lateHistoryTasks=[];window.__lateObserver=new PerformanceObserver(l=>window.__lateHistoryTasks.push(...l.getEntries().map(e=>({start:e.startTime,duration:e.duration}))));try{window.__lateObserver.observe({type:'longtask'})}catch(e){}});
+        const beforeMetrics=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
+        const releaseStart=await page.evaluate(()=>performance.now());historyGate.release();historyGate=null;
+        await waitGate(reviewGate,'decision review');
+        await page.waitForFunction(()=>document.querySelectorAll('#thesisPrevious .ai-history-item').length===10);
+        await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+        const historyReadyMs=await page.evaluate(start=>performance.now()-start,releaseStart);
+        const historyMetrics=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
+        const historyEnd=await page.evaluate(()=>performance.now());
+        assert.deepEqual(await chartSnapshot(),selected,'history preserves chart period and point');
+        assert.ok(await page.evaluate(()=>window.__lateChart===document.querySelector('.security-price-interactive')),'history keeps chart DOM');
+        await page.locator('#detailStartAction').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+        await page.locator('#detailDecisionAction').click();
+        await page.locator('#detailReason').fill('합성 작성 중 초안 '+visit);
+        await page.locator('#detailReview').fill('합성 실적 확인 조건 '+visit);
+        await page.locator('#detailReason').focus();
+        await page.locator('#detailReason').evaluate(e=>e.setSelectionRange(2,7));
+        const draft=await page.evaluate(()=>{const e=document.querySelector('#detailReason');return {reason:e.value,review:document.querySelector('#detailReview').value,focus:document.activeElement.id,start:e.selectionStart,end:e.selectionEnd}});
+        const reviewMetrics=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
+        const reviewStart=await page.evaluate(()=>performance.now());reviewGate.release();reviewGate=null;
+        await page.waitForFunction(()=>window.__dailyTest.state().idle);
+        await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+        const reviewReadyMs=await page.evaluate(start=>performance.now()-start,reviewStart);
+        assert.deepEqual(await page.evaluate(()=>{const e=document.querySelector('#detailReason');return {reason:e.value,review:document.querySelector('#detailReview').value,focus:document.activeElement.id,start:e.selectionStart,end:e.selectionEnd}}),draft,'late decision reread preserves draft, focus and selection');
+        assert.deepEqual(await chartSnapshot(),selected,'decision reread preserves chart');
+        assert.ok(await page.evaluate(()=>window.__lateChart===document.querySelector('.security-price-interactive')),'decision reread keeps chart DOM');
+        assert.ok(await page.locator('.detail-sheet').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'sheet has no horizontal overflow');
+        assert.ok(await page.locator('#detailOverview strong').evaluateAll(es=>es.every(e=>e.scrollWidth<=e.clientWidth+1)),'amounts fit');
+        assert.equal(await page.locator('#detailDecisionForm').isVisible(),true);
+        const afterMetrics=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
+        const cpu=cdp?Object.fromEntries(['LayoutDuration','RecalcStyleDuration','ScriptDuration','TaskDuration','LayoutCount'].map(k=>[k,afterMetrics.find(m=>m.name===k).value-beforeMetrics.find(m=>m.name===k).value])):null;
+        const phaseCpu=cdp?Object.fromEntries([['history',beforeMetrics,historyMetrics],['editor',historyMetrics,reviewMetrics],['review',reviewMetrics,afterMetrics]].map(([phase,a,b])=>[phase,Object.fromEntries(['LayoutDuration','RecalcStyleDuration','ScriptDuration','TaskDuration','LayoutCount'].map(k=>[k,b.find(m=>m.name===k).value-a.find(m=>m.name===k).value]))])):null;
+        const longTasks=name==='chromium'?await page.evaluate(()=>{window.__lateObserver.disconnect();return window.__lateHistoryTasks}):null;
+        const phaseLongTasks=longTasks?Object.fromEntries([['history',releaseStart,historyEnd],['editor',historyEnd,reviewStart],['review',reviewStart,Infinity]].map(([phase,a,b])=>[phase,longTasks.filter(t=>t.start>=a&&t.start<b).map(t=>t.duration)])):null;
+        assert.equal(calls.filter(c=>c.path.endsWith('/ai_analysis_history')).length,1,'one shared history request');
+        assert.equal(decisionReads,2,'initial and fresh decision reads');
+        attempts.push({readyMs,periodCallbackMs,historyReadyMs,reviewReadyMs,selected,cpu,phaseCpu,longTasks,phaseLongTasks,requests:calls.length,requestNames:calls.map(c=>c.path.split('/').pop())});
+        if(verify&&visit%2)await page.goBack();else await page.locator('#detailClose').click();
+        await page.locator('#detailModal').waitFor({state:'hidden'});
+        assert.equal(await page.evaluate(()=>document.activeElement?.dataset.securityId),'daily-0');
+      }
+      samples.push({run:run+1,engine:name,attempts});assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);continue;
+    }
     if(pendingReturn){
       const attempts=[];
       for(let visit=0;visit<(verify?6:1);visit++){
@@ -216,6 +277,6 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       }
     }
     samples.push({run:run+1,entries});assert.deepEqual(errors,[]);
-  }finally{if(detailGate)detailGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
+  }finally{if(historyGate)historyGate.release();if(reviewGate)reviewGate.release();if(detailGate)detailGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
-console.log(JSON.stringify({scenario:pendingReturn?'close gated ARM core response, open MRNA, touch/keyboard chart, release ARM and preserve active chart':'detail rendering',conditions:pendingReturn?(verify?'Each engine: six width/zoom pending-return cases; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; Chromium CPU4x, WebKit default; SW blocked; emulated tap and keyboard input; no GC or heap measurement':'5 fresh Chromium sessions; one pending-return case per session; 390x844 touch/mobile CPU4x; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; SW blocked; emulated tap and keyboard input; no GC or heap measurement'):(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':(repeat?'5 fresh Chromium sessions x3 same-detail entries; ':'5 fresh Chromium sessions x1 detail entry; '))+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));
+console.log(JSON.stringify({scenario:lateHistory?'gate shared history then decision reread; retain chart period/point and draft focus/selection':pendingReturn?'close gated ARM core response, open MRNA, touch/keyboard chart, release ARM and preserve active chart':'detail rendering',conditions:lateHistory?((verify?'Chromium/WebKit six width/zoom cases':'5 fresh Chromium sessions at 390x844')+'; warmed portfolio,365 prices,10 saved decisions,10 long AI histories; synthetic 50ms API reads plus controlled gates; Chromium CPU4x/WebKit default; SW blocked; callback/readiness includes automation and two rAF; aggregate CPU/longtasks cover both late phases AND intervening editor input; phaseCpu separates history/editor/review including automation assertions; phaseLongTasks grouped by task start; no heap/byte measurement'):pendingReturn?(verify?'Each engine: six width/zoom pending-return cases; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; Chromium CPU4x, WebKit default; SW blocked; emulated tap and keyboard input; no GC or heap measurement':'5 fresh Chromium sessions; one pending-return case per session; 390x844 touch/mobile CPU4x; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; SW blocked; emulated tap and keyboard input; no GC or heap measurement'):(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':(repeat?'5 fresh Chromium sessions x3 same-detail entries; ':'5 fresh Chromium sessions x1 detail entry; '))+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));

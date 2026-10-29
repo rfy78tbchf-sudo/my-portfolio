@@ -1,0 +1,396 @@
+{
+  "scenario": "gate shared history then decision reread; retain chart period/point and draft focus/selection",
+  "conditions": "5 fresh Chromium sessions at 390x844; warmed portfolio,365 prices,10 saved decisions,10 long AI histories; synthetic 50ms API reads plus controlled gates; Chromium CPU4x/WebKit default; SW blocked; callback/readiness includes automation and two rAF; aggregate CPU/longtasks cover both late phases AND intervening editor input; phaseCpu separates history/editor/review including automation assertions; phaseLongTasks grouped by task start; no heap/byte measurement",
+  "samples": [
+    {
+      "run": 1,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "readyMs": 634.8000000119209,
+          "periodCallbackMs": 129.20000000298023,
+          "historyReadyMs": 127.20000000298023,
+          "reviewReadyMs": 93.80000001192093,
+          "selected": {
+            "date": "2026-07-29 · 종가",
+            "start": "272",
+            "count": "93",
+            "period": "3",
+            "selected": "272"
+          },
+          "cpu": {
+            "LayoutDuration": 0.18044,
+            "RecalcStyleDuration": 0.058297,
+            "ScriptDuration": 0.02914,
+            "TaskDuration": 0.5852229999999999,
+            "LayoutCount": 12
+          },
+          "phaseCpu": {
+            "history": {
+              "LayoutDuration": 0,
+              "RecalcStyleDuration": 0.005708000000000001,
+              "ScriptDuration": 0.0016450000000000006,
+              "TaskDuration": 0.057638999999999996,
+              "LayoutCount": 0
+            },
+            "editor": {
+              "LayoutDuration": 0.171647,
+              "RecalcStyleDuration": 0.04663099999999999,
+              "ScriptDuration": 0.026588,
+              "TaskDuration": 0.44803000000000004,
+              "LayoutCount": 11
+            },
+            "review": {
+              "LayoutDuration": 0.008792999999999995,
+              "RecalcStyleDuration": 0.005958000000000005,
+              "ScriptDuration": 0.0009069999999999981,
+              "TaskDuration": 0.0795539999999999,
+              "LayoutCount": 1
+            }
+          },
+          "longTasks": [
+            {
+              "start": 3371.7000000029802,
+              "duration": 135
+            },
+            {
+              "start": 4435.5,
+              "duration": 75
+            }
+          ],
+          "phaseLongTasks": {
+            "history": [],
+            "editor": [
+              135,
+              75
+            ],
+            "review": []
+          },
+          "requests": 8,
+          "requestNames": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions",
+            "ai_analysis_history",
+            "investment_breakout_rules",
+            "get_live_decision_metrics",
+            "get_investment_decisions"
+          ]
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "readyMs": 498.40000000596046,
+          "periodCallbackMs": 96.69999998807907,
+          "historyReadyMs": 130.6000000089407,
+          "reviewReadyMs": 83.29999999701977,
+          "selected": {
+            "date": "2026-07-29 · 종가",
+            "start": "272",
+            "count": "93",
+            "period": "3",
+            "selected": "272"
+          },
+          "cpu": {
+            "LayoutDuration": 0.17741,
+            "RecalcStyleDuration": 0.047255,
+            "ScriptDuration": 0.030985,
+            "TaskDuration": 0.578497,
+            "LayoutCount": 12
+          },
+          "phaseCpu": {
+            "history": {
+              "LayoutDuration": 0,
+              "RecalcStyleDuration": 0.003025,
+              "ScriptDuration": 0.0012150000000000008,
+              "TaskDuration": 0.06127600000000005,
+              "LayoutCount": 0
+            },
+            "editor": {
+              "LayoutDuration": 0.167682,
+              "RecalcStyleDuration": 0.037892,
+              "ScriptDuration": 0.027803,
+              "TaskDuration": 0.43619299999999994,
+              "LayoutCount": 11
+            },
+            "review": {
+              "LayoutDuration": 0.009728000000000014,
+              "RecalcStyleDuration": 0.006337999999999996,
+              "ScriptDuration": 0.0019669999999999965,
+              "TaskDuration": 0.0810280000000001,
+              "LayoutCount": 1
+            }
+          },
+          "longTasks": [
+            {
+              "start": 3085.5999999940395,
+              "duration": 144
+            },
+            {
+              "start": 4171.29999999702,
+              "duration": 60
+            }
+          ],
+          "phaseLongTasks": {
+            "history": [],
+            "editor": [
+              144,
+              60
+            ],
+            "review": []
+          },
+          "requests": 8,
+          "requestNames": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions",
+            "ai_analysis_history",
+            "investment_breakout_rules",
+            "get_live_decision_metrics",
+            "get_investment_decisions"
+          ]
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "readyMs": 479.40000000596046,
+          "periodCallbackMs": 96.20000000298023,
+          "historyReadyMs": 110.5,
+          "reviewReadyMs": 103,
+          "selected": {
+            "date": "2026-07-29 · 종가",
+            "start": "272",
+            "count": "93",
+            "period": "3",
+            "selected": "272"
+          },
+          "cpu": {
+            "LayoutDuration": 0.149199,
+            "RecalcStyleDuration": 0.05014299999999999,
+            "ScriptDuration": 0.027876,
+            "TaskDuration": 0.5424709999999999,
+            "LayoutCount": 12
+          },
+          "phaseCpu": {
+            "history": {
+              "LayoutDuration": 0,
+              "RecalcStyleDuration": 0.0019930000000000017,
+              "ScriptDuration": 0.0011189999999999985,
+              "TaskDuration": 0.03841499999999998,
+              "LayoutCount": 0
+            },
+            "editor": {
+              "LayoutDuration": 0.13894900000000002,
+              "RecalcStyleDuration": 0.041242,
+              "ScriptDuration": 0.023936,
+              "TaskDuration": 0.395389,
+              "LayoutCount": 11
+            },
+            "review": {
+              "LayoutDuration": 0.010249999999999981,
+              "RecalcStyleDuration": 0.0069079999999999975,
+              "ScriptDuration": 0.002821000000000004,
+              "TaskDuration": 0.10866699999999996,
+              "LayoutCount": 1
+            }
+          },
+          "longTasks": [
+            {
+              "start": 3175.199999988079,
+              "duration": 118
+            },
+            {
+              "start": 4209.5999999940395,
+              "duration": 59
+            }
+          ],
+          "phaseLongTasks": {
+            "history": [],
+            "editor": [
+              118,
+              59
+            ],
+            "review": []
+          },
+          "requests": 8,
+          "requestNames": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions",
+            "ai_analysis_history",
+            "investment_breakout_rules",
+            "get_live_decision_metrics",
+            "get_investment_decisions"
+          ]
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "readyMs": 476.79999999701977,
+          "periodCallbackMs": 96.79999999701977,
+          "historyReadyMs": 111,
+          "reviewReadyMs": 101.29999999701977,
+          "selected": {
+            "date": "2026-07-29 · 종가",
+            "start": "272",
+            "count": "93",
+            "period": "3",
+            "selected": "272"
+          },
+          "cpu": {
+            "LayoutDuration": 0.148825,
+            "RecalcStyleDuration": 0.05483400000000001,
+            "ScriptDuration": 0.025931000000000003,
+            "TaskDuration": 0.5334839999999998,
+            "LayoutCount": 12
+          },
+          "phaseCpu": {
+            "history": {
+              "LayoutDuration": 0,
+              "RecalcStyleDuration": 0.002610000000000001,
+              "ScriptDuration": 0.0002339999999999981,
+              "TaskDuration": 0.03384899999999991,
+              "LayoutCount": 0
+            },
+            "editor": {
+              "LayoutDuration": 0.13829100000000003,
+              "RecalcStyleDuration": 0.046365,
+              "ScriptDuration": 0.023921000000000005,
+              "TaskDuration": 0.410598,
+              "LayoutCount": 11
+            },
+            "review": {
+              "LayoutDuration": 0.010533999999999988,
+              "RecalcStyleDuration": 0.005859000000000003,
+              "ScriptDuration": 0.0017759999999999998,
+              "TaskDuration": 0.08903699999999992,
+              "LayoutCount": 1
+            }
+          },
+          "longTasks": [
+            {
+              "start": 3118.9000000059605,
+              "duration": 116
+            },
+            {
+              "start": 4169.4000000059605,
+              "duration": 64
+            }
+          ],
+          "phaseLongTasks": {
+            "history": [],
+            "editor": [
+              116,
+              64
+            ],
+            "review": []
+          },
+          "requests": 8,
+          "requestNames": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions",
+            "ai_analysis_history",
+            "investment_breakout_rules",
+            "get_live_decision_metrics",
+            "get_investment_decisions"
+          ]
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "readyMs": 609.5999999940395,
+          "periodCallbackMs": 95,
+          "historyReadyMs": 126.19999998807907,
+          "reviewReadyMs": 98.09999999403954,
+          "selected": {
+            "date": "2026-07-29 · 종가",
+            "start": "272",
+            "count": "93",
+            "period": "3",
+            "selected": "272"
+          },
+          "cpu": {
+            "LayoutDuration": 0.180395,
+            "RecalcStyleDuration": 0.054721,
+            "ScriptDuration": 0.025246,
+            "TaskDuration": 0.5872930000000001,
+            "LayoutCount": 12
+          },
+          "phaseCpu": {
+            "history": {
+              "LayoutDuration": 0,
+              "RecalcStyleDuration": 0.003141999999999999,
+              "ScriptDuration": 0.0023440000000000023,
+              "TaskDuration": 0.05266700000000002,
+              "LayoutCount": 0
+            },
+            "editor": {
+              "LayoutDuration": 0.169505,
+              "RecalcStyleDuration": 0.04492,
+              "ScriptDuration": 0.022004999999999997,
+              "TaskDuration": 0.43994500000000003,
+              "LayoutCount": 11
+            },
+            "review": {
+              "LayoutDuration": 0.01089000000000001,
+              "RecalcStyleDuration": 0.006658999999999998,
+              "ScriptDuration": 0.000897000000000002,
+              "TaskDuration": 0.09468100000000002,
+              "LayoutCount": 1
+            }
+          },
+          "longTasks": [
+            {
+              "start": 3205.7999999970198,
+              "duration": 122
+            },
+            {
+              "start": 4255.5,
+              "duration": 90
+            }
+          ],
+          "phaseLongTasks": {
+            "history": [],
+            "editor": [
+              122,
+              90
+            ],
+            "review": []
+          },
+          "requests": 8,
+          "requestNames": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions",
+            "ai_analysis_history",
+            "investment_breakout_rules",
+            "get_live_decision_metrics",
+            "get_investment_decisions"
+          ]
+        }
+      ]
+    }
+  ]
+}
