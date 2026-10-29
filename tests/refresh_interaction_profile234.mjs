@@ -24,7 +24,7 @@ const hook=`
   };
 `;
 assert.ok(source.includes('  restoreLogin();'));
-const profile=process.argv.includes('--profile-render');
+const profile=process.argv.includes('--profile-render'),completeRefresh=process.argv.includes('--complete-refresh');
 let measured=source;
 if(profile){
  const start=source.indexOf('  function render(preserveScroll)'),end=source.indexOf('  function renderNav()',start);
@@ -69,8 +69,8 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
   await context.addInitScript(({token,key})=>localStorage.setItem(key,JSON.stringify({accessToken:token,refreshToken:'synthetic-local-refresh',expiresAt:Date.now()+3600000})),{token:jwt,key:'my_portfolio_session_v2'});
-  const calls=[],forbidden=[],errors=[];let wealthGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
-  const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)});
+  const calls=[],forbidden=[],errors=[],requestRecords=new WeakMap();let recording=false,recordStart=0;let wealthGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
+  const json=(route,value,status=200)=>{const body=JSON.stringify(value),record=requestRecords.get(route.request());if(record){record.responseReadyMs=performance.now()-recordStart;record.decodedJsonBytes=Buffer.byteLength(body);record.status=status;}return route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body})};
   await context.route('**/*',async route=>{
     const request=route.request(),url=new URL(request.url()),method=request.method();
     if(url.origin===new URL(site).origin){
@@ -85,10 +85,10 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(path==='/auth/v1/passkeys/authentication/options')return json(route,{error_code:'passkey_disabled'},400);
     if(path==='/auth/v1/token')return json(route,{access_token:jwt,refresh_token:'synthetic-local-refresh',expires_in:3600});
     assert.equal(request.headers().authorization,'Bearer '+jwt,'real authFetch supplies the isolated stored-session token');
-    calls.push({path,body});await new Promise(r=>setTimeout(r,50));
+    const record={path,body,...(completeRefresh&&recording?{query:url.search,startMs:performance.now()-recordStart}: {})};calls.push(record);if(completeRefresh&&recording)requestRecords.set(request,record);await new Promise(r=>setTimeout(r,50));
     if(path.startsWith('/functions/')){
       if(body.action==='sync-current')return json(route,{ok:true});
-      if(body.action==='sync-history-month'||body.action==='sync-prices'){await backgroundDelay.wait;return json(route,{ok:true})}
+      if(body.action==='sync-history-month'||body.action==='sync-prices'){if(!completeRefresh)await backgroundDelay.wait;return json(route,{ok:true})}
 
       if(body.action==='overseas-day-pnl')return json(route,{ok:true,available:false,items:[]});
       if(body.action==='sync-target-prices'&&body.security_ids?.every(id=>securities.some(s=>s.id===id)))return json(route,{ok:true,results:[]});
@@ -127,6 +127,34 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       await page.locator('#nav [data-tab="'+tab+'"]').click();
       await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().wealthLoading);
     }
+    if(completeRefresh){
+      const attempts=[];
+      await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().background);
+      for(let visit=0;visit<(verify?6:2);visit++){
+        if(verify){await page.setViewportSize({width:[390,402,430][visit%3],height:844});await page.evaluate(z=>document.documentElement.style.zoom=z,visit<3?'1':'1.25');}
+        scope.current_display_total=fixtureTotal+(visit+1)*100000;
+        calls.length=0;recordStart=performance.now();recording=true;
+        await page.evaluate(expected=>{
+          const start=performance.now();window.__refreshTiming={start,assetMs:null,foregroundMs:null};window.__refreshLong=[];
+          window.__refreshObserver=new MutationObserver(()=>{const t=window.__refreshTiming;if(t.assetMs===null&&document.querySelector('.hero .asset')?.textContent.includes(expected))t.assetMs=performance.now()-t.start;if(t.foregroundMs===null&&document.querySelector('#refreshBtn').getAttribute('aria-busy')==='false')t.foregroundMs=performance.now()-t.start});
+          window.__refreshObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-busy']});
+          if(PerformanceObserver.supportedEntryTypes.includes('longtask')){window.__refreshLongObserver=new PerformanceObserver(l=>window.__refreshLong.push(...l.getEntries().map(e=>e.duration)));window.__refreshLongObserver.observe({type:'longtask'});}
+          document.querySelector('#refreshBtn').click();document.querySelector('#refreshBtn').click();
+        },scope.current_display_total.toLocaleString('en-US'));
+        await page.waitForFunction(()=>window.__refreshTiming.foregroundMs!==null&&window.__dailyTest.state().idle&&!window.__dailyTest.state().background);
+        const timing=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__refreshObserver.disconnect();if(window.__refreshLongObserver)window.__refreshLongObserver.disconnect();r({...window.__refreshTiming,allIdleMs:performance.now()-window.__refreshTiming.start,longTasks:PerformanceObserver.supportedEntryTypes.includes('longtask')?window.__refreshLong:null})}))));
+        recording=false;delete timing.start;
+        assert.ok(timing.assetMs!==null&&timing.assetMs<=timing.allIdleMs,'fresh synthetic amount appears');
+        assert.equal(calls.filter(c=>c.body.action==='sync-current').length,1,'double click shares one foreground sync');
+        assert.equal(await page.locator('#refreshBtn').getAttribute('aria-busy'),'false');
+        assert.equal(await page.locator('#refreshBtn').isEnabled(),true);
+        assert.ok(await page.locator('.hero .asset').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'asset amount fits');
+        assert.equal(await page.evaluate(()=>window.__dailyTest.state().error),null);
+        assert.ok(calls.every(c=>Number.isFinite(c.responseReadyMs)&&Number.isFinite(c.decodedJsonBytes)),'all measured API responses accounted for');
+        attempts.push({visit:visit+1,...timing,requests:calls.length,decodedJsonBytes:calls.reduce((n,c)=>n+(c.decodedJsonBytes||0),0),calls:structuredClone(calls)});
+      }
+      samples.push({run:run+1,engine:name,attempts});assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);continue;
+    }
     const geometry=process.argv.includes('--row-geometry')?await inspectPortfolioRows(page,holdingCount):null;
     const metricSession=profile&&name==='chromium'?await context.newCDPSession(page):null;if(metricSession)await metricSession.send('Performance.enable');
     async function interactions(){
@@ -162,4 +190,4 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);
   }finally{if(coreDelay)coreDelay.release();if(wealthGate)wealthGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
-console.log(JSON.stringify({holdingCount,conditions:'5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes',samples},null,2));
+console.log(JSON.stringify({holdingCount,conditions:completeRefresh?'Five fresh Chromium sessions, two sequential complete refreshes each (verification: six width/zoom cases per engine); warmed home and tabs;390x844 CPU4x Chromium/WebKit default;50ms synthetic per API request including sync; SW blocked/interception disables cache; no manual response gates; first background sync due, subsequent TTL fresh; asset/foreground DOM observer timestamps, all-idle polling plus two rAF; request timestamps use Node clock; decoded JSON bytes are fixture payload size NOT wire bytes; no operating DB writes':'5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes',samples},null,2));

@@ -118,6 +118,8 @@ jobs:
       - run: node tests/build63_journey.mjs
       - run: node tests/build64a_unconfirmed_close.mjs
       - run: node tests/build65_decision_completion.mjs
+      - name: Verify complete refresh stages and background TTL reuse
+        run: node tests/refresh_interaction_profile234.mjs --verify --complete-refresh
       - name: Verify refresh interaction with fifty synthetic holdings
         run: SYNTHETIC_HOLDINGS=50 node tests/refresh_interaction_profile234.mjs --verify --row-geometry
       - name: Verify navigation and search while refresh response is pending
