@@ -145,10 +145,19 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         const historyEnd=await page.evaluate(()=>performance.now());
         assert.deepEqual(await chartSnapshot(),selected,'history preserves chart period and point');
         assert.ok(await page.evaluate(()=>window.__lateChart===document.querySelector('.security-price-interactive')),'history keeps chart DOM');
-        await page.locator('#detailStartAction').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
-        await page.locator('#detailDecisionAction').click();
-        await page.locator('#detailReason').fill('합성 작성 중 초안 '+visit);
-        await page.locator('#detailReview').fill('합성 실적 확인 조건 '+visit);
+        const editorSteps=[];
+        async function editorStep(label,action){
+          const before=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
+          const start=await page.evaluate(()=>performance.now());await action();
+          const end=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now())))));
+          const after=cdp?(await cdp.send('Performance.getMetrics')).metrics:[];
+          editorSteps.push({label,callbackMs:end-start,cpu:cdp?Object.fromEntries(['LayoutDuration','RecalcStyleDuration','ScriptDuration','TaskDuration','LayoutCount'].map(k=>[k,after.find(m=>m.name===k).value-before.find(m=>m.name===k).value])):null,
+            longTasks:name==='chromium'?await page.evaluate(({start,end})=>window.__lateHistoryTasks.filter(t=>t.start>=start&&t.start<end).map(t=>t.duration),{start,end}):null});
+        }
+        await editorStep('revealSavedReview',async()=>{await page.locator('#detailStartAction').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'})});
+        await editorStep('openEditor',()=>page.locator('#detailDecisionAction').click());
+        await editorStep('fillReason',()=>page.locator('#detailReason').fill('합성 작성 중 초안 '+visit));
+        await editorStep('fillReview',()=>page.locator('#detailReview').fill('합성 실적 확인 조건 '+visit));
         await page.locator('#detailReason').focus();
         await page.locator('#detailReason').evaluate(e=>e.setSelectionRange(2,7));
         const draft=await page.evaluate(()=>{const e=document.querySelector('#detailReason');return {reason:e.value,review:document.querySelector('#detailReview').value,focus:document.activeElement.id,start:e.selectionStart,end:e.selectionEnd}});
@@ -170,7 +179,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         const phaseLongTasks=longTasks?Object.fromEntries([['history',releaseStart,historyEnd],['editor',historyEnd,reviewStart],['review',reviewStart,Infinity]].map(([phase,a,b])=>[phase,longTasks.filter(t=>t.start>=a&&t.start<b).map(t=>t.duration)])):null;
         assert.equal(calls.filter(c=>c.path.endsWith('/ai_analysis_history')).length,1,'one shared history request');
         assert.equal(decisionReads,2,'initial and fresh decision reads');
-        attempts.push({readyMs,periodCallbackMs,historyReadyMs,reviewReadyMs,selected,cpu,phaseCpu,longTasks,phaseLongTasks,requests:calls.length,requestNames:calls.map(c=>c.path.split('/').pop())});
+        attempts.push({readyMs,periodCallbackMs,historyReadyMs,reviewReadyMs,selected,editorSteps,cpu,phaseCpu,longTasks,phaseLongTasks,requests:calls.length,requestNames:calls.map(c=>c.path.split('/').pop())});
         if(verify&&visit%2)await page.goBack();else await page.locator('#detailClose').click();
         await page.locator('#detailModal').waitFor({state:'hidden'});
         assert.equal(await page.evaluate(()=>document.activeElement?.dataset.securityId),'daily-0');
