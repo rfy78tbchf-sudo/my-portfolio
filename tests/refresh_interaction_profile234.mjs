@@ -3,6 +3,7 @@ import {readFileSync,existsSync,mkdirSync} from 'node:fs';
 import {dirname,resolve,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium,webkit} from 'playwright';
+import {profileHomeChart} from './home_chart_profile238.mjs';
 import {inspectPortfolioRows} from './portfolio_row_geometry234.mjs';
 
 // Actual startup, stored-session authentication, API queue, resume events and renderers.
@@ -41,6 +42,7 @@ const html=measured.replace('  restoreLogin();',hook+'  restoreLogin();');
 const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
 const before=n=>new Date(Date.parse(day+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);
 const now=day+'T00:00:00Z';
+const homeChartMode=process.argv.includes('--home-chart'),homeCount=Number(process.env.HOME_POINTS||90);assert.ok([8,90,365].includes(homeCount));
 const holdingCount=Number(process.env.SYNTHETIC_HOLDINGS||4);assert.ok([4,20,50].includes(holdingCount));
 const securities=[['ARM','ARM 검증 종목','USD'],['MRNA','MRNA 검증 종목','USD'],['MU','MU 검증 종목','USD'],['005930','국내 검증 종목','KRW']]
   .map(([symbol,name,currency],i)=>({id:'daily-'+i,symbol,name,currency,market:currency==='KRW'?'KRX':'NAS',country:currency==='KRW'?'KR':'US'}));
@@ -52,6 +54,7 @@ const fixtureTotal=2000000+holdings.reduce((sum,h)=>sum+h.market_value,0);
 const snapshots=Array.from({length:8},(_,i)=>({snapshot_date:before(i*3),snapshot_at:before(i*3)+'T00:00:00Z',total_assets:fixtureTotal-i*10000,cash:2000000,securities_value:fixtureTotal-2000000-i*10000,unrealized_pnl:400000,external_flow:0}));
 const scope={ok:true,current_display_total:fixtureTotal,current_primary_value:fixtureTotal,current_isa_value:0,current_primary_observed_at:now,snapshot_at:now,broker_account_overlap_verified:true};
 const prices=securities.flatMap((s,i)=>Array.from({length:24},(_,n)=>({security_id:s.id,price_date:before(n),observed_at:before(n)+'T00:00:00Z',close:500-i*3-n,currency:s.currency})));
+const homePoints=Array.from({length:homeCount},(_,i)=>({date:before(homeCount-1-i),total_assets:fixtureTotal-(homeCount-1-i)*10000}));
 const gate={ok:true,state:'estimated',partial:false,reliable_start:before(30),observed_through:day,investment_pnl:90000,return_estimate_pct:1.7,opening_assets:fixtureTotal-90000,closing_assets:fixtureTotal,external_flow:0,as_of:now};
 const summary={ok:true,return_ready:true,investment_pnl:90000,return_pct:1.7,period_start:before(30),period_end:day,realized_pnl:0,dividends_net:0};
 function stockResult(period,generation){
@@ -102,7 +105,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       const security=securities.find(s=>s.id===body.p_security_id)||securities[0];
       const values={get_wealth_dashboard:{ok:true,plan:{base_amount:5000000,base_date:day,std_rate:20,best_rate:30,revision:0},current:{amount:fixtureTotal,as_of:day},records:[]},get_app_settings:{},reconcile_live_cash_flows:{ok:true},get_live_current_account_scope:scope,
         get_live_performance_summary:summary,get_live_reliable_performance:gate,
-        get_live_home_chart:{items:snapshots.slice().reverse().map(s=>({date:s.snapshot_date,total_assets:s.total_assets}))},
+        get_live_home_chart:{items:homeChartMode?homePoints:snapshots.slice().reverse().map(s=>({date:s.snapshot_date,total_assets:s.total_assets}))},
         get_live_security_performance:{ok:true,items:[]},get_live_technical_summary:{ok:true,items:[]},get_live_monthly_performance:{ok:true,items:[]},
         get_live_security_detail:{ok:true,security,holding:{quantity:10},technical:{},prices:prices.filter(p=>p.security_id===security.id).slice().reverse().map(p=>({date:p.price_date,close:p.close,currency:p.currency}))},
         get_live_security_activity:{ok:true,items:[]},get_investment_thesis:{ok:true,thesis:{version:1,rationale:'실적 발표에서 보유 근거를 다시 확인',updated_at:now}},
@@ -126,6 +129,14 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     for(const tab of ['portfolio','performance','analysis','home']){
       await page.locator('#nav [data-tab="'+tab+'"]').click();
       await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().wealthLoading);
+    }
+    if(homeChartMode){
+      const attempts=[];
+      for(let visit=0;visit<(verify?6:1);visit++){
+        if(verify){await page.setViewportSize({width:[390,402,430][visit%3],height:844});await page.evaluate(z=>document.documentElement.style.zoom=z,visit<3?'1':'1.25');}
+        calls.length=0;const result=await profileHomeChart(page,homePoints);assert.equal(calls.length,0,'home chart inputs make no requests');attempts.push({...result,requests:calls.length});
+      }
+      samples.push({run:run+1,engine:name,attempts});assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);continue;
     }
     if(completeRefresh){
       const attempts=[];
@@ -191,4 +202,4 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     assert.deepEqual(forbidden,[]);assert.deepEqual(errors,[]);
   }finally{if(coreDelay)coreDelay.release();if(wealthGate)wealthGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
-console.log(JSON.stringify({holdingCount,conditions:completeRefresh?'Five fresh Chromium sessions, two sequential complete refreshes each (verification: six width/zoom cases per engine); warmed home and tabs;390x844 CPU4x Chromium/WebKit default;50ms synthetic per API request including sync; SW blocked/interception disables cache; no manual response gates; first background sync due, subsequent TTL fresh; asset/foreground DOM observer timestamps, all-idle polling plus two rAF; request timestamps use Node clock; decoded JSON bytes are fixture payload size NOT wire bytes; no operating DB writes':'5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes',samples},null,2));
+console.log(JSON.stringify({holdingCount,homeCount,conditions:homeChartMode?'Five fresh Chromium sessions (verify: six width/zoom cases per engine); warmed full app home;390x844 mobile CPU4x;50ms synthetic API responses;SW blocked/routed no HTTP cache;60 frames x4 synthetic pointer samples;callback is not paint or actual touch; no heap/longtask measurement':completeRefresh?'Five fresh Chromium sessions, two sequential complete refreshes each (verification: six width/zoom cases per engine); warmed home and tabs;390x844 CPU4x Chromium/WebKit default;50ms synthetic per API request including sync; SW blocked/interception disables cache; no manual response gates; first background sync due, subsequent TTL fresh; asset/foreground DOM observer timestamps, all-idle polling plus two rAF; request timestamps use Node clock; decoded JSON bytes are fixture payload size NOT wire bytes; no operating DB writes':'5 fresh Chromium sessions; warmed tab data; 390x844 CPU4x, synthetic 50ms reads, SW blocked; compare same four programmatic tab clicks idle versus refresh holdings response gated until navigation/search complete; two rAF callback latency is not presented paint/INP; longtask unsupported in WebKit reported null; no operating DB writes',samples},null,2));
