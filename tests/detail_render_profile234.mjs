@@ -50,7 +50,7 @@ const savedDecisions=Array.from({length:10},(_,i)=>({id:'decision-'+i,security_i
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace'),repeat=process.argv.includes('--repeat');
+const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace'),repeat=process.argv.includes('--repeat'),pendingReturn=process.argv.includes('--pending-return');
 for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
  const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
   scope.current_display_total=5400000; // Each browser starts with its own baseline value.
@@ -58,7 +58,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
   await context.addInitScript(({token,key})=>localStorage.setItem(key,JSON.stringify({accessToken:token,refreshToken:'synthetic-local-refresh',expiresAt:Date.now()+3600000})),{token:jwt,key:'my_portfolio_session_v2'});
-  const calls=[],forbidden=[],errors=[];let generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
+  const calls=[],forbidden=[],errors=[];let detailGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
   const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)});
   await context.route('**/*',async route=>{
     const request=route.request(),url=new URL(request.url()),method=request.method();
@@ -74,7 +74,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(path==='/auth/v1/passkeys/authentication/options')return json(route,{error_code:'passkey_disabled'},400);
     if(path==='/auth/v1/token')return json(route,{access_token:jwt,refresh_token:'synthetic-local-refresh',expires_in:3600});
     assert.equal(request.headers().authorization,'Bearer '+jwt,'real authFetch supplies the isolated stored-session token');
-    calls.push({path,body});await new Promise(r=>setTimeout(r,50));
+    calls.push({path,body,...(pendingReturn?{query:url.searchParams.toString()}: {})});await new Promise(r=>setTimeout(r,50));
     if(path.startsWith('/functions/')){
       if(body.action==='sync-current')return json(route,{ok:true});
       if(body.action==='sync-history-month'||body.action==='sync-prices'){await backgroundDelay.wait;return json(route,{ok:true})}
@@ -85,6 +85,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     }
     if(path.startsWith('/rest/v1/rpc/')){
       const rpc=path.split('/').pop();
+      if(rpc==='get_live_security_detail'&&body.p_security_id==='daily-0'&&detailGate){detailGate.entered();await detailGate.wait;}
       if(!rpc.startsWith('get_')&&rpc!=='reconcile_live_cash_flows'){forbidden.push(rpc);return json(route,{message:'Writes are blocked'},403)}
       if(rpc==='get_live_period_stock_pnl'){if(pnlDelay){const pending=pnlDelay;pending.entered();await pending.wait}return json(route,stockResult(body.p_period,generation))}
       if(rpc==='get_live_benchmark_comparison'&&extraDelay){extraDelay.entered();await extraDelay.wait}
@@ -95,7 +96,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         get_live_security_performance:{ok:true,items:[]},get_live_technical_summary:{ok:true,items:[]},get_live_monthly_performance:{ok:true,items:[]},
         get_live_security_detail:{ok:true,security,holding:{quantity:10},technical:{},prices:prices.filter(p=>p.security_id===security.id).slice().reverse().map(p=>({date:p.price_date,close:p.close,currency:p.currency}))},
         get_live_security_activity:{ok:true,items:[]},get_investment_thesis:{ok:true,thesis:{version:1,rationale:'실적 발표에서 보유 근거를 다시 확인',updated_at:now}},
-        get_investment_decisions:savedDecisions,get_investment_breakout_rule:null,get_live_realized_sales:{ok:true,items:[],period:body.p_period},get_pending_kb_position_events:[]};
+        get_investment_decisions:pendingReturn?savedDecisions.filter(d=>d.security_id===security.id):savedDecisions,get_investment_breakout_rule:null,get_live_realized_sales:{ok:true,items:[],period:body.p_period},get_pending_kb_position_events:[]};
       return json(route,Object.hasOwn(values,rpc)?values[rpc]:{ok:false,items:[]});
     }
     if(method!=='GET'){forbidden.push(path);return json(route,{message:'Writes are blocked'},403)}
@@ -104,6 +105,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(table==='holdings'&&failCore)return json(route,{message:'synthetic offline'},503);
     if(table==='transactions'&&failExtra)return json(route,{message:'synthetic extra failure'},503);
     const tables={accounts,securities,holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:savedAnalyses};
+    if(pendingReturn&&table==='ai_analysis_history'&&url.searchParams.get('symbol')==='eq.MRNA')return json(route,[]);
     if(table==='ai_analysis_history'&&url.searchParams.get('select')==='id,created_at,official_evidence')return json(route,savedAnalyses.map(({id,created_at,official_evidence})=>({id,created_at,official_evidence})));
     return json(route,tables[table]||[]);
   });
@@ -114,6 +116,44 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0);
     await page.locator('#nav [data-tab="portfolio"]').click();
     await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().deferred);
+    if(pendingReturn){
+      const attempts=[];
+      for(let visit=0;visit<(verify?6:1);visit++){
+        if(verify){await page.setViewportSize({width:[390,402,430][visit%3],height:844});await page.evaluate(z=>document.documentElement.style.zoom=z,visit<3?'1':'1.25');}
+        calls.length=0;detailGate=deferred();
+        const row=page.locator('.portfolio-list [data-security-id="daily-0"]');await row.scrollIntoViewIfNeeded();
+        const before=await page.evaluate(()=>scrollY);
+        await row.click();await waitGate(detailGate,'ARM detail');
+        await page.evaluate(()=>window.__closeStart=performance.now());
+        if(verify&&visit%2)await page.goBack();else await page.locator('#detailReturn').click();
+        await page.locator('#detailModal').waitFor({state:'hidden'});
+        const closeMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__closeStart)))));
+        assert.ok(Math.abs(await page.evaluate(()=>scrollY)-before)<=2,'pending return preserves scroll');
+        assert.equal(await page.evaluate(()=>document.activeElement?.dataset.securityId),'daily-0');
+        await page.evaluate(()=>{window.__otherStart=performance.now();document.querySelector('.portfolio-list [data-security-id="daily-1"]').click()});
+        await page.locator('#detailOverview').waitFor();
+        const otherReadyMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__otherStart)))));
+        assert.match(await page.locator('#detailBody').innerText(),/MRNA/);
+        const oldReadsBeforeRelease=calls.filter(c=>c.body.p_security_id==='daily-0').map(c=>c.path.split('/').pop());
+        const hit=page.locator('.security-chart-hit');await hit.scrollIntoViewIfNeeded();
+        await page.evaluate(()=>window.__chartInputStart=performance.now());await hit.tap();
+        const chartCallbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__chartInputStart)))));
+        await hit.press('Home');
+        const chartState=await page.evaluate(()=>{const root=document.querySelector('.security-price-interactive');window.__pendingChart=root;return {date:root.querySelector('[data-price-date]').textContent,start:root.dataset.chartStart,count:root.dataset.chartCount}});
+        detailGate.release();detailGate=null;
+        await page.waitForFunction(()=>window.__dailyTest.state().idle);
+        assert.match(await page.locator('#detailBody').innerText(),/MRNA/);
+        assert.equal(await page.locator('#detailBody .detail-overview').count(),1);
+        assert.ok(await page.locator('.detail-sheet').evaluate(e=>e.scrollWidth<=e.clientWidth+1));
+        assert.deepEqual(await page.evaluate(()=>{const root=document.querySelector('.security-price-interactive');if(root!==window.__pendingChart)throw Error('late old detail recreated active chart');return {date:root.querySelector('[data-price-date]').textContent,start:root.dataset.chartStart,count:root.dataset.chartCount}}),chartState);
+        assert.ok(!calls.some(c=>c.path.endsWith('/ai_analysis_history')&&new URLSearchParams(c.query).get('symbol')==='eq.ARM'),'closed ARM detail launches no history read');
+        const requestNames=calls.map(c=>({name:c.path.split('/').pop(),security:c.body.p_security_id||null,query:c.query}));
+        assert.equal(calls.filter(c=>c.body.p_security_id==='daily-0').length,oldReadsBeforeRelease.length,'stale core response starts no additional security RPC');
+        attempts.push({closeMs,otherReadyMs,chartCallbackMs,chartState,oldReadsBeforeRelease,requestNames});
+        await page.locator('#detailReturn').click();await page.locator('#detailModal').waitFor({state:'hidden'});
+      }
+      samples.push({run:run+1,engine:name,attempts});assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);continue;
+    }
     const cdp=name==='chromium'?await context.newCDPSession(page):null,entries=[];
     if(cdp)await cdp.send('Performance.enable');
     for(let visit=0;visit<(verify?6:repeat?3:1);visit++){
@@ -176,6 +216,6 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       }
     }
     samples.push({run:run+1,entries});assert.deepEqual(errors,[]);
-  }finally{if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
+  }finally{if(detailGate)detailGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
-console.log(JSON.stringify({conditions:(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':(repeat?'5 fresh Chromium sessions x3 same-detail entries; ':'5 fresh Chromium sessions x1 detail entry; '))+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));
+console.log(JSON.stringify({scenario:pendingReturn?'close gated ARM core response, open MRNA, touch/keyboard chart, release ARM and preserve active chart':'detail rendering',conditions:pendingReturn?(verify?'Each engine: six width/zoom pending-return cases; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; Chromium CPU4x, WebKit default; SW blocked; emulated tap and keyboard input; no GC or heap measurement':'5 fresh Chromium sessions; one pending-return case per session; 390x844 touch/mobile CPU4x; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; SW blocked; emulated tap and keyboard input; no GC or heap measurement'):(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':(repeat?'5 fresh Chromium sessions x3 same-detail entries; ':'5 fresh Chromium sessions x1 detail entry; '))+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));
