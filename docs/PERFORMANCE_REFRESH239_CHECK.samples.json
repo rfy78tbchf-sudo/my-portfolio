@@ -1,0 +1,4371 @@
+{
+  "holdingCount": 4,
+  "homeCount": 90,
+  "conditions": "Five fresh Chromium sessions, two sequential complete refreshes each (verification: six width/zoom cases per engine); warmed home and tabs;390x844 CPU4x Chromium/WebKit default;50ms synthetic per API request including sync; SW blocked/interception disables cache; no manual response gates; first background sync due, subsequent TTL fresh; asset/foreground DOM observer timestamps, all-idle polling plus two rAF; request timestamps use Node clock; decoded JSON bytes are fixture payload size NOT wire bytes; no operating DB writes",
+  "samples": [
+    {
+      "run": 1,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "visit": 1,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 20.400000002235174,
+                "restore": 1.3999999985098839,
+                "deferred": 0,
+                "nav": 2.5,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 2.199999999254942,
+                "periodVisibility": 26.100000001490116,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 34,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 1.1000000014901161,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 3.900000002235174,
+                "periodVisibility": 35.599999997764826,
+                "anchor": 0.10000000149011612,
+                "scroll": 0.09999999776482582
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 22.800000000745058,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 1.5,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 2.600000001490116,
+                "periodVisibility": 25.199999999254942,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17,
+                "restore": 1.1000000014901161,
+                "deferred": 0,
+                "nav": 0.6999999992549419,
+                "page": 1.199999999254942,
+                "wealth": 0,
+                "otherBindings": 3,
+                "periodVisibility": 30,
+                "anchor": 0,
+                "scroll": 0.8000000007450581
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.5,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 0.7000000029802322,
+                "page": 0,
+                "wealth": 0,
+                "otherBindings": 1.2999999970197678,
+                "periodVisibility": 23.300000000745058,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.300000000745058,
+                "restore": 1.3999999985098839,
+                "deferred": 0.6999999992549419,
+                "nav": 0.10000000149011612,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 0.5,
+                "periodVisibility": 32.29999999701977,
+                "anchor": 0.6000000014901161,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.800000000745058,
+                "restore": 0.5999999977648258,
+                "deferred": 0,
+                "nav": 0.7000000029802322,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 5,
+                "periodVisibility": 33.69999999925494,
+                "anchor": 0,
+                "scroll": 0.30000000074505806
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 24.599999997764826,
+                "restore": 0.20000000298023224,
+                "deferred": 0,
+                "nav": 0.6999999992549419,
+                "page": 1.0999999977648258,
+                "wealth": 0,
+                "otherBindings": 4,
+                "periodVisibility": 28.5,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 20.899999998509884,
+                "restore": 1,
+                "deferred": 0,
+                "nav": 1.2000000029802322,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 4.5,
+                "periodVisibility": 29,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 21.300000000745058,
+                "restore": 0.09999999776482582,
+                "deferred": 0.8000000007450581,
+                "nav": 1.199999999254942,
+                "page": 1.4000000022351742,
+                "wealth": 0,
+                "otherBindings": 0.3999999985098839,
+                "periodVisibility": 26,
+                "anchor": 0,
+                "scroll": 0.19999999925494194
+              }
+            }
+          ],
+          "assetMs": 195.60000000149012,
+          "foregroundMs": 769.3000000007451,
+          "allIdleMs": 1633.4000000022352,
+          "longTasks": [
+            56,
+            100,
+            54,
+            106,
+            57,
+            70,
+            62,
+            113
+          ],
+          "requests": 37,
+          "decodedJsonBytes": 33731,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 19.450162999999975,
+              "responseReadyMs": 69.23236399999996,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 85.74181200000021,
+              "responseReadyMs": 135.88324000000011,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 85.91717000000017,
+              "responseReadyMs": 136.39727700000003,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 87.24934200000007,
+              "responseReadyMs": 136.88178000000016,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 148.71527800000013,
+              "responseReadyMs": 199.4105800000002,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 207.2292150000003,
+              "responseReadyMs": 257.7810690000001,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 207.81332500000008,
+              "responseReadyMs": 258.6074060000001,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 226.0975980000003,
+              "responseReadyMs": 276.4460530000001,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 264.99278000000004,
+              "responseReadyMs": 315.58873500000027,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 426.00271599999996,
+              "responseReadyMs": 476.73602900000014,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 426.26168800000005,
+              "responseReadyMs": 477.4836399999999,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 426.5076549999999,
+              "responseReadyMs": 477.8915500000003,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 427.85913500000015,
+              "responseReadyMs": 478.50331099999994,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 488.99359000000004,
+              "responseReadyMs": 539.567102,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 557.6030740000001,
+              "responseReadyMs": 607.522453,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 558.5215870000002,
+              "responseReadyMs": 608.5765099999999,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 558.9815840000001,
+              "responseReadyMs": 609.4672869999999,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 617.8097339999999,
+              "responseReadyMs": 668.487619,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "month": "2026-10",
+                "action": "sync-history-month"
+              },
+              "query": "",
+              "startMs": 782.8523890000001,
+              "responseReadyMs": 833.599326,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-prices"
+              },
+              "query": "",
+              "startMs": 841.337693,
+              "responseReadyMs": 892.2700529999997,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 901.1057660000001,
+              "responseReadyMs": 951.4564590000005,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 901.510041,
+              "responseReadyMs": 952.0108359999999,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 901.928367,
+              "responseReadyMs": 952.4672780000005,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 958.748223,
+              "responseReadyMs": 1009.2656469999997,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 1019.1261680000002,
+              "responseReadyMs": 1069.0646499999998,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 1020.0299289999998,
+              "responseReadyMs": 1069.8406129999998,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 1032.4893550000002,
+              "responseReadyMs": 1081.862189,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 1078.670528,
+              "responseReadyMs": 1128.7404780000002,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 1205.7661270000003,
+              "responseReadyMs": 1257.0750819999998,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 1205.916108,
+              "responseReadyMs": 1258.0583199999996,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 1205.9689050000002,
+              "responseReadyMs": 1258.2628609999997,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 1206.1859749999999,
+              "responseReadyMs": 1258.870676,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 1271.118113,
+              "responseReadyMs": 1322.0215210000001,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1358.5433779999998,
+              "responseReadyMs": 1408.8248440000002,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1358.7389360000002,
+              "responseReadyMs": 1409.441072,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1359.0333189999997,
+              "responseReadyMs": 1409.8388879999998,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 1421.1292610000005,
+              "responseReadyMs": 1471.7164479999997,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        },
+        {
+          "visit": 2,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 21.600000001490116,
+                "restore": 1.0999999977648258,
+                "deferred": 0.6000000014901161,
+                "nav": 0.8000000007450581,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 0.19999999925494194,
+                "periodVisibility": 29.300000000745058,
+                "anchor": 0,
+                "scroll": 1.0999999977648258
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 19.300000000745058,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 2.600000001490116,
+                "page": 1.199999999254942,
+                "wealth": 0,
+                "otherBindings": 2.300000000745058,
+                "periodVisibility": 38.099999997764826,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.800000000745058,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 1.4000000022351742,
+                "page": 0.5999999977648258,
+                "wealth": 0,
+                "otherBindings": 2.300000000745058,
+                "periodVisibility": 29.600000001490116,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 22.900000002235174,
+                "restore": 0.6999999992549419,
+                "deferred": 0,
+                "nav": 1.1000000014901161,
+                "page": 0.8999999985098839,
+                "wealth": 0,
+                "otherBindings": 3.899999998509884,
+                "periodVisibility": 29.200000002980232,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14,
+                "restore": 0.6999999992549419,
+                "deferred": 0.09999999776482582,
+                "nav": 1.1000000014901161,
+                "page": 0.6000000014901161,
+                "wealth": 0,
+                "otherBindings": 0.3999999985098839,
+                "periodVisibility": 25.199999999254942,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 190.30000000074506,
+          "foregroundMs": 747.1999999992549,
+          "allIdleMs": 774.6000000014901,
+          "longTasks": [
+            59,
+            76,
+            53,
+            108
+          ],
+          "requests": 18,
+          "decodedJsonBytes": 16860,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 8.457099999999627,
+              "responseReadyMs": 58.99457799999982,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 67.58384800000022,
+              "responseReadyMs": 117.81804099999954,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 67.65366100000028,
+              "responseReadyMs": 118.53997400000026,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 68.46028899999965,
+              "responseReadyMs": 119.39206899999954,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 134.53553099999954,
+              "responseReadyMs": 185.4653870000002,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 193.6604070000003,
+              "responseReadyMs": 244.6443819999995,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 194.97856799999954,
+              "responseReadyMs": 245.10306799999944,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 210.97760500000004,
+              "responseReadyMs": 261.2864319999999,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 256.0406759999996,
+              "responseReadyMs": 306.3644400000003,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 390.083627,
+              "responseReadyMs": 440.2540650000001,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 390.3043520000001,
+              "responseReadyMs": 441.3027089999996,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 390.3761370000002,
+              "responseReadyMs": 441.66377099999954,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 390.70296899999994,
+              "responseReadyMs": 441.8185889999995,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 452.5045970000001,
+              "responseReadyMs": 503.30174799999986,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 523.6209529999996,
+              "responseReadyMs": 574.362102,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 523.7066089999998,
+              "responseReadyMs": 575.0516269999998,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 523.750454,
+              "responseReadyMs": 576.0120719999995,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 585.4074989999999,
+              "responseReadyMs": 636.2726809999995,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "visit": 1,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 21.600000001490116,
+                "restore": 1.5999999977648258,
+                "deferred": 0,
+                "nav": 1.6000000014901161,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 2.099999997764826,
+                "periodVisibility": 63.30000000074506,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 20.699999999254942,
+                "restore": 0.3999999985098839,
+                "deferred": 0,
+                "nav": 0.19999999925494194,
+                "page": 1,
+                "wealth": 0,
+                "otherBindings": 4.5,
+                "periodVisibility": 57.30000000074506,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 32.19999999925494,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.5,
+                "page": 0.5999999977648258,
+                "wealth": 0,
+                "otherBindings": 3.100000001490116,
+                "periodVisibility": 60.100000001490116,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 22.899999998509884,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 1,
+                "page": 1.699999999254942,
+                "wealth": 0,
+                "otherBindings": 4.699999999254942,
+                "periodVisibility": 34.400000002235174,
+                "anchor": 0,
+                "scroll": 0.09999999776482582
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 19.800000000745058,
+                "restore": 0.4000000022351742,
+                "deferred": 0,
+                "nav": 1.3999999985098839,
+                "page": 0,
+                "wealth": 0,
+                "otherBindings": 0.8000000007450581,
+                "periodVisibility": 27.599999997764826,
+                "anchor": 0.10000000149011612,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 12.100000001490116,
+                "restore": 0.6999999992549419,
+                "deferred": 1,
+                "nav": 0.10000000149011612,
+                "page": 0,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 22.099999997764826,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.100000001490116,
+                "restore": 0.6999999992549419,
+                "deferred": 0.10000000149011612,
+                "nav": 0.5,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 2.900000002235174,
+                "periodVisibility": 24.5,
+                "anchor": 0.09999999776482582,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 13.5,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.9000000022351742,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 2.300000000745058,
+                "periodVisibility": 25.399999998509884,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.199999999254942,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 2.7000000029802322,
+                "periodVisibility": 22.5,
+                "anchor": 0.09999999776482582,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 18.699999999254942,
+                "restore": 0.10000000149011612,
+                "deferred": 0.6999999992549419,
+                "nav": 0.10000000149011612,
+                "page": 0.8999999985098839,
+                "wealth": 0,
+                "otherBindings": 0.6999999992549419,
+                "periodVisibility": 26.800000000745058,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 237.30000000074506,
+          "foregroundMs": 921.1000000014901,
+          "allIdleMs": 1709.699999999255,
+          "longTasks": [
+            94,
+            97,
+            100,
+            128,
+            58,
+            97
+          ],
+          "requests": 37,
+          "decodedJsonBytes": 33731,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 11.858345000000554,
+              "responseReadyMs": 62.04641900000024,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 72.73522000000048,
+              "responseReadyMs": 123.9198720000004,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 72.80268000000069,
+              "responseReadyMs": 125.08604000000014,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 73.19694999999956,
+              "responseReadyMs": 126.36957000000075,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 147.8895279999997,
+              "responseReadyMs": 197.4814839999999,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 243.5382950000003,
+              "responseReadyMs": 294.62933800000064,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 252.9061500000007,
+              "responseReadyMs": 302.433051,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 259.47528500000044,
+              "responseReadyMs": 309.12214700000004,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 315.35683400000016,
+              "responseReadyMs": 365.88061799999923,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 467.7898889999997,
+              "responseReadyMs": 518.1747230000001,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 468.48759600000085,
+              "responseReadyMs": 519.3591969999998,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 468.70499700000073,
+              "responseReadyMs": 519.6271419999994,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 468.88566300000093,
+              "responseReadyMs": 519.8357589999996,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 536.4639330000009,
+              "responseReadyMs": 587.0778090000003,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 654.4243129999995,
+              "responseReadyMs": 704.6789000000008,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 654.9210949999997,
+              "responseReadyMs": 706.3813979999995,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 654.9662410000001,
+              "responseReadyMs": 706.6650150000005,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 746.1079700000009,
+              "responseReadyMs": 796.6158589999995,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "month": "2026-10",
+                "action": "sync-history-month"
+              },
+              "query": "",
+              "startMs": 932.8135039999997,
+              "responseReadyMs": 983.3143780000009,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-prices"
+              },
+              "query": "",
+              "startMs": 996.9739160000008,
+              "responseReadyMs": 1046.5892559999993,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 1055.9008140000005,
+              "responseReadyMs": 1105.6728810000004,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 1056.3312179999994,
+              "responseReadyMs": 1106.5588349999998,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 1057.1529879999998,
+              "responseReadyMs": 1107.2388470000005,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 1117.1180270000004,
+              "responseReadyMs": 1168.1409199999998,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 1159.4187149999998,
+              "responseReadyMs": 1209.610745,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 1161.9017019999992,
+              "responseReadyMs": 1211.1803959999997,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 1176.2349909999994,
+              "responseReadyMs": 1226.3009249999996,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 1219.1133989999998,
+              "responseReadyMs": 1269.3870640000005,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 1332.5702619999993,
+              "responseReadyMs": 1382.5116429999998,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 1332.6582519999993,
+              "responseReadyMs": 1383.104566,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 1332.9041940000006,
+              "responseReadyMs": 1383.2920020000001,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 1332.9452039999996,
+              "responseReadyMs": 1383.4182980000005,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 1392.6499440000007,
+              "responseReadyMs": 1443.1608739999992,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1454.3511940000008,
+              "responseReadyMs": 1505.1983990000008,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1454.6268500000006,
+              "responseReadyMs": 1505.6452869999994,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1454.7628499999992,
+              "responseReadyMs": 1505.9388789999994,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 1514.5076289999997,
+              "responseReadyMs": 1565.188569,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        },
+        {
+          "visit": 2,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.5,
+                "restore": 1.199999999254942,
+                "deferred": 1.1000000014901161,
+                "nav": 1.800000000745058,
+                "page": 0.30000000074505806,
+                "wealth": 0,
+                "otherBindings": 1.2999999970197678,
+                "periodVisibility": 25.400000002235174,
+                "anchor": 0,
+                "scroll": 0.5999999977648258
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.699999999254942,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 1,
+                "wealth": 0,
+                "otherBindings": 3.800000000745058,
+                "periodVisibility": 26.399999998509884,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.699999999254942,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.3999999985098839,
+                "wealth": 0,
+                "otherBindings": 1.800000000745058,
+                "periodVisibility": 24.699999999254942,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 21.899999998509884,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.3999999985098839,
+                "page": 0.9000000022351742,
+                "wealth": 0,
+                "otherBindings": 1.3999999985098839,
+                "periodVisibility": 26.699999999254942,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 13,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.6000000014901161,
+                "wealth": 0,
+                "otherBindings": 0.19999999925494194,
+                "periodVisibility": 26.600000001490116,
+                "anchor": 0.09999999776482582,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 174.39999999850988,
+          "foregroundMs": 690.8000000007451,
+          "allIdleMs": 704.1999999992549,
+          "longTasks": [
+            52,
+            59,
+            99
+          ],
+          "requests": 18,
+          "decodedJsonBytes": 16860,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 6.545885999999882,
+              "responseReadyMs": 56.75719899999967,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 65.30803299999934,
+              "responseReadyMs": 114.59318200000052,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 65.3958019999991,
+              "responseReadyMs": 116.02907199999936,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 66.16129899999942,
+              "responseReadyMs": 116.38613799999985,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 122.11649699999907,
+              "responseReadyMs": 171.99850999999944,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 176.8222850000002,
+              "responseReadyMs": 226.678754999999,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 177.67916100000002,
+              "responseReadyMs": 227.4524650000003,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 191.22562199999993,
+              "responseReadyMs": 240.9385710000006,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 235.7566050000005,
+              "responseReadyMs": 286.3716920000006,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 350.5880620000007,
+              "responseReadyMs": 401.32039599999916,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 350.914573,
+              "responseReadyMs": 402.0255699999998,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 351.20301800000016,
+              "responseReadyMs": 402.2260160000005,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 351.8067769999998,
+              "responseReadyMs": 402.86724499999946,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 412.9929150000007,
+              "responseReadyMs": 463.59633100000065,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 477.7334439999995,
+              "responseReadyMs": 527.9965439999996,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 477.8631999999998,
+              "responseReadyMs": 528.7043900000008,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 478.47149999999965,
+              "responseReadyMs": 529.5417529999995,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 538.2178550000008,
+              "responseReadyMs": 587.7968529999998,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "visit": 1,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.800000000745058,
+                "restore": 1.699999999254942,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.5999999977648258,
+                "wealth": 0,
+                "otherBindings": 1.4000000022351742,
+                "periodVisibility": 25.800000000745058,
+                "anchor": 0.19999999925494194,
+                "scroll": 0.09999999776482582
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.300000000745058,
+                "restore": 0.9000000022351742,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 1.4000000022351742,
+                "periodVisibility": 30.699999999254942,
+                "anchor": 0.30000000074505806,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.300000000745058,
+                "restore": 0.30000000074505806,
+                "deferred": 0,
+                "nav": 1.300000000745058,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 2.199999999254942,
+                "periodVisibility": 41.20000000298023,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 24.900000002235174,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 1.300000000745058,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 5.900000002235174,
+                "periodVisibility": 33.29999999701977,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.5,
+                "restore": 0.29999999701976776,
+                "deferred": 0.20000000298023224,
+                "nav": 0.5999999977648258,
+                "page": 0.9000000022351742,
+                "wealth": 0,
+                "otherBindings": 0.09999999776482582,
+                "periodVisibility": 26.600000001490116,
+                "anchor": 0.09999999776482582,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14.800000000745058,
+                "restore": 1.5,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 0.5,
+                "periodVisibility": 29.599999997764826,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 18.5,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 2.400000002235174,
+                "periodVisibility": 32.899999998509884,
+                "anchor": 0.10000000149011612,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 18.899999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 2.800000000745058,
+                "periodVisibility": 31.399999998509884,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 19.299999997019768,
+                "restore": 0,
+                "deferred": 0.10000000149011612,
+                "nav": 1.1000000014901161,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 4.800000000745058,
+                "periodVisibility": 36.29999999701977,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.800000000745058,
+                "restore": 0.10000000149011612,
+                "deferred": 0.09999999776482582,
+                "nav": 0.8000000007450581,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 0.10000000149011612,
+                "periodVisibility": 34.80000000074506,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 190.30000000074506,
+          "foregroundMs": 763,
+          "allIdleMs": 1609.199999999255,
+          "longTasks": [
+            52,
+            64,
+            64,
+            125,
+            50,
+            67,
+            56,
+            119
+          ],
+          "requests": 37,
+          "decodedJsonBytes": 33731,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 13.353812999999718,
+              "responseReadyMs": 63.698443999999654,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 73.035652999999,
+              "responseReadyMs": 123.67996200000016,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 73.10703900000044,
+              "responseReadyMs": 124.48538100000042,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 73.14134899999954,
+              "responseReadyMs": 124.91778999999951,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 140.4533739999988,
+              "responseReadyMs": 191.17411999999968,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 196.38368400000036,
+              "responseReadyMs": 247.21098299999903,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 197.31994699999996,
+              "responseReadyMs": 247.75499599999966,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 207.8149519999988,
+              "responseReadyMs": 257.33868599999914,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 255.21362699999918,
+              "responseReadyMs": 306.0438149999991,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 376.0849450000005,
+              "responseReadyMs": 427.02621199999885,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 376.1487699999998,
+              "responseReadyMs": 428.0028739999998,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 376.18511299999955,
+              "responseReadyMs": 428.26296899999943,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 376.4057389999998,
+              "responseReadyMs": 428.5787449999989,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 441.2110959999991,
+              "responseReadyMs": 491.724107,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 521.6772970000002,
+              "responseReadyMs": 571.8714010000003,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 521.8946479999995,
+              "responseReadyMs": 572.3247200000005,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 522.2076099999995,
+              "responseReadyMs": 572.6806059999999,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 582.338565,
+              "responseReadyMs": 640.4116940000004,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "month": "2026-10",
+                "action": "sync-history-month"
+              },
+              "query": "",
+              "startMs": 773.6560250000002,
+              "responseReadyMs": 824.148294999999,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-prices"
+              },
+              "query": "",
+              "startMs": 834.3470469999993,
+              "responseReadyMs": 884.8742870000005,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 897.5506989999994,
+              "responseReadyMs": 948.1210790000005,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 897.648052999999,
+              "responseReadyMs": 948.9976729999998,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 898.5258649999996,
+              "responseReadyMs": 949.5368789999993,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 957.1927450000003,
+              "responseReadyMs": 1007.2556960000002,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 1009.4856189999991,
+              "responseReadyMs": 1060.2793440000005,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 1010.6336699999993,
+              "responseReadyMs": 1060.7625879999996,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 1024.7162530000005,
+              "responseReadyMs": 1074.3257379999995,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 1068.103928999999,
+              "responseReadyMs": 1118.8159830000004,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 1191.2446390000005,
+              "responseReadyMs": 1241.595324,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 1191.6321909999988,
+              "responseReadyMs": 1242.3563279999998,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 1191.6750049999991,
+              "responseReadyMs": 1242.656551,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 1192.123737,
+              "responseReadyMs": 1243.5777409999992,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 1255.2068920000002,
+              "responseReadyMs": 1305.9097819999988,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1329.2033319999991,
+              "responseReadyMs": 1379.7915240000002,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1329.334655999999,
+              "responseReadyMs": 1380.3315119999988,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1330.3132509999996,
+              "responseReadyMs": 1381.0256769999996,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 1389.7051950000005,
+              "responseReadyMs": 1440.271752999999,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        },
+        {
+          "visit": 2,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 24.200000002980232,
+                "restore": 2.199999999254942,
+                "deferred": 0.3999999985098839,
+                "nav": 1.300000000745058,
+                "page": 0.8999999985098839,
+                "wealth": 0,
+                "otherBindings": 0.20000000298023224,
+                "periodVisibility": 28.799999997019768,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 21,
+                "restore": 0.8000000007450581,
+                "deferred": 0,
+                "nav": 1.800000000745058,
+                "page": 3.5,
+                "wealth": 0,
+                "otherBindings": 4.5,
+                "periodVisibility": 42.899999998509884,
+                "anchor": 0.10000000149011612,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 20.800000000745058,
+                "restore": 0.3999999985098839,
+                "deferred": 0,
+                "nav": 2.600000001490116,
+                "page": 1.0999999977648258,
+                "wealth": 0,
+                "otherBindings": 6.700000002980232,
+                "periodVisibility": 31.799999997019768,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 22.100000001490116,
+                "restore": 0,
+                "deferred": 0.09999999776482582,
+                "nav": 0.5,
+                "page": 0.9000000022351742,
+                "wealth": 0,
+                "otherBindings": 2.2999999970197678,
+                "periodVisibility": 25,
+                "anchor": 0.10000000149011612,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 24.699999999254942,
+                "restore": 0,
+                "deferred": 0.5,
+                "nav": 0.8000000007450581,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 0.8000000007450581,
+                "periodVisibility": 35.80000000074506,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 183,
+          "foregroundMs": 784.4000000022352,
+          "allIdleMs": 822.1999999992549,
+          "longTasks": [
+            62,
+            87,
+            65,
+            121
+          ],
+          "requests": 18,
+          "decodedJsonBytes": 16860,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 7.681355000000622,
+              "responseReadyMs": 58.371139999999286,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 65.99416299999939,
+              "responseReadyMs": 116.38042599999972,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 66.19849500000055,
+              "responseReadyMs": 116.87358400000085,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 66.88124299999981,
+              "responseReadyMs": 117.33120000000054,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 126.51181400000132,
+              "responseReadyMs": 176.98850999999922,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 189.7986380000002,
+              "responseReadyMs": 240.23325300000215,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 190.53552599999966,
+              "responseReadyMs": 241.1424960000004,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 204.7570450000021,
+              "responseReadyMs": 254.69244600000093,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 248.54261899999983,
+              "responseReadyMs": 298.57796900000176,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 396.17793399999937,
+              "responseReadyMs": 445.772487000002,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 396.24794699999984,
+              "responseReadyMs": 447.11019300000044,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 396.49065600000176,
+              "responseReadyMs": 447.63811200000055,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 396.66804799999954,
+              "responseReadyMs": 448.0883470000008,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 459.94410100000096,
+              "responseReadyMs": 509.78270500000144,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 553.8057550000012,
+              "responseReadyMs": 603.9420539999992,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 553.8706810000003,
+              "responseReadyMs": 604.4540799999995,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 555.3650280000002,
+              "responseReadyMs": 606.076556,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 613.6101320000016,
+              "responseReadyMs": 663.6046860000024,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "visit": 1,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.199999999254942,
+                "restore": 1.4000000022351742,
+                "deferred": 0,
+                "nav": 1.5,
+                "page": 0.7999999970197678,
+                "wealth": 0,
+                "otherBindings": 2.2000000029802322,
+                "periodVisibility": 39.5,
+                "anchor": 0,
+                "scroll": 0.09999999776482582
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.0999999977648258,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 2,
+                "periodVisibility": 33.30000000074506,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.599999997764826,
+                "restore": 1.1000000014901161,
+                "deferred": 0,
+                "nav": 0.10000000149011612,
+                "page": 1.0999999977648258,
+                "wealth": 0,
+                "otherBindings": 3.100000001490116,
+                "periodVisibility": 25.099999997764826,
+                "anchor": 0.6000000014901161,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 21.600000001490116,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 3.399999998509884,
+                "periodVisibility": 31.199999999254942,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16,
+                "restore": 0.10000000149011612,
+                "deferred": 0.8999999985098839,
+                "nav": 0.6999999992549419,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 0.8000000007450581,
+                "periodVisibility": 29.099999997764826,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.699999999254942,
+                "restore": 1.800000000745058,
+                "deferred": 0.10000000149011612,
+                "nav": 0.7999999970197678,
+                "page": 0.7000000029802322,
+                "wealth": 0,
+                "otherBindings": 0.09999999776482582,
+                "periodVisibility": 21.800000000745058,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.400000002235174,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 0.9000000022351742,
+                "page": 0.5999999977648258,
+                "wealth": 0,
+                "otherBindings": 2.900000002235174,
+                "periodVisibility": 32.29999999701977,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 21.599999997764826,
+                "restore": 0.5,
+                "deferred": 0.10000000149011612,
+                "nav": 0.6000000014901161,
+                "page": 1,
+                "wealth": 0,
+                "otherBindings": 1.7999999970197678,
+                "periodVisibility": 22.300000000745058,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.099999997764826,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.7000000029802322,
+                "page": 1.0999999977648258,
+                "wealth": 0,
+                "otherBindings": 2.100000001490116,
+                "periodVisibility": 28.899999998509884,
+                "anchor": 0,
+                "scroll": 0.4000000022351742
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 19.099999997764826,
+                "restore": 0.6999999992549419,
+                "deferred": 0.10000000149011612,
+                "nav": 0.8999999985098839,
+                "page": 0.7000000029802322,
+                "wealth": 0,
+                "otherBindings": 0.09999999776482582,
+                "periodVisibility": 33.69999999925494,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 192.39999999850988,
+          "foregroundMs": 738.5999999977648,
+          "allIdleMs": 1548.5999999977648,
+          "longTasks": [
+            68,
+            63,
+            122,
+            66,
+            108
+          ],
+          "requests": 37,
+          "decodedJsonBytes": 33731,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 7.392721000000165,
+              "responseReadyMs": 58.22002900000007,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 66.26297700000214,
+              "responseReadyMs": 117.13137500000084,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 66.35253899999952,
+              "responseReadyMs": 117.7567650000019,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 67.58417100000224,
+              "responseReadyMs": 118.53670300000158,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 127.11496500000067,
+              "responseReadyMs": 176.63519900000028,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 195.01475500000015,
+              "responseReadyMs": 244.91757700000016,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 197.30839500000002,
+              "responseReadyMs": 247.71185999999943,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 220.4263110000029,
+              "responseReadyMs": 271.1082940000015,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 261.91617600000245,
+              "responseReadyMs": 311.8973790000018,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 380.5517639999998,
+              "responseReadyMs": 430.8248020000028,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 381.06677200000195,
+              "responseReadyMs": 431.4145200000021,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 381.1070710000022,
+              "responseReadyMs": 431.6169880000016,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 381.17694400000255,
+              "responseReadyMs": 432.53498899999977,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 447.9713580000025,
+              "responseReadyMs": 497.76802900000257,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 506.6561099999999,
+              "responseReadyMs": 557.1235790000028,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 506.71275400000013,
+              "responseReadyMs": 557.6329089999999,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 507.591717000003,
+              "responseReadyMs": 558.6984570000022,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 570.3207170000023,
+              "responseReadyMs": 620.8561260000024,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "month": "2026-10",
+                "action": "sync-history-month"
+              },
+              "query": "",
+              "startMs": 749.2754789999999,
+              "responseReadyMs": 799.8519730000007,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-prices"
+              },
+              "query": "",
+              "startMs": 809.6362829999998,
+              "responseReadyMs": 860.1532450000013,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 869.2167090000003,
+              "responseReadyMs": 920.3231130000022,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 869.3175470000024,
+              "responseReadyMs": 921.0796670000018,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 869.427259,
+              "responseReadyMs": 921.4681490000003,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 935.5288730000029,
+              "responseReadyMs": 985.5301209999998,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 981.3441440000024,
+              "responseReadyMs": 1031.3849800000025,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 982.2935810000017,
+              "responseReadyMs": 1032.2685410000013,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 993.9118770000023,
+              "responseReadyMs": 1044.2159790000005,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 1042.085013,
+              "responseReadyMs": 1092.2385900000008,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 1164.6053090000023,
+              "responseReadyMs": 1215.009019000001,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 1165.3989980000006,
+              "responseReadyMs": 1216.0707519999996,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 1165.463412000001,
+              "responseReadyMs": 1216.4768189999995,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 1165.505164000002,
+              "responseReadyMs": 1216.9318390000008,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 1226.921827000002,
+              "responseReadyMs": 1277.536382000002,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1297.3757320000004,
+              "responseReadyMs": 1348.5126660000024,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1297.7500930000024,
+              "responseReadyMs": 1349.3858309999996,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1297.8020890000007,
+              "responseReadyMs": 1349.7960249999996,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 1361.4169680000014,
+              "responseReadyMs": 1412.0863140000001,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        },
+        {
+          "visit": 2,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 19.599999997764826,
+                "restore": 2.100000001490116,
+                "deferred": 0.09999999776482582,
+                "nav": 0.9000000022351742,
+                "page": 0.5999999977648258,
+                "wealth": 0,
+                "otherBindings": 0.4000000022351742,
+                "periodVisibility": 31.899999998509884,
+                "anchor": 0,
+                "scroll": 0.6999999992549419
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.299999997019768,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 3.199999999254942,
+                "periodVisibility": 35.400000002235174,
+                "anchor": 0.09999999776482582,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.600000001490116,
+                "restore": 0.09999999776482582,
+                "deferred": 0.4000000022351742,
+                "nav": 0.6999999992549419,
+                "page": 0.19999999925494194,
+                "wealth": 0.8000000007450581,
+                "otherBindings": 2.800000000745058,
+                "periodVisibility": 41.29999999701977,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14.800000000745058,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.09999999776482582,
+                "page": 1.4000000022351742,
+                "wealth": 0,
+                "otherBindings": 2.699999999254942,
+                "periodVisibility": 25.399999998509884,
+                "anchor": 0.10000000149011612,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 13.600000001490116,
+                "restore": 0.6999999992549419,
+                "deferred": 0.10000000149011612,
+                "nav": 0.6999999992549419,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 0.19999999925494194,
+                "periodVisibility": 30.5,
+                "anchor": 0,
+                "scroll": 0.8999999985098839
+              }
+            }
+          ],
+          "assetMs": 184.79999999701977,
+          "foregroundMs": 746.2999999970198,
+          "allIdleMs": 777.7999999970198,
+          "longTasks": [
+            58,
+            70,
+            64,
+            98
+          ],
+          "requests": 18,
+          "decodedJsonBytes": 16860,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 7.511585000000196,
+              "responseReadyMs": 57.738320000000385,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 67.05579299999954,
+              "responseReadyMs": 117.06247799999983,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 67.13174399999843,
+              "responseReadyMs": 117.74857799999882,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 67.45997799999896,
+              "responseReadyMs": 118.0450239999991,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 128.39110699999947,
+              "responseReadyMs": 179.14646899999934,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 187.380928999999,
+              "responseReadyMs": 237.6774149999983,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 189.054240999998,
+              "responseReadyMs": 238.77041299999837,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 202.0741139999991,
+              "responseReadyMs": 251.6237519999995,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 245.45250899999883,
+              "responseReadyMs": 298.279344999999,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 375.3029629999983,
+              "responseReadyMs": 426.7434489999978,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 375.36809899999935,
+              "responseReadyMs": 427.7020599999996,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 375.44996999999785,
+              "responseReadyMs": 428.0640820000008,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 376.4041440000001,
+              "responseReadyMs": 428.2367970000014,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 447.136051999998,
+              "responseReadyMs": 497.84820599999875,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 526.2189880000005,
+              "responseReadyMs": 576.5715410000012,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 526.3292499999989,
+              "responseReadyMs": 577.1268180000006,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 527.0054449999989,
+              "responseReadyMs": 577.3370379999978,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 591.1897219999992,
+              "responseReadyMs": 641.8424369999993,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "visit": 1,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 20.5,
+                "restore": 1.7999999970197678,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 1.699999999254942,
+                "periodVisibility": 40.600000001490116,
+                "anchor": 0,
+                "scroll": 0.09999999776482582
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.199999999254942,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 2.300000000745058,
+                "periodVisibility": 32.899999998509884,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 18.900000002235174,
+                "restore": 0.5,
+                "deferred": 0,
+                "nav": 0.6999999992549419,
+                "page": 0.3999999985098839,
+                "wealth": 0,
+                "otherBindings": 2.400000002235174,
+                "periodVisibility": 27.199999999254942,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 19.800000000745058,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 1.199999999254942,
+                "page": 0.30000000074505806,
+                "wealth": 0,
+                "otherBindings": 3.899999998509884,
+                "periodVisibility": 28.100000001490116,
+                "anchor": 0.09999999776482582,
+                "scroll": 0.8000000007450581
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 20.800000000745058,
+                "restore": 0.6999999992549419,
+                "deferred": 0.3999999985098839,
+                "nav": 0.19999999925494194,
+                "page": 1.1000000014901161,
+                "wealth": 0,
+                "otherBindings": 0.8999999985098839,
+                "periodVisibility": 30.5,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 17.600000001490116,
+                "restore": 1.800000000745058,
+                "deferred": 0.5,
+                "nav": 2.199999999254942,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 0.8000000007450581,
+                "periodVisibility": 27.699999999254942,
+                "anchor": 0.8000000007450581,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 18.699999999254942,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 2.300000000745058,
+                "periodVisibility": 28,
+                "anchor": 0,
+                "scroll": 0.29999999701976776
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 20,
+                "restore": 0.10000000149011612,
+                "deferred": 0.10000000149011612,
+                "nav": 1,
+                "page": 0,
+                "wealth": 0,
+                "otherBindings": 3.599999997764826,
+                "periodVisibility": 27.699999999254942,
+                "anchor": 0.7000000029802322,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 25.600000001490116,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0,
+                "wealth": 0,
+                "otherBindings": 3.100000001490116,
+                "periodVisibility": 27,
+                "anchor": 0,
+                "scroll": 1.0999999977648258
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 24.700000002980232,
+                "restore": 0.09999999776482582,
+                "deferred": 1,
+                "nav": 1,
+                "page": 0.6000000014901161,
+                "wealth": 0,
+                "otherBindings": 1.300000000745058,
+                "periodVisibility": 29.099999997764826,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 208.69999999925494,
+          "foregroundMs": 760.5999999977648,
+          "allIdleMs": 1601.800000000745,
+          "longTasks": [
+            71,
+            68,
+            51,
+            118,
+            56,
+            60,
+            54,
+            119
+          ],
+          "requests": 37,
+          "decodedJsonBytes": 33731,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 9.044004999999743,
+              "responseReadyMs": 59.567874999997,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 73.9260609999983,
+              "responseReadyMs": 123.94313799999873,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 74.31864999999743,
+              "responseReadyMs": 124.71668899999713,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 74.39832799999931,
+              "responseReadyMs": 125.0361499999999,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 141.59054800000013,
+              "responseReadyMs": 192.28795999999784,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 213.73577899999873,
+              "responseReadyMs": 263.72260099999767,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 226.36939100000018,
+              "responseReadyMs": 277.1185329999971,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 235.18697699999757,
+              "responseReadyMs": 285.72105699999884,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 271.93790499999886,
+              "responseReadyMs": 321.22838099999717,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 395.7629629999974,
+              "responseReadyMs": 445.42213300000003,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 395.8769609999981,
+              "responseReadyMs": 446.0824769999999,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 395.9418769999975,
+              "responseReadyMs": 446.2780449999991,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 395.98184599999877,
+              "responseReadyMs": 446.5504669999973,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 462.99690599999667,
+              "responseReadyMs": 512.4587209999991,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 528.2575039999974,
+              "responseReadyMs": 578.6147089999977,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 528.9056999999993,
+              "responseReadyMs": 579.2765650000001,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 529.0106549999982,
+              "responseReadyMs": 579.4806059999974,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 592.6500329999981,
+              "responseReadyMs": 642.6955669999988,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "month": "2026-10",
+                "action": "sync-history-month"
+              },
+              "query": "",
+              "startMs": 769.4473169999983,
+              "responseReadyMs": 820.030609999998,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-prices"
+              },
+              "query": "",
+              "startMs": 828.6003729999975,
+              "responseReadyMs": 879.1658099999986,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 888.9317159999991,
+              "responseReadyMs": 938.9981279999993,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 889.0566209999997,
+              "responseReadyMs": 939.714348999998,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 889.5550989999974,
+              "responseReadyMs": 940.0778079999982,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 951.5007639999967,
+              "responseReadyMs": 1002.1299099999997,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 1006.7163779999973,
+              "responseReadyMs": 1056.8965899999966,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 1007.9732609999992,
+              "responseReadyMs": 1058.139952999998,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 1021.3455519999989,
+              "responseReadyMs": 1071.299383999998,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 1066.027188,
+              "responseReadyMs": 1117.2641109999968,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 1184.1553609999974,
+              "responseReadyMs": 1234.590710999997,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 1184.4879540000002,
+              "responseReadyMs": 1235.236697999997,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 1184.9158879999995,
+              "responseReadyMs": 1235.4226339999987,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 1184.9614359999978,
+              "responseReadyMs": 1235.5736980000001,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 1247.1395809999995,
+              "responseReadyMs": 1297.624227999997,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1319.0956529999967,
+              "responseReadyMs": 1370.0313239999996,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1319.372422999997,
+              "responseReadyMs": 1370.6966799999973,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 1319.4233389999972,
+              "responseReadyMs": 1371.0192579999966,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 1383.994831,
+              "responseReadyMs": 1433.5294059999978,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        },
+        {
+          "visit": 2,
+          "renders": [
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 18.600000001490116,
+                "restore": 1.800000000745058,
+                "deferred": 0.8000000007450581,
+                "nav": 0.7999999970197678,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 0.8999999985098839,
+                "periodVisibility": 26.700000002980232,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.299999997019768,
+                "restore": 1,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 2.5,
+                "periodVisibility": 29.899999998509884,
+                "anchor": 0,
+                "scroll": 0.4000000022351742
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.299999997019768,
+                "restore": 0.20000000298023224,
+                "deferred": 0,
+                "nav": 0.5,
+                "page": 0.7999999970197678,
+                "wealth": 0,
+                "otherBindings": 2.100000001490116,
+                "periodVisibility": 42.69999999925494,
+                "anchor": 0,
+                "scroll": 0.5
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 18.399999998509884,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 2.2999999970197678,
+                "periodVisibility": 28.200000002980232,
+                "anchor": 0.19999999925494194,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.099999997764826,
+                "restore": 0,
+                "deferred": 0.5,
+                "nav": 0.8000000007450581,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 0.09999999776482582,
+                "periodVisibility": 26.600000001490116,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "assetMs": 179.09999999776483,
+          "foregroundMs": 716.3999999985099,
+          "allIdleMs": 735,
+          "longTasks": [
+            51,
+            62,
+            64,
+            101
+          ],
+          "requests": 18,
+          "decodedJsonBytes": 16860,
+          "calls": [
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "body": {
+                "action": "sync-current"
+              },
+              "query": "",
+              "startMs": 11.44420700000046,
+              "responseReadyMs": 62.449807000000874,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "body": {},
+              "query": "?select=id,name,provider,provider_account_ref,base_currency,mode,is_active,created_at&mode=eq.live&is_active=eq.true",
+              "startMs": 74.09034099999917,
+              "responseReadyMs": 124.49010099999941,
+              "decodedJsonBytes": 130,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "body": {},
+              "query": "",
+              "startMs": 74.41053499999907,
+              "responseReadyMs": 124.96562600000107,
+              "decodedJsonBytes": 226,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,currency,valuation_krw,cost_krw,pnl_krw,rate_pct,average_unit_krw,valued_unit_krw,broker_pnl_krw,calculation_basis,broker_pnl_differs,quote_basis",
+              "startMs": 74.93629499999952,
+              "responseReadyMs": 125.19353399999818,
+              "decodedJsonBytes": 1376,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/securities",
+              "body": {},
+              "query": "?select=id,symbol,name,market,currency,sector,country",
+              "startMs": 133.80323599999974,
+              "responseReadyMs": 184.4195839999993,
+              "decodedJsonBytes": 431,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "body": {},
+              "query": "?select=account_id,security_id,as_of,quantity,avg_cost,market_price,market_value,unrealized_pnl,unrealized_pnl_rate,currency,fx_rate_to_base,native_prices:provider_payload-%3Enative_prices&order=market_value.desc",
+              "startMs": 187.1536109999979,
+              "responseReadyMs": 236.86509699999806,
+              "decodedJsonBytes": 890,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "body": {},
+              "query": "?select=snapshot_date,snapshot_at,total_assets,cash,securities_value,unrealized_pnl,realized_pnl,dividends,fees,taxes,total_pnl,external_flow&order=snapshot_date.desc&limit=500",
+              "startMs": 187.9406280000003,
+              "responseReadyMs": 237.64262999999846,
+              "decodedJsonBytes": 1401,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "body": {},
+              "query": "?select=subaccount_key,snapshot_date,total_assets,cash,securities_value,unrealized_pnl&active=eq.true&order=snapshot_date.desc&limit=1000",
+              "startMs": 197.44384799999898,
+              "responseReadyMs": 247.92110500000126,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "body": {},
+              "query": "?select=account_id,symbol,observed_at,settled_quantity,pending_buy_quantity,pending_sell_quantity,effective_quantity,quantity_identity_ok",
+              "startMs": 245.79758700000093,
+              "responseReadyMs": 296.37188799999785,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "body": {},
+              "query": "",
+              "startMs": 362.5774369999999,
+              "responseReadyMs": 413.077487999999,
+              "decodedJsonBytes": 11,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "body": {},
+              "query": "?select=security_id,price_date,observed_at,close,currency&price_date=gte.2026-10-09&order=price_date.desc,observed_at.desc&limit=500",
+              "startMs": 362.72068899999795,
+              "responseReadyMs": 413.9064260000014,
+              "decodedJsonBytes": 11329,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "body": {},
+              "query": "?select=id,security_id,choice,reason,review_condition,created_at,thesis_version,price_snapshot,official_evidence_snapshot&order=created_at.desc&limit=100",
+              "startMs": 363.11265999999887,
+              "responseReadyMs": 414.1734319999996,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "body": {},
+              "query": "?select=symbol,created_at,official_evidence&order=created_at.desc&limit=30",
+              "startMs": 363.4162699999979,
+              "responseReadyMs": 414.8872100000008,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "body": {},
+              "query": "",
+              "startMs": 425.14528399999836,
+              "responseReadyMs": 474.69860100000005,
+              "decodedJsonBytes": 2,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 505.19179799999984,
+              "responseReadyMs": 555.0854289999988,
+              "decodedJsonBytes": 160,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 505.5676249999997,
+              "responseReadyMs": 556.2796740000013,
+              "decodedJsonBytes": 371,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "1M"
+              },
+              "query": "",
+              "startMs": 505.60648299999957,
+              "responseReadyMs": 556.546921000001,
+              "decodedJsonBytes": 257,
+              "status": 200
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "body": {
+                "p_period": "오늘"
+              },
+              "query": "",
+              "startMs": 567.0133339999993,
+              "responseReadyMs": 617.7910310000007,
+              "decodedJsonBytes": 257,
+              "status": 200
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

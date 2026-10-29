@@ -39,3 +39,24 @@ Full samples are in PERFORMANCE_STARTUP_TRACE239.samples.json, retaining origina
 All ten sessions completed with expected synthetic assets, four portfolio rows, update request count, zero page errors and zero forbidden writes. Product/test source is unchanged, and its final CI40881844828 already passed Chromium/WebKit regressions. No new code needs screen-width/zoom regression or deployment. No memory/timer or physical iPhone/Face ID/native keyboard/full-PWA-restart claim.
 
 Handoff: retain Build239. Avoid repeating this aggregate trace or previously rejected scheduling/containment candidates. A further render change needs per-caller data-state/DOM comparison and staged failure/early-input ownership assertions before a matched A/B experiment; a split needs actual parse/compile attribution and first-interaction/offline tests. If neither has concrete new evidence, leave production unchanged rather than generating another diagnostic-only cycle. This record completes the prior pending CI continuation and the requested targeted initial script attribution.
+
+
+## 2026-10-30 continuation: complete refresh check
+
+Previous final branch 83ca2d2 CI40895499507 passed both Chromium/WebKit suites. Main11998325 CI40865599440 and Pages40865598206 remain successful; live version.json still reports2026-10-29-home-tooltip-239. The separate annual-wealth feature branch is awaiting publication approval and was not included in this performance run.
+
+Ran `node tests/refresh_interaction_profile234.mjs --complete-refresh --profile-render` against unchanged Build239: five fresh Chromium sessions, two consecutive refreshes per session,390x844/CPU4x/four synthetic holdings/24prices each,50ms per intercepted API call, no bandwidth throttle, warmed app tabs, blocked SW/routed cache. Browser build remains140.0.7339.186. DOM observers mark changed assets and button aria-busy=false; all-idle also waits for background completion/queues and two animation callbacks. Served-only phase instrumentation and DOM serialization add overhead; these results are NOT a controlled comparison with older batches or evidence of a production slowdown/speedup.
+
+|Metric median(min–max),n=5 each|Background due|TTL fresh|
+|---|---:|---:|
+|Asset DOM,ms|195.6(190.3–237.3)|183.0(174.4–190.3)|
+|Button ready,ms|763.0(738.6–921.1)|746.3(690.8–784.4)|
+|All-idle callback,ms|1609.2(1548.6–1709.7)|774.6(704.2–822.2)|
+|API calls|37.0(37.0–37.0)|18.0(18.0–18.0)|
+|Decoded fixture JSON bytes|33731.0(33731.0–33731.0)|16860.0(16860.0–16860.0)|
+
+All five sessions retain10background-due/5TTL-fresh home renders,37/18API calls and exactly one foreground sync after duplicate button clicks. Final changed amount is displayed, button enabled, no page errors or unexpected writes. Long-task counts are5–8background-due and3–4TTL-fresh; no zero-long-task claim. Decoded fixture sizes exclude headers/compression/TLS and are not wire bytes. No actual KB latency, iPhone paint/INP, heap or timer retention measurement.
+
+One same-HTML stage occurs in each load, including post-background load, but this deterministic equality is not evidence of identical data/error/listener state across all responses. No new safe render-elision candidate was established; do not remove it based on equality alone. Repeated request identities are separated by the background data update, and the second refresh correctly uses TTL. No new evidence justifies repeating rejected queue/ordering/reload-removal candidates. Product, SQL and test code unchanged; no deployment or additional unchanged-code regression cycle needed after the successful final-code CI. Raw observations: PERFORMANCE_REFRESH239_CHECK.samples.json.
+
+Next: avoid another identical aggregate startup/refresh benchmark. A future product change needs a new reproducible interaction or per-caller state-transition bottleneck plus matched A/B evidence. Keep the annual-history request separate; do not use this performance authorization to publish that blocked feature. Physical iPhone keyboard/Face ID/PWA restart remain untested.
