@@ -10,9 +10,11 @@ import {chromium,webkit} from 'playwright';
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 let dispatch,transfers=[],versionOverride=null,versionStatus=200,fallbackBuild=null,updateUnavailable=false,navigationUnavailable=false;
+const portfolioStages=process.argv.includes('--portfolio-stages');
 const pacedStartup=process.argv.includes('--paced-startup'),pacedGzip=!!process.env.PACED_GZIP;
 const verify=process.argv.includes('--verify'),profileStartup=pacedStartup||process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup'),earlyCore=process.argv.includes('--early-core'),earlyInteraction=process.argv.includes('--early-interaction')||earlyCore;
 assert.ok(!(earlyInteraction&&profileStartup),'early interaction is a separate condition');
+assert.ok(!portfolioStages||profileStartup,'portfolio stages require startup profiling');
 const pacedQueue=[];
 // Shared across ALL HTTP responses, including service-worker requests. Body-only pacing, not a physical network model.
 const pacer=pacedStartup?setInterval(()=>{const job=pacedQueue.shift();if(!job)return;const end=Math.min(job.offset+4096,job.payload.length);job.res.write(job.payload.subarray(job.offset,end));job.offset=end;if(end===job.payload.length){job.res.end();job.resolve()}else pacedQueue.push(job)},20):null;if(pacer)pacer.unref();
@@ -42,7 +44,7 @@ const hook=`
     checkUpdate:function(){lastUpdateCheck=0;window.portfolioCheckUpdate()},
     refresh:function(){return refreshLive(true,false)},
     age:function(){lastLiveLoadAt=Date.now()-4*60*1000},
-    state:function(){return {tab:currentTab,period:stockPeriod,query:stockPnlQuery,scope:stockPnlScope,
+    state:function(){return {swingLoaded:Object.keys(live&&live.swingPrices||{}).length,tab:currentTab,period:stockPeriod,query:stockPnlQuery,scope:stockPnlScope,
       resumePending:liveResumePending,renderPending:contentRenderPending,loadEpoch:liveLoadEpoch,
       updatePending:updateCheckPending,idle:!liveRefreshPromise&&!liveLoadPromise&&!liveResumePromise&&!liveReadsActive&&!liveReadQueue.length,
       pnl:live&&live.stockPnl&&live.stockPnl.pnl_krw,error:liveError,deferred:!!(live&&live.detailsDeferred),enrichment:!!(live&&live.enrichmentLoading),background:!!backgroundSyncPromise}}
@@ -88,7 +90,8 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
   await context.addInitScript(({token,key})=>localStorage.setItem(key,JSON.stringify({accessToken:token,refreshToken:'synthetic-local-refresh',expiresAt:Date.now()+3600000})),{token:jwt,key:'my_portfolio_session_v2'});
   const calls=[],forbidden=[],errors=[];let emptyHoldings=false,earlyGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
-  const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)});
+  let portfolioRecordStart=null;const requestRecords=new WeakMap();
+  const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)}).then(()=>{const record=requestRecords.get(route);if(record)record.responseCompleteMs=performance.now()-portfolioRecordStart;});
   dispatch=async route=>{
     const request=route.request(),url=new URL(request.url()),method=request.method();
     if(navigationUnavailable&&url.origin===new URL(site).origin&&(url.pathname==='/'||url.pathname==='/index.html')&&!url.searchParams.has('check_build'))return route.fulfill({status:503,body:'temporary outage'});
@@ -106,7 +109,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(path==='/auth/v1/passkeys/authentication/options')return json(route,{error_code:'passkey_disabled'},400);
     if(path==='/auth/v1/token')return json(route,{access_token:jwt,refresh_token:'synthetic-local-refresh',expires_in:3600});
     assert.equal(request.headers().authorization,'Bearer '+jwt,'real authFetch supplies the isolated stored-session token');
-    calls.push({path,body});await new Promise(r=>setTimeout(r,50));
+    const record={path,body};if(portfolioStages&&portfolioRecordStart!==null){record.startMs=performance.now()-portfolioRecordStart;requestRecords.set(route,record);}calls.push(record);await new Promise(r=>setTimeout(r,50));
     if(path.startsWith('/functions/')){
       if(body.action==='sync-current')return json(route,{ok:true});
       if(body.action==='sync-history-month'||body.action==='sync-prices'){await backgroundDelay.wait;return json(route,{ok:true})}
@@ -214,11 +217,23 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       samples.push({run:run+1,cache,...(early?{early}:{}),...(startup?{startup}:{}),updateBytes:updates.reduce((n,x)=>n+x.bytes,0),updateRequests:updates.length,networkResponses:transfers.length,decodedBytes:transfers.reduce((n,x)=>n+x.bytes,0),controlled:await page.evaluate(()=>!!navigator.serviceWorker.controller)});
       if(profileStartup){
         calls.length=0;
-        await page.evaluate(()=>{window.__firstTabStart=performance.now();document.querySelector('#nav [data-tab="portfolio"]').click()});
+        if(portfolioStages)portfolioRecordStart=performance.now();
+        await page.evaluate(stages=>{
+          window.__firstTabStart=performance.now();
+          if(stages){window.__portfolioStages={rowsMs:null,swingDataMs:null};window.__portfolioWatch=new MutationObserver(()=>{if(window.__portfolioStages.rowsMs===null&&document.querySelectorAll('.portfolio-list .portfolio-row').length===4)window.__portfolioStages.rowsMs=performance.now()-window.__firstTabStart;});window.__portfolioWatch.observe(document.querySelector('#content'),{childList:true,subtree:true});
+          const poll=()=>{if(window.__dailyTest.state().swingLoaded===4){window.__portfolioStages.swingDataMs=performance.now()-window.__firstTabStart;return}window.__portfolioFrame=requestAnimationFrame(poll)};window.__portfolioFrame=requestAnimationFrame(poll);}
+          document.querySelector('#nav [data-tab="portfolio"]').click();
+        },portfolioStages);
         startup.firstPortfolioCallbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__firstTabStart)))));
         await page.waitForFunction(()=>window.__dailyTest.state().idle);
         startup.firstPortfolioIdleMs=await page.evaluate(()=>performance.now()-window.__firstTabStart);
         startup.firstPortfolioReads=calls.length;
+        if(portfolioStages){
+          startup.portfolioStages=await page.evaluate(()=>{window.__portfolioWatch.disconnect();cancelAnimationFrame(window.__portfolioFrame);return window.__portfolioStages});
+          startup.portfolioRequests=calls.map(c=>({name:c.path.split('/').pop(),startMs:c.startMs,responseCompleteMs:c.responseCompleteMs}));
+          assert.ok(startup.portfolioStages.rowsMs!==null&&startup.portfolioStages.swingDataMs!==null,'list DOM and all four swing data stages observed');
+          assert.ok(startup.portfolioRequests.every(r=>Number.isFinite(r.startMs)&&Number.isFinite(r.responseCompleteMs)),'all stage requests accounted for');portfolioRecordStart=null;
+        }
         assert.ok(Number.isFinite(startup.assetMs)&&startup.assetMs>0);
         if(metrics)assert.ok(startup.scriptMs>=0,'CDP script counter delta is nonnegative');
         assert.equal(await page.locator('.portfolio-list .portfolio-row').count(),4);
