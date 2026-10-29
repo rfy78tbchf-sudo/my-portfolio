@@ -3,6 +3,7 @@ import {readFileSync,existsSync,mkdirSync} from 'node:fs';
 import {dirname,resolve,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium,webkit} from 'playwright';
+import {measureChartInput} from './chart_interaction238.mjs';
 
 // Actual startup, stored-session authentication, API queue, resume events and renderers.
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
@@ -50,7 +51,7 @@ const savedDecisions=Array.from({length:10},(_,i)=>({id:'decision-'+i,security_i
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace'),repeat=process.argv.includes('--repeat'),pendingReturn=process.argv.includes('--pending-return'),lateHistory=process.argv.includes('--late-history');
+const samples=[],verify=process.argv.includes('--verify'),trace=process.argv.includes('--trace'),repeat=process.argv.includes('--repeat'),pendingReturn=process.argv.includes('--pending-return'),lateHistory=process.argv.includes('--late-history'),chartInput=process.argv.includes('--chart-input');
 assert.ok(!(pendingReturn&&lateHistory),'choose one gated scenario');
 for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
  const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
@@ -119,6 +120,20 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0);
     await page.locator('#nav [data-tab="portfolio"]').click();
     await page.waitForFunction(()=>window.__dailyTest.state().idle&&!window.__dailyTest.state().deferred);
+    if(chartInput){
+      const attempts=[];
+      for(let visit=0;visit<(verify?6:1);visit++){
+        if(verify){await page.setViewportSize({width:[390,402,430][visit%3],height:844});await page.evaluate(z=>document.documentElement.style.zoom=z,visit<3?'1':'1.25');}
+        await page.locator('.portfolio-list [data-security-id="daily-0"]').click();
+        await page.waitForFunction(()=>window.__dailyTest.state().idle&&document.querySelectorAll('#thesisPrevious .ai-history-item').length===10);
+        calls.length=0;const result=await measureChartInput(page);assert.equal(calls.length,0,'chart input makes no requests');
+        assert.ok(await page.locator('.detail-sheet').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'detail fits');
+        attempts.push({...result,requests:calls.length});
+        if(visit%2)await page.goBack();else await page.locator('#detailClose').click();
+        await page.locator('#detailModal').waitFor({state:'hidden'});
+      }
+      samples.push({run:run+1,engine:name,attempts});assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);continue;
+    }
     if(lateHistory){
       const attempts=[],cdp=name==='chromium'?await context.newCDPSession(page):null;
       if(cdp)await cdp.send('Performance.enable');
@@ -288,4 +303,4 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     samples.push({run:run+1,entries});assert.deepEqual(errors,[]);
   }finally{if(historyGate)historyGate.release();if(reviewGate)reviewGate.release();if(detailGate)detailGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }
-console.log(JSON.stringify({scenario:lateHistory?'gate shared history then decision reread; retain chart period/point and draft focus/selection':pendingReturn?'close gated ARM core response, open MRNA, touch/keyboard chart, release ARM and preserve active chart':'detail rendering',conditions:lateHistory?((verify?'Chromium/WebKit six width/zoom cases':'5 fresh Chromium sessions at 390x844')+'; warmed portfolio,365 prices,10 saved decisions,10 long AI histories; synthetic 50ms API reads plus controlled gates; Chromium CPU4x/WebKit default; SW blocked; callback/readiness includes automation and two rAF; aggregate CPU/longtasks cover both late phases AND intervening editor input; phaseCpu separates history/editor/review including automation assertions; phaseLongTasks grouped by task start; no heap/byte measurement'):pendingReturn?(verify?'Each engine: six width/zoom pending-return cases; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; Chromium CPU4x, WebKit default; SW blocked; emulated tap and keyboard input; no GC or heap measurement':'5 fresh Chromium sessions; one pending-return case per session; 390x844 touch/mobile CPU4x; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; SW blocked; emulated tap and keyboard input; no GC or heap measurement'):(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':(repeat?'5 fresh Chromium sessions x3 same-detail entries; ':'5 fresh Chromium sessions x1 detail entry; '))+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));
+console.log(JSON.stringify({scenario:chartInput?'full detail chart controls and 240 synthetic crosshair pointer samples':lateHistory?'gate shared history then decision reread; retain chart period/point and draft focus/selection':pendingReturn?'close gated ARM core response, open MRNA, touch/keyboard chart, release ARM and preserve active chart':'detail rendering',conditions:chartInput?'5 fresh Chromium sessions (verification: six width/zoom cases each engine); full app idle detail,365 prices,10 saved decisions/histories;390x844 CPU4x;50ms mocked reads,SW blocked;controls plus60 frames x4 same-day pointer samples;callback is not paint/INP or physical iPhone latency':lateHistory?((verify?'Chromium/WebKit six width/zoom cases':'5 fresh Chromium sessions at 390x844')+'; warmed portfolio,365 prices,10 saved decisions,10 long AI histories; synthetic 50ms API reads plus controlled gates; Chromium CPU4x/WebKit default; SW blocked; callback/readiness includes automation and two rAF; aggregate CPU/longtasks cover both late phases AND intervening editor input; phaseCpu separates history/editor/review including automation assertions; phaseLongTasks grouped by task start; no heap/byte measurement'):pendingReturn?(verify?'Each engine: six width/zoom pending-return cases; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; Chromium CPU4x, WebKit default; SW blocked; emulated tap and keyboard input; no GC or heap measurement':'5 fresh Chromium sessions; one pending-return case per session; 390x844 touch/mobile CPU4x; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; SW blocked; emulated tap and keyboard input; no GC or heap measurement'):(verify?'Browser verification; ':'Timing baseline; ')+(verify?'each engine: six width/zoom entries plus fresh reopen; ':(repeat?'5 fresh Chromium sessions x3 same-detail entries; ':'5 fresh Chromium sessions x1 detail entry; '))+ ' 365 prices, 10 saved decisions, 10 long AI histories; 390x844 CPU4x; synthetic 50ms API responses; actual login/render/request queue; SW blocked; readiness includes two rAF callbacks, not actual presented paint; forced GC after return',samples},null,2));
