@@ -1,0 +1,5419 @@
+{
+  "plain": {
+    "pacing": {
+      "aggregateBodyBytesPerSecond": 204800,
+      "chunkBytes": 4096,
+      "tickMs": 20,
+      "responseHeaderDelayMs": 80,
+      "gzip": false,
+      "scope": "all local HTTP responses including SW; headers/TLS not paced; no actual operating server measurement"
+    },
+    "conditions": "5 pairs cold/warm;  real HTTP and service worker caching, synthetic session/API 50ms, 390x844; Chromium CPU4x, WebKit default in verification; server response body bytes, no compression, not production wire bytes or iPhone timing",
+    "samples": [
+      {
+        "run": 1,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 3781,
+          "longTasks": [
+            {
+              "start": 613.4000000022352,
+              "duration": 76
+            },
+            {
+              "start": 3353.300000000745,
+              "duration": 75
+            },
+            {
+              "start": 3680.300000000745,
+              "duration": 58
+            },
+            {
+              "start": 4301.5,
+              "duration": 93
+            },
+            {
+              "start": 5766.10000000149,
+              "duration": 111
+            }
+          ],
+          "idleObservedMs": 8801.199999999255,
+          "reads": 19,
+          "scriptMs": 48.637,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 434
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 24
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 97630
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            }
+          ],
+          "firstPortfolioCallbackMs": 107.19999999925494,
+          "firstPortfolioIdleMs": 2944.60000000149,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 51,
+        "decodedBytes": 1559697,
+        "controlled": true
+      },
+      {
+        "run": 1,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 3436.7999999970198,
+          "longTasks": [
+            {
+              "start": 3314.7999999970198,
+              "duration": 98
+            },
+            {
+              "start": 4216.199999999255,
+              "duration": 86
+            },
+            {
+              "start": 5219.89999999851,
+              "duration": 99
+            }
+          ],
+          "idleObservedMs": 5341.79999999702,
+          "reads": 17,
+          "scriptMs": 37.69499999999999,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            }
+          ],
+          "firstPortfolioCallbackMs": 74.19999999925494,
+          "firstPortfolioIdleMs": 2911.39999999851,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 2,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 3813.599999997765,
+          "longTasks": [
+            {
+              "start": 592,
+              "duration": 75
+            },
+            {
+              "start": 3304.5,
+              "duration": 61
+            },
+            {
+              "start": 3366.39999999851,
+              "duration": 105
+            },
+            {
+              "start": 3696.89999999851,
+              "duration": 59
+            },
+            {
+              "start": 3756,
+              "duration": 50
+            },
+            {
+              "start": 4339,
+              "duration": 134
+            },
+            {
+              "start": 5105.599999997765,
+              "duration": 55
+            },
+            {
+              "start": 5975.099999997765,
+              "duration": 141
+            }
+          ],
+          "idleObservedMs": 8890.699999999255,
+          "reads": 19,
+          "scriptMs": 52.083,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 434
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 24
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 97630
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            }
+          ],
+          "firstPortfolioCallbackMs": 154.19999999925494,
+          "firstPortfolioIdleMs": 2978.5,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 52,
+        "decodedBytes": 1559699,
+        "controlled": true
+      },
+      {
+        "run": 2,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 3465.800000000745,
+          "longTasks": [
+            {
+              "start": 607.3000000007451,
+              "duration": 52
+            },
+            {
+              "start": 3323.400000002235,
+              "duration": 122
+            },
+            {
+              "start": 4225.900000002235,
+              "duration": 89
+            },
+            {
+              "start": 5234.900000002235,
+              "duration": 132
+            }
+          ],
+          "idleObservedMs": 5386.800000000745,
+          "reads": 17,
+          "scriptMs": 40.296,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            }
+          ],
+          "firstPortfolioCallbackMs": 100.39999999850988,
+          "firstPortfolioIdleMs": 2965.199999999255,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 3,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 3815.699999999255,
+          "longTasks": [
+            {
+              "start": 604.6000000014901,
+              "duration": 101
+            },
+            {
+              "start": 3318.60000000149,
+              "duration": 57
+            },
+            {
+              "start": 3375.900000002235,
+              "duration": 89
+            },
+            {
+              "start": 3706.400000002235,
+              "duration": 52
+            },
+            {
+              "start": 3758.400000002235,
+              "duration": 53
+            },
+            {
+              "start": 4327.900000002235,
+              "duration": 190
+            },
+            {
+              "start": 5144,
+              "duration": 57
+            },
+            {
+              "start": 6040.800000000745,
+              "duration": 204
+            }
+          ],
+          "idleObservedMs": 8883.300000000745,
+          "reads": 19,
+          "scriptMs": 63.93600000000001,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 434
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 24
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 97630
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            }
+          ],
+          "firstPortfolioCallbackMs": 162.10000000149012,
+          "firstPortfolioIdleMs": 2990.199999999255,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 52,
+        "decodedBytes": 1559699,
+        "controlled": true
+      },
+      {
+        "run": 3,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 3532.2999999970198,
+          "longTasks": [
+            {
+              "start": 588.8999999985099,
+              "duration": 50
+            },
+            {
+              "start": 3328.599999997765,
+              "duration": 171
+            },
+            {
+              "start": 4229.39999999851,
+              "duration": 189
+            },
+            {
+              "start": 4755.599999997765,
+              "duration": 285
+            },
+            {
+              "start": 5496.199999999255,
+              "duration": 225
+            }
+          ],
+          "idleObservedMs": 5759.79999999702,
+          "reads": 17,
+          "scriptMs": 64.95299999999999,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            }
+          ],
+          "firstPortfolioCallbackMs": 183.29999999701977,
+          "firstPortfolioIdleMs": 2986.7999999970198,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 4,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 3835.5,
+          "longTasks": [
+            {
+              "start": 618.1000000014901,
+              "duration": 104
+            },
+            {
+              "start": 3299.5,
+              "duration": 82
+            },
+            {
+              "start": 3382.10000000149,
+              "duration": 146
+            },
+            {
+              "start": 3709.300000000745,
+              "duration": 63
+            },
+            {
+              "start": 3772.800000000745,
+              "duration": 57
+            },
+            {
+              "start": 4371.900000002235,
+              "duration": 234
+            },
+            {
+              "start": 5215.900000002235,
+              "duration": 56
+            },
+            {
+              "start": 6082,
+              "duration": 207
+            }
+          ],
+          "idleObservedMs": 8947.10000000149,
+          "reads": 19,
+          "scriptMs": 74.958,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 434
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 24
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 97630
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            }
+          ],
+          "firstPortfolioCallbackMs": 302.9000000022352,
+          "firstPortfolioIdleMs": 2992.60000000149,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 52,
+        "decodedBytes": 1559699,
+        "controlled": true
+      },
+      {
+        "run": 4,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 3551.699999999255,
+          "longTasks": [
+            {
+              "start": 603.8999999985099,
+              "duration": 58
+            },
+            {
+              "start": 3338.099999997765,
+              "duration": 188
+            },
+            {
+              "start": 4225.699999999255,
+              "duration": 154
+            },
+            {
+              "start": 4714.699999999255,
+              "duration": 76
+            },
+            {
+              "start": 5319.099999997765,
+              "duration": 166
+            }
+          ],
+          "idleObservedMs": 5522.599999997765,
+          "reads": 17,
+          "scriptMs": 54.348000000000006,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            }
+          ],
+          "firstPortfolioCallbackMs": 180.10000000149012,
+          "firstPortfolioIdleMs": 2944.60000000149,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 5,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 3785.300000000745,
+          "longTasks": [
+            {
+              "start": 604.6999999992549,
+              "duration": 81
+            },
+            {
+              "start": 3319,
+              "duration": 97
+            },
+            {
+              "start": 3416.10000000149,
+              "duration": 159
+            },
+            {
+              "start": 3666.5,
+              "duration": 65
+            },
+            {
+              "start": 4311.89999999851,
+              "duration": 227
+            },
+            {
+              "start": 5189.60000000149,
+              "duration": 107
+            },
+            {
+              "start": 5918.89999999851,
+              "duration": 194
+            }
+          ],
+          "idleObservedMs": 8931.89999999851,
+          "reads": 19,
+          "scriptMs": 70.202,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 434
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 24
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 97630
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            }
+          ],
+          "firstPortfolioCallbackMs": 154,
+          "firstPortfolioIdleMs": 2997.39999999851,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 51,
+        "decodedBytes": 1559697,
+        "controlled": true
+      },
+      {
+        "run": 5,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 3462.800000000745,
+          "longTasks": [
+            {
+              "start": 3336.900000002235,
+              "duration": 119
+            },
+            {
+              "start": 4247.400000002235,
+              "duration": 102
+            },
+            {
+              "start": 5285.300000000745,
+              "duration": 109
+            }
+          ],
+          "idleObservedMs": 5427,
+          "reads": 17,
+          "scriptMs": 28.328999999999994,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 654525
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 4453
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 38713
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 14731
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 226
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 1376
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 431
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 890
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 1401
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 40
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 2540
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 11
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 11266
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 2
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 160
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 371
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 257
+            }
+          ],
+          "firstPortfolioCallbackMs": 76.5,
+          "firstPortfolioIdleMs": 2943.099999997765,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      }
+    ]
+  },
+  "gzip": {
+    "pacing": {
+      "aggregateBodyBytesPerSecond": 204800,
+      "chunkBytes": 4096,
+      "tickMs": 20,
+      "responseHeaderDelayMs": 80,
+      "gzip": true,
+      "scope": "all local HTTP responses including SW; headers/TLS not paced; no actual operating server measurement"
+    },
+    "conditions": "5 pairs cold/warm;  real HTTP and service worker caching, synthetic session/API 50ms, 390x844; Chromium CPU4x, WebKit default in verification; server response body bytes, no compression, not production wire bytes or iPhone timing",
+    "samples": [
+      {
+        "run": 1,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 1523.800000000745,
+          "longTasks": [
+            {
+              "start": 216.80000000074506,
+              "duration": 97
+            },
+            {
+              "start": 982.1999999992549,
+              "duration": 68
+            },
+            {
+              "start": 1050.8999999985099,
+              "duration": 104
+            },
+            {
+              "start": 1374.800000000745,
+              "duration": 72
+            },
+            {
+              "start": 1447.5999999977648,
+              "duration": 65
+            },
+            {
+              "start": 1994.300000000745,
+              "duration": 197
+            },
+            {
+              "start": 2657.800000000745,
+              "duration": 66
+            },
+            {
+              "start": 3301.5,
+              "duration": 142
+            }
+          ],
+          "idleObservedMs": 3463.300000000745,
+          "reads": 19,
+          "scriptMs": 42.551,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 271
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 28535
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 44
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            }
+          ],
+          "firstPortfolioCallbackMs": 119.19999999925494,
+          "firstPortfolioIdleMs": 2842.300000000745,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 51,
+        "decodedBytes": 1559697,
+        "controlled": true
+      },
+      {
+        "run": 1,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 1112.199999999255,
+          "longTasks": [
+            {
+              "start": 977.8999999985099,
+              "duration": 115
+            },
+            {
+              "start": 1818.8999999985099,
+              "duration": 83
+            },
+            {
+              "start": 2780.89999999851,
+              "duration": 110
+            }
+          ],
+          "idleObservedMs": 2916.39999999851,
+          "reads": 17,
+          "scriptMs": 35.177,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            }
+          ],
+          "firstPortfolioCallbackMs": 141.39999999850988,
+          "firstPortfolioIdleMs": 2842.39999999851,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 2,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 1464.800000000745,
+          "longTasks": [
+            {
+              "start": 206,
+              "duration": 107
+            },
+            {
+              "start": 967.7000000029802,
+              "duration": 74
+            },
+            {
+              "start": 1042.5,
+              "duration": 161
+            },
+            {
+              "start": 1296.300000000745,
+              "duration": 74
+            },
+            {
+              "start": 1370.9000000022352,
+              "duration": 92
+            },
+            {
+              "start": 2018.6000000014901,
+              "duration": 152
+            },
+            {
+              "start": 3291.300000000745,
+              "duration": 102
+            }
+          ],
+          "idleObservedMs": 3426.5,
+          "reads": 19,
+          "scriptMs": 52.591,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 271
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 28535
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 44
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            }
+          ],
+          "firstPortfolioCallbackMs": 134,
+          "firstPortfolioIdleMs": 2825.800000000745,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 51,
+        "decodedBytes": 1559697,
+        "controlled": true
+      },
+      {
+        "run": 2,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 1088.300000000745,
+          "longTasks": [
+            {
+              "start": 968.6999999992549,
+              "duration": 98
+            },
+            {
+              "start": 1789.699999999255,
+              "duration": 92
+            },
+            {
+              "start": 2756,
+              "duration": 101
+            }
+          ],
+          "idleObservedMs": 2884.699999999255,
+          "reads": 17,
+          "scriptMs": 26.691000000000006,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            }
+          ],
+          "firstPortfolioCallbackMs": 80,
+          "firstPortfolioIdleMs": 2813.900000002235,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 3,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 1423.7999999970198,
+          "longTasks": [
+            {
+              "start": 202.69999999925494,
+              "duration": 126
+            },
+            {
+              "start": 957.2999999970198,
+              "duration": 58
+            },
+            {
+              "start": 1015.3999999985099,
+              "duration": 124
+            },
+            {
+              "start": 1329.0999999977648,
+              "duration": 52
+            },
+            {
+              "start": 2014,
+              "duration": 124
+            },
+            {
+              "start": 2602.099999997765,
+              "duration": 115
+            },
+            {
+              "start": 3281.2999999970198,
+              "duration": 103
+            }
+          ],
+          "idleObservedMs": 3404.2999999970198,
+          "reads": 19,
+          "scriptMs": 36.795,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 271
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 28535
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 44
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            }
+          ],
+          "firstPortfolioCallbackMs": 109.69999999925494,
+          "firstPortfolioIdleMs": 2846.400000002235,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 51,
+        "decodedBytes": 1559697,
+        "controlled": true
+      },
+      {
+        "run": 3,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 1105.5,
+          "longTasks": [
+            {
+              "start": 984.9000000022352,
+              "duration": 114
+            },
+            {
+              "start": 1307.5,
+              "duration": 58
+            },
+            {
+              "start": 1798.1000000014901,
+              "duration": 110
+            },
+            {
+              "start": 2788.5,
+              "duration": 124
+            }
+          ],
+          "idleObservedMs": 2938.400000002235,
+          "reads": 17,
+          "scriptMs": 34.86,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            }
+          ],
+          "firstPortfolioCallbackMs": 142.59999999776483,
+          "firstPortfolioIdleMs": 2825.7999999970198,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 4,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 1411.199999999255,
+          "longTasks": [
+            {
+              "start": 201,
+              "duration": 82
+            },
+            {
+              "start": 944.8999999985099,
+              "duration": 66
+            },
+            {
+              "start": 1010.8999999985099,
+              "duration": 158
+            },
+            {
+              "start": 1270.8999999985099,
+              "duration": 87
+            },
+            {
+              "start": 1979.2999999970198,
+              "duration": 233
+            },
+            {
+              "start": 2647.39999999851,
+              "duration": 65
+            },
+            {
+              "start": 3334.699999999255,
+              "duration": 136
+            }
+          ],
+          "idleObservedMs": 3500.199999999255,
+          "reads": 19,
+          "scriptMs": 52.789,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 271
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 28535
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 44
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            }
+          ],
+          "firstPortfolioCallbackMs": 173.19999999925494,
+          "firstPortfolioIdleMs": 2918.60000000149,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 51,
+        "decodedBytes": 1559697,
+        "controlled": true
+      },
+      {
+        "run": 4,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 1149,
+          "longTasks": [
+            {
+              "start": 971.8000000007451,
+              "duration": 157
+            },
+            {
+              "start": 1766.800000000745,
+              "duration": 85
+            },
+            {
+              "start": 2732.5,
+              "duration": 114
+            }
+          ],
+          "idleObservedMs": 2870.5,
+          "reads": 17,
+          "scriptMs": 23.623000000000005,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            }
+          ],
+          "firstPortfolioCallbackMs": 84.69999999925494,
+          "firstPortfolioIdleMs": 2810.39999999851,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      },
+      {
+        "run": 5,
+        "cache": "cold",
+        "startup": {
+          "assetMs": 1448,
+          "longTasks": [
+            {
+              "start": 200.19999999925494,
+              "duration": 75
+            },
+            {
+              "start": 960.2999999970198,
+              "duration": 60
+            },
+            {
+              "start": 1021.5999999977648,
+              "duration": 134
+            },
+            {
+              "start": 1333.5,
+              "duration": 57
+            },
+            {
+              "start": 1390.5999999977648,
+              "duration": 51
+            },
+            {
+              "start": 1977.199999999255,
+              "duration": 168
+            },
+            {
+              "start": 2599.7999999970198,
+              "duration": 55
+            },
+            {
+              "start": 3263.599999997765,
+              "duration": 128
+            }
+          ],
+          "idleObservedMs": 3417.199999999255,
+          "reads": 19,
+          "scriptMs": 44.708,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/index.html",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/manifest.webmanifest",
+              "bytes": 434,
+              "encodedBodyBytes": 271
+            },
+            {
+              "path": "/icon.png",
+              "bytes": 3557,
+              "encodedBodyBytes": 3557
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/vendor/jszip.min.js",
+              "bytes": 97630,
+              "encodedBodyBytes": 28535
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/functions/v1/kb-sync-worker",
+              "bytes": 24,
+              "encodedBodyBytes": 44
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            }
+          ],
+          "firstPortfolioCallbackMs": 147.30000000074506,
+          "firstPortfolioIdleMs": 2842.5,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 51,
+        "decodedBytes": 1559697,
+        "controlled": true
+      },
+      {
+        "run": 5,
+        "cache": "warm",
+        "startup": {
+          "assetMs": 1084.3999999985099,
+          "longTasks": [
+            {
+              "start": 980.3000000007451,
+              "duration": 97
+            },
+            {
+              "start": 1767.3999999985099,
+              "duration": 102
+            },
+            {
+              "start": 2760.800000000745,
+              "duration": 115
+            }
+          ],
+          "idleObservedMs": 2898.300000000745,
+          "reads": 17,
+          "scriptMs": 33.43599999999999,
+          "responses": [
+            {
+              "path": "/",
+              "bytes": 654525,
+              "encodedBodyBytes": 173973
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/passkey.js",
+              "bytes": 4453,
+              "encodedBodyBytes": 1642
+            },
+            {
+              "path": "/app-enhancements.js",
+              "bytes": 38713,
+              "encodedBodyBytes": 12308
+            },
+            {
+              "path": "/realized-sales-ui.js",
+              "bytes": 14731,
+              "encodedBodyBytes": 5133
+            },
+            {
+              "path": "/rest/v1/accounts",
+              "bytes": 130,
+              "encodedBodyBytes": 144
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_current_account_scope",
+              "bytes": 226,
+              "encodedBodyBytes": 150
+            },
+            {
+              "path": "/rest/v1/live_holding_display_basis",
+              "bytes": 1376,
+              "encodedBodyBytes": 290
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/version.json",
+              "bytes": 40,
+              "encodedBodyBytes": 60
+            },
+            {
+              "path": "/sw.js",
+              "bytes": 2540,
+              "encodedBodyBytes": 1083
+            },
+            {
+              "path": "/rest/v1/securities",
+              "bytes": 431,
+              "encodedBodyBytes": 179
+            },
+            {
+              "path": "/rest/v1/holdings",
+              "bytes": 890,
+              "encodedBodyBytes": 207
+            },
+            {
+              "path": "/rest/v1/daily_account_snapshots",
+              "bytes": 1401,
+              "encodedBodyBytes": 233
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/manual_subaccount_snapshots",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/live_position_settlement_basis",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/reconcile_live_cash_flows",
+              "bytes": 11,
+              "encodedBodyBytes": 31
+            },
+            {
+              "path": "/rest/v1/daily_security_prices",
+              "bytes": 11266,
+              "encodedBodyBytes": 742
+            },
+            {
+              "path": "/rest/v1/investment_decisions",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/ai_analysis_history",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_app_settings",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 2,
+              "encodedBodyBytes": 22
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_performance_summary",
+              "bytes": 160,
+              "encodedBodyBytes": 130
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_home_chart",
+              "bytes": 371,
+              "encodedBodyBytes": 118
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            },
+            {
+              "path": "/rest/v1/rpc/get_live_reliable_performance",
+              "bytes": 257,
+              "encodedBodyBytes": 190
+            }
+          ],
+          "firstPortfolioCallbackMs": 90.30000000074506,
+          "firstPortfolioIdleMs": 2882,
+          "firstPortfolioReads": 31
+        },
+        "updateBytes": 40,
+        "updateRequests": 1,
+        "networkResponses": 39,
+        "decodedBytes": 731820,
+        "controlled": true
+      }
+    ]
+  }
+}

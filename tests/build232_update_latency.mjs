@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import {gzipSync} from 'node:zlib';
 import {readFileSync,existsSync,mkdirSync} from 'node:fs';
 import {dirname,resolve,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -9,13 +10,24 @@ import {chromium,webkit} from 'playwright';
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 let dispatch,transfers=[],versionOverride=null,versionStatus=200,fallbackBuild=null,updateUnavailable=false,navigationUnavailable=false;
-const verify=process.argv.includes('--verify'),profileStartup=process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup'),earlyCore=process.argv.includes('--early-core'),earlyInteraction=process.argv.includes('--early-interaction')||earlyCore;
+const pacedStartup=process.argv.includes('--paced-startup'),pacedGzip=!!process.env.PACED_GZIP;
+const verify=process.argv.includes('--verify'),profileStartup=pacedStartup||process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup'),earlyCore=process.argv.includes('--early-core'),earlyInteraction=process.argv.includes('--early-interaction')||earlyCore;
 assert.ok(!(earlyInteraction&&profileStartup),'early interaction is a separate condition');
+const pacedQueue=[];
+// Shared across ALL HTTP responses, including service-worker requests. Body-only pacing, not a physical network model.
+const pacer=pacedStartup?setInterval(()=>{const job=pacedQueue.shift();if(!job)return;const end=Math.min(job.offset+4096,job.payload.length);job.res.write(job.payload.subarray(job.offset,end));job.offset=end;if(end===job.payload.length){job.res.end();job.resolve()}else pacedQueue.push(job)},20):null;if(pacer)pacer.unref();
 const server=http.createServer(async(req,res)=>{
  let body='';for await(const chunk of req)body+=chunk;
  const url='http://'+req.headers.host+req.url;
  const route={request:()=>({url:()=>url,method:()=>req.method,headers:()=>req.headers,postDataJSON:()=>body?JSON.parse(body):{}}),
- fulfill:async({status=200,contentType,headers={},body=''})=>{transfers.push({url,bytes:Buffer.byteLength(body)});res.writeHead(status,{'content-type':contentType||'text/plain','cache-control':'no-cache',...headers});res.end(body)},
+ fulfill:async({status=200,contentType,headers={},body=''})=>{
+   let payload=Buffer.from(body);if(pacedStartup&&pacedGzip&&/text|json|javascript|svg/.test(contentType||'')){payload=gzipSync(payload);headers={...headers,'content-encoding':'gzip'};}
+   transfers.push({url,bytes:Buffer.byteLength(body),encodedBodyBytes:payload.length});
+   if(pacedStartup)await new Promise(r=>setTimeout(r,80));
+   res.writeHead(status,{'content-type':contentType||'text/plain','cache-control':'no-cache',...headers});
+   if(!pacedStartup){res.end(payload);return}
+   await new Promise(resolve=>pacedQueue.push({res,payload,offset:0,resolve}));
+ },
  abort:async()=>{res.writeHead(502);res.end()}};
  try{await dispatch(route)}catch(e){console.error(e);res.writeHead(500);res.end()}
 });
@@ -191,7 +203,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         const cpuAfter=metrics?(await metrics.send('Performance.getMetrics')).metrics:[];
         startup={...await page.evaluate(()=>({...window.__startup,idleObservedMs:performance.now()})),reads:calls.length,
           scriptMs:metrics?1000*((cpuAfter.find(m=>m.name==='ScriptDuration')?.value||0)-(cpuBefore.find(m=>m.name==='ScriptDuration')?.value||0)):null,
-          responses:transfers.map(x=>({path:new URL(x.url).pathname,bytes:x.bytes}))};
+          responses:transfers.map(x=>({path:new URL(x.url).pathname,bytes:x.bytes,...(pacedStartup?{encodedBodyBytes:x.encodedBodyBytes}:{})}))};
       }
       if(traceStartup&&metrics){
         const done=new Promise(r=>metrics.once('Tracing.tracingComplete',r));await metrics.send('Tracing.end');await done;metrics.off('Tracing.dataCollected',traceListener);
@@ -251,4 +263,4 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);
   }finally{if(coreDelay)coreDelay.release();if(earlyGate)earlyGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }}finally{await new Promise(r=>server.close(r))}
-console.log(JSON.stringify({conditions:(verify?'Browser regression; ':'5 pairs cold/warm; ')+' real HTTP and service worker caching, synthetic session/API 50ms, 390x844; Chromium CPU4x, WebKit default in verification; server response body bytes, no compression, not production wire bytes or iPhone timing',samples},null,2));
+console.log(JSON.stringify({...(pacedStartup?{pacing:{aggregateBodyBytesPerSecond:204800,chunkBytes:4096,tickMs:20,responseHeaderDelayMs:80,gzip:pacedGzip,scope:'all local HTTP responses including SW; headers/TLS not paced; no actual operating server measurement'}}:{}),conditions:(verify?'Browser regression; ':'5 pairs cold/warm; ')+' real HTTP and service worker caching, synthetic session/API 50ms, 390x844; Chromium CPU4x, WebKit default in verification; server response body bytes, no compression, not production wire bytes or iPhone timing',samples},null,2));
