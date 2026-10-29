@@ -65,6 +65,10 @@ jobs:
         run: node tests/build234_detail_reads.mjs --verify
       - name: Verify chart window reuse preserves selection and new prices
         run: node tests/build233_chart_latency.mjs --verify
+      - name: Verify early portfolio interaction retains pending startup and search
+        run: node tests/build232_update_latency.mjs --verify --early-interaction
+      - name: Verify pending holdings never appear as an empty portfolio
+        run: node tests/build232_update_latency.mjs --verify --early-core
       - name: Verify cold and warm update checks with real service workers
         run: node tests/build232_update_latency.mjs --verify --profile-startup
       - name: Verify wealth only requests visible data and reuses cached results

@@ -9,7 +9,8 @@ import {chromium,webkit} from 'playwright';
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 let dispatch,transfers=[],versionOverride=null,versionStatus=200,fallbackBuild=null,updateUnavailable=false,navigationUnavailable=false;
-const verify=process.argv.includes('--verify'),profileStartup=process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup');
+const verify=process.argv.includes('--verify'),profileStartup=process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup'),earlyCore=process.argv.includes('--early-core'),earlyInteraction=process.argv.includes('--early-interaction')||earlyCore;
+assert.ok(!(earlyInteraction&&profileStartup),'early interaction is a separate condition');
 const server=http.createServer(async(req,res)=>{
  let body='';for await(const chunk of req)body+=chunk;
  const url='http://'+req.headers.host+req.url;
@@ -74,7 +75,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'allow'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
   await context.addInitScript(({token,key})=>localStorage.setItem(key,JSON.stringify({accessToken:token,refreshToken:'synthetic-local-refresh',expiresAt:Date.now()+3600000})),{token:jwt,key:'my_portfolio_session_v2'});
-  const calls=[],forbidden=[],errors=[];let generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
+  const calls=[],forbidden=[],errors=[];let emptyHoldings=false,earlyGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
   const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)});
   dispatch=async route=>{
     const request=route.request(),url=new URL(request.url()),method=request.method();
@@ -104,6 +105,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     }
     if(path.startsWith('/rest/v1/rpc/')){
       const rpc=path.split('/').pop();
+      if(rpc==='get_live_performance_summary'&&earlyGate){earlyGate.entered();await earlyGate.wait;}
       if(!rpc.startsWith('get_')&&rpc!=='reconcile_live_cash_flows'){forbidden.push(rpc);return json(route,{message:'Writes are blocked'},403)}
       if(rpc==='get_live_period_stock_pnl'){if(pnlDelay){const pending=pnlDelay;pending.entered();await pending.wait}return json(route,stockResult(body.p_period,generation))}
       if(rpc==='get_live_benchmark_comparison'&&extraDelay){extraDelay.entered();await extraDelay.wait}
@@ -122,7 +124,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     if(table==='holdings'&&coreDelay){const pending=coreDelay;pending.entered();await pending.wait}
     if(table==='holdings'&&failCore)return json(route,{message:'synthetic offline'},503);
     if(table==='transactions'&&failExtra)return json(route,{message:'synthetic extra failure'},503);
-    const tables={accounts,securities,holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
+    const tables={accounts,securities,holdings:emptyHoldings?[]:holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
     return json(route,tables[table]||[]);
   };
   if(profileStartup)await context.addInitScript(()=>{
@@ -140,11 +142,45 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
   try{
     for(const cache of ['cold','warm']){
       transfers=[];calls.length=0;
+      let early=null;if(earlyInteraction){if(earlyCore)coreDelay=deferred();else earlyGate=deferred();}
       let traceEvents=[],traceListener;
       if(traceStartup&&metrics){traceListener=x=>traceEvents.push(...x.value);metrics.on('Tracing.dataCollected',traceListener);await metrics.send('Tracing.start',{categories:'devtools.timeline,blink.user_timing,toplevel',transferMode:'ReportEvents'});}
 
       const cpuBefore=metrics?(await metrics.send('Performance.getMetrics')).metrics:[];
       if(cache==='cold')await page.goto(site,{waitUntil:'load'});else await page.reload({waitUntil:'load'});
+      if(earlyInteraction){
+        await waitGate(earlyCore?coreDelay:earlyGate,earlyCore?'startup holdings':'startup summary');
+        if(earlyCore)await page.waitForFunction(()=>document.querySelector('.hero .asset')?.textContent.includes('5,400,000'));
+        assert.equal(await page.evaluate(()=>window.__dailyTest.state().idle),false);
+        const before=calls.length;
+        await page.evaluate(()=>{window.__earlyStart=performance.now();document.querySelector('#nav [data-tab="portfolio"]').click()});
+        if(!earlyCore)await page.locator('.portfolio-list .portfolio-row').first().waitFor();
+        const callbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__earlyStart)))));
+        let pendingText=null;
+        if(earlyCore){pendingText=await page.locator('#content').innerText();assert.match(pendingText,/종목 불러오는 중/);assert.doesNotMatch(pendingText,/보유종목 없음/);assert.equal(await page.locator('#content [role="status"]').count(),1);
+          if(verify)for(const zoom of [1,1.25])for(const width of [390,402,430]){
+            await page.setViewportSize({width,height:844});await page.evaluate(z=>document.documentElement.style.zoom=String(z),zoom);
+            assert.ok(await page.locator('#content').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'loading message fits');
+            assert.ok(await page.locator('#nav button').evaluateAll(es=>es.every(e=>e.getBoundingClientRect().height>=44)),'navigation touch targets');
+          }
+          await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.documentElement.style.zoom='1');
+        coreDelay.release();coreDelay=null;await page.locator('.portfolio-list .portfolio-row').first().waitFor();}
+        assert.equal(await page.locator('.portfolio-list .portfolio-row').count(),4);
+        await page.locator('#search').fill('ARM');
+        early={pendingText,callbackMs,readsAtClick:before,readsWhileGated:calls.length,gateIdle:await page.evaluate(()=>window.__dailyTest.state().idle)};
+        if(earlyGate){earlyGate.release();earlyGate=null;}
+        await page.waitForFunction(()=>window.__dailyTest.state().idle);
+        assert.equal(await page.locator('#nav [aria-current="page"]').getAttribute('data-tab'),'portfolio');
+        assert.equal(await page.locator('#search').inputValue(),'ARM');
+        assert.equal(await page.evaluate(()=>document.activeElement?.id),'search');
+        assert.equal(await page.locator('.portfolio-list .portfolio-row:visible').count(),1);
+        early.completionAfterClickMs=await page.evaluate(()=>performance.now()-window.__earlyStart);
+        early.reads=calls.map(c=>c.path.split('/').pop());
+        assert.equal(early.reads.filter(n=>n==='get_live_performance_summary').length,1,'early navigation shares pending startup summary');
+        await page.locator('#search').blur();
+        await page.locator('#nav [data-tab="home"]').click();
+        assert.match(await page.locator('.hero .asset').innerText(),/5,400,000/);
+      }
       await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0&&!window.__dailyTest.state().updatePending);
       await page.evaluate(()=>navigator.serviceWorker.ready);
       const updates=transfers.filter(x=>x.url.includes('check_build='));
@@ -163,7 +199,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         startup.renderMarks=traceEvents.filter(e=>e.pid===asset.pid&&e.tid===asset.tid&&e.name.startsWith('startupRender')).map(e=>({name:e.name,startFromAssetMs:(e.ts-asset.ts)/1000}));
         startup.trace=traceEvents.filter(e=>e.pid===asset.pid&&e.tid===asset.tid&&e.dur&&['RunTask','Layout','UpdateLayoutTree','ParseHTML','EvaluateScript','FunctionCall','CompileScript','Paint'].includes(e.name)).map(e=>({name:e.name,startFromAssetMs:(e.ts-asset.ts)/1000,durationMs:e.dur/1000,...(['FunctionCall','EvaluateScript','Layout'].includes(e.name)?{data:e.args?.data}:{} )}));
       }
-      samples.push({run:run+1,cache,...(startup?{startup}:{}),updateBytes:updates.reduce((n,x)=>n+x.bytes,0),updateRequests:updates.length,networkResponses:transfers.length,decodedBytes:transfers.reduce((n,x)=>n+x.bytes,0),controlled:await page.evaluate(()=>!!navigator.serviceWorker.controller)});
+      samples.push({run:run+1,cache,...(early?{early}:{}),...(startup?{startup}:{}),updateBytes:updates.reduce((n,x)=>n+x.bytes,0),updateRequests:updates.length,networkResponses:transfers.length,decodedBytes:transfers.reduce((n,x)=>n+x.bytes,0),controlled:await page.evaluate(()=>!!navigator.serviceWorker.controller)});
       if(profileStartup){
         calls.length=0;
         await page.evaluate(()=>{window.__firstTabStart=performance.now();document.querySelector('#nav [data-tab="portfolio"]').click()});
@@ -176,6 +212,13 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         assert.equal(await page.locator('.portfolio-list .portfolio-row').count(),4);
         await page.locator('#nav [data-tab="home"]').click();
       }
+    }
+    if(verify&&earlyCore){
+      emptyHoldings=true;await page.reload({waitUntil:'load'});await page.waitForFunction(()=>window.__dailyTest.state().idle);
+      await page.locator('#nav [data-tab="portfolio"]').click();await page.waitForFunction(()=>window.__dailyTest.state().idle);
+      assert.match(await page.locator('#content').innerText(),/보유종목 없음/,'completed empty holdings still use the empty state');
+      assert.doesNotMatch(await page.locator('#content').innerText(),/종목 불러오는 중/);
+      emptyHoldings=false;await page.reload({waitUntil:'load'});await page.waitForFunction(()=>window.__dailyTest.state().idle);
     }
     if(verify){
       assert.ok(samples.slice(-2).every(x=>x.updateBytes===readFileSync(resolve(root,'version.json')).length),'cold and warm service-worker paths use the manifest');
@@ -205,7 +248,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
       navigationUnavailable=false;
       console.log(name+': real SW cold/warm manifest checks, new release, HTML fallback, malformed/unavailable draft preservation and cached navigation fallback passed');
     }
-    assert.deepEqual(errors,[]);
-  }finally{if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
+    assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);
+  }finally{if(coreDelay)coreDelay.release();if(earlyGate)earlyGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
 }}finally{await new Promise(r=>server.close(r))}
 console.log(JSON.stringify({conditions:(verify?'Browser regression; ':'5 pairs cold/warm; ')+' real HTTP and service worker caching, synthetic session/API 50ms, 390x844; Chromium CPU4x, WebKit default in verification; server response body bytes, no compression, not production wire bytes or iPhone timing',samples},null,2));
