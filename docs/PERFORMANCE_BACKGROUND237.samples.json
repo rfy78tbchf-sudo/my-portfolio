@@ -1,0 +1,3512 @@
+{
+  "before": {
+    "holdingCount": 4,
+    "conditions": "Five fresh Chromium sessions, two sequential complete refreshes each (verification: six width/zoom cases per engine); warmed home and tabs;390x844 CPU4x Chromium/WebKit default;50ms synthetic per API request including sync; SW blocked/interception disables cache; no manual response gates; first background sync due, subsequent TTL fresh; asset/foreground DOM observer timestamps, all-idle polling plus two rAF; request timestamps use Node clock; decoded JSON bytes are fixture payload size NOT wire bytes; no operating DB writes",
+    "samples": [
+      {
+        "run": 1,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.900000000139698,
+                  "restore": 0.30000000004656613,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 25.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0.8000000000465661
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.699999999953434,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 30.5999999998603,
+                  "anchor": 0.6999999999534339,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.600000000093132,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.0999999998603016,
+                  "page": 0.9000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 25.799999999813735,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.399999999906868,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.9000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 25.299999999813735,
+                  "anchor": 0.9000000001396984,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.800000000046566,
+                  "restore": 0,
+                  "deferred": 0.6999999999534339,
+                  "nav": 0.10000000009313226,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 1,
+                  "periodVisibility": 23,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.600000000093132,
+                  "restore": 1.1999999999534339,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.8000000000465661,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.5,
+                  "periodVisibility": 24.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0.9000000001396984
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.5999999998603,
+                  "restore": 0.20000000018626451,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 2.3999999999068677,
+                  "periodVisibility": 34.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 26.9000000001397,
+                  "restore": 0,
+                  "deferred": 0.09999999986030161,
+                  "nav": 1.1000000000931323,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 2.300000000046566,
+                  "periodVisibility": 37.39999999990687,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.9000000001397,
+                  "restore": 0.19999999995343387,
+                  "deferred": 0,
+                  "nav": 0.6000000000931323,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2.0999999998603016,
+                  "periodVisibility": 30.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.1999999999534339,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 24.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.399999999906868,
+                  "restore": 0.30000000004656613,
+                  "deferred": 0.19999999995343387,
+                  "nav": 1.5,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 0.6000000000931323,
+                  "periodVisibility": 40.0999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 181,
+            "foregroundMs": 706.1999999999534,
+            "allIdleMs": 1592.3999999999069,
+            "longTasks": [
+              61,
+              50,
+              101,
+              69,
+              72,
+              161
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14,
+                  "restore": 1.9000000001396984,
+                  "deferred": 0.39999999990686774,
+                  "nav": 0.10000000009313226,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 0.19999999995343387,
+                  "periodVisibility": 29.9000000001397,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.5999999998603,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.10000000009313226,
+                  "page": 1.0999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 1.3000000000465661,
+                  "periodVisibility": 25.600000000093132,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 28.4000000001397,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.5999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 2.4000000001396984,
+                  "periodVisibility": 34.5999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.700000000186265,
+                  "restore": 0,
+                  "deferred": 0.8999999999068677,
+                  "nav": 1.1000000000931323,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 3.2999999998137355,
+                  "periodVisibility": 23.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.399999999906868,
+                  "restore": 0,
+                  "deferred": 0.6000000000931323,
+                  "nav": 0.2999999998137355,
+                  "page": 0.4000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 0.19999999995343387,
+                  "periodVisibility": 21.399999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 176,
+            "foregroundMs": 692.5999999998603,
+            "allIdleMs": 709.8999999999069,
+            "longTasks": [
+              50,
+              59,
+              68,
+              88
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.800000000046566,
+                  "restore": 2.199999999953434,
+                  "deferred": 0,
+                  "nav": 0.19999999995343387,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 3.5999999998603016,
+                  "periodVisibility": 26.9000000001397,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0.7000000001862645
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.399999999906868,
+                  "restore": 0.7000000001862645,
+                  "deferred": 0,
+                  "nav": 0.7999999998137355,
+                  "page": 0.20000000018626451,
+                  "wealth": 0,
+                  "otherBindings": 2.8999999999068677,
+                  "periodVisibility": 27.399999999906868,
+                  "anchor": 0,
+                  "scroll": 0.4000000001396984
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 21.300000000046566,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 25.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.799999999813735,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.2000000001862645,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 28,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.799999999813735,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 0.8999999999068677,
+                  "periodVisibility": 25.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 29.4000000001397,
+                  "restore": 1.2999999998137355,
+                  "deferred": 1,
+                  "nav": 0.8000000000465661,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 0.8000000000465661,
+                  "periodVisibility": 23.0999999998603,
+                  "anchor": 0,
+                  "scroll": 1
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.199999999953434,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 2.0999999998603016,
+                  "periodVisibility": 29.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.700000000186265,
+                  "restore": 0,
+                  "deferred": 0.09999999986030161,
+                  "nav": 0.10000000009313226,
+                  "page": 1.0999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 1.7000000001862645,
+                  "periodVisibility": 29.5999999998603,
+                  "anchor": 0.30000000004656613,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.800000000046566,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 0.6999999999534339,
+                  "page": 0.20000000018626451,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 23.799999999813735,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0.5
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.399999999906868,
+                  "restore": 0,
+                  "deferred": 0.8000000000465661,
+                  "nav": 0.09999999986030161,
+                  "page": 0.7000000001862645,
+                  "wealth": 0,
+                  "otherBindings": 0.09999999986030161,
+                  "periodVisibility": 24.600000000093132,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.200000000186265,
+                  "restore": 0.19999999995343387,
+                  "deferred": 0.19999999995343387,
+                  "nav": 0.39999999990686774,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 1,
+                  "periodVisibility": 25.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 181.19999999995343,
+            "foregroundMs": 709,
+            "allIdleMs": 1541.5,
+            "longTasks": [
+              54,
+              60,
+              52,
+              101,
+              59,
+              59,
+              131
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14,
+                  "restore": 1.6000000000931323,
+                  "deferred": 0.09999999986030161,
+                  "nav": 0.7000000001862645,
+                  "page": 1.2999999998137355,
+                  "wealth": 0,
+                  "otherBindings": 0.20000000018626451,
+                  "periodVisibility": 28,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.699999999953434,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.5999999998603016,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 27.100000000093132,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.399999999906868,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 2.699999999953434,
+                  "periodVisibility": 26.100000000093132,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.4000000001397,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.5999999998603016,
+                  "page": 0.8000000000465661,
+                  "wealth": 0.10000000009313226,
+                  "otherBindings": 1.5999999998603016,
+                  "periodVisibility": 24.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.399999999906868,
+                  "restore": 0,
+                  "deferred": 1,
+                  "nav": 0.9000000001396984,
+                  "page": 0.39999999990686774,
+                  "wealth": 0,
+                  "otherBindings": 0.8000000000465661,
+                  "periodVisibility": 23.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 170.69999999995343,
+            "foregroundMs": 685.3999999999069,
+            "allIdleMs": 703.0999999998603,
+            "longTasks": [
+              60,
+              101
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.199999999953434,
+                  "restore": 1.0999999998603016,
+                  "deferred": 0,
+                  "nav": 0.6000000000931323,
+                  "page": 0.6000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 23.399999999906868,
+                  "anchor": 0,
+                  "scroll": 1.1000000000931323
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 23.5,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.7000000001862645,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 3.4000000001396984,
+                  "periodVisibility": 31.199999999953434,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.600000000093132,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.7999999998137355,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.3999999999068677,
+                  "periodVisibility": 26.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.5,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0.9000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 2.699999999953434,
+                  "periodVisibility": 27,
+                  "anchor": 0.8999999999068677,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.300000000046566,
+                  "restore": 0,
+                  "deferred": 0.09999999986030161,
+                  "nav": 1,
+                  "page": 0.4000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 0.8999999999068677,
+                  "periodVisibility": 23.100000000093132,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.600000000093132,
+                  "restore": 1.5999999998603016,
+                  "deferred": 0.19999999995343387,
+                  "nav": 0.9000000001396984,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.9000000001396984,
+                  "periodVisibility": 25.899999999906868,
+                  "anchor": 0.4000000001396984,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 2.4000000001396984,
+                  "periodVisibility": 30,
+                  "anchor": 0,
+                  "scroll": 0.5
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.599999999860302,
+                  "restore": 0.9000000001396984,
+                  "deferred": 0,
+                  "nav": 0.6999999999534339,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 2.800000000046566,
+                  "periodVisibility": 26.600000000093132,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.200000000186265,
+                  "restore": 0.5,
+                  "deferred": 0,
+                  "nav": 0.6999999999534339,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 3.300000000046566,
+                  "periodVisibility": 21.800000000046566,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.299999999813735,
+                  "restore": 0,
+                  "deferred": 0.5,
+                  "nav": 0.10000000009313226,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 27.0999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.900000000139698,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.3999999999068677,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 1,
+                  "periodVisibility": 24.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 167.19999999995343,
+            "foregroundMs": 710.6999999999534,
+            "allIdleMs": 1518.8999999999069,
+            "longTasks": [
+              77,
+              105,
+              58,
+              125
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 22.699999999953434,
+                  "restore": 2.4000000001396984,
+                  "deferred": 0.09999999986030161,
+                  "nav": 0.10000000009313226,
+                  "page": 1.3000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 0.09999999986030161,
+                  "periodVisibility": 42.5,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.199999999953434,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0.6000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 32.800000000046566,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.700000000186265,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.7999999998137355,
+                  "page": 0.7000000001862645,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 24,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 28,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 3.6000000000931323,
+                  "periodVisibility": 21.0999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.199999999953434,
+                  "restore": 0,
+                  "deferred": 0.09999999986030161,
+                  "nav": 1.5,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 0.5,
+                  "periodVisibility": 22.600000000093132,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 197.5,
+            "foregroundMs": 722.5,
+            "allIdleMs": 750,
+            "longTasks": [
+              72,
+              62,
+              103
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.800000000046566,
+                  "restore": 1.1999999999534339,
+                  "deferred": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 1.7000000001862645,
+                  "periodVisibility": 31.5999999998603,
+                  "anchor": 0.6000000000931323,
+                  "scroll": 0.19999999995343387
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 22.199999999953434,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 2.300000000046566,
+                  "periodVisibility": 31.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 23.899999999906868,
+                  "restore": 0.7000000001862645,
+                  "deferred": 0,
+                  "nav": 0.6999999999534339,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 3.199999999953434,
+                  "periodVisibility": 30.100000000093132,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1.3000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 3.5999999998603016,
+                  "periodVisibility": 27.100000000093132,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 33.0999999998603,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0.8999999999068677,
+                  "nav": 0.10000000009313226,
+                  "page": 1.1000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 1.6999999999534339,
+                  "periodVisibility": 29.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.899999999906868,
+                  "restore": 1.3000000000465661,
+                  "deferred": 0.8000000000465661,
+                  "nav": 0.7999999998137355,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 0.20000000018626451,
+                  "periodVisibility": 28.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 23.300000000046566,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 2.300000000046566,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 3.6000000000931323,
+                  "periodVisibility": 34.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.199999999953434,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.5,
+                  "page": 0.5999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 3.199999999953434,
+                  "periodVisibility": 37.700000000186265,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 22,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.3000000000465661,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 3.8999999999068677,
+                  "periodVisibility": 29.9000000001397,
+                  "anchor": 0,
+                  "scroll": 0.5999999998603016
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.9000000001397,
+                  "restore": 0,
+                  "deferred": 0.09999999986030161,
+                  "nav": 1.5,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 0.8000000000465661,
+                  "periodVisibility": 31.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.600000000093132,
+                  "restore": 0,
+                  "deferred": 0.09999999986030161,
+                  "nav": 1.5,
+                  "page": 0.5,
+                  "wealth": 0.30000000004656613,
+                  "otherBindings": 0.4000000001396984,
+                  "periodVisibility": 32.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 187.19999999995343,
+            "foregroundMs": 759,
+            "allIdleMs": 1705.3000000000466,
+            "longTasks": [
+              56,
+              72,
+              60,
+              126,
+              54,
+              78,
+              63,
+              176
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.899999999906868,
+                  "restore": 1.1000000000931323,
+                  "deferred": 0.39999999990686774,
+                  "nav": 0.19999999995343387,
+                  "page": 0.6000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 1,
+                  "periodVisibility": 35.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.700000000186265,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 3,
+                  "periodVisibility": 28.899999999906868,
+                  "anchor": 0.6000000000931323,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 21.5,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 0.7000000001862645,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 32.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 24.300000000046566,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2.5999999998603016,
+                  "periodVisibility": 28.4000000001397,
+                  "anchor": 0.7999999998137355,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.699999999953434,
+                  "restore": 1,
+                  "deferred": 0.19999999995343387,
+                  "nav": 1.3999999999068677,
+                  "page": 0.4000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 1.3000000000465661,
+                  "periodVisibility": 31.0999999998603,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 190.69999999995343,
+            "foregroundMs": 760.5999999998603,
+            "allIdleMs": 803.5999999998603,
+            "longTasks": [
+              63,
+              66,
+              60,
+              122
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.700000000186265,
+                  "restore": 1,
+                  "deferred": 0,
+                  "nav": 1.0999999998603016,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 2.2000000001862645,
+                  "periodVisibility": 45.199999999953434,
+                  "anchor": 0.8999999999068677,
+                  "scroll": 0.19999999995343387
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.199999999953434,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 30.200000000186265,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.5,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0.6000000000931323,
+                  "nav": 0.19999999995343387,
+                  "page": 1.0999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 3.2000000001862645,
+                  "periodVisibility": 27.0999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.800000000046566,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2.800000000046566,
+                  "periodVisibility": 27.300000000046566,
+                  "anchor": 0.5999999998603016,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.799999999813735,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 1.1000000000931323,
+                  "periodVisibility": 27.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.799999999813735,
+                  "restore": 1.8000000000465661,
+                  "deferred": 2.1000000000931323,
+                  "nav": 0.09999999986030161,
+                  "page": 0.7000000001862645,
+                  "wealth": 0,
+                  "otherBindings": 0.09999999986030161,
+                  "periodVisibility": 33.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.4000000001397,
+                  "restore": 0.8000000000465661,
+                  "deferred": 0,
+                  "nav": 0.7999999998137355,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 28.4000000001397,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.800000000046566,
+                  "restore": 0.6999999999534339,
+                  "deferred": 0,
+                  "nav": 0.5999999998603016,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 1.8999999999068677,
+                  "periodVisibility": 29.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.899999999906868,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.19999999995343387,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 2.4000000001396984,
+                  "periodVisibility": 26.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.300000000046566,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.5999999998603016,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 1.1000000000931323,
+                  "periodVisibility": 25.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.199999999953434,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.8000000000465661,
+                  "page": 0.5999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 0.4000000001396984,
+                  "periodVisibility": 24.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 196.5,
+            "foregroundMs": 726.8000000000466,
+            "allIdleMs": 1586.3000000000466,
+            "longTasks": [
+              72,
+              65,
+              53,
+              106,
+              60,
+              61,
+              50,
+              143
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.899999999906868,
+                  "restore": 1.5,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.8000000000465661,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 0.09999999986030161,
+                  "periodVisibility": 22.100000000093132,
+                  "anchor": 0.8000000000465661,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.800000000046566,
+                  "periodVisibility": 28.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.099999999860302,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.9000000001396984,
+                  "page": 1.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 21.5999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.600000000093132,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.7999999998137355,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.699999999953434,
+                  "periodVisibility": 25.100000000093132,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.099999999860302,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1,
+                  "page": 1.1000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 0.09999999986030161,
+                  "periodVisibility": 26.5,
+                  "anchor": 0.6000000000931323,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 166.5,
+            "foregroundMs": 675.1000000000931,
+            "allIdleMs": 688.5,
+            "longTasks": [
+              63,
+              92
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      }
+    ]
+  },
+  "after": {
+    "holdingCount": 4,
+    "conditions": "Five fresh Chromium sessions, two sequential complete refreshes each (verification: six width/zoom cases per engine); warmed home and tabs;390x844 CPU4x Chromium/WebKit default;50ms synthetic per API request including sync; SW blocked/interception disables cache; no manual response gates; first background sync due, subsequent TTL fresh; asset/foreground DOM observer timestamps, all-idle polling plus two rAF; request timestamps use Node clock; decoded JSON bytes are fixture payload size NOT wire bytes; no operating DB writes",
+    "samples": [
+      {
+        "run": 1,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.0999999998603,
+                  "restore": 0.9000000001396984,
+                  "deferred": 0.6999999999534339,
+                  "nav": 0.6999999999534339,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 3,
+                  "periodVisibility": 27.600000000093132,
+                  "anchor": 0.5,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.0999999998603016,
+                  "page": 1.2000000001862645,
+                  "wealth": 0,
+                  "otherBindings": 1.3999999999068677,
+                  "periodVisibility": 29.5,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.5,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.699999999953434,
+                  "periodVisibility": 31.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.300000000046566,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 2.800000000046566,
+                  "periodVisibility": 26,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.5,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0.39999999990686774,
+                  "nav": 0.39999999990686774,
+                  "page": 0.4000000001396984,
+                  "wealth": 0.09999999986030161,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 24.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.699999999953434,
+                  "restore": 2.199999999953434,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.6999999999534339,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 0,
+                  "periodVisibility": 27.5,
+                  "anchor": 0,
+                  "scroll": 0.6999999999534339
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.800000000046566,
+                  "restore": 0.39999999990686774,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 1.3999999999068677,
+                  "periodVisibility": 26.100000000093132,
+                  "anchor": 0.6999999999534339,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 1.8000000000465661,
+                  "periodVisibility": 26.5,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.899999999906868,
+                  "restore": 0,
+                  "deferred": 0.4000000001396984,
+                  "nav": 0.5999999998603016,
+                  "page": 0.9000000001396984,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 22.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.400000000139698,
+                  "restore": 0,
+                  "deferred": 0.6999999999534339,
+                  "nav": 0.09999999986030161,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 0.8999999999068677,
+                  "periodVisibility": 23.200000000186265,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 181.9000000001397,
+            "foregroundMs": 707.9000000001397,
+            "allIdleMs": 1453.2000000001863,
+            "longTasks": [
+              55,
+              63,
+              56,
+              96,
+              58,
+              82
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.199999999953434,
+                  "restore": 1.5,
+                  "deferred": 0.30000000004656613,
+                  "nav": 0.19999999995343387,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 26.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.699999999953434,
+                  "restore": 0.19999999995343387,
+                  "deferred": 0,
+                  "nav": 0.6000000000931323,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 1.3999999999068677,
+                  "periodVisibility": 30.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.9000000001397,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 3.0999999998603016,
+                  "periodVisibility": 22.700000000186265,
+                  "anchor": 1,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.399999999906868,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1.2999999998137355,
+                  "wealth": 0,
+                  "otherBindings": 1.7000000001862645,
+                  "periodVisibility": 24.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 12.199999999953434,
+                  "restore": 0,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.8000000000465661,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 24.300000000046566,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 171.19999999995343,
+            "foregroundMs": 677.8000000000466,
+            "allIdleMs": 715.9000000001397,
+            "longTasks": [
+              60,
+              92
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20,
+                  "restore": 1.3000000000465661,
+                  "deferred": 0,
+                  "nav": 0.6000000000931323,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 46.699999999953434,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.199999999953434,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1.1999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 28.600000000093132,
+                  "anchor": 0,
+                  "scroll": 0.8999999999068677
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.100000000093132,
+                  "restore": 0.5999999998603016,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1.0999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 25.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.5,
+                  "restore": 0.30000000004656613,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.6000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 2.199999999953434,
+                  "periodVisibility": 24.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.899999999906868,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.8000000000465661,
+                  "periodVisibility": 27.100000000093132,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.700000000186265,
+                  "restore": 1.2999999998137355,
+                  "deferred": 0.20000000018626451,
+                  "nav": 0.5,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 0.19999999995343387,
+                  "periodVisibility": 24.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.699999999953434,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.9000000001396984,
+                  "page": 0.39999999990686774,
+                  "wealth": 0,
+                  "otherBindings": 3.3999999999068677,
+                  "periodVisibility": 28.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.799999999813735,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.20000000018626451,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 25.0999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.799999999813735,
+                  "restore": 0.30000000004656613,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 1.8000000000465661,
+                  "periodVisibility": 32.199999999953434,
+                  "anchor": 1.8000000000465661,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 22,
+                  "restore": 0.5,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.8000000000465661,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.6000000000931323,
+                  "periodVisibility": 27.600000000093132,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 215.69999999995343,
+            "foregroundMs": 750.2999999998137,
+            "allIdleMs": 1566.5999999998603,
+            "longTasks": [
+              76,
+              64,
+              102,
+              69,
+              109
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.600000000093132,
+                  "restore": 1.1000000000931323,
+                  "deferred": 0.09999999986030161,
+                  "nav": 0.10000000009313226,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 0.19999999995343387,
+                  "periodVisibility": 28,
+                  "anchor": 0,
+                  "scroll": 0.5
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.899999999906868,
+                  "restore": 0.6999999999534339,
+                  "deferred": 0,
+                  "nav": 0.7000000001862645,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 2.4000000001396984,
+                  "periodVisibility": 25,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0.6999999999534339
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.800000000046566,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 1.8000000000465661,
+                  "periodVisibility": 25.0999999998603,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.599999999860302,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1.3999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 1.5,
+                  "periodVisibility": 21.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0.20000000018626451
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.200000000186265,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 2,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.6000000000931323,
+                  "periodVisibility": 22.5999999998603,
+                  "anchor": 1.3000000000465661,
+                  "scroll": 0.19999999995343387
+                }
+              }
+            ],
+            "assetMs": 173.5,
+            "foregroundMs": 675.8999999999069,
+            "allIdleMs": 712,
+            "longTasks": [
+              50,
+              59,
+              89
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16,
+                  "restore": 1.1999999999534339,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0.30000000004656613,
+                  "wealth": 0,
+                  "otherBindings": 2.8999999999068677,
+                  "periodVisibility": 32.4000000001397,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.100000000093132,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.39999999990686774,
+                  "wealth": 0,
+                  "otherBindings": 2,
+                  "periodVisibility": 29.100000000093132,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.800000000046566,
+                  "restore": 0.6000000000931323,
+                  "deferred": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 1.6999999999534339,
+                  "periodVisibility": 33,
+                  "anchor": 0.8000000000465661,
+                  "scroll": 0.19999999995343387
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.0999999998603,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.20000000018626451,
+                  "wealth": 0,
+                  "otherBindings": 3.699999999953434,
+                  "periodVisibility": 33.5,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20,
+                  "restore": 0.8999999999068677,
+                  "deferred": 0,
+                  "nav": 0.20000000018626451,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 0.5,
+                  "periodVisibility": 29.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.5,
+                  "restore": 1.1000000000931323,
+                  "deferred": 0.10000000009313226,
+                  "nav": 1.1999999999534339,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 0.7000000001862645,
+                  "periodVisibility": 33.5,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15,
+                  "restore": 0.8999999999068677,
+                  "deferred": 0,
+                  "nav": 0.10000000009313226,
+                  "page": 1.1000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 2.2999999998137355,
+                  "periodVisibility": 34.4000000001397,
+                  "anchor": 0.8000000000465661,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.200000000186265,
+                  "restore": 1,
+                  "deferred": 0,
+                  "nav": 0.09999999986030161,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 2.300000000046566,
+                  "periodVisibility": 34,
+                  "anchor": 0.10000000009313226,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 2,
+                  "page": 0.30000000004656613,
+                  "wealth": 0,
+                  "otherBindings": 2.8999999999068677,
+                  "periodVisibility": 32.60000000009313,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.800000000046566,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 1.3000000000465661,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 1.0999999998603016,
+                  "periodVisibility": 58.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 187.0999999998603,
+            "foregroundMs": 739.8999999999069,
+            "allIdleMs": 1608.0999999998603,
+            "longTasks": [
+              57,
+              63,
+              59,
+              123,
+              57,
+              66,
+              55,
+              143
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.5,
+                  "restore": 1.1999999999534339,
+                  "deferred": 0.39999999990686774,
+                  "nav": 0.10000000009313226,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 0.19999999995343387,
+                  "periodVisibility": 27.5,
+                  "anchor": 0.19999999995343387,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.600000000093132,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.0999999998603016,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 1.8999999999068677,
+                  "periodVisibility": 33.9000000001397,
+                  "anchor": 1,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.899999999906868,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2.300000000046566,
+                  "periodVisibility": 27.0999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.899999999906868,
+                  "restore": 0.9000000001396984,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 1.8000000000465661,
+                  "periodVisibility": 29.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.0999999998603,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.3000000000465661,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 1.1999999999534339,
+                  "periodVisibility": 26.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 184.5,
+            "foregroundMs": 724.9000000001397,
+            "allIdleMs": 759.3000000000466,
+            "longTasks": [
+              50,
+              74,
+              53,
+              100
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 20.5,
+                  "restore": 1.1000000000931323,
+                  "deferred": 0,
+                  "nav": 0.8000000000465661,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 1.7999999998137355,
+                  "periodVisibility": 33.800000000046566,
+                  "anchor": 0,
+                  "scroll": 1.1000000000931323
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.199999999953434,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.3999999999068677,
+                  "page": 0.5,
+                  "wealth": 0,
+                  "otherBindings": 3.2000000001862645,
+                  "periodVisibility": 35.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.5999999998603,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.3999999999068677,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 5.600000000093132,
+                  "periodVisibility": 29.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.4000000001397,
+                  "restore": 1.0999999998603016,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.800000000046566,
+                  "periodVisibility": 27.399999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.700000000186265,
+                  "restore": 0,
+                  "deferred": 0.7999999998137355,
+                  "nav": 1,
+                  "page": 0.20000000018626451,
+                  "wealth": 0,
+                  "otherBindings": 0.7999999998137355,
+                  "periodVisibility": 23.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.199999999953434,
+                  "restore": 1,
+                  "deferred": 0.19999999995343387,
+                  "nav": 0.6000000000931323,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 0.8000000000465661,
+                  "periodVisibility": 24.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 13.699999999953434,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.2000000001862645,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2.3999999999068677,
+                  "periodVisibility": 23.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.5,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.39999999990686774,
+                  "wealth": 0,
+                  "otherBindings": 2.5,
+                  "periodVisibility": 26.899999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.399999999906868,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.5,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 3.2000000001862645,
+                  "periodVisibility": 30.399999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.5,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0.09999999986030161,
+                  "nav": 0.6999999999534339,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 1.6000000000931323,
+                  "periodVisibility": 23.699999999953434,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 204.0999999998603,
+            "foregroundMs": 757.1999999999534,
+            "allIdleMs": 1551.1999999999534,
+            "longTasks": [
+              65,
+              77,
+              58,
+              104,
+              52,
+              103
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.800000000046566,
+                  "restore": 1.6000000000931323,
+                  "deferred": 0.8000000000465661,
+                  "nav": 0.19999999995343387,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 0.09999999986030161,
+                  "periodVisibility": 26.200000000186265,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.5,
+                  "restore": 0.9000000001396984,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 1.8999999999068677,
+                  "periodVisibility": 26.600000000093132,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 0.6000000000931323,
+                  "page": 0.19999999995343387,
+                  "wealth": 0,
+                  "otherBindings": 2.5999999998603016,
+                  "periodVisibility": 29.200000000186265,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.300000000046566,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 0.9000000001396984,
+                  "page": 1.5999999998603016,
+                  "wealth": 0,
+                  "otherBindings": 2.1000000000931323,
+                  "periodVisibility": 27.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.100000000093132,
+                  "restore": 1,
+                  "deferred": 0,
+                  "nav": 0.19999999995343387,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 0,
+                  "periodVisibility": 27.600000000093132,
+                  "anchor": 0.5999999998603016,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 176.20000000018626,
+            "foregroundMs": 699.7000000001863,
+            "allIdleMs": 736.2000000001863,
+            "longTasks": [
+              50,
+              60,
+              52,
+              102
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "visit": 1,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17,
+                  "restore": 1.3000000000465661,
+                  "deferred": 0,
+                  "nav": 1.1999999999534339,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 3,
+                  "periodVisibility": 28.5,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.699999999953434,
+                  "restore": 0.5,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 2.9000000001396984,
+                  "periodVisibility": 30.399999999906868,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 19.800000000046566,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.1000000000931323,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 3.1000000000931323,
+                  "periodVisibility": 24.800000000046566,
+                  "anchor": 0.7999999998137355,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 14.799999999813735,
+                  "restore": 0.8000000000465661,
+                  "deferred": 0,
+                  "nav": 1.4000000001396984,
+                  "page": 0.09999999986030161,
+                  "wealth": 0,
+                  "otherBindings": 3.4000000001396984,
+                  "periodVisibility": 22.199999999953434,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 15.300000000046566,
+                  "restore": 0,
+                  "deferred": 0.09999999986030161,
+                  "nav": 1.6999999999534339,
+                  "page": 0.20000000018626451,
+                  "wealth": 0,
+                  "otherBindings": 0.6999999999534339,
+                  "periodVisibility": 25.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.800000000046566,
+                  "restore": 2,
+                  "deferred": 0,
+                  "nav": 0.8999999999068677,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 0.5,
+                  "periodVisibility": 26.300000000046566,
+                  "anchor": 0,
+                  "scroll": 0.10000000009313226
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 17.199999999953434,
+                  "restore": 0.10000000009313226,
+                  "deferred": 0,
+                  "nav": 1.5,
+                  "page": 0,
+                  "wealth": 0,
+                  "otherBindings": 2.8999999999068677,
+                  "periodVisibility": 29.4000000001397,
+                  "anchor": 0,
+                  "scroll": 0.39999999990686774
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.5,
+                  "restore": 0.7999999998137355,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.8000000000465661,
+                  "page": 1.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 4.100000000093132,
+                  "periodVisibility": 26.799999999813735,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 21.9000000001397,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 1.1000000000931323,
+                  "wealth": 0,
+                  "otherBindings": 3.5,
+                  "periodVisibility": 24.5999999998603,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": true,
+                "refresh": false,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16,
+                  "restore": 0,
+                  "deferred": 0.6999999999534339,
+                  "nav": 0.09999999986030161,
+                  "page": 0.8000000000465661,
+                  "wealth": 0,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 30.800000000046566,
+                  "anchor": 0,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 176.5,
+            "foregroundMs": 691.5,
+            "allIdleMs": 1505.0999999998603,
+            "longTasks": [
+              54,
+              65,
+              52,
+              97,
+              52,
+              62,
+              52,
+              105
+            ],
+            "requests": 37,
+            "decodedJsonBytes": 33731
+          },
+          {
+            "visit": 2,
+            "renders": [
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 22.300000000046566,
+                  "restore": 1.6999999999534339,
+                  "deferred": 0.09999999986030161,
+                  "nav": 0.8000000000465661,
+                  "page": 0.6999999999534339,
+                  "wealth": 0,
+                  "otherBindings": 0,
+                  "periodVisibility": 26.9000000001397,
+                  "anchor": 0,
+                  "scroll": 0.09999999986030161
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.699999999953434,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 1,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 3.1000000000931323,
+                  "periodVisibility": 29,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": true,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 18.200000000186265,
+                  "restore": 0.09999999986030161,
+                  "deferred": 0,
+                  "nav": 2,
+                  "page": 1,
+                  "wealth": 0,
+                  "otherBindings": 3.1000000000931323,
+                  "periodVisibility": 25.300000000046566,
+                  "anchor": 0.09999999986030161,
+                  "scroll": 0
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": true,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.5,
+                  "restore": 0,
+                  "deferred": 0,
+                  "nav": 1.3000000000465661,
+                  "page": 0.10000000009313226,
+                  "wealth": 0,
+                  "otherBindings": 2.3999999999068677,
+                  "periodVisibility": 25.4000000001397,
+                  "anchor": 0,
+                  "scroll": 0.2999999998137355
+                }
+              },
+              {
+                "background": false,
+                "refresh": true,
+                "detailsLoading": false,
+                "sameHtml": false,
+                "tab": "home",
+                "periodGroups": 1,
+                "parts": {
+                  "html": 16.100000000093132,
+                  "restore": 0.5999999998603016,
+                  "deferred": 0.10000000009313226,
+                  "nav": 0.19999999995343387,
+                  "page": 0.8999999999068677,
+                  "wealth": 0,
+                  "otherBindings": 0.10000000009313226,
+                  "periodVisibility": 28.399999999906868,
+                  "anchor": 0.30000000004656613,
+                  "scroll": 0
+                }
+              }
+            ],
+            "assetMs": 174.80000000004657,
+            "foregroundMs": 688,
+            "allIdleMs": 712.5,
+            "longTasks": [
+              55,
+              61,
+              51,
+              98
+            ],
+            "requests": 18,
+            "decodedJsonBytes": 16860
+          }
+        ]
+      }
+    ]
+  }
+}

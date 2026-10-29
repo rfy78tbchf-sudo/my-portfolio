@@ -34,7 +34,7 @@ if(profile){
  for(const [anchor,label] of [['renderQuickAsset(content);','html'],['bindDeferredDetails(content);','restore'],['renderNav();','deferred'],['bindPage();','nav'],['bindWealth();','page'],['bindDrilldown();','wealth'],['keepActivePeriodsVisible(content);','otherBindings'],['if(trendAnchor){','periodVisibility'],['window.scrollTo(0,scrollY)','anchor']]){
    assert.ok(block.includes(anchor),anchor);block=block.replace(anchor,"__mark('"+label+"');"+anchor);
  }
- block=block.replace('window.scrollTo(0,scrollY)}',"window.scrollTo(0,scrollY);__mark('scroll');(window.__renderSamples||(window.__renderSamples=[])).push({tab:currentTab,periodGroups:content.querySelectorAll('.periods').length,parts:__parts})}");
+ block=block.replace('window.scrollTo(0,scrollY)}',"window.scrollTo(0,scrollY);__mark('scroll');(window.__renderSamples||(window.__renderSamples=[])).push({background:!!backgroundSyncPromise,refresh:!!liveRefreshPromise,detailsLoading:!!(live&&live.detailsLoading),sameHtml:window.__previousRefreshHtml===content.innerHTML,tab:currentTab,periodGroups:content.querySelectorAll('.periods').length,parts:__parts});window.__previousRefreshHtml=content.innerHTML}");
  measured=source.slice(0,start)+block+source.slice(end);
 }
 const html=measured.replace('  restoreLogin();',hook+'  restoreLogin();');
@@ -88,7 +88,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
     const record={path,body,...(completeRefresh&&recording?{query:url.search,startMs:performance.now()-recordStart}: {})};calls.push(record);if(completeRefresh&&recording)requestRecords.set(request,record);await new Promise(r=>setTimeout(r,50));
     if(path.startsWith('/functions/')){
       if(body.action==='sync-current')return json(route,{ok:true});
-      if(body.action==='sync-history-month'||body.action==='sync-prices'){if(!completeRefresh)await backgroundDelay.wait;return json(route,{ok:true})}
+      if(body.action==='sync-history-month'||body.action==='sync-prices'){if(completeRefresh&&verify&&body.action==='sync-prices')scope.current_display_total+=1;if(!completeRefresh)await backgroundDelay.wait;return json(route,{ok:true})}
 
       if(body.action==='overseas-day-pnl')return json(route,{ok:true,available:false,items:[]});
       if(body.action==='sync-target-prices'&&body.security_ids?.every(id=>securities.some(s=>s.id===id)))return json(route,{ok:true,results:[]});
@@ -135,7 +135,7 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         scope.current_display_total=fixtureTotal+(visit+1)*100000;
         calls.length=0;recordStart=performance.now();recording=true;
         await page.evaluate(expected=>{
-          const start=performance.now();window.__refreshTiming={start,assetMs:null,foregroundMs:null};window.__refreshLong=[];
+          window.__renderSamples=[];window.__previousRefreshHtml=null;const start=performance.now();window.__refreshTiming={start,assetMs:null,foregroundMs:null};window.__refreshLong=[];
           window.__refreshObserver=new MutationObserver(()=>{const t=window.__refreshTiming;if(t.assetMs===null&&document.querySelector('.hero .asset')?.textContent.includes(expected))t.assetMs=performance.now()-t.start;if(t.foregroundMs===null&&document.querySelector('#refreshBtn').getAttribute('aria-busy')==='false')t.foregroundMs=performance.now()-t.start});
           window.__refreshObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-busy']});
           if(PerformanceObserver.supportedEntryTypes.includes('longtask')){window.__refreshLongObserver=new PerformanceObserver(l=>window.__refreshLong.push(...l.getEntries().map(e=>e.duration)));window.__refreshLongObserver.observe({type:'longtask'});}
@@ -148,10 +148,11 @@ for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
         assert.equal(calls.filter(c=>c.body.action==='sync-current').length,1,'double click shares one foreground sync');
         assert.equal(await page.locator('#refreshBtn').getAttribute('aria-busy'),'false');
         assert.equal(await page.locator('#refreshBtn').isEnabled(),true);
+        assert.ok((await page.locator('.hero .asset').innerText()).includes(scope.current_display_total.toLocaleString('en-US')),'post-background changed amount is rendered, not just stored in memory');
         assert.ok(await page.locator('.hero .asset').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'asset amount fits');
         assert.equal(await page.evaluate(()=>window.__dailyTest.state().error),null);
         assert.ok(calls.every(c=>Number.isFinite(c.responseReadyMs)&&Number.isFinite(c.decodedJsonBytes)),'all measured API responses accounted for');
-        attempts.push({visit:visit+1,...timing,requests:calls.length,decodedJsonBytes:calls.reduce((n,c)=>n+(c.decodedJsonBytes||0),0),calls:structuredClone(calls)});
+        attempts.push({visit:visit+1,...(profile?{renders:await page.evaluate(()=>window.__renderSamples)}:{}),...timing,requests:calls.length,decodedJsonBytes:calls.reduce((n,c)=>n+(c.decodedJsonBytes||0),0),calls:structuredClone(calls)});
       }
       samples.push({run:run+1,engine:name,attempts});assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);continue;
     }
