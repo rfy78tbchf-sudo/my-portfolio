@@ -10,11 +10,12 @@ import {chromium,webkit} from 'playwright';
 // Every browser request is fulfilled/aborted locally; all account values are synthetic.
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 let dispatch,transfers=[],versionOverride=null,versionStatus=200,fallbackBuild=null,updateUnavailable=false,navigationUnavailable=false;
-const portfolioStages=process.argv.includes('--portfolio-stages');
+const portfolioStages=process.argv.includes('--portfolio-stages'),renderOwnership=process.argv.includes('--render-ownership');
 const pacedStartup=process.argv.includes('--paced-startup'),pacedGzip=!!process.env.PACED_GZIP;
 const verify=process.argv.includes('--verify'),profileStartup=pacedStartup||process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup'),earlyCore=process.argv.includes('--early-core'),earlyInteraction=process.argv.includes('--early-interaction')||earlyCore;
 assert.ok(!(earlyInteraction&&profileStartup),'early interaction is a separate condition');
 assert.ok(!portfolioStages||profileStartup,'portfolio stages require startup profiling');
+assert.ok(!renderOwnership||profileStartup,'render ownership requires startup profiling');
 const pacedQueue=[];
 // Shared across ALL HTTP responses, including service-worker requests. Body-only pacing, not a physical network model.
 const pacer=pacedStartup?setInterval(()=>{const job=pacedQueue.shift();if(!job)return;const end=Math.min(job.offset+4096,job.payload.length);job.res.write(job.payload.subarray(job.offset,end));job.offset=end;if(end===job.payload.length){job.res.end();job.resolve()}else pacedQueue.push(job)},20):null;if(pacer)pacer.unref();
@@ -59,7 +60,13 @@ if(traceStartup){
   block=block.replace('window.scrollTo(0,scrollY)}',"window.scrollTo(0,scrollY);performance.mark('startupRenderEnd')}");
   served=served.slice(0,start)+block+served.slice(end);
 }
-const html=served.replace('  restoreLogin();',hook+'  restoreLogin();');
+const ownershipHook=renderOwnership?`
+  window.__renderOwnership=[];var ownershipPreviousHtml=null,ownershipRender=render;
+  render=function(){var started=performance.now(),caller=new Error().stack.split('\\n').slice(2,4).join(' | '),flags={tab:currentTab,refreshOwned:!!liveRefreshPromise,homeOnly:!!(live&&live.homeOnlyRefresh),reviewLoading:!!(live&&live.homeReviewLoading),startupLoading:!!(live&&live.startupHomeLoading),detailsLoading:!!(live&&live.detailsLoading),startupError:!!(live&&live.startupHomeError)};
+    var result=ownershipRender.apply(this,arguments),elapsed=performance.now()-started,html=document.getElementById('content').innerHTML;
+    window.__renderOwnership.push({caller:caller,flags:flags,durationMs:elapsed,sameAsPrevious:html===ownershipPreviousHtml});ownershipPreviousHtml=html;return result};
+`:'';
+const html=served.replace('  restoreLogin();',hook+ownershipHook+'  restoreLogin();');
 const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
 const before=n=>new Date(Date.parse(day+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);
 const now=day+'T00:00:00Z';
@@ -208,6 +215,7 @@ try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
           scriptMs:metrics?1000*((cpuAfter.find(m=>m.name==='ScriptDuration')?.value||0)-(cpuBefore.find(m=>m.name==='ScriptDuration')?.value||0)):null,
           responses:transfers.map(x=>({path:new URL(x.url).pathname,bytes:x.bytes,...(pacedStartup?{encodedBodyBytes:x.encodedBodyBytes}:{})}))};
       }
+      if(renderOwnership){startup.renderOwnership=await page.evaluate(()=>window.__renderOwnership);assert.ok(startup.renderOwnership.length>0&&startup.renderOwnership.every(r=>Number.isFinite(r.durationMs)&&typeof r.sameAsPrevious==='boolean'),'render ownership samples are complete');}
       if(traceStartup&&metrics){
         const done=new Promise(r=>metrics.once('Tracing.tracingComplete',r));await metrics.send('Tracing.end');await done;metrics.off('Tracing.dataCollected',traceListener);
         const asset=traceEvents.find(e=>e.name==='startupAssetReady');assert.ok(asset,'asset trace mark exists');

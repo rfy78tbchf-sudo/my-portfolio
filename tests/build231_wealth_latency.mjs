@@ -12,6 +12,8 @@ const apiOrigin=source.match(/var SUPABASE_URL='([^']+)'/)[1];
 const site='https://daily.portfolio.test/';
 const output=resolve(root,process.env.UI_OUTPUT||'mobile-artifacts/build216');
 mkdirSync(output,{recursive:true});
+const historyYears=process.env.WEALTH_HISTORY_YEARS===undefined?null:Number(process.env.WEALTH_HISTORY_YEARS);
+assert.ok(historyYears===null||Number.isInteger(historyYears)&&historyYears>=0&&historyYears<=30);
 const hook=`
   window.__dailyTest={
     refresh:function(){return refreshLive(true,false)},
@@ -23,10 +25,17 @@ const hook=`
   };
 `;
 assert.ok(source.includes('  restoreLogin();'));
-const html=source.replace('  restoreLogin();',hook+'  restoreLogin();');
+const historyHook=historyYears===null?'':`
+  window.__wealthProfile={htmlMs:[],openStart:null};
+  var originalWealthHistoryHtml=wealthHistoryHtml;wealthHistoryHtml=function(data){var started=performance.now();try{return originalWealthHistoryHtml(data)}finally{window.__wealthProfile.htmlMs.push(performance.now()-started)}};
+`;
+const html=source.replace('  restoreLogin();',hook+historyHook+'  restoreLogin();');
 const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
 const before=n=>new Date(Date.parse(day+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);
 const now=day+'T00:00:00Z';
+const currentYear=Number(day.slice(0,4));
+const historyRows=Array.from({length:historyYears||0},(_,i)=>({year:currentYear-1-i,start_date:(currentYear-1-i)+'-01-01',base_amount:5000000,std_rate:20,best_rate:30,std_target:6000000,best_target:6500000,end_amount:5000000,finalized_at:(currentYear-i)+'-01-01'}));
+const historicalDashboard={ok:true,today:day,plan:{version:2,base_amount:5000000,base_date:(currentYear-(historyYears||0))+'-01-01',std_rate:20,best_rate:30,revision:0},current:{amount:5400000,as_of:day},current_year:{year:currentYear,start_date:currentYear+'-01-01',base_amount:5000000,std_rate:20,best_rate:30,std_target:6000000,best_target:6500000},years:historyRows,records:historyRows.flatMap(r=>Array.from({length:12},(_,i)=>({as_of:r.year+'-'+String(i+1).padStart(2,'0')+'-15',amount:5000000,finalized:true})))};
 const securities=[['ARM','ARM 검증 종목','USD'],['MRNA','MRNA 검증 종목','USD'],['MU','MU 검증 종목','USD'],['005930','국내 검증 종목','KRW']]
   .map(([symbol,name,currency],i)=>({id:'daily-'+i,symbol,name,currency,market:currency==='KRW'?'KRX':'NAS',country:currency==='KRW'?'KR':'US'}));
 const accounts=[{id:'daily-account',name:'검증용 계좌',provider:'kb_securities',base_currency:'KRW',mode:'live',is_active:true}];
@@ -45,7 +54,7 @@ function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),h
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
 const samples=[],verify=process.argv.includes('--verify');
-for(let run=0;run<(verify?2:5);run++){
+for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
  const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
   scope.current_display_total=5400000; // Each browser starts with its own baseline value.
   const browser=await engine.launch({headless:true});
@@ -90,6 +99,7 @@ for(let run=0;run<(verify?2:5);run++){
         get_live_security_detail:{ok:true,security,holding:{quantity:10},technical:{},prices:prices.filter(p=>p.security_id===security.id).slice().reverse().map(p=>({date:p.price_date,close:p.close,currency:p.currency}))},
         get_live_security_activity:{ok:true,items:[]},get_investment_thesis:{ok:true,thesis:{version:1,rationale:'실적 발표에서 보유 근거를 다시 확인',updated_at:now}},
         get_investment_decisions:[],get_investment_breakout_rule:null,get_live_realized_sales:{ok:true,items:[],period:body.p_period},get_pending_kb_position_events:[]};
+      if(rpc==='get_wealth_dashboard'&&historyYears!==null)return json(route,historicalDashboard);
       return json(route,Object.hasOwn(values,rpc)?values[rpc]:{ok:false,items:[]});
     }
     if(method!=='GET'){forbidden.push(path);return json(route,{message:'Writes are blocked'},403)}
@@ -111,6 +121,21 @@ for(let run=0;run<(verify?2:5);run++){
     const elapsed=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__start)))));
     await page.waitForFunction(()=>window.__dailyTest.state().idle);
     samples.push({run:run+1,wealthPaintMs:Math.round(elapsed),requests:calls.length,technicalRequests:calls.filter(c=>c.path.endsWith('/get_live_technical_summary')).length});
+    if(historyYears!==null){
+      const sample=samples[samples.length-1];
+      sample.history=await page.evaluate(()=>({htmlMs:window.__wealthProfile.htmlMs,domNodes:document.querySelector('.wealth-history').querySelectorAll('*').length,bodyNodes:document.querySelectorAll('.wealth-year-body *').length}));
+      sample.history.pastYears=historyYears;
+      assert.equal(await page.locator('[data-wealth-year]').count(),historyYears);
+      if(historyYears){
+        await page.evaluate(()=>{window.__wealthProfile.openStart=performance.now();document.querySelector('.wealth-year > summary').click()});
+        sample.history.firstOpenCallbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__wealthProfile.openStart)))));
+        assert.match(await page.locator('.wealth-year').first().innerText(),/6,000,000/);
+        await page.locator('.wealth-year').first().locator('.more-list > summary').click();
+        assert.equal(await page.locator('.wealth-year').first().locator('.wealth-month-row').count(),12);
+        assert.match(await page.locator('.wealth-year').first().innerText(),new RegExp((currentYear-1)+'-12-15'));
+      }
+      assert.equal(calls.length,1,'annual history expansion reuses dashboard response');
+    }
     if(verify){
       assert.equal(calls.length,1,'wealth entry only fetches its dashboard');
       for(let i=0;i<5;i++){

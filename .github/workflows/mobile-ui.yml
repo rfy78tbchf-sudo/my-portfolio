@@ -37,6 +37,8 @@ jobs:
           tests/build209_shell_recovery.mjs
       - name: Verify provisional amounts and reconciliation scope
         run: node --test tests/build210_pnl_state.mjs
+      - name: Verify annual actual rebasing and history calculations
+        run: node tests/build240_wealth_annual.mjs
       - name: Verify automatic wealth, projections and milestone calculations
         run: node tests/build226_wealth.mjs
       - name: Verify daily five-day moving average crossings
@@ -70,11 +72,13 @@ jobs:
       - name: Verify pending holdings never appear as an empty portfolio
         run: node tests/build232_update_latency.mjs --verify --early-core
       - name: Verify cold and warm update checks with real service workers
-        run: node tests/build232_update_latency.mjs --verify --profile-startup
+        run: node tests/build232_update_latency.mjs --verify --profile-startup --render-ownership
       - name: Verify wealth only requests visible data and reuses cached results
-        run: node tests/build231_wealth_latency.mjs --verify
+        run: WEALTH_HISTORY_YEARS=10 node tests/build231_wealth_latency.mjs --verify
       - name: Verify lazy Excel parsing, shared loading and retry
         run: node tests/build230_lazy_xlsx.mjs
+      - name: Verify annual history and rollover on mobile
+        run: node tests/build240_wealth_browser.mjs
       - name: Verify automatic wealth, scenarios, retry and mobile layout
         run: node tests/build226_browser.mjs
       - name: Verify moving average crossing display in both browsers
