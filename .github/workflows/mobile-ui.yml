@@ -37,8 +37,8 @@ jobs:
           tests/build209_shell_recovery.mjs
       - name: Verify provisional amounts and reconciliation scope
         run: node --test tests/build210_pnl_state.mjs
-      - name: Verify fixed goal and rolling forecast basis
-        run: node tests/build243_wealth_basis.mjs
+      - name: Verify fixed annual goals and exact excess amounts
+        run: node tests/build243_wealth_basis.mjs && node tests/build244_fixed_goals.mjs
       - name: Verify annual actual rebasing and history calculations
         run: node tests/build240_wealth_annual.mjs
       - name: Verify automatic wealth, projections and milestone calculations
@@ -66,7 +66,7 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
       - name: Verify realized sale dates with isolated synthetic Postgres and both browsers
-        run: node tests/build242_refresh_history.mjs && node tests/build241_realized_dates.mjs && node tests/build241_realized_browser.mjs
+        run: node tests/build244_wealth_rollover.mjs && node tests/build242_refresh_history.mjs && node tests/build241_realized_dates.mjs && node tests/build241_realized_browser.mjs
       - name: Verify saved detail history sharing and fresh reopening
         run: node tests/build234_detail_reads.mjs --verify
       - name: Verify chart window reuse preserves selection and new prices
@@ -81,7 +81,7 @@ jobs:
         run: WEALTH_HISTORY_YEARS=10 node tests/build231_wealth_latency.mjs --verify
       - name: Verify lazy Excel parsing, shared loading and retry
         run: node tests/build230_lazy_xlsx.mjs
-      - name: Verify goal versus forecast dates and amounts on mobile
+      - name: Verify fixed goal cards and table agree on mobile
         run: node tests/build243_wealth_basis.mjs --browser
       - name: Verify annual history and rollover on mobile
         run: node tests/build240_wealth_browser.mjs

@@ -1,0 +1,67 @@
+{
+  "conditions": "Five alternating AB/BA fresh sessions per source; identical synthetic fixtures, Chromium 390x844 CPU4x, 50ms synthetic API delay, SW blocked. Wealth click to amount plus two animation frames. Not real server/iPhone timing.",
+  "before": [
+    {
+      "run": 1,
+      "wealthPaintMs": 275,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 255,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 276,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 286,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 263,
+      "requests": 1,
+      "technicalRequests": 0
+    }
+  ],
+  "after": [
+    {
+      "run": 1,
+      "wealthPaintMs": 248,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 274,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 299,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 295,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 272,
+      "requests": 1,
+      "technicalRequests": 0
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const scope=vm.createContext({liveAuthEpoch:1,kstDate:()=> '2026-10-31',mode:'live',live:null,esc:String,cls:n=>n<0?'down':'up',money:n=>Number(n).toLocaleString('en-US')+'원',signedMoney:n=>(n>0?'+':'')+Number(n).toLocaleString('en-US')+'원',pct:n=>Number(n).toFixed(2)+'%',num:(n,d)=>Number(n).toFixed(d),shortGoal:n=>n/1e8+'억',kstStamp:String});
+vm.runInContext(html.slice(html.indexOf('  var wealthOwner='),html.indexOf('  function legacyAnalysis(')),scope);
+const data={today:'2026-10-31',plan:{base_amount:100000000,base_date:'2026-01-01',std_rate:20,best_rate:30},current:{amount:125000000},current_year:{start_date:'2026-01-01',base_amount:100000000,std_target:120000000,best_target:130000000},records:[]};
+let m=scope.wealthMetrics(data);
+assert.equal(m.scenarios[0].gap,5000000);assert.equal(m.scenarios[1].gap,-5000000);
+assert.equal(scope.wealthGoalPathAmount(m.scenarios[0],0),120000000);
+assert.equal(scope.wealthGoalPathAmount(m.scenarios[0],1),144000000);
+assert.equal(scope.wealthGoalPathAmount({target:null,rate:20},0),null);
+assert.equal(scope.wealthGoalPathAmount({target:0,rate:20},1),0);
+assert.equal(scope.wealthGoalPathAmount({target:120000000,rate:0},5),120000000);
+scope.wealthState().data=data;let panel=scope.wealthPanel();
+assert.match(panel,/5,000,000원<\/span> <small>초과 달성/);assert.match(panel,/목표까지<\/small> <span>5,000,000원/);
+assert.doesNotMatch(panel,/현재 자산 기준 예상|지금부터|남은 61일/);
+const curve=scope.wealthFutureChart(m);
+for(const amount of [0,120000000,140000000,null]){
+ const changed={...data,today:'2026-12-31',current:{amount}};
+ assert.equal(scope.wealthMetrics(changed).scenarios[0].target,120000000);
+ assert.equal(scope.wealthFutureChart(scope.wealthMetrics(changed)),curve);
+}
+scope.wealthState().data={...data,current:{amount:120000000}};
+assert.match(scope.wealthPanel(),/>목표 달성</);
+scope.wealthState().data={...data,current:null,records:[{as_of:'2026-10-15',amount:125000000}]};
+assert.match(scope.wealthPanel(),/최근 기록 기준/);
+const next={...data,today:'2027-01-01',current:{amount:125000000},current_year:{start_date:'2027-01-01',base_amount:125000000,std_target:150000000,best_target:162500000}};
+assert.equal(scope.wealthMetrics(next).scenarios[0].target,150000000,'next year uses confirmed actual, not previous target');
+assert.equal(scope.wealthMetrics({...next,current_year:null}).scenarios[0].target,null,'missing finalization cannot invent new target');
+console.log('Build244: frozen goal path, exact excess/shortfall, zero/missing, year-end changes and actual rebasing passed');
