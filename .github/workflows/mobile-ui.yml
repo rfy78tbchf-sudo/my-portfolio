@@ -60,9 +60,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0
+      - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
+      - name: Verify realized sale dates with isolated synthetic Postgres and both browsers
+        run: node tests/build241_realized_dates.mjs && node tests/build241_realized_browser.mjs
       - name: Verify saved detail history sharing and fresh reopening
         run: node tests/build234_detail_reads.mjs --verify
       - name: Verify chart window reuse preserves selection and new prices
