@@ -1,0 +1,257 @@
+{
+  "conditions": "Five fresh Chromium sessions, two sequential complete refreshes each (verification: six width/zoom cases per engine); warmed home and tabs;390x844 CPU4x Chromium/WebKit default;50ms synthetic per API request including sync; SW blocked/interception disables cache; no manual response gates; first background sync due, subsequent TTL fresh; asset/foreground DOM observer timestamps, all-idle polling plus two rAF; request timestamps use Node clock; decoded JSON bytes are fixture payload size NOT wire bytes; no operating DB writes",
+  "results": {
+    "before": {
+      "1": {
+        "assetMs": {
+          "median": 168.8,
+          "min": 158.6,
+          "max": 190.1,
+          "samples": [
+            190.1,
+            184.7,
+            163.2,
+            168.8,
+            158.6
+          ]
+        },
+        "foregroundMs": {
+          "median": 684,
+          "min": 654.1,
+          "max": 758.3,
+          "samples": [
+            758.3,
+            684,
+            657.5,
+            696.3,
+            654.1
+          ]
+        },
+        "allIdleMs": {
+          "median": 1460.5,
+          "min": 1395.7,
+          "max": 1618.9,
+          "samples": [
+            1618.9,
+            1526.6,
+            1395.7,
+            1460.5,
+            1399.2
+          ]
+        },
+        "requests": {
+          "median": 37,
+          "min": 37,
+          "max": 37,
+          "samples": [
+            37,
+            37,
+            37,
+            37,
+            37
+          ]
+        },
+        "decodedJsonBytes": {
+          "median": 33731,
+          "min": 33731,
+          "max": 33731,
+          "samples": [
+            33731,
+            33731,
+            33731,
+            33731,
+            33731
+          ]
+        }
+      },
+      "2": {
+        "assetMs": {
+          "median": 173.5,
+          "min": 160.5,
+          "max": 212,
+          "samples": [
+            194.5,
+            212,
+            160.5,
+            164.1,
+            173.5
+          ]
+        },
+        "foregroundMs": {
+          "median": 681.6,
+          "min": 633.6,
+          "max": 820.8,
+          "samples": [
+            814,
+            820.8,
+            654.6,
+            633.6,
+            681.6
+          ]
+        },
+        "allIdleMs": {
+          "median": 703.4,
+          "min": 674.9,
+          "max": 853.5,
+          "samples": [
+            841.5,
+            853.5,
+            690.7,
+            674.9,
+            703.4
+          ]
+        },
+        "requests": {
+          "median": 18,
+          "min": 18,
+          "max": 18,
+          "samples": [
+            18,
+            18,
+            18,
+            18,
+            18
+          ]
+        },
+        "decodedJsonBytes": {
+          "median": 16860,
+          "min": 16860,
+          "max": 16860,
+          "samples": [
+            16860,
+            16860,
+            16860,
+            16860,
+            16860
+          ]
+        }
+      }
+    },
+    "after": {
+      "1": {
+        "assetMs": {
+          "median": 165.4,
+          "min": 153.4,
+          "max": 176.7,
+          "samples": [
+            159.5,
+            167.7,
+            153.4,
+            176.7,
+            165.4
+          ]
+        },
+        "foregroundMs": {
+          "median": 661.8,
+          "min": 620.3,
+          "max": 677.6,
+          "samples": [
+            677.6,
+            657.2,
+            620.3,
+            667.1,
+            661.8
+          ]
+        },
+        "allIdleMs": {
+          "median": 1385.4,
+          "min": 1319,
+          "max": 1470.2,
+          "samples": [
+            1470.2,
+            1385.4,
+            1319,
+            1392.4,
+            1382.9
+          ]
+        },
+        "requests": {
+          "median": 37,
+          "min": 37,
+          "max": 37,
+          "samples": [
+            37,
+            37,
+            37,
+            37,
+            37
+          ]
+        },
+        "decodedJsonBytes": {
+          "median": 33731,
+          "min": 33731,
+          "max": 33731,
+          "samples": [
+            33731,
+            33731,
+            33731,
+            33731,
+            33731
+          ]
+        }
+      },
+      "2": {
+        "assetMs": {
+          "median": 161.1,
+          "min": 158.2,
+          "max": 164.6,
+          "samples": [
+            159.3,
+            161.1,
+            158.2,
+            164.4,
+            164.6
+          ]
+        },
+        "foregroundMs": {
+          "median": 645.7,
+          "min": 640.7,
+          "max": 650,
+          "samples": [
+            641.1,
+            650,
+            640.7,
+            646.9,
+            645.7
+          ]
+        },
+        "allIdleMs": {
+          "median": 1320.4,
+          "min": 1301.4,
+          "max": 1336.4,
+          "samples": [
+            1317.3,
+            1320.4,
+            1301.4,
+            1323.7,
+            1336.4
+          ]
+        },
+        "requests": {
+          "median": 36,
+          "min": 36,
+          "max": 36,
+          "samples": [
+            36,
+            36,
+            36,
+            36,
+            36
+          ]
+        },
+        "decodedJsonBytes": {
+          "median": 33720,
+          "min": 33720,
+          "max": 33720,
+          "samples": [
+            33720,
+            33720,
+            33720,
+            33720,
+            33720
+          ]
+        }
+      }
+    }
+  }
+}

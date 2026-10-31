@@ -64,7 +64,7 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
         timeout-minutes: 5
       - name: Verify realized sale dates with isolated synthetic Postgres and both browsers
-        run: node tests/build241_realized_dates.mjs && node tests/build241_realized_browser.mjs
+        run: node tests/build242_refresh_history.mjs && node tests/build241_realized_dates.mjs && node tests/build241_realized_browser.mjs
       - name: Verify saved detail history sharing and fresh reopening
         run: node tests/build234_detail_reads.mjs --verify
       - name: Verify chart window reuse preserves selection and new prices
