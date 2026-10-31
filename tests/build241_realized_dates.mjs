@@ -60,7 +60,9 @@ assert.deepEqual(foreignAfter.items,foreignBefore.items,'USD amounts, historical
 
 // Exercise all other existing matching guards using their synthetic read-only fixture CTEs.
 const {execFileSync}=await import('node:child_process');
-const guardSQL=execFileSync(process.execPath,['tests/build118_grouped_dates.mjs'],{encoding:'utf8'});
+const originalGuardSQL=execFileSync(process.execPath,['tests/build118_grouped_dates.mjs'],{encoding:'utf8'});
+const actualMatcher=candidate.slice(candidate.indexOf('), domestic_date_candidates'),candidate.indexOf(')\n  select coalesce(jsonb_object_agg')).replaceAll('public.realized_pnl_events','fixture_evidence');
+const guardSQL=originalGuardSQL.slice(0,originalGuardSQL.indexOf('), domestic_date_candidates'))+actualMatcher+originalGuardSQL.slice(originalGuardSQL.indexOf('), expected as')); 
 const guard=(await db.query(guardSQL)).rows[0];assert.equal(guard.dates_correct,true);assert.equal(guard.known_times_preserved,true);
 
 // Five alternating runs per version, same 400-trade/200-report synthetic corpus and engine.
