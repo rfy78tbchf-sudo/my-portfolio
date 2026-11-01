@@ -1,0 +1,19 @@
+{
+  "condition": "PGlite, warm synthetic two-transaction USD fixture, fixed date, 5 alternating batches of 30 calls, no network",
+  "msPerCall": {
+    "baseline": [
+      2.280087233333332,
+      1.6432159000000033,
+      1.899896633333333,
+      1.5758680333333435,
+      2.104936600000004
+    ],
+    "candidate": [
+      2.2395495000000056,
+      2.174084666666666,
+      1.9129269000000022,
+      2.2124639666666703,
+      1.953956833333344
+    ]
+  }
+}
