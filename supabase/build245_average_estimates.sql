@@ -508,15 +508,24 @@ begin
       c.proceeds-c.sale_qty*p.avg_cost estimate_local,f.rate,f.rate_date
     from candidates c
     left join lateral (
-      select o.avg_cost,o.fetched_at
+      select case when o.currency='KRW' then o.avg_cost else o.avg_cost/d.fx_rate_to_base end avg_cost,o.fetched_at
       from public.position_observations o
       join public.account_observations ao on ao.id=o.account_observation_id and ao.account_id=o.account_id
       join public.securities s on s.id=o.security_id
+      -- KB std_crncy_f=2 stores KRW unit prices even on foreign-currency holdings.
+      -- Match the archived daily snapshot exactly; never treat those prices as USD.
+      left join public.daily_security_snapshots d on d.account_id=o.account_id and d.security_id=o.security_id
+        and d.snapshot_date=(o.fetched_at at time zone 'Asia/Seoul')::date
+        and d.avg_cost=o.avg_cost and d.quantity=o.quantity
+        and d.market_price=o.market_price and d.market_value=o.market_value
+        and d.currency=o.currency and d.fx_rate_to_base>0
+        and d.fx_rate_to_base::text not in ('NaN','Infinity','-Infinity')
       where o.account_id=v_account and o.currency=c.item->>'currency'
         and (c.transaction_security=o.security_id or c.transaction_security is null
           and (case when c.asset_key is not null then s.isin=c.asset_key
             else s.symbol=c.item->>'symbol' or s.isin=c.item->>'symbol' end))
         and ao.source='kb_current_snapshot'
+        and (o.currency='KRW' or d.fx_rate_to_base is not null)
         and o.avg_cost>0 and o.avg_cost::text not in ('NaN','Infinity','-Infinity') and o.quantity>0
         and o.fetched_at < c.sale_day::timestamp at time zone 'Asia/Seoul'
         and o.fetched_at >= (c.sale_day-7)::timestamp at time zone 'Asia/Seoul'
@@ -541,6 +550,7 @@ begin
   )
   select coalesce(jsonb_agg(item || case when avg_cost is null then '{}'::jsonb else jsonb_build_object(
     'average_cost_estimate',jsonb_build_object('method','prior_broker_average_reference',
+      'basis_method',case when item->>'currency'='KRW' then 'broker_average_krw' else 'broker_krw_average_at_snapshot_fx' end,
       'basis_at',fetched_at,'basis_date',(fetched_at at time zone 'Asia/Seoul')::date,'average_cost',avg_cost,'allocated_cost',sale_qty*avg_cost,
       'realized_local',estimate_local,'reference_krw',case when item->>'currency'='KRW' then estimate_local else estimate_local*rate end,
       'fx_date',rate_date,'fx_method','sale_day_reference_conversion',
