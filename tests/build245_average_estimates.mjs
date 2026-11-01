@@ -20,8 +20,16 @@ await ins('fx_rates',{id:id(8),base_currency:'USD',quote_currency:'KRW',rate_dat
 const before=JSON.stringify((await db.query('select * from transactions')).rows);
 const sql=fs.readFileSync('supabase/build245_average_estimates.sql','utf8').replace("v_today date := (now() at time zone 'Asia/Seoul')::date","v_today date := date '2030-01-10'");
 await db.exec(sql);
-async function run(){return (await db.query("select get_live_realized_sales('1W') r")).rows[0].r}
+async function run(period='1W'){return (await db.query("select get_live_realized_sales($1) r",[period])).rows[0].r}
 let r=await run(),sale=r.items[0];assert.equal(sale.status,'order_unverified');assert.equal(sale.realized_local,null);assert.equal(sale.average_cost_estimate.realized_local,60);assert.equal(sale.average_cost_estimate.reference_krw,60000);assert.equal(r.ready_count,0);
+// The same dated sale has the same estimate in every containing period.
+for(const period of ['THIS_MONTH','1M','3M','6M','YTD','1Y','ALL']){
+ const result=await run(period);
+ assert.equal(result.items.length,1,period);
+ assert.deepEqual(result.items[0].average_cost_estimate,sale.average_cost_estimate,period);
+ assert.equal(result.items[0].realized_local,null,period+' does not promote an estimate');
+}
+assert.equal((await run('TODAY')).items.length,0,'today excludes yesterday sale');
 fs.mkdirSync('mobile-artifacts/build245',{recursive:true});fs.writeFileSync('mobile-artifacts/build245/rpc-fixture.json',JSON.stringify(r));
 for(const [change,restore] of [
  ["currency='KRW'","currency='USD'"],["fetched_at='2030-01-09T01:00:00+09:00'","fetched_at='2030-01-08T10:00:00+09:00'"],
@@ -40,6 +48,9 @@ fs.writeFileSync('mobile-artifacts/build245/sql-timing.json',JSON.stringify({con
 await db.exec('delete from fx_rates');assert.equal((await run()).items[0].average_cost_estimate.reference_krw,null,'missing FX never becomes zero');
 await ins('kb_position_evidence',{id:id(10),account_id:id(2),source:'SPQM2205',symbol:'SYNTH',asset_key:'US0000000001',event_type:'sell',order_date:'2030-01-10',trade_date:'2030-01-10',settlement_date:'2030-01-12',quantity:1,price:110,gross_amount:110,currency:'USD',active:true,evidence:{trade_gross:110}});
 r=await run();const pending=r.items.find(x=>x.status==='settlement_pending');assert.equal(pending.average_cost_estimate.realized_local,20);assert.equal(pending.average_cost_estimate.costs_final,false);
+const todayPending=(await run('TODAY')).items;
+assert.equal(todayPending.length,1,'today includes pending execution before settlement');
+assert.deepEqual(todayPending[0].average_cost_estimate,pending.average_cost_estimate);
 // Duplicate symbol registry: exact broker asset ID on this account's ledger resolves the original observed security.
 await db.exec('update securities set isin=null');await ins('securities',{id:id(11),symbol:'SYNTH',isin:'US0000000001',currency:'USD'});
 assert.equal((await run()).items.find(x=>x.status==='settlement_pending').average_cost_estimate.realized_local,20,'ledger asset identity beats duplicate symbol');
