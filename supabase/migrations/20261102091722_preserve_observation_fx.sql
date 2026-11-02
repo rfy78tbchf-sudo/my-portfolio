@@ -583,7 +583,7 @@ begin
   return jsonb_build_object('ok',true,'period',p_period,'period_start',v_start,
     'period_end',v_today,'period_date_basis','broker_order_date_where_linked_else_provisional_ledger_date',
     'account_id',v_account,'account_provider',v_provider,
-    'calculation_version','realized-sales-v10-average-estimates','cost_method','account_moving_average',
+    'calculation_version','realized-sales-v11-observation-fx','cost_method','account_moving_average',
     'pending_settlement_count',v_pending,'candidate_count',v_count,'ready_count',v_complete,'partial_count',v_partial,
     'order_unverified_count',v_order,'direct_order_count',v_direct_order,
     'carried_order_count',v_carried_order,'cost_review_count',v_cost_missing,
