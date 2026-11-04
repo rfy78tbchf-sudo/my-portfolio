@@ -13,3 +13,8 @@ New settled sales have ledger-matching proceeds and fees/taxes. Two retain dated
 
 ## Release gate
 Prepared on existing work/performance-detail-render-234 from 9957b88. Await final commit CI, guarded main promotion, migration application and live RPC/Pages verification. Frontend marker245 is intentionally unchanged; this is a backend-only correction. Rollback is the get_live_realized_sales definition from Build246. No UI, wealth-goal, ledger, account scope or currency-unit change.
+
+## Verified release (2026-11-04)
+Application commit 7f1e05d708a6723863a48d510a17e183f5fd2702 passed complete required branch CI41773492423 (including Chromium/WebKit). Main was rechecked at b4452a5 and fast-forwarded with its expected SHA. Applied reconcile_settlement_precision through the Supabase connector. Live RPC now reports realized-sales-v12-settlement-precision. Pages41774587177 succeeded for the same commit; frontend marker245 remains intentional.
+
+Read-only immediate before/after verification removed exactly one reconciled pending duplicate. All retained items and closed-cycle output had identical hashes across deployment; settled amounts, fees/taxes and estimate metadata are unchanged. Security advisory categories/counts are unchanged. No new original historical basis was found, so priority3 has no backfill or fabricated calculation. Continue on new dated basis/FX, official-source revisions, or reproducible settlement discrepancies; do not reimplement245/246 or redeploy unchanged output.
