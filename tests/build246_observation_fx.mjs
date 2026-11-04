@@ -21,8 +21,9 @@ const before=JSON.stringify((await db.query('select * from transactions')).rows)
 await db.exec('create role anon; create role authenticated;');
 const sql=fs.readFileSync('supabase/migrations/20261102091722_preserve_observation_fx.sql','utf8').replace("v_today date := (now() at time zone 'Asia/Seoul')::date","v_today date := date '2030-01-10'");
 await db.exec(sql);
+if(process.env.BUILD247==='1') await db.exec(fs.readFileSync('supabase/migrations/20261104045000_reconcile_settlement_precision.sql','utf8').replace("v_today date := (now() at time zone 'Asia/Seoul')::date","v_today date := date '2030-01-10'"));
 async function run(period='1W'){return (await db.query("select get_live_realized_sales($1) r",[period])).rows[0].r}
-let r=await run(),sale=r.items[0];assert.equal(r.calculation_version,'realized-sales-v11-observation-fx');assert.equal(sale.status,'order_unverified');assert.equal(sale.realized_local,null);assert.equal(sale.average_cost_estimate.realized_local,60);assert.equal(sale.average_cost_estimate.reference_krw,60000);assert.equal(r.ready_count,0);
+let r=await run(),sale=r.items[0];assert.equal(r.calculation_version,process.env.BUILD247==='1'?'realized-sales-v12-settlement-precision':'realized-sales-v11-observation-fx');assert.equal(sale.status,'order_unverified');assert.equal(sale.realized_local,null);assert.equal(sale.average_cost_estimate.realized_local,60);assert.equal(sale.average_cost_estimate.reference_krw,60000);assert.equal(r.ready_count,0);
 // The same dated sale has the same estimate in every containing period.
 for(const period of ['THIS_MONTH','1M','3M','6M','YTD','1Y','ALL']){
  const result=await run(period);
