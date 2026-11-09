@@ -1,0 +1,110 @@
+{
+  "conditions": "Current stock258 and realized257 SQL; PGlite; 3000 synthetic transactions,1500 sales in each shape; 100/10/1 securities with30/300/3000 daily transactions each; ALL, fixed2026-11-09; five warm repeated queries per shape; NAV stubbed, no network/browser; complete results repeat and independent local profit=15000 USD. Shape changes dates: not a before/after optimization comparison.",
+  "rows": [
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "run": 0,
+      "ms": 722.9456150000001
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "run": 1,
+      "ms": 676.7374599999998
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "run": 2,
+      "ms": 741.0518309999998
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "run": 3,
+      "ms": 692.471536
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "run": 4,
+      "ms": 692.4710059999998
+    },
+    {
+      "securities": 10,
+      "transactions": 3000,
+      "historyPerSecurity": 300,
+      "run": 0,
+      "ms": 950.5114120000007
+    },
+    {
+      "securities": 10,
+      "transactions": 3000,
+      "historyPerSecurity": 300,
+      "run": 1,
+      "ms": 1075.4500039999984
+    },
+    {
+      "securities": 10,
+      "transactions": 3000,
+      "historyPerSecurity": 300,
+      "run": 2,
+      "ms": 994.848446
+    },
+    {
+      "securities": 10,
+      "transactions": 3000,
+      "historyPerSecurity": 300,
+      "run": 3,
+      "ms": 1020.1288409999997
+    },
+    {
+      "securities": 10,
+      "transactions": 3000,
+      "historyPerSecurity": 300,
+      "run": 4,
+      "ms": 1069.381696999999
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "run": 0,
+      "ms": 6084.115301999998
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "run": 1,
+      "ms": 5924.976146000001
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "run": 2,
+      "ms": 6161.976577999998
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "run": 3,
+      "ms": 5772.410085999996
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "run": 4,
+      "ms": 5555.458634000002
+    }
+  ]
+}
