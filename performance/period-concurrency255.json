@@ -1,0 +1,818 @@
+{
+  "kind": "isolated-stock-sql-worker-scheduling",
+  "conditions": {
+    "cpuThrottle": "none",
+    "requestIntervalMs": 40,
+    "periods": [
+      "1W",
+      "1M",
+      "3M",
+      "ALL"
+    ],
+    "nav": "stubbed/excluded",
+    "database": "independent PGlite worker copies",
+    "production": false
+  },
+  "results": [
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 0,
+      "slots": 1,
+      "queries": 4,
+      "maxActive": 1,
+      "latestMs": 107.85678600000006,
+      "drainMs": 228.24753999999984,
+      "cpuMs": 277.548,
+      "queryElapsedSumMs": 225.762477,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.058327999999846725,
+          "started": 0.12708199999997305,
+          "sqlMs": 50.351749000000154,
+          "finished": 51.03035099999988,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.525037999999995,
+          "started": 51.08548299999984,
+          "sqlMs": 54.185894999999846,
+          "finished": 105.66230599999994,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 80.37832400000002,
+          "started": 105.67327299999988,
+          "sqlMs": 50.443397000000004,
+          "finished": 156.57056199999988,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.92829899999992,
+          "started": 156.58296099999984,
+          "sqlMs": 70.78143599999999,
+          "finished": 227.78508499999998,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 0,
+      "slots": 2,
+      "queries": 4,
+      "maxActive": 2,
+      "latestMs": 70.6635839999999,
+      "drainMs": 190.9574419999999,
+      "cpuMs": 254.004,
+      "queryElapsedSumMs": 217.98085700000001,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.01567299999987881,
+          "started": 0.01883799999995972,
+          "sqlMs": 46.08253999999988,
+          "finished": 46.56456900000012,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.526108999999906,
+          "started": 39.56495799999993,
+          "sqlMs": 46.884426000000076,
+          "finished": 86.92422699999997,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.88120500000014,
+          "started": 79.90367900000001,
+          "sqlMs": 54.838600999999926,
+          "finished": 135.16586800000005,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 120.24667700000009,
+          "started": 120.25360799999999,
+          "sqlMs": 70.17529000000013,
+          "finished": 190.910261,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 1,
+      "slots": 2,
+      "queries": 4,
+      "maxActive": 2,
+      "latestMs": 72.83521000000019,
+      "drainMs": 193.048538,
+      "cpuMs": 271.959,
+      "queryElapsedSumMs": 241.3320020000001,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.01271900000028836,
+          "started": 0.015634000000318338,
+          "sqlMs": 47.934193999999934,
+          "finished": 48.46435100000008,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.32313400000021,
+          "started": 39.338056999999935,
+          "sqlMs": 60.786507000000256,
+          "finished": 100.71677399999999,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.72716500000024,
+          "started": 79.73337399999991,
+          "sqlMs": 60.2228540000001,
+          "finished": 140.515809,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 120.14596699999993,
+          "started": 120.15195600000015,
+          "sqlMs": 72.38844699999981,
+          "finished": 192.98117700000012,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 1,
+      "slots": 1,
+      "queries": 4,
+      "maxActive": 1,
+      "latestMs": 105.45746700000018,
+      "drainMs": 225.09886000000006,
+      "cpuMs": 253.711,
+      "queryElapsedSumMs": 223.206670999999,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.013901000000259955,
+          "started": 0.01722600000039165,
+          "sqlMs": 44.14785999999958,
+          "finished": 44.544196000000284,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.433861000000434,
+          "started": 44.55015500000036,
+          "sqlMs": 55.392043999999714,
+          "finished": 100.28253100000029,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.84699,
+          "started": 100.28935100000035,
+          "sqlMs": 51.45839399999977,
+          "finished": 152.1904300000001,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.57587400000011,
+          "started": 152.19797100000005,
+          "sqlMs": 72.20837299999994,
+          "finished": 225.0333410000003,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 2,
+      "slots": 1,
+      "queries": 4,
+      "maxActive": 1,
+      "latestMs": 97.40599999999995,
+      "drainMs": 216.84400199999982,
+      "cpuMs": 240.302,
+      "queryElapsedSumMs": 215.1002840000001,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.011356999999861728,
+          "started": 0.014181999999891559,
+          "sqlMs": 46.897054000000026,
+          "finished": 47.25586399999975,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.29716499999995,
+          "started": 47.263144999999895,
+          "sqlMs": 49.32574599999998,
+          "finished": 97.12240299999985,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.53707900000018,
+          "started": 97.12865299999976,
+          "sqlMs": 48.27035999999998,
+          "finished": 145.748157,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.36166700000012,
+          "started": 145.75384600000007,
+          "sqlMs": 70.60712400000011,
+          "finished": 216.76766700000007,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 2,
+      "slots": 2,
+      "queries": 4,
+      "maxActive": 2,
+      "latestMs": 84.2030249999998,
+      "drainMs": 203.65090099999998,
+      "cpuMs": 251.493,
+      "queryElapsedSumMs": 223.93919199999937,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.014831999999842083,
+          "started": 0.01766700000007404,
+          "sqlMs": 45.809593999999834,
+          "finished": 46.26747699999987,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.490396000000146,
+          "started": 39.49780700000019,
+          "sqlMs": 46.15940499999988,
+          "finished": 86.1385049999999,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.54311700000017,
+          "started": 79.54942600000004,
+          "sqlMs": 48.22444499999983,
+          "finished": 128.2360709999998,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.38872700000002,
+          "started": 119.39697999999999,
+          "sqlMs": 83.74574799999982,
+          "finished": 203.59175199999981,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 3,
+      "slots": 2,
+      "queries": 4,
+      "maxActive": 2,
+      "latestMs": 60.5430650000003,
+      "drainMs": 180.54842000000008,
+      "cpuMs": 222.604,
+      "queryElapsedSumMs": 203.71966000000066,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.04057099999999991,
+          "started": 0.07377100000030623,
+          "sqlMs": 54.140292000000045,
+          "finished": 54.63179600000012,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.37123700000029,
+          "started": 39.37579400000004,
+          "sqlMs": 44.56688000000031,
+          "finished": 84.44030199999997,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.9467840000002,
+          "started": 79.9519720000003,
+          "sqlMs": 44.90283500000032,
+          "finished": 125.28348200000028,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.88997100000006,
+          "started": 119.89547900000025,
+          "sqlMs": 60.10965299999998,
+          "finished": 180.43303600000036,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 3,
+      "slots": 1,
+      "queries": 4,
+      "maxActive": 1,
+      "latestMs": 69.85149700000011,
+      "drainMs": 189.88573499999984,
+      "cpuMs": 202.959,
+      "queryElapsedSumMs": 187.99886800000013,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.008342000000084226,
+          "started": 0.01058599999987564,
+          "sqlMs": 45.026176000000305,
+          "finished": 45.38993699999992,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.61181799999986,
+          "started": 45.39664700000003,
+          "sqlMs": 43.57336600000008,
+          "finished": 89.75587499999983,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.68439900000021,
+          "started": 89.77574499999992,
+          "sqlMs": 42.40062199999966,
+          "finished": 132.51101100000005,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.99643100000003,
+          "started": 132.51793099999986,
+          "sqlMs": 56.99870400000009,
+          "finished": 189.84792800000014,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 4,
+      "slots": 1,
+      "queries": 4,
+      "maxActive": 1,
+      "latestMs": 72.21066599999995,
+      "drainMs": 192.10039200000028,
+      "cpuMs": 203.467,
+      "queryElapsedSumMs": 190.7399859999996,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.010846000000128697,
+          "started": 0.012699000000338856,
+          "sqlMs": 42.36329599999999,
+          "finished": 42.66308200000003,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 38.277868000000126,
+          "started": 42.680999000000156,
+          "sqlMs": 41.64319299999988,
+          "finished": 84.6472630000003,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.88873700000022,
+          "started": 84.65894100000014,
+          "sqlMs": 46.79289699999981,
+          "finished": 131.74696700000004,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.8648790000002,
+          "started": 131.75283500000023,
+          "sqlMs": 59.940599999999904,
+          "finished": 192.07554500000015,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 20,
+      "transactions": 600,
+      "run": 4,
+      "slots": 2,
+      "queries": 4,
+      "maxActive": 2,
+      "latestMs": 64.21026999999958,
+      "drainMs": 184.31787200000008,
+      "cpuMs": 221.645,
+      "queryElapsedSumMs": 200.094384,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.008012000000235275,
+          "started": 0.009974999999940337,
+          "sqlMs": 42.04027499999984,
+          "finished": 42.36832800000002,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.28461000000016,
+          "started": 39.28910700000006,
+          "sqlMs": 45.98510800000031,
+          "finished": 85.85029200000008,
+          "current": false
+        },
+        {
+          "period": "3M",
+          "requested": 79.84266699999989,
+          "started": 79.84815500000013,
+          "sqlMs": 48.55754200000001,
+          "finished": 129.246756,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 120.0790890000003,
+          "started": 120.08370599999989,
+          "sqlMs": 63.51145899999983,
+          "finished": 184.28935899999988,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 0,
+      "slots": 1,
+      "queries": 2,
+      "maxActive": 1,
+      "latestMs": 322.3021239999998,
+      "drainMs": 442.2930759999999,
+      "cpuMs": 473.696,
+      "queryElapsedSumMs": 440.3900590000003,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.017796000000089407,
+          "started": 0.020751000000018394,
+          "sqlMs": 140.99833800000033,
+          "finished": 142.0648769999998,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.95953499999996,
+          "started": 142.07144700000026,
+          "sqlMs": 299.39172099999996,
+          "finished": 442.2616589999998,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 0,
+      "slots": 2,
+      "queries": 3,
+      "maxActive": 2,
+      "latestMs": 356.12106500000027,
+      "drainMs": 476.2463550000002,
+      "cpuMs": 708.505,
+      "queryElapsedSumMs": 677.6831849999999,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.00657000000046537,
+          "started": 0.008192000000235566,
+          "sqlMs": 189.75788699999976,
+          "finished": 190.63154100000065,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 38.58678200000031,
+          "started": 38.5920900000001,
+          "sqlMs": 202.98478299999988,
+          "finished": 242.59271100000024,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 120.093793,
+          "started": 190.63770999999997,
+          "sqlMs": 284.94051500000023,
+          "finished": 476.2148580000003,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 1,
+      "slots": 2,
+      "queries": 3,
+      "maxActive": 2,
+      "latestMs": 360.51229800000056,
+      "drainMs": 480.38526600000023,
+      "cpuMs": 718.223,
+      "queryElapsedSumMs": 681.8637120000003,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.006288999999924272,
+          "started": 0.008052000000134285,
+          "sqlMs": 193.91867600000023,
+          "finished": 194.60952499999985,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.28145599999971,
+          "started": 39.28648299999986,
+          "sqlMs": 203.18315900000016,
+          "finished": 243.4311689999995,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.84192199999961,
+          "started": 194.61735700000008,
+          "sqlMs": 284.7618769999999,
+          "finished": 480.35422000000017,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 1,
+      "slots": 1,
+      "queries": 2,
+      "maxActive": 1,
+      "latestMs": 309.1709259999989,
+      "drainMs": 429.19174699999894,
+      "cpuMs": 446.349,
+      "queryElapsedSumMs": 427.66883600000074,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.006860999999844353,
+          "started": 0.008843999999953667,
+          "sqlMs": 142.88315300000068,
+          "finished": 143.71625200000017,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.99557300000015,
+          "started": 143.72354199999972,
+          "sqlMs": 284.78568300000006,
+          "finished": 429.166498999999,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 2,
+      "slots": 1,
+      "queries": 2,
+      "maxActive": 1,
+      "latestMs": 306.04503399999885,
+      "drainMs": 426.2528259999999,
+      "cpuMs": 436.384,
+      "queryElapsedSumMs": 424.4919839999984,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.006849999999758438,
+          "started": 0.008722999999008607,
+          "sqlMs": 166.20065599999907,
+          "finished": 167.0391559999989,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 120.17654500000026,
+          "started": 167.04523599999993,
+          "sqlMs": 258.29132799999934,
+          "finished": 426.2215789999991,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 2,
+      "slots": 2,
+      "queries": 3,
+      "maxActive": 2,
+      "latestMs": 359.6498420000007,
+      "drainMs": 479.60362200000054,
+      "cpuMs": 710.802,
+      "queryElapsedSumMs": 689.0838230000008,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.008012000000235275,
+          "started": 0.009634000000005472,
+          "sqlMs": 191.89472800000112,
+          "finished": 192.83089100000143,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.268911000001026,
+          "started": 39.273418000000675,
+          "sqlMs": 211.11159399999997,
+          "finished": 251.31186100000014,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.88266300000032,
+          "started": 192.83755100000053,
+          "sqlMs": 286.07750099999976,
+          "finished": 479.53250500000104,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 3,
+      "slots": 2,
+      "queries": 3,
+      "maxActive": 2,
+      "latestMs": 363.05127399999947,
+      "drainMs": 482.8646669999998,
+      "cpuMs": 694.879,
+      "queryElapsedSumMs": 676.753134999999,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.007351000000198837,
+          "started": 0.009334000000308151,
+          "sqlMs": 189.73263000000043,
+          "finished": 190.54845099999875,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.27519099999881,
+          "started": 39.28042900000037,
+          "sqlMs": 195.5258699999995,
+          "finished": 235.62918100000024,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.78961700000036,
+          "started": 190.5552719999996,
+          "sqlMs": 291.4946349999991,
+          "finished": 482.84089099999983,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 3,
+      "slots": 1,
+      "queries": 2,
+      "maxActive": 1,
+      "latestMs": 324.31697499999973,
+      "drainMs": 444.2584790000001,
+      "cpuMs": 453.416,
+      "queryElapsedSumMs": 442.5148019999997,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.009143999999650987,
+          "started": 0.010916999999608379,
+          "sqlMs": 151.90675499999998,
+          "finished": 152.75021299999935,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.91517399999975,
+          "started": 152.7564829999992,
+          "sqlMs": 290.6080469999997,
+          "finished": 444.2321489999995,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 4,
+      "slots": 1,
+      "queries": 2,
+      "maxActive": 1,
+      "latestMs": 301.7651139999998,
+      "drainMs": 421.73715900000025,
+      "cpuMs": 433.594,
+      "queryElapsedSumMs": 419.8725140000006,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.006319000000075903,
+          "started": 0.00790199999937613,
+          "sqlMs": 149.19707000000017,
+          "finished": 150.09382799999912,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 119.93868400000065,
+          "started": 150.1007580000005,
+          "sqlMs": 270.6754440000004,
+          "finished": 421.70379800000046,
+          "current": true
+        }
+      ]
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "run": 4,
+      "slots": 2,
+      "queries": 3,
+      "maxActive": 2,
+      "latestMs": 352.5828079999992,
+      "drainMs": 472.74232499999925,
+      "cpuMs": 692.808,
+      "queryElapsedSumMs": 670.9139999999989,
+      "trace": [
+        {
+          "period": "1W",
+          "requested": 0.12373599999955331,
+          "started": 0.12571899999966263,
+          "sqlMs": 173.9226439999984,
+          "finished": 174.7087309999988,
+          "current": false
+        },
+        {
+          "period": "1M",
+          "requested": 39.60290199999872,
+          "started": 39.60797900000034,
+          "sqlMs": 199.7127530000016,
+          "finished": 240.3170709999995,
+          "current": false
+        },
+        {
+          "period": "ALL",
+          "requested": 120.13419900000008,
+          "started": 174.71520099999907,
+          "sqlMs": 297.27860299999884,
+          "finished": 472.7170069999993,
+          "current": true
+        }
+      ]
+    }
+  ]
+}

@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify retained period result cache boundaries
+        run: node tests/build256_period_cache.mjs
       - name: Verify nested render scroll preservation
         run: node tests/build255_render_scroll.mjs
       - name: Verify interactive queue refill preserves calculation order and concurrency
@@ -73,6 +75,8 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - name: Verify independent NAV arithmetic, periods and invalid balance rejection
         run: node tests/build254_contract.mjs
+      - name: Verify completed obsolete periods are reused in both browsers
+        run: EXPECT_REUSE=1 RETURN_RUNS=1 node experiments/period-return255.mjs && EXPECT_REUSE=1 RETURN_RUNS=1 BROWSER=webkit node experiments/period-return255.mjs
       - name: Verify nested refresh scroll and evidence at 125 percent
         run: node tests/build255_scroll_browser.mjs && BROWSER=webkit node tests/build255_scroll_browser.mjs
       - name: Verify all-account reconciliation on mobile

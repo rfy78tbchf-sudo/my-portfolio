@@ -1,0 +1,29 @@
+{
+  "browser": "chromium",
+  "holdingCount": 50,
+  "viewport": "390x844",
+  "transportMs": 50,
+  "samples": [
+    {
+      "cycle": 0,
+      "cacheEntries": 4,
+      "usedSize": 2519996,
+      "totalRequests": 107,
+      "totalPnlRequests": 4
+    },
+    {
+      "cycle": 10,
+      "cacheEntries": 4,
+      "usedSize": 2530320,
+      "totalRequests": 147,
+      "totalPnlRequests": 4
+    },
+    {
+      "cycle": 20,
+      "cacheEntries": 4,
+      "usedSize": 2573472,
+      "totalRequests": 187,
+      "totalPnlRequests": 4
+    }
+  ]
+}
