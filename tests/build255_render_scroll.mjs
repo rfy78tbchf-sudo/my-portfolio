@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync('index.html','utf8');
+const start=source.indexOf('  var renderScrollDepth=');
+const end=source.indexOf('  function renderNav()',start);
+assert.ok(start>0&&end>start);
+let y=620,reads=0,active=false,nest=false,fail=false,scrolls=[];
+const content={querySelector(){return null},insertAdjacentHTML(){},set innerHTML(v){y=0}};
+const context={document:{getElementById(){return content}},window:{get scrollY(){reads++;return y},scrollTo(x,value){scrolls.push(value);y=value}},currentTab:'performance',mode:'live',live:{},stockView:'unrealized',contentInputActive:()=>active,captureExpandedSections:()=>({}),homeTrendViewportAnchor:()=>null,livePerformance:()=>'',renderQuickAsset(){},bindBrokerDay(){if(nest){nest=false;vm.runInContext('render(true)',ctx)}if(fail)throw Error('synthetic failure')},restoreExpandedSections(){},contentRenderPending:false};
+for(const name of ['bindDeferredDetails','renderNav','bindPage','bindWealth','bindDrilldown','bindTradeTargets','bindDaily','bindPasskeyButtons','keepActivePeriodsVisible'])context[name]=()=>{};
+const ctx=vm.createContext(context);vm.runInContext(source.slice(start,end),ctx);
+nest=true;vm.runInContext('render(true)',ctx);assert.equal(reads,1);assert.deepEqual(scrolls,[620,620]);
+active=true;reads=0;vm.runInContext('render(true)',ctx);assert.equal(reads,0);assert.equal(ctx.contentRenderPending,true);
+active=false;fail=true;assert.throws(()=>vm.runInContext('render(true)',ctx),/synthetic failure/);assert.equal(ctx.renderScrollDepth,0);
+fail=false;y=940;reads=0;scrolls=[];vm.runInContext('render(true)',ctx);assert.equal(reads,1);assert.deepEqual(scrolls,[940]);
+reads=0;scrolls=[];nest=true;vm.runInContext('render(false)',ctx);assert.equal(reads,0);assert.deepEqual(scrolls,[0,0]);
+console.log('Build255: nested scroll preserved, input guard avoids layout reads, exceptions reset depth, later renders capture fresh scroll, navigation resets');
