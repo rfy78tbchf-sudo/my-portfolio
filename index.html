@@ -3681,10 +3681,10 @@ scopeRead
     var previous=target.stockPnlPrevious&&target.stockPnl&&target.stockPnl.period===next?target.stockPnl:null;
     stockPeriod=next;var request=++stockPeriodEpoch;target.stockPnlDeferred=false;
     var cached=target.stockPnlCache[next];
-    if(cached&&Date.now()-Number(cached.client_fetched_at||0)>=30000)cached=null;
+    if(cached&&Date.now()-Number(target.stockPnlCacheTimes&&target.stockPnlCacheTimes[next]||0)>=30000)cached=null;
     var homeAudit=target.homeChart&&target.homeChart.reconciliation;
     if(cached&&homeAudit&&homeAudit.period===next&&cached.reconciliation&&homeAudit.data_version!==cached.reconciliation.data_version)cached=null;
-    if(cached){target.stockPnlFetchedAt=cached.client_fetched_at;target.stockPnl=cached;target.stockPnlPrevious=false;target.stockPnlLoading=false;target.stockPnlFailed=false;render(preserveScroll===true);return Promise.resolve(cached)}
+    if(cached){target.stockPnlFetchedAt=target.stockPnlCacheTimes[next];target.stockPnl=cached;target.stockPnlPrevious=false;target.stockPnlLoading=false;target.stockPnlFailed=false;render(preserveScroll===true);return Promise.resolve(cached)}
     target.stockPnl=previous;target.stockPnlPrevious=!!previous;target.stockPnlLoading=true;target.stockPnlFailed=false;render(preserveScroll===true);
     var pending=target.stockPnlRequests[next];
     if(!pending){
@@ -3696,7 +3696,7 @@ scopeRead
       if(request!==stockPeriodEpoch||stockPeriod!==next||live!==target)return;
       if(day!==kstDate()){target.stockPnl=null;target.stockPnlPrevious=false;target.stockPnlLoading=false;target.stockPnlDeferred=true;target.stockPnlKeepView=true;render(true);return}
       var valid=x&&x.ok&&x.period===next&&(next!=='오늘'||x.period_start===day&&x.period_end===day);
-      if(valid){x.client_fetched_at=Date.now();target.stockPnlFetchedAt=x.client_fetched_at;target.stockPnlCache[next]=x;}
+      if(valid){target.stockPnlFetchedAt=Date.now();(target.stockPnlCacheTimes||(target.stockPnlCacheTimes={}))[next]=target.stockPnlFetchedAt;target.stockPnlCache[next]=x;}
       target.stockPnl=valid?x:previous;target.stockPnlPrevious=!valid&&!!previous;target.stockPnlFailed=!valid;target.stockPnlLoading=false;render(true);
     }).catch(function(){
       if(request!==stockPeriodEpoch||stockPeriod!==next||live!==target)return;
