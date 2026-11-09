@@ -241,6 +241,7 @@ const injected=`
   };
 
   window.__uiFixture=function(data,record,opinion,comparison){
+    if(typeof performanceAssetScope!=='undefined')performanceAssetScope='stocks';
     liveAuthEpoch++;live=data;liveError=null;mode='live';period='1M';session={accessToken:'test.'+btoa(JSON.stringify({sub:data.draftOwner||('fixture-'+crypto.randomUUID())}))+'.test'};
     var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
     window.__uiSavedDecision=function(){return savedDecision?JSON.parse(JSON.stringify(savedDecision)):null};
