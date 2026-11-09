@@ -6,7 +6,7 @@ export async function compareBrowser(db,base,candidate,cohort=null){
  if(!cohort)cohort={transactions:Number((await db.query('select count(*) n from transactions')).rows[0].n),positions:Number((await db.query('select count(distinct security_id) n from holdings')).rows[0].n)};
  for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n])=>!process.env.UI_BROWSER||n===process.env.UI_BROWSER)){
   const browser=await engine.launch({headless:true});const samples=[];
-  try{for(const period of ['1W','1M','3M','ALL'])for(let run=0;run<3;run++)for(const kind of (run%2?['after','before']:['before','after'])){
+  try{for(const period of ['1W','1M','3M','ALL'])for(let run=0;run<Number(process.env.PERIOD_RUNS||3);run++)for(const kind of (run%2?['after','before']:['before','after'])){
    await db.exec('reset role');await db.exec(kind==='before'?base:candidate);await db.exec('set role authenticated');
    const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});let dbMs=0,requests=0,expected;
    const hook=`session={accessToken:'synthetic'};kstDate=function(){return '2026-11-09'};live={stockPnl:null,accounts:[],holdings:[],securityMap:{}};
@@ -26,6 +26,6 @@ export async function compareBrowser(db,base,candidate,cohort=null){
    const warm=await page.evaluate(()=>window.repeat());assert.deepEqual(warm.result,expected);assert.equal(requests,1);
    samples.push({period,run,kind,firstMs:first.ms,dbMs,cachedMs:warm.ms});await page.close();
   }}finally{await browser.close();await db.exec('reset role')}
-  console.log(JSON.stringify({browser:name,...cohort,viewport:390,syntheticTransportDelayMs:100,runs:3,samples}));
+  console.log(JSON.stringify({browser:name,...cohort,viewport:390,syntheticTransportDelayMs:100,runs:Number(process.env.PERIOD_RUNS||3),samples}));
  }
 }
