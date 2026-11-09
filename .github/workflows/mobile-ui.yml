@@ -67,6 +67,8 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify deployed corporate reuse preserves reconciliation and idempotence
+        run: CORPORATE_EXPERIMENT=1 CORPORATE_MIGRATION=supabase/build252_corporate_candidates.sql node tests/build251_opening_reconciliation.mjs
       - name: Verify owned date evidence, RLS and period latency
         run: PERIOD_BROWSER=1 node tests/build250_date_evidence.mjs
         timeout-minutes: 8

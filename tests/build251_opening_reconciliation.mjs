@@ -17,7 +17,8 @@ const migration=fs.readFileSync('supabase/build251_domestic_opening.sql','utf8')
 await db.exec(migration);await db.exec(migration);
 let candidate=await definition();
 if(process.env.CORPORATE_EXPERIMENT){
- await db.exec(fs.readFileSync('tests/fixtures/period_corporate_candidate_experiment.sql','utf8').replace('a1c5b0dd24c00467912fc425ce351892','b08fe9c5e0bab487b0dc1a64aad25800'));
+ const patch=fs.readFileSync(process.env.CORPORATE_MIGRATION||'tests/fixtures/period_corporate_candidate_experiment.sql','utf8').replace('a1c5b0dd24c00467912fc425ce351892','b08fe9c5e0bab487b0dc1a64aad25800');
+ await db.exec(patch);if(process.env.CORPORATE_MIGRATION)await db.exec(patch);
  candidate=await definition();
 }
 console.log('Definition hash', (await db.query("select md5(btrim(pg_get_functiondef('public.get_live_period_stock_pnl(text)'::regprocedure),E' \n\r\t')) h")).rows[0].h);
