@@ -7,7 +7,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n]
  try{const times=[];for(let i=0;i<7;i++){
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
  const hook=`
- session={accessToken:'synthetic'};kstDate=function(){return '2030-01-10'};live={stockPnl:null,accounts:[],holdings:[],securityMap:{}};
+ performanceAssetScope='stocks';session={accessToken:'synthetic'};kstDate=function(){return '2030-01-10'};live={stockPnl:null,accounts:[],holdings:[],securityMap:{}};
  window.calls=[];rpcNetwork=function(name,payload){calls.push(payload.p_period);return new Promise(function(resolve){setTimeout(function(){resolve({ok:true,period:payload.p_period,period_start:'2029-01-01',period_end:'2030-01-10',pnl_krw:17,complete:false,items:[],candidate_count:0,krw_included_count:0})},100)})};
  render=function(){document.body.innerHTML=stockPeriodPerformance()||''};
  window.run=async function(){var start=performance.now(),ps=[changeStockPeriod('1W')];await new Promise(function(r){setTimeout(r,10)});['1M','3M','6M','ALL'].forEach(function(p){ps.push(changeStockPeriod(p))});await Promise.all(ps);await new Promise(function(r){requestAnimationFrame(function(){requestAnimationFrame(r)})});return {ms:performance.now()-start,calls:calls,period:live.stockPnl.period,complete:live.stockPnl.complete}};

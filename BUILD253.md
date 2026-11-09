@@ -1,0 +1,11 @@
+# Build253 — shared period boundaries and explicit reconciliation status
+
+Existing daily NAV summaries used the first included activity day's snapshot as the opening value, while stock P&L used the prior day. Introduce one period-start function and use the preceding valuation date in home charts, summaries and stock queries. Add THIS_MONTH and 6M support to the legacy routes.
+
+A read-only NAV audit records scope, observation times, component gaps, missing opening evidence and a calculation/data version. It does not certify historical account totals or manufacture cash FX/settlement P&L. Whole-account P&L remains unavailable until independently supported. The existing asset subtraction is diagnostic, not an exact return. All-account scope is the default P&L view; stock-only remains selectable, with visible provisional/partial status. Home and P&L retain the selected period across tabs.
+
+Reject incomplete, duplicate and unfinished paginated balance responses before normalization. The snapshot writer rejects missing numeric totals, malformed positions and attempts to rewrite another date. Serialize same-owner writes and skip older/repeated source requests. Existing function privileges and security mode are preserved. No historical account observations, trades, quantities or cost bases are rewritten by this release.
+
+Independent fixed-value arithmetic/date fixtures and invalid-input/stale-response tests are in tests/build253_contract.mjs. Mobile synthetic fixtures cover all-account versus stock scope, provisional status, cross-tab periods and layout. Existing period/decision/refresh regressions are retained. A result's arithmetic equality is explicitly distinct from verified input evidence.
+
+Known unfinished work: original-currency cash balances and settlement-component history; independently reconstructed account-wide P&L; current/period ISA records; authenticated production UI and physical iPhone validation. Stored external-ID uniqueness does not prove that separate execution and settlement IDs refer to different economic events. Audit versioning does not by itself establish cross-request database snapshot isolation. No claim of overall financial correctness is made.

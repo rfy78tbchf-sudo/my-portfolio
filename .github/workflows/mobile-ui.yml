@@ -1,7 +1,7 @@
 name: Mobile portfolio layout
 on:
   push:
-    branches: [main, 'work/performance-*']
+    branches: [main, 'work/performance-*', 'work/trust-*']
   workflow_dispatch:
 jobs:
   decision-regression:
@@ -67,6 +67,10 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify independent NAV arithmetic, periods and invalid balance rejection
+        run: node tests/build253_contract.mjs
+      - name: Verify all-account reconciliation on mobile
+        run: node tests/build253_nav_browser.mjs
       - name: Verify deployed corporate reuse preserves reconciliation and idempotence
         run: CORPORATE_EXPERIMENT=1 CORPORATE_MIGRATION=supabase/build252_corporate_candidates.sql node tests/build251_opening_reconciliation.mjs
       - name: Verify owned date evidence, RLS and period latency
