@@ -32,7 +32,7 @@ const scope={live,liveError:'',period:'1M',portfolioMarket:'ALL',portfolioAccoun
   pct:n=>(Number(n)>0?'+':'')+Number(n).toFixed(2)+'%',weightPct:n=>Number(n).toFixed(2)+'%',
   cls:n=>Number(n)>=0?'up':'down',kstStamp:x=>String(x||'날짜 미확인'),kstDate:()=> '2026-09-27',
   marketGroup:()=> 'OVERSEAS',completeSnapshotPeriod:()=>true,ledgerHeadlineReady:()=>false,
-  latestManualRows:()=>[],reviewHomeCard:()=>'',decisionHomeCard:()=>'',reconciliationHomeStatus:()=>'',
+  latestManualRows:()=>[],reviewHomeCard:()=>'',decisionHomeCard:()=>'',reconciliationHomeStatus:()=>'',navReconciliationHtml:()=>'',
   cashFlowAuditCard:()=>'',annualGoalCard:()=>'',tradeTargetCard:()=>'',dividendCard:()=>'',
   priceAlertCard:()=>'',upcomingAgenda:()=>'',dataStatusCard:()=>'',cashCaseAssessmentCard:()=>'',
   verifiedMovementCard:()=>'',cashAccountingCard:()=>'',analysisCoverageCard:()=>'',ledgerEstimateHtml:()=>'',
@@ -72,7 +72,8 @@ assert.ok(!holdings.includes('원가단가'));
 assert.ok(performance.indexOf('종목별 확인된 실현손익')<performance.indexOf('실현손익·배당·비용과 계산 근거'));
 assert.ok(performance.includes('Sold holding'),'sold holdings remain in selected period results');
 assert.ok(performance.indexOf('Sold holding')<performance.indexOf('First holding'),'contribution amount sort is consistent');
-assert.ok(performance.includes('최근 1개월')&&!performance.includes('이번 달'),'rolling period never claims calendar month');
+assert.match(performance, /data-period="1M" aria-pressed="true">최근 1개월/, 'rolling month is selected');
+assert.match(performance, /data-period="THIS_MONTH" aria-pressed="false">이번 달/, 'calendar month is a separate unselected option');
 
 mkdirSync('mobile-artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true});

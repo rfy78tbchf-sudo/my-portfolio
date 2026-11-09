@@ -1,7 +1,7 @@
 name: Mobile portfolio layout
 on:
   push:
-    branches: [main, 'work/performance-*']
+    branches: [main, 'work/performance-*', 'work/trust-*']
   workflow_dispatch:
 jobs:
   decision-regression:
@@ -69,6 +69,22 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify independent NAV arithmetic, periods and invalid balance rejection
+        run: node tests/build254_contract.mjs
+      - name: Verify all-account reconciliation on mobile
+        run: node tests/build254_nav_browser.mjs
+      - name: Verify daily journey with production login and data-loading paths
+        run: node tests/build209_daily_browser.mjs
+      - name: Verify home asset map and portfolio selection
+        run: node tests/build214_browser.mjs
+      - name: Verify trend period continuity
+        run: node tests/build210_trend_browser.mjs
+      - name: Verify detail actions during text entry and control selection
+        run: node tests/build210_detail_controls.mjs
+      - name: Verify decision save, interrupted receipt and next-visit readback
+        run: node tests/build211_decision_browser.mjs
+      - run: node tests/build90_chart_ma.mjs --browser
+      - run: node tests/build93_review_conditions.mjs
       - name: Verify deployed corporate reuse preserves reconciliation and idempotence
         run: CORPORATE_EXPERIMENT=1 CORPORATE_MIGRATION=supabase/build252_corporate_candidates.sql node tests/build251_opening_reconciliation.mjs
       - name: Verify owned date evidence, RLS and period latency
@@ -173,18 +189,6 @@ jobs:
         run: node tests/build215_browser.mjs
       - run: node tests/build67_ui_visual.mjs
       - run: UI_WEBKIT_NAV=1 UI_OUTPUT=mobile-artifacts/webkit-navigation node tests/build67_ui_visual.mjs
-      - name: Verify daily journey with production login and data-loading paths
-        run: node tests/build209_daily_browser.mjs
-      - name: Verify home asset map and portfolio selection
-        run: node tests/build214_browser.mjs
-      - name: Verify trend period continuity
-        run: node tests/build210_trend_browser.mjs
-      - name: Verify detail actions during text entry and control selection
-        run: node tests/build210_detail_controls.mjs
-      - name: Verify decision save, interrupted receipt and next-visit readback
-        run: node tests/build211_decision_browser.mjs
-      - run: node tests/build90_chart_ma.mjs --browser
-      - run: node tests/build93_review_conditions.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

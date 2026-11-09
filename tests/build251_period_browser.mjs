@@ -8,7 +8,7 @@ partial.items.push({symbol:'MISSING',name:'합성 대조 대기 종목',currency
 const hook=`
   kstDate=function(){return '2026-11-09'};resumeLiveView=function(){return Promise.resolve()};
   rpc=function(){return Promise.resolve({ok:false,items:[]})};bindBrokerDay=function(){};
-  currentTab='performance';stockView='total';stockPeriod='1W';period='1W';
+  performanceAssetScope='stocks';currentTab='performance';stockView='total';stockPeriod='1W';period='1W';
   live={stockPnl:${JSON.stringify(partial)},accounts:[{id:'synthetic'}],holdings:[],securityMap:{},snapshots:[{snapshot_date:'2026-11-09',total_assets:15000}],homeChart:{items:[{date:'2026-11-02',total_assets:10000},{date:'2026-11-09',total_assets:15000}]}};
   window.__pnlFixture=function(data){currentTab='performance';live.stockPnl=data;render(true)};
   window.__homeFixture=function(){currentTab='home';render(true)};

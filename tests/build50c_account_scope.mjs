@@ -34,7 +34,7 @@ const empty=()=>'',money=n=>Math.round(Number(n)).toLocaleString('ko-KR')+'원';
 const ctx=vm.createContext({live,liveError:null,period:'1W',latestManualRows:()=>[],
   completeSnapshotPeriod:()=>false,ledgerHeadlineReady:()=>false,
   esc:String,money,cls:empty,kstStamp:()=> '9. 26. 11:42 KST',periods:()=>'',periodLabel:x=>x,
-  reconciliationHomeStatus:empty,assetChart:empty,metric:empty,
+  reconciliationHomeStatus:empty,navReconciliationHtml:empty,assetChart:empty,metric:empty,
   homeCheckCard:()=>'',homeBrowseCard:empty,kstDate:()=>"2026-10-01",riskOverviewCard:empty,decisionHomeCard:empty,reviewHomeCard:empty,cashFlowAuditCard:empty,
   annualGoalCard:empty,tradeTargetCard:empty,dividendCard:empty,
   priceAlertCard:empty,upcomingAgenda:empty,dataStatusCard:empty});
