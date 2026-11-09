@@ -127,6 +127,11 @@ for(const [name,engine] of (process.env.BROWSER==='webkit'?[['webkit',webkit]]:[
     if(table==='holdings'&&failCore)return json(route,{message:'synthetic offline'},503);
     if(table==='transactions'&&failExtra)return json(route,{message:'synthetic extra failure'},503);
     const tables={accounts,securities,holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
+    if(table==='daily_security_prices'){
+      let rows=prices;const filter=url.searchParams.get('security_id');
+      if(filter?.startsWith('eq.'))rows=rows.filter(p=>p.security_id===filter.slice(3));
+      return json(route,rows.slice().sort((a,b)=>b.price_date.localeCompare(a.price_date)).slice(0,Number(url.searchParams.get('limit')||rows.length)));
+    }
     return json(route,tables[table]||[]);
   });
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
