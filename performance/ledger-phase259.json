@@ -1,0 +1,725 @@
+{
+  "conditions": "Current stock258 and realized257 SQL; PGlite; 3000 synthetic transactions,1500 sales in each shape; 100/1 securities with30/3000 daily transactions each; 1W/1M/3M/ALL, phase attribution (nested stock is included in closed phase), fixed2026-11-09; five warm repeated queries per shape; NAV stubbed, no network/browser; instrumentation-stripped complete responses equal uninstrumented current SQL. Shape changes dates: not a before/after optimization comparison.",
+  "rows": [
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1W",
+      "run": 0,
+      "ms": 603.6449339999999,
+      "phases": {
+        "dates": 6,
+        "closed": 324,
+        "ledger": 252,
+        "account": 1,
+        "pending": 2,
+        "official": 1,
+        "estimates": 9,
+        "stock_subcall": 306
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1W",
+      "run": 1,
+      "ms": 598.8681949999996,
+      "phases": {
+        "dates": 8,
+        "closed": 313,
+        "ledger": 257,
+        "account": 0,
+        "pending": 3,
+        "official": 2,
+        "estimates": 9,
+        "stock_subcall": 297
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1W",
+      "run": 2,
+      "ms": 615.0401189999993,
+      "phases": {
+        "dates": 7,
+        "closed": 331,
+        "ledger": 257,
+        "account": 0,
+        "pending": 3,
+        "official": 1,
+        "estimates": 9,
+        "stock_subcall": 313
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1W",
+      "run": 3,
+      "ms": 576.5813010000002,
+      "phases": {
+        "dates": 8,
+        "closed": 296,
+        "ledger": 254,
+        "account": 0,
+        "pending": 3,
+        "official": 1,
+        "estimates": 9,
+        "stock_subcall": 279
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1W",
+      "run": 4,
+      "ms": 565.694238,
+      "phases": {
+        "dates": 7,
+        "closed": 291,
+        "ledger": 251,
+        "account": 1,
+        "pending": 2,
+        "official": 1,
+        "estimates": 7,
+        "stock_subcall": 276
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1M",
+      "run": 0,
+      "ms": 726.514381,
+      "phases": {
+        "dates": 6,
+        "closed": 368,
+        "ledger": 300,
+        "account": 0,
+        "pending": 6,
+        "official": 1,
+        "estimates": 28,
+        "stock_subcall": 308
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1M",
+      "run": 1,
+      "ms": 763.5442620000003,
+      "phases": {
+        "dates": 5,
+        "closed": 395,
+        "ledger": 307,
+        "account": 0,
+        "pending": 5,
+        "official": 2,
+        "estimates": 31,
+        "stock_subcall": 325
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1M",
+      "run": 2,
+      "ms": 795.6212259999993,
+      "phases": {
+        "dates": 6,
+        "closed": 405,
+        "ledger": 331,
+        "account": 0,
+        "pending": 6,
+        "official": 1,
+        "estimates": 29,
+        "stock_subcall": 332
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1M",
+      "run": 3,
+      "ms": 763.8895350000003,
+      "phases": {
+        "dates": 5,
+        "closed": 398,
+        "ledger": 305,
+        "account": 0,
+        "pending": 6,
+        "official": 2,
+        "estimates": 29,
+        "stock_subcall": 332
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "1M",
+      "run": 4,
+      "ms": 826.902422000001,
+      "phases": {
+        "dates": 5,
+        "closed": 381,
+        "ledger": 381,
+        "account": 0,
+        "pending": 5,
+        "official": 1,
+        "estimates": 34,
+        "stock_subcall": 320
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "3M",
+      "run": 0,
+      "ms": 751.5979739999984,
+      "phases": {
+        "dates": 5,
+        "closed": 377,
+        "ledger": 314,
+        "account": 0,
+        "pending": 5,
+        "official": 2,
+        "estimates": 29,
+        "stock_subcall": 316
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "3M",
+      "run": 1,
+      "ms": 719.686819999999,
+      "phases": {
+        "dates": 5,
+        "closed": 360,
+        "ledger": 303,
+        "account": 1,
+        "pending": 5,
+        "official": 1,
+        "estimates": 28,
+        "stock_subcall": 300
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "3M",
+      "run": 2,
+      "ms": 716.1882879999994,
+      "phases": {
+        "dates": 5,
+        "closed": 366,
+        "ledger": 295,
+        "account": 0,
+        "pending": 5,
+        "official": 1,
+        "estimates": 28,
+        "stock_subcall": 303
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "3M",
+      "run": 3,
+      "ms": 763.0082070000008,
+      "phases": {
+        "dates": 5,
+        "closed": 365,
+        "ledger": 335,
+        "account": 0,
+        "pending": 6,
+        "official": 1,
+        "estimates": 29,
+        "stock_subcall": 305
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "3M",
+      "run": 4,
+      "ms": 726.2921940000015,
+      "phases": {
+        "dates": 5,
+        "closed": 363,
+        "ledger": 307,
+        "account": 1,
+        "pending": 5,
+        "official": 1,
+        "estimates": 28,
+        "stock_subcall": 303
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "ALL",
+      "run": 0,
+      "ms": 655.6124359999994,
+      "phases": {
+        "dates": 4,
+        "closed": 291,
+        "ledger": 304,
+        "account": 1,
+        "pending": 6,
+        "official": 1,
+        "estimates": 32,
+        "stock_subcall": 291
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "ALL",
+      "run": 1,
+      "ms": 664.3955830000014,
+      "phases": {
+        "dates": 5,
+        "closed": 281,
+        "ledger": 323,
+        "account": 0,
+        "pending": 7,
+        "official": 2,
+        "estimates": 28,
+        "stock_subcall": 280
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "ALL",
+      "run": 2,
+      "ms": 666.951729999997,
+      "phases": {
+        "dates": 5,
+        "closed": 296,
+        "ledger": 301,
+        "account": 0,
+        "pending": 5,
+        "official": 3,
+        "estimates": 36,
+        "stock_subcall": 296
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "ALL",
+      "run": 3,
+      "ms": 725.6365890000015,
+      "phases": {
+        "dates": 6,
+        "closed": 306,
+        "ledger": 356,
+        "account": 0,
+        "pending": 6,
+        "official": 1,
+        "estimates": 31,
+        "stock_subcall": 306
+      }
+    },
+    {
+      "securities": 100,
+      "transactions": 3000,
+      "historyPerSecurity": 30,
+      "period": "ALL",
+      "run": 4,
+      "ms": 815.7281949999997,
+      "phases": {
+        "dates": 5,
+        "closed": 351,
+        "ledger": 403,
+        "account": 0,
+        "pending": 6,
+        "official": 2,
+        "estimates": 30,
+        "stock_subcall": 351
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1W",
+      "run": 0,
+      "ms": 6031.1883640000015,
+      "phases": {
+        "dates": 7,
+        "closed": 63,
+        "ledger": 5956,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 3,
+        "stock_subcall": 61
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1W",
+      "run": 1,
+      "ms": 5830.551368,
+      "phases": {
+        "dates": 6,
+        "closed": 61,
+        "ledger": 5758,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 2,
+        "stock_subcall": 59
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1W",
+      "run": 2,
+      "ms": 5699.530934000002,
+      "phases": {
+        "dates": 6,
+        "closed": 66,
+        "ledger": 5623,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 2,
+        "stock_subcall": 63
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1W",
+      "run": 3,
+      "ms": 5806.685877999997,
+      "phases": {
+        "dates": 6,
+        "closed": 74,
+        "ledger": 5721,
+        "account": 1,
+        "pending": 2,
+        "official": 0,
+        "estimates": 2,
+        "stock_subcall": 71
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1W",
+      "run": 4,
+      "ms": 5805.401773000005,
+      "phases": {
+        "dates": 7,
+        "closed": 62,
+        "ledger": 5730,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 3,
+        "stock_subcall": 61
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1M",
+      "run": 0,
+      "ms": 5529.897566999993,
+      "phases": {
+        "dates": 5,
+        "closed": 55,
+        "ledger": 5468,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 0,
+        "stock_subcall": 53
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1M",
+      "run": 1,
+      "ms": 5738.058548000001,
+      "phases": {
+        "dates": 5,
+        "closed": 57,
+        "ledger": 5674,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 57
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1M",
+      "run": 2,
+      "ms": 5590.749440000014,
+      "phases": {
+        "dates": 5,
+        "closed": 63,
+        "ledger": 5520,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 62
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1M",
+      "run": 3,
+      "ms": 5851.873569999996,
+      "phases": {
+        "dates": 5,
+        "closed": 53,
+        "ledger": 5792,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 0,
+        "stock_subcall": 52
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "1M",
+      "run": 4,
+      "ms": 5949.269672999988,
+      "phases": {
+        "dates": 4,
+        "closed": 62,
+        "ledger": 5881,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 62
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "3M",
+      "run": 0,
+      "ms": 5625.342142000009,
+      "phases": {
+        "dates": 5,
+        "closed": 62,
+        "ledger": 5556,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 61
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "3M",
+      "run": 1,
+      "ms": 5574.890312000003,
+      "phases": {
+        "dates": 4,
+        "closed": 61,
+        "ledger": 5506,
+        "account": 1,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 61
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "3M",
+      "run": 2,
+      "ms": 5843.175792999988,
+      "phases": {
+        "dates": 5,
+        "closed": 79,
+        "ledger": 5756,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 79
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "3M",
+      "run": 3,
+      "ms": 5962.96962399999,
+      "phases": {
+        "dates": 7,
+        "closed": 60,
+        "ledger": 5892,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 59
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "3M",
+      "run": 4,
+      "ms": 5692.240248000016,
+      "phases": {
+        "dates": 5,
+        "closed": 66,
+        "ledger": 5618,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 2,
+        "stock_subcall": 66
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "ALL",
+      "run": 0,
+      "ms": 5884.421991999989,
+      "phases": {
+        "dates": 6,
+        "closed": 99,
+        "ledger": 5726,
+        "account": 0,
+        "pending": 6,
+        "official": 2,
+        "estimates": 28,
+        "stock_subcall": 99
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "ALL",
+      "run": 1,
+      "ms": 5672.246068000008,
+      "phases": {
+        "dates": 5,
+        "closed": 100,
+        "ledger": 5513,
+        "account": 1,
+        "pending": 5,
+        "official": 2,
+        "estimates": 29,
+        "stock_subcall": 100
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "ALL",
+      "run": 2,
+      "ms": 5824.3183390000195,
+      "phases": {
+        "dates": 5,
+        "closed": 106,
+        "ledger": 5659,
+        "account": 0,
+        "pending": 6,
+        "official": 1,
+        "estimates": 30,
+        "stock_subcall": 106
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "ALL",
+      "run": 3,
+      "ms": 5832.829821000021,
+      "phases": {
+        "dates": 5,
+        "closed": 99,
+        "ledger": 5675,
+        "account": 1,
+        "pending": 6,
+        "official": 1,
+        "estimates": 29,
+        "stock_subcall": 99
+      }
+    },
+    {
+      "securities": 1,
+      "transactions": 3000,
+      "historyPerSecurity": 3000,
+      "period": "ALL",
+      "run": 4,
+      "ms": 5932.90709600001,
+      "phases": {
+        "dates": 6,
+        "closed": 104,
+        "ledger": 5771,
+        "account": 0,
+        "pending": 5,
+        "official": 2,
+        "estimates": 28,
+        "stock_subcall": 104
+      }
+    }
+  ]
+}

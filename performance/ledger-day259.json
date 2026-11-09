@@ -1,0 +1,965 @@
+{
+  "conditions": "PGlite current stock258/realized257 vs typed daily-record reuse; fixed2026-11-09; representative indexes; NAV stubbed; both SQL plans warm;5 alternating pairs per period/shape; all full responses equal. No browser/network timing.",
+  "rows": [
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 120.03542599999992
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 71.0579560000001
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 66.59419400000002
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 125.28912400000013
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 115.94270800000004
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 62.40416400000004
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 60.63236300000017
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 117.43271500000037
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 119.7784730000003
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1W",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 57.65186800000038
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 103.91095300000006
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 54.441013999999996
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 54.06638000000021
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 105.86143900000025
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 110.67196000000013
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 51.88532999999961
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 54.337508999999955
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 113.85926599999993
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 113.07967099999996
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "1M",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 58.332332999999835
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 120.85845700000027
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 60.38380700000016
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 62.214879999999994
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 116.56477600000017
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 114.54823600000054
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 58.85763499999939
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 56.769186999999874
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 109.37604499999998
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 106.76618899999994
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "3M",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 58.863054000000375
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 122.27391699999953
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 69.29153099999985
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 69.04876500000046
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 120.3329219999996
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 124.32049099999949
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 69.62554199999977
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 69.7959979999996
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 116.88846199999989
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 115.20380000000023
+    },
+    {
+      "securities": 1,
+      "total": 300,
+      "period": "ALL",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 66.13065499999993
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 5712.712748
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 199.44486099999995
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 214.3802829999986
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 5830.275598
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 6018.673193999999
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 182.5291959999995
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 198.33431599999676
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 5505.003524
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 5722.169625999995
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1W",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 208.92527599999448
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 5580.991566999997
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 186.3531440000006
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 182.5152209999942
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 5825.442271
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 5704.212906999994
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 170.72146800000337
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 176.82120000000577
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 6304.540322000001
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 5419.629764000012
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "1M",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 173.76369399999385
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 5453.424939999997
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 183.93013100000098
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 188.09612099999504
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 5526.3231499999965
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 5411.641623000003
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 217.76624999998603
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 263.5300439999992
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 5562.036567999996
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 5415.98550499999
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "3M",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 179.1920370000007
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 5722.528630000001
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 360.46643999998923
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 347.566347999993
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 5765.565884000011
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 5837.169880999994
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 370.72969300000113
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 355.92115899999044
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 5932.785881000018
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 5846.799167000019
+    },
+    {
+      "securities": 1,
+      "total": 3000,
+      "period": "ALL",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 351.74486599999364
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 550.0047269999923
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 486.6208880000049
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 470.60224800001015
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 561.4674259999883
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 598.9377080000122
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 481.9389150000061
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 461.4326449999935
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 550.835070000001
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 579.7907970000233
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1W",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 472.0108159999945
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 721.1820979999902
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 648.2272349999985
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 648.0495490000176
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 728.834726000001
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 733.2872189999907
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 647.8655209999997
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 727.7231029999966
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 814.0494569999864
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 804.1217330000072
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "1M",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 691.5740979999828
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 737.2957399999723
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 648.7922039999976
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 653.9780819999869
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 717.2170380000025
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 729.5331980000192
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 681.577489999996
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 647.2945990000153
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 726.1219500000007
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 778.1922909999848
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "3M",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 699.0446069999889
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 0,
+      "variant": "baseline",
+      "ms": 650.9947999999858
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 0,
+      "variant": "candidate",
+      "ms": 571.1474879999878
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 1,
+      "variant": "candidate",
+      "ms": 555.9677800000063
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 1,
+      "variant": "baseline",
+      "ms": 623.620705999987
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 2,
+      "variant": "baseline",
+      "ms": 704.7924810000113
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 2,
+      "variant": "candidate",
+      "ms": 596.1489989999973
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 3,
+      "variant": "candidate",
+      "ms": 610.977396000002
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 3,
+      "variant": "baseline",
+      "ms": 683.9407859999919
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 4,
+      "variant": "baseline",
+      "ms": 664.2005219999992
+    },
+    {
+      "securities": 100,
+      "total": 3000,
+      "period": "ALL",
+      "run": 4,
+      "variant": "candidate",
+      "ms": 557.7713010000007
+    }
+  ]
+}
