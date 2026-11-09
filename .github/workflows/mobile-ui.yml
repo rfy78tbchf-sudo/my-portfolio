@@ -73,6 +73,8 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - name: Verify independent NAV arithmetic, periods and invalid balance rejection
         run: node tests/build254_contract.mjs
+      - name: Verify nested refresh scroll and evidence at 125 percent
+        run: node tests/build255_scroll_browser.mjs && BROWSER=webkit node tests/build255_scroll_browser.mjs
       - name: Verify all-account reconciliation on mobile
         run: node tests/build254_nav_browser.mjs
       - name: Verify daily journey with production login and data-loading paths
