@@ -42,6 +42,16 @@ Chromium390x844,1000 synthetic transactions/2000 evidence rows/100 positions, fi
 Cached timing overlaps; no cached-speed improvement claim. No changed cache invalidation, cancellation, concurrency, UI or wealth features. Build72 update/version regression passed.
 
 ## Release gate and next action
-Require final application commit's full Chromium/WebKit CI, existing390/402/430px and125% checks. Then apply committed guarded migration, read-only exact JSON comparison of deployed RPC against249, fresh-main guarded promotion, Pages and live version confirmation. Deployment is not yet claimed.
+Application commit47efd8e4bc5453ad4a7ff9482ce2706486643cde passed full CI42568658322: Chromium/WebKit, existing390/402/430px and125% checks, finance and decision regressions. The committed build250_owned_date_evidence migration was applied only after that success. Deployed definition hash is a1c5b0dd24c00467912fc425ce351892; SECURITY INVOKER, empty search_path, jit off, work_mem16MB and statement_timeout20s remain intact. Authenticated repeatable-read/read-only comparison against249 returned exactly equal JSON for today/1W/1M/3M/6M/1Y/ALL. Fresh main668b451 was guarded-fast-forwarded to47efd8e. Pages42569911430 succeeded for that SHA. Independent HTTP200 reads confirmed version.json and HTML marker2026-11-09-date-evidence-250 and service-worker shell my-portfolio-shell-2026110903-250. Deployment verified2026-11-09. This release/follow-up documentation is committed on the existing work branch without triggering another application deployment.
+
+CI browser comparison used the same1000 synthetic transactions,100ms transport,390x844 and three alternating first queries per version/period. First-query medians below include isolated SQL, synthetic transport and rendering, not production network timing. Cached returns still issue zero additional RPCs; no cached-speed improvement is claimed.
+
+| Browser | 1W before→after ms | 1M before→after ms | 3M before→after ms | ALL before→after ms |
+|---|---:|---:|---:|---:|
+| Chromium | 3188.0→311.5 | 3226.1→311.1 | 3333.5→408.4 | 3345.3→460.7 |
+| WebKit | 3278.0→382.0 | 3286.0→398.0 | 3412.0→496.0 | 3452.0→546.0 |
 
 After release, profile ALL's remaining per-position corporate-event and pre-period quantity scans under authenticated role. Prioritize measured costs; do not repeat this evidence-normalization work or the rejected249 trade-count aggregation. Once major period costs are addressed, continue refresh/startup/tab/chart flows. Actual iPhone/network tail latency and peak memory remain unmeasured. No production financial rows written.
+
+## Follow-up plan evidence
+The final candidate's authenticated ALL plan still spends substantial inclusive time in per-position corporate-event lookup (~322ms across144 subplan calls) and pre-period quantity validation (~242ms across101 calls). Total explained execution1760.106ms, no temporary blocks written; instrumentation and concurrent server conditions differ from the comparison table. These are concrete next hypotheses, not additional improvements in250. Isolate those source predicates once or preaggregate by existing asset keys only after whole-JSON and corporate/IPO/opening-boundary equivalence tests. Do not sum inclusive node timings or replace missing opening cost with current holdings.
