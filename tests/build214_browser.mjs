@@ -43,7 +43,7 @@ function stockResult(period,generation){
 function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
 async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
 
-for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
+for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.UI_BROWSER||name===process.env.UI_BROWSER)){
   const browser=await engine.launch({headless:true});
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
@@ -120,6 +120,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
       await page.screenshot({path:resolve(output,name+'-portfolio-'+width+'.png')});
       await page.locator('#nav [data-tab="performance"]').click();
       await page.waitForFunction(()=>window.__dailyTest.state().idle);
+      if(await page.locator('[data-performance-scope="stocks"]').count())await page.locator('[data-performance-scope="stocks"]').click();
       assert.match(await page.locator('.performance-hero').innerText(),/일부 (?:계산|미계산)/);
       await page.screenshot({path:resolve(output,name+'-performance-'+width+'.png')});
       await page.locator('#nav [data-tab="home"]').click();

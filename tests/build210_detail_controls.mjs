@@ -14,7 +14,7 @@ assert.ok(css&&modal.includes('detail-return-bar'));
 const output=resolve(root,'mobile-artifacts/build210-detail-controls');
 mkdirSync(output,{recursive:true});
 
-for(const [name,engine] of [['chromium',chromium],['webkit',webkit]]){
+for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.UI_BROWSER||name===process.env.UI_BROWSER)){
   const browser=await engine.launch({headless:true});
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await page.route('**/*',route=>route.abort());
