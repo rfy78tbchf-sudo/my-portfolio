@@ -1,0 +1,25 @@
+name: Mixed period experiment
+on:
+  push:
+    branches: ['work/performance-*']
+    paths:
+      - tests/period_mixed_corporate_experiment.mjs
+      - .github/workflows/mixed-period-experiment.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mixed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright@1.55.1 @electric-sql/pglite@0.3.14
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Compare both browsers with mixed history and exact JSON
+        run: PERIOD_BROWSER=1 node tests/period_mixed_corporate_experiment.mjs
+      - name: Compare larger history with exact JSON
+        run: COHORT_SIZE=300 node tests/period_mixed_corporate_experiment.mjs

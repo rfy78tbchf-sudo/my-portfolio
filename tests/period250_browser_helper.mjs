@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {chromium,webkit} from 'playwright';
-export async function compareBrowser(db,base,candidate){
+export async function compareBrowser(db,base,candidate,cohort=null){
  const source=fs.readFileSync('index.html','utf8');
+ if(!cohort)cohort={transactions:Number((await db.query('select count(*) n from transactions')).rows[0].n),positions:Number((await db.query('select count(distinct security_id) n from holdings')).rows[0].n)};
  for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n])=>!process.env.UI_BROWSER||n===process.env.UI_BROWSER)){
   const browser=await engine.launch({headless:true});const samples=[];
   try{for(const period of ['1W','1M','3M','ALL'])for(let run=0;run<3;run++)for(const kind of (run%2?['after','before']:['before','after'])){
@@ -25,6 +26,6 @@ export async function compareBrowser(db,base,candidate){
    const warm=await page.evaluate(()=>window.repeat());assert.deepEqual(warm.result,expected);assert.equal(requests,1);
    samples.push({period,run,kind,firstMs:first.ms,dbMs,cachedMs:warm.ms});await page.close();
   }}finally{await browser.close();await db.exec('reset role')}
-  console.log(JSON.stringify({browser:name,transactions:1000,positions:100,viewport:390,syntheticTransportDelayMs:100,runs:3,samples}));
+  console.log(JSON.stringify({browser:name,...cohort,viewport:390,syntheticTransportDelayMs:100,runs:3,samples}));
  }
 }
