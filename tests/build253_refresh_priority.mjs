@@ -20,3 +20,11 @@ for(let i=0;i<10;i++){await tick();while(timers.length)timers.shift()();for(cons
 await Promise.all([total,...background]);await tick();while(timers.length)timers.shift()();
 assert.equal(maximum,3);assert.equal(c.liveReadsActive,0);assert.equal(c.liveReadQueue.length,0);assert.equal(timers.length,0);
 console.log('Build253: serial calculation order preserved; next interactive request beats queued enrichment; concurrency and cleanup preserved');
+
+const ordinary=['get_ordinary_1','get_ordinary_2','get_ordinary_3','get_ordinary_4'].map(name=>c.rpc(name,{}));
+await tick();assert.equal(calls.includes('get_ordinary_4'),false);
+pending.get('get_ordinary_1')({ok:true});await ordinary[0];await tick();
+assert.equal(calls.includes('get_ordinary_4'),true,'ordinary completion refills immediately without timer overhead');assert.equal(timers.length,0);
+for(const resolve of pending.values())resolve({ok:true});await Promise.all(ordinary);await tick();
+assert.equal(c.liveReadsActive,0);assert.equal(c.liveReadQueue.length,0);
+console.log('Build253: ordinary reads refill without deferred tasks');

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {writeFileSync,mkdirSync} from 'node:fs';
+// Final candidate yields only priority-read handoff; ordinary refills stay synchronous.
 const baseline='/tmp/portfolio-refresh-before253.html';
 writeFileSync(baseline,execFileSync('git',['show','e40184641247db15abbca21e9e31b92adb20b7bd:index.html']));
 const output=[];

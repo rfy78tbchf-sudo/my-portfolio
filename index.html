@@ -2408,19 +2408,19 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
   function queueLiveRead(task,priority){
     var owner=liveAuthEpoch;
     return new Promise(function(resolve,reject){
-      var job={task:task,resolve:resolve,reject:reject,owner:owner};
+      var job={task:task,resolve:resolve,reject:reject,owner:owner,priority:!!priority};
       if(priority)liveReadQueue.unshift(job);else liveReadQueue.push(job);
       drainLiveReads();
     });
   }
-  // Refill after settled promise chains enqueue their next interactive calculation.
-  // Keep the three-request cap and original realized/total calculation order.
+  // Yield only after an interactive read so its serial successor can take priority.
+  // Ordinary reads refill immediately; retain the three-request concurrency cap.
   function drainLiveReads(){
     while(liveReadsActive<3&&liveReadQueue.length){
       (function(job){
         if(job.owner!==liveAuthEpoch||!session){job.reject(new Error('AUTH_REQUIRED'));return}
         liveReadsActive++;
-        Promise.resolve().then(job.task).then(job.resolve,job.reject).finally(function(){liveReadsActive--;setTimeout(drainLiveReads,0)});
+        Promise.resolve().then(job.task).then(job.resolve,job.reject).finally(function(){liveReadsActive--;if(job.priority)setTimeout(drainLiveReads,0);else drainLiveReads()});
       })(liveReadQueue.shift());
     }
   }
