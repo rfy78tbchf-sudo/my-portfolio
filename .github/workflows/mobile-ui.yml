@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify superseded period calculations skip queued network work
+        run: node tests/build248_period_queue.mjs
       - name: Verify detail history sharing does not cache completed results
         run: node tests/build234_read_sharing.mjs
       - name: Verify update manifest matches HTML and cached shell
