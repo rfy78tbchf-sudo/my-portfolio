@@ -73,7 +73,7 @@ begin
   'flows',(select jsonb_build_array(count(*),max(updated_at)) from public.cash_flows where account_id=v_account))::text) into v_version;
  return jsonb_build_object('ok',true,'period',p_period,'period_start',v_start,'period_end',v_today,
   'opening_date',v_start-1,'opening_at',v_base.snapshot_at,'closing_at',v_end.snapshot_at,
-  'scope','all_accounts','currency','KRW','calculation_version','nav-contract-253','data_version',v_version,
+  'scope','all_accounts','currency','KRW','calculation_version','nav-contract-254','data_version',v_version,
   'whole_pnl_verified',false,'components_verified',false,'whole_pnl',null,'reasons',v_reasons,
   'recorded_opening_nav',v_base.total_assets,'recorded_closing_nav',v_end.total_assets,
   'recorded_asset_change',v_end.total_assets-v_base.total_assets,

@@ -11,7 +11,7 @@ const hook=`
  live={stockPnl:${JSON.stringify(pnl)},stockPnlFetchedAt:Date.now(),stockPnlCacheDay:'2026-11-09',stockPnlCache:{},stockPnlRequests:{},accounts:[{id:'synthetic'}],holdings:[],securityMap:{},snapshots:[{snapshot_date:'2026-11-09',total_assets:11000}],homeChart:{reconciliation:${JSON.stringify(audit)},items:[{date:'2026-11-02',total_assets:10000},{date:'2026-11-09',total_assets:11000}]}};
  window.testState=function(){return {period:period,stockPeriod:stockPeriod,scope:performanceAssetScope}};showApp('live');
 `;
-fs.mkdirSync('mobile-artifacts/build253',{recursive:true});
+fs.mkdirSync('mobile-artifacts/build254',{recursive:true});
 for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n])=>!process.env.UI_BROWSER||n===process.env.UI_BROWSER)){
  const browser=await engine.launch({headless:true});
  try{for(const width of [390,430]){
@@ -35,7 +35,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n]
   assert.deepEqual(await page.evaluate(()=>window.testState()),{period:'1W',stockPeriod:'1W',scope:'all'});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:`mobile-artifacts/build253/${name}-${width}.png`,fullPage:true});
+  await page.screenshot({path:`mobile-artifacts/build254/${name}-${width}.png`,fullPage:true});
   await page.close();console.log(name,width,'all-account/stock scope, provisional status, NAV details, retained period and horizontal layout PASS');
  }}finally{await browser.close()}
 }

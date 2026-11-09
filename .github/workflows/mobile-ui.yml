@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify interactive queue refill preserves calculation order and concurrency
+        run: node tests/build253_refresh_priority.mjs
       - name: Verify superseded period calculations skip queued network work
         run: node tests/build248_period_queue.mjs
       - name: Verify detail history sharing does not cache completed results
@@ -68,9 +70,9 @@ jobs:
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
       - name: Verify independent NAV arithmetic, periods and invalid balance rejection
-        run: node tests/build253_contract.mjs
+        run: node tests/build254_contract.mjs
       - name: Verify all-account reconciliation on mobile
-        run: node tests/build253_nav_browser.mjs
+        run: node tests/build254_nav_browser.mjs
       - name: Verify deployed corporate reuse preserves reconciliation and idempotence
         run: CORPORATE_EXPERIMENT=1 CORPORATE_MIGRATION=supabase/build252_corporate_candidates.sql node tests/build251_opening_reconciliation.mjs
       - name: Verify owned date evidence, RLS and period latency

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {stripTypeScriptTypes} from 'node:module';
 import {PGlite} from '@electric-sql/pglite';
 const db=new PGlite();
-const sql=fs.readFileSync('supabase/build253_nav_contract.sql','utf8');
+const sql=fs.readFileSync('supabase/build254_nav_contract.sql','utf8');
 await db.exec(sql.slice(0,sql.indexOf('create or replace function public.get_live_nav_reconciliation')));
 // Fixed, independently calculated expected values; no implementation-generated oracle.
 for(const [open,close,flow,components,expected,match] of [
@@ -26,7 +26,7 @@ for(const [open,close,flow,components,expected,match] of [
 for(const [p,day,expected] of [['1W','2026-11-09','2026-11-03'],['오늘','2026-11-09','2026-11-09'],['THIS_MONTH','2026-11-09','2026-11-01'],['6M','2026-11-09','2026-05-09'],['YTD','2027-01-01','2027-01-01'],['1M','2024-03-31','2024-02-29'],['THIS_WEEK','2026-11-08','2026-11-02']]){
  const r=(await db.query('select portfolio_period_start($1,$2)::text s',[p,day])).rows[0];assert.equal(r.s,expected);
 }
-await db.exec(fs.readFileSync('supabase/build253_snapshot_guard.sql','utf8'));
+await db.exec(fs.readFileSync('supabase/build254_snapshot_guard.sql','utf8'));
 const day=(await db.query("select timezone('Asia/Seoul',now())::date::text d")).rows[0].d;
 const uid='00000000-0000-0000-0000-000000000001';
 for(const [date,holdings,summary] of [[day,[],{}],['2000-01-01',[],{}],[day,null,{}],[day,[{symbol:'A'}],{total_assets:100,cash:100,securities_value:0,invested_capital:0,unrealized_pnl:0}]]){
@@ -61,4 +61,4 @@ assert.throws(()=>context.assertCompleteBalance(domestic,{dataBody:{Record2:[row
 assert.throws(()=>context.assertCompleteBalance(domestic,{dataBody:{Record2:[{...row,std_exch_r:0}]}}));
 const html=fs.readFileSync('index.html','utf8');
 for(const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
-console.log('Build253: independent arithmetic/date fixtures, missing/duplicate/paginated balance rejection and JS compilation PASS');
+console.log('Build254: independent arithmetic/date fixtures, missing/duplicate/paginated balance rejection and JS compilation PASS');

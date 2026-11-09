@@ -23,6 +23,28 @@ Fresh production-data comparison used complete deployed251 and candidate SQL bod
 
 Small samples do not establish p95 or elimination of intermittent production delay. Memory peak, real network tail and physical iPhone unmeasured. Earlier100-position results are retained in docs/PERFORMANCE_AFTER_BUILD250.md; small-history improvements were modest and1M WebKit variance overlapped. Do not generalize large-history percentages to every user query.
 
-## Release gate / next action
-Pending: final application CI, apply exact tested252 migration, verify hash/attributes and unchanged aggregate coverage, fresh main lease, Pages success and live version/HTML/SW markers. Do not claim deployed until all pass. Preserve archived unshipped opening-quantity fixtures as experiments only.
-After release, investigate non-home refresh waiting for full enrichment (refreshLive→loadLive(false)) with delayed synthetic unrelated reads. That is an unmeasured code hypothesis, not a proven bottleneck. Do not rerun the same corporate benchmark without new evidence. Keep result freshness, fee/tax/estimate distinctions and existing return/input behavior protected.
+
+## Release verification — 2026-11-09
+- Final application commit e40184641247db15abbca21e9e31b92adb20b7bd passed required [Mobile portfolio layout CI42605282517](https://github.com/rfy78tbchf-sudo/my-portfolio/actions/runs/42605282517), both jobs successful. Includes390/402/430px and125% layouts, Chromium/WebKit, exact252 migration applied twice in synthetic tests, financial/account/fee/tax/estimate cases, rapid period switching, saved judgments, refresh, detail return, charts and wealth regressions.
+- Applied build252_corporate_candidates. Actual definition hash6aa21954163a2e536cd1525d10bb69e5; SECURITY INVOKER,stable,empty search_path,jit=off,work_mem=16MB,statement_timeout=20s preserved. No ledger/financial rows modified.
+- Authenticated read-only post-apply comparisons: deployed function versus complete prior251 body, full JSON unchanged for all7 periods. Recent1W coverage6/6,complete=true,unmapped_count0,provisional_count1 remains. No private amounts/account IDs in this record.
+- A batched seven-period post-apply comparison exceeded the tool timeout; identified and cancelled only that diagnostic backend. Replaced it with sequential per-period PL/pgSQL comparisons, each bounded by20s statement_timeout; all passed. Do not reuse the large UNION comparison. Security/performance advisors initially timed out during that diagnostic; retries matched pre-release notices exactly after ignoring observed_at. Health notices unchanged/empty.
+- Refreshed main ef316c3fde79a0ca75e51b1a69278e488ab462ff immediately before guarded non-force fast-forward to the already-tested application SHA. No concurrent drift.
+- [Pages42608035051](https://github.com/rfy78tbchf-sudo/my-portfolio/actions/runs/42608035051) succeeded on e40184641247db15abbca21e9e31b92adb20b7bd. Direct HTTPS reads confirmed version.json and HTML appBuild/comment2026-11-09-period-corporate-reuse-252,SW cache my-portfolio-shell-2026110905-252. The main-triggered duplicate CI42608036394 runs the identical application; release gate was the successful final-SHA work-branch CI above.
+- Physical iPhone Face ID/native keyboard/full PWA shutdown/relaunch were not performed. No claim of p95, memory-peak improvement or elimination of intermittent real-network delay.
+
+## Next hypothesis checked during release validation
+Ran tests/refresh_enrichment_diagnostic252.mjs using the actual stored-session/login path, read queue, refreshLive(true,false), rendering and synthetic four-position data. Chromium,390x844,no CPU throttle,50ms response delay, five alternating refreshes with an additional500ms/1500ms hold on get_live_benchmark_comparison. Every request is locally intercepted; no live writes. Fresh partial subtotal is checked in state and visible content, then two animation frames.
+
+|Hidden benchmark hold|Fresh correct P&L median (range) ms|Refresh promise median (range) ms|Requests per refresh|
+|---|---|---|---|
+|500ms|746.8 (734.9–816.6)|1376.1 (1371.5–1441.2)|52 total,1 P&L|
+|1500ms|743.9 (733.6–771.0)|2373.1 (2363.9–2399.2)|52 total,1 P&L|
+
+Raw fresh-result samples:500ms [816.6,734.9,743.2,746.8,756.5];1500ms [771.0,743.9,733.6,750.8,737.2].
+Raw completion samples:500ms [1441.2,1371.5,1372.3,1376.1,1399.3];1500ms [2399.2,2363.9,2366.5,2373.1,2378.3].
+This rejects hidden benchmark completion as the cause of delayed **correct P&L paint in this fixture**; it does delay the refresh completion indicator. No app change made for this hypothesis: splitting completion must first prove benefit with real sync/background-history freshness and retry/navigation behavior, rather than merely announcing completion early. Chromium-only diagnostic, not physical iPhone or WebKit evidence.
+
+Next concrete action: instrument queue-wait and response/paint timestamps for the52 non-home refresh reads, compare cold/revisit and delayed core/startup/selected-P&L responses with large synthetic holdings, and identify the critical path before pruning or deferring requests. Validate an actual benefit and both browsers before another release. Do not repeat the corporate benchmark or reimplement the completed251 reconciliation.
+
+A separate instrumented diagnostic pass (same10 refresh cases) added in-page rpc/rpcNetwork timing. Selected P&L request median started212.8ms after refresh, waited117.4ms before network invocation, and resolved67.5ms later; app-settings requested213.5ms, queue61.0ms,response78.7ms; startup summary/chart requested359.7ms with0ms queue and61.3/63.5ms response medians. These measured client queue/response intervals include mocked transport and browser overhead, not DB processing. Instrumented fresh-paint medians807.2/796.2ms and completion1427.1/2439.7ms for500/1500ms holds confirm the same dependency distinction. Segment medians are not additive; do not label the unexplained remainder as rendering cost without direct timing. The committed diagnostic includes these trace hooks.

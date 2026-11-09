@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const block=source.slice(source.indexOf('  var liveReadQueue=[]'),source.indexOf('  function loadPerformance('));
+const calls=[],pending=new Map(),timers=[];let maximum=0;
+const c=vm.createContext({session:{},liveAuthEpoch:1,Promise,setTimeout(fn){timers.push(fn)}});
+vm.runInContext(block,c);
+c.rpcNetwork=name=>{calls.push(name);maximum=Math.max(maximum,c.liveReadsActive);return new Promise(resolve=>pending.set(name,resolve))};
+const tick=()=>new Promise(r=>setImmediate(r));
+const realized=c.rpc('get_live_realized_sales',{}),total=c.rpc('get_live_period_stock_pnl',{});
+await tick();assert.deepEqual(calls,['get_live_realized_sales']);
+const background=['get_background_1','get_background_2','get_background_3'].map(name=>c.rpc(name,{}));
+await tick();assert.equal(c.liveReadsActive,3);assert.equal(calls.includes('get_background_3'),false);
+pending.get('get_live_realized_sales')({ok:true});await realized;await tick();
+assert.deepEqual(calls,['get_live_realized_sales','get_background_1','get_background_2','get_live_period_stock_pnl'],'freed slot goes to the next serialized interactive calculation before queued enrichment');
+assert.equal(c.liveReadsActive,3);
+for(const resolve of pending.values())resolve({ok:true});
+for(let i=0;i<10;i++){await tick();while(timers.length)timers.shift()();for(const resolve of pending.values())resolve({ok:true});}
+await Promise.all([total,...background]);await tick();while(timers.length)timers.shift()();
+assert.equal(maximum,3);assert.equal(c.liveReadsActive,0);assert.equal(c.liveReadQueue.length,0);assert.equal(timers.length,0);
+console.log('Build253: serial calculation order preserved; next interactive request beats queued enrichment; concurrency and cleanup preserved');
+
+const ordinary=['get_ordinary_1','get_ordinary_2','get_ordinary_3','get_ordinary_4'].map(name=>c.rpc(name,{}));
+await tick();assert.equal(calls.includes('get_ordinary_4'),false);
+pending.get('get_ordinary_1')({ok:true});await ordinary[0];await tick();
+assert.equal(calls.includes('get_ordinary_4'),true,'ordinary completion refills immediately without timer overhead');assert.equal(timers.length,0);
+for(const resolve of pending.values())resolve({ok:true});await Promise.all(ordinary);await tick();
+assert.equal(c.liveReadsActive,0);assert.equal(c.liveReadQueue.length,0);
+console.log('Build253: ordinary reads refill without deferred tasks');
