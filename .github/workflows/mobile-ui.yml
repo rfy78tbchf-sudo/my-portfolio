@@ -67,6 +67,9 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify period evidence equivalence and database-to-render latency
+        run: PERIOD_BROWSER=1 node tests/build249_period_evidence.mjs && node tests/build249_existing_finance.mjs
+        timeout-minutes: 8
       - name: Verify rapid period switching reaches the current rendered result
         run: node tests/build248_period_browser.mjs
         timeout-minutes: 5
