@@ -32,3 +32,36 @@ The targeted ALL first-result improvement is only7.7ms in this fixture and range
 3. Check the decision-save timeout at its exact readback wait if it recurs; do not weaken timeouts/assertions simply to green CI. Keep existing correctness,390/402/430px and125% gates for any release.
 
 Peak memory, physical iPhone and production network tail remain unmeasured. No source financial identifiers, quantities, balances or user memos are recorded here.
+
+## Follow-up: full IPO regression and opening-quantity candidate
+2026-11-09 subsequent run: main47efd8e and live250 unchanged; work4cc866c CI42574825276 passed, no active Actions runs. Read the deployed function again before constructing the candidate. No production migration was applied.
+
+Added tests/period_corporate_ipo_regression.mjs: full baseline/corporate-candidate JSON equality for seven periods over valid IPO, malformed IPO cash, prior-boundary receipt and future receipt fixtures. Direct intermediate assertions prove valid IPO evidence is excluded from corporate warnings, malformed evidence is retained, and prior/future receipts are outside the1W boundary. All passed. An initial fixture expectation incorrectly assumed future receipt removes unmatched payment/refund corporate rows; corrected the fixture to isolate receipt boundaries by removing those rows. Production code was not changed to satisfy a faulty expectation.
+
+Independently implemented tests/fixtures/period_opening_quantity_experiment.sql, applied once to the exact250 definition in tests/period_opening_quantity_experiment.mjs. It groups the original signed quantity expression by original asset key before the shared start_date, retaining coalesce-to-zero for absent/all-null totals. It does not synthesize opening cost. Seven-period whole-result equality and14 evidence/ownership mutations passed. Actual account/transaction RLS with authenticated role is applied around each RPC; benchmark durations include identical role-switch overhead in both versions.
+
+Read-only production SQL, authenticated repeatable-read, jit off/work_mem16MB, five alternating-order pairs, exact JSON equality:
+- ALL before1471.725,1321.824,1305.686,1335.781,1285.161ms; after1099.252,1097.348,1063.541,1070.718,1064.246ms. Median1321.824→1070.718ms.
+- 1W first baseline1942.494ms is an uncontrolled initial-call outlier. Remaining before432.057,431.015,429.238,431.068; after439.170,432.067,431.219,435.494ms show no1W improvement. First candidate457.501ms. Do not claim cold-start/p95 improvement.
+
+Isolated PGlite synthetic ALL comparison, five measured samples after warm-up, alternating versions; fixed2026-11-09 clock and no network:
+| Transactions / positions | Baseline median (range) ms | Candidate median (range) ms |
+|---|---|---|
+|600 /20|72.7 (62.6–82.8)|72.7 (63.8–78.0)|
+|3000 /100|311.9 (299.5–346.3)|317.9 (309.8–333.0)|
+|6000 /200|984.2 (964.1–1018.6)|975.8 (963.1–1115.7)|
+
+This falsifies a material general scaling benefit for the tested trade-history shape. The production SQL gain alone does not justify shipping this candidate. Keep it isolated in tests; no Build251 release or UI change. Earlier non-RLS exploratory samples are not used as the final SQL comparison.
+
+WebKit binaries downloaded, but local OS dependencies were missing; package installation failed due environment setgroups/cache-directory permissions. No successful local WebKit check is claimed. Existing250 CI success remains separate from these new experiments. Do not disable browser checks or weaken release gates. A release-worthy candidate must pass both browsers in the existing CI environment.
+
+Next: retain the now-tested corporate/IPO exclusion logic and measure a mixed corporate/IPO/alias history cohort (the full-function correctness fixture is small, not a performance cohort). Do not repeatedly benchmark the rejected opening-quantity aggregation on the same simple trade shape. If no end-to-end benefit survives, proceed to refresh/startup request paths using recorded browser evidence. The opening-quantity and corporate experiments are not combined or deployed.
+
+Authenticated Chromium390x844,3000 transactions/100 positions,100ms synthetic transport,three alternating fresh pages/version/period; identical JSON,one initial RPC and zero extra cached-return RPCs. No CPU throttle; this is not production network timing.
+
+| Period | Before median/range ms | After median/range ms |
+|---|---|---|
+|1W|368.6 /363.0–393.4|357.1 /351.5–362.3|
+|1M|370.4 /363.6–375.4|365.7 /352.5–388.0|
+|3M|382.3 /374.4–423.3|380.7 /363.7–463.8|
+|ALL|508.3 /498.7–510.4|519.4 /474.7–536.2|
