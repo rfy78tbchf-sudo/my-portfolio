@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify retained period result cache boundaries
-        run: node tests/build256_period_cache.mjs
+        run: node --test tests/build256_period_cache.mjs tests/build75_period_ui.mjs tests/build108_today_journey.mjs tests/build131_pnl_recovery.mjs tests/build144_demand_pnl.mjs tests/build145_period_cache.mjs tests/build180_loading.mjs
       - name: Verify nested render scroll preservation
         run: node tests/build255_render_scroll.mjs
       - name: Verify interactive queue refill preserves calculation order and concurrency

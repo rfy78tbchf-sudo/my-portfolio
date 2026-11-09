@@ -18,5 +18,6 @@ const retry=context.changeStockPeriod('ALL');await flush();waiting.shift().resol
 assert.equal(context.live.stockPnl.period,'ALL');assert.equal(context.live.stockPnlFailed,false,'manual retry recovers without full refresh');
 const today=context.changeStockPeriod('오늘');await flush();waiting.shift().resolve({ok:true,period:'오늘',period_start:'2026-01-04',period_end:'2026-01-04'});await today;
 assert.equal(context.live.stockPnl,null,'yesterday data cannot appear as today');
+context.live.stockPnlCacheTimes.THIS_MONTH=0; // Force the snapshot-isolation case through a fresh read.
 const swapped=context.changeStockPeriod('THIS_MONTH');await flush();const replacement={stockPnl:null};context.live=replacement;waiting.shift().resolve({ok:true,period:'THIS_MONTH'});await swapped;assert.equal(replacement.stockPnl,null,'replaced account snapshot is not overwritten');
 assert.match(source,/id="stockPnlRetry"/);console.log('Build131 recovery, queue, duplicate, stale-period/day/snapshot checks passed');

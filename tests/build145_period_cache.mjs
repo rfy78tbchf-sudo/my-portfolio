@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 const source=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
 let day='2026-10-06',calls=[];
-const c=vm.createContext({stockPeriod:'ALL',stockPeriodEpoch:0,live:{},render(){},kstDate:()=>day,rpc:(_,p)=>new Promise((resolve,reject)=>calls.push({period:p.p_period,resolve,reject}))});
+const c=vm.createContext({liveAuthEpoch:1,stockPeriod:'ALL',stockPeriodEpoch:0,live:{},render(){},kstDate:()=>day,rpc:(_,p)=>new Promise((resolve,reject)=>calls.push({period:p.p_period,resolve,reject}))});
 vm.runInContext(source.slice(source.indexOf('  function changeStockPeriod('),source.indexOf('  function stockPeriodPerformance(')),c);
 let p=c.changeStockPeriod('ALL');calls[0].resolve({ok:true,period:'ALL',value:1});await p;
 p=c.changeStockPeriod('THIS_MONTH');calls[1].resolve({ok:true,period:'THIS_MONTH'});await p;

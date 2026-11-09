@@ -32,7 +32,7 @@ if(changed){assert.ok(f.paints.every(x=>x.review),'refresh must not blank confir
 const resume=vm.createContext({mode:'live',document:{visibilityState:'visible'},liveRefreshPromise:null,lastLiveLoadAt:Date.now(),Date,Promise});
 vm.runInContext(section('  function refreshLive(', '  (function bindPullToRefresh'),resume);
 let at=performance.now();await resume.refreshLive(false);timings.resume_within_3min_ms=+(performance.now()-at).toFixed(2);
-let periodCalls=0;const periods=vm.createContext({stockPeriod:'ALL',stockPeriodEpoch:0,live:{},kstDate:()=> '2026-10-10',render(){},rpc:async(_,p)=>{periodCalls++;await delay(40);return {ok:true,period:p.p_period}}});
+let periodCalls=0;const periods=vm.createContext({liveAuthEpoch:1,stockPeriod:'ALL',stockPeriodEpoch:0,live:{},kstDate:()=> '2026-10-10',render(){},rpc:async(_,p)=>{periodCalls++;await delay(40);return {ok:true,period:p.p_period}}});
 vm.runInContext(section('  function changeStockPeriod(', '  function stockPeriodPerformance('),periods);
 at=performance.now();await periods.changeStockPeriod('THIS_MONTH');timings.first_period_ms=+(performance.now()-at).toFixed(2);await periods.changeStockPeriod('ALL');at=performance.now();await periods.changeStockPeriod('THIS_MONTH');timings.cached_period_ms=+(performance.now()-at).toFixed(2);assert.equal(periodCalls,2);
 console.log('Build180 controlled timings '+JSON.stringify(timings));
