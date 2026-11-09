@@ -2413,12 +2413,14 @@ html,body{background:#fff;font-size:16px}.content{padding:12px 18px 32px}.shell{
       drainLiveReads();
     });
   }
+  // Refill after settled promise chains enqueue their next interactive calculation.
+  // Keep the three-request cap and original realized/total calculation order.
   function drainLiveReads(){
     while(liveReadsActive<3&&liveReadQueue.length){
       (function(job){
         if(job.owner!==liveAuthEpoch||!session){job.reject(new Error('AUTH_REQUIRED'));return}
         liveReadsActive++;
-        Promise.resolve().then(job.task).then(job.resolve,job.reject).finally(function(){liveReadsActive--;drainLiveReads()});
+        Promise.resolve().then(job.task).then(job.resolve,job.reject).finally(function(){liveReadsActive--;setTimeout(drainLiveReads,0)});
       })(liveReadQueue.shift());
     }
   }
@@ -2570,8 +2572,7 @@ scopeRead
       }
       target.homeReviewLoading=true;
       live=target;liveError=null;if(typeof rememberHomeSnapshot==='function')rememberHomeSnapshot(target);if(mode==='live')render(true);
-      // Let the selected calculation enter the read queue before background enrichment.
-      return Promise.resolve().then(function(){if(!active()||live!==target)return;return loadLiveDetails(core,target,active,homeOnly)}).finally(function(){if(active()&&live===target)target.detailsLoading=false});
+      return loadLiveDetails(core,target,active,homeOnly).finally(function(){if(active()&&live===target)target.detailsLoading=false});
     }).catch(function(e){if(!active())return;corePending=false;loadLiveOnce.quickAsset=null;liveError=e.message||'계좌 데이터를 불러오지 못했습니다.';live=previous;if(mode==='live')render(true)});
   }
   function loadLiveDetails(core,target,active,homeOnly){liveError=null;var homeReads=loadHomeReviewData(target,active);return Promise.all([rpc('reconcile_live_cash_flows',{}).catch(function(e){return {ok:false,error:e.message||'입출금 점검 실패'}}),rpc('get_app_settings',{}).catch(function(){return {}})]).then(function(initial){if(!active()||live!==target)return;var cashFlowCheck=initial[0],settings=initial[1]||{};var saved=settings.home_period;if(!periodTouched&&typeof saved==='string'&&['오늘','1W','1M','3M','6M','YTD','1Y','ALL'].indexOf(saved)>=0)period=saved;if(!realizedPeriodExplicit)realizedPeriod=period;var requestedPerformanceEpoch=performanceRequestEpoch,requestedPeriod=period,requestedRealizedPeriod=realizedPeriod,requestedRealizedAccount=realizedAccount;compactMode=!!settings.compact_mode;hideZeroHoldings=!!settings.hide_zero_holdings;applyUiSettings();target.settings=settings;target.cashFlowCheck=cashFlowCheck;var startup=loadStartupHomeData(target,active,requestedPeriod,requestedPerformanceEpoch);return startup.then(function(){if(!active()||live!==target)return;
@@ -3677,15 +3678,13 @@ scopeRead
     stockPeriod=next;var request=++stockPeriodEpoch;target.stockPnlDeferred=false;
     var cached=target.stockPnlCache[next];
     if(cached){target.stockPnl=cached;target.stockPnlPrevious=false;target.stockPnlLoading=false;target.stockPnlFailed=false;render(preserveScroll===true);return Promise.resolve(cached)}
-    target.stockPnl=previous;target.stockPnlPrevious=!!previous;target.stockPnlLoading=true;target.stockPnlFailed=false;
+    target.stockPnl=previous;target.stockPnlPrevious=!!previous;target.stockPnlLoading=true;target.stockPnlFailed=false;render(preserveScroll===true);
     var pending=target.stockPnlRequests[next];
     if(!pending){
       pending=rpc('get_live_period_stock_pnl',{p_period:next},function(){return live===target&&stockPeriod===next&&day===kstDate()});target.stockPnlRequests[next]=pending;
       var clear=function(){if(target.stockPnlRequests[next]===pending)delete target.stockPnlRequests[next]};
       pending.then(clear,clear);
     }
-    // Rendering retained totals can enqueue realized details; reserve the total request first.
-    render(preserveScroll===true);
     return pending.then(function(x){
       if(request!==stockPeriodEpoch||stockPeriod!==next||live!==target)return;
       if(day!==kstDate()){target.stockPnl=null;target.stockPnlPrevious=false;target.stockPnlLoading=false;target.stockPnlDeferred=true;target.stockPnlKeepView=true;render(true);return}

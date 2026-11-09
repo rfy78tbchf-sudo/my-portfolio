@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify refresh reserves selected total before nested realized details
+      - name: Verify interactive queue refill preserves calculation order and concurrency
         run: node tests/build253_refresh_priority.mjs
       - name: Verify superseded period calculations skip queued network work
         run: node tests/build248_period_queue.mjs

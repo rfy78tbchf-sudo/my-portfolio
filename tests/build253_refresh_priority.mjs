@@ -2,18 +2,21 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-const block=source.slice(source.indexOf('  function changeStockPeriod('),source.indexOf('  function stockPeriodPerformance('));
-const calls=[],pending={};let nested=false;
-const previous={ok:true,period:'1W',pnl_krw:10,items:[]};
-const c=vm.createContext({live:{stockPnlCacheDay:'2026-11-09',stockPnlCache:{},stockPnlRequests:{},stockPnl:previous,stockPnlPrevious:true},stockPeriod:'1W',stockPeriodEpoch:0,kstDate:()=> '2026-11-09',
- rpc(name,payload){calls.push(name);return new Promise(resolve=>{pending[name]=resolve})},
- render(){if(!nested&&c.live.stockPnlLoading){nested=true;c.rpc('get_live_realized_sales',{})}}
-});
+const block=source.slice(source.indexOf('  var liveReadQueue=[]'),source.indexOf('  function loadPerformance('));
+const calls=[],pending=new Map(),timers=[];let maximum=0;
+const c=vm.createContext({session:{},liveAuthEpoch:1,Promise,setTimeout(fn){timers.push(fn)}});
 vm.runInContext(block,c);
-const result=c.changeStockPeriod('1W',true);
-assert.deepEqual(calls,['get_live_period_stock_pnl','get_live_realized_sales'],'retained result rendering cannot reserve the serial calculation ahead of the selected total');
-assert.equal(c.live.stockPnlPrevious,true,'retained amount remains explicitly old');
-const fresh={ok:true,period:'1W',pnl_krw:20,items:[]};pending.get_live_period_stock_pnl(fresh);await result;
-assert.equal(c.live.stockPnl,fresh);assert.equal(c.live.stockPnlPrevious,false);assert.equal(c.live.stockPnlLoading,false);
-await c.changeStockPeriod('1W',true);assert.equal(calls.length,2,'valid selected result remains reusable');
-console.log('Build253: selected total precedes nested realized query; retained freshness and reuse preserved');
+c.rpcNetwork=name=>{calls.push(name);maximum=Math.max(maximum,c.liveReadsActive);return new Promise(resolve=>pending.set(name,resolve))};
+const tick=()=>new Promise(r=>setImmediate(r));
+const realized=c.rpc('get_live_realized_sales',{}),total=c.rpc('get_live_period_stock_pnl',{});
+await tick();assert.deepEqual(calls,['get_live_realized_sales']);
+const background=['get_background_1','get_background_2','get_background_3'].map(name=>c.rpc(name,{}));
+await tick();assert.equal(c.liveReadsActive,3);assert.equal(calls.includes('get_background_3'),false);
+pending.get('get_live_realized_sales')({ok:true});await realized;await tick();
+assert.deepEqual(calls,['get_live_realized_sales','get_background_1','get_background_2','get_live_period_stock_pnl'],'freed slot goes to the next serialized interactive calculation before queued enrichment');
+assert.equal(c.liveReadsActive,3);
+for(const resolve of pending.values())resolve({ok:true});
+for(let i=0;i<10;i++){await tick();while(timers.length)timers.shift()();for(const resolve of pending.values())resolve({ok:true});}
+await Promise.all([total,...background]);await tick();while(timers.length)timers.shift()();
+assert.equal(maximum,3);assert.equal(c.liveReadsActive,0);assert.equal(c.liveReadQueue.length,0);assert.equal(timers.length,0);
+console.log('Build253: serial calculation order preserved; next interactive request beats queued enrichment; concurrency and cleanup preserved');
