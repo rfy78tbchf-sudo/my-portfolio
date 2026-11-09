@@ -24,10 +24,12 @@ await db.exec('delete from transactions');
 const sale={id:id(30),account_id:id(2),security_id:id(3),type:'sell',trade_at:'2030-01-10T00:00:00+09:00',order_at:'2030-01-09T00:00:00+09:00',quantity:10,price:123.456789,net_amount:1233.56,fee:1,tax:0.00789,currency:'USD',source:'api',provider_payload:{stnd_is_cd:'US0000000001',dl_amt:'1234.56789'}};
 const evidence={id:id(31),account_id:id(2),source:'SPQM2205',symbol:'SYNTH',asset_key:'US0000000001',event_type:'sell',order_date:'2030-01-09',trade_date:'2030-01-09',settlement_date:'2030-01-10',quantity:10,price:123.456788,gross_amount:1233.56,currency:'USD',active:true,evidence:{occurrences:1,trade_gross:1234.56788}};
 await ins('transactions',sale);await ins('kb_position_evidence',evidence);
-async function run(){return (await db.query("select get_live_realized_sales('1W') r")).rows[0].r}
+let compareOriginal=false;
+async function run(){const result=(await db.query("select get_live_realized_sales('1W') r")).rows[0].r;if(compareOriginal)assert.deepEqual(result,(await db.query("select baseline_realized_sales('1W') r")).rows[0].r,'optimized full output matches original');return result}
 const baseline=await run();assert.equal(baseline.items.length,2,'reproduces price-precision duplicate');
 const ledgerBefore=JSON.stringify((await db.query('select * from transactions')).rows);
-await db.exec(freeze(fs.readFileSync('supabase/migrations/20261104045000_reconcile_settlement_precision.sql','utf8')));
+await db.exec(freeze(fs.readFileSync(process.env.REALIZED_SQL_SOURCE||'supabase/migrations/20261104045000_reconcile_settlement_precision.sql','utf8')));
+if(process.env.REALIZED_SQL_SOURCE){await db.exec(freeze(fs.readFileSync('supabase/migrations/20261104045000_reconcile_settlement_precision.sql','utf8')).replace('public.get_live_realized_sales(','public.baseline_realized_sales('));compareOriginal=true;}
 const fixed=await run();assert.equal(fixed.items.length,1);assert.equal(fixed.pending_settlement_count,0);
 assert.deepEqual(fixed.items[0],baseline.items.find(i=>i.transaction_id===id(30)),'settled amount/status/estimate unchanged');
 // Each absent/conflicting piece of evidence must retain the pending row.

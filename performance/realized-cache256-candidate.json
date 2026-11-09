@@ -1,0 +1,143 @@
+{
+  "browser": "chromium",
+  "holdingCount": 4,
+  "viewport": "390x844",
+  "transportMs": 50,
+  "samples": [
+    {
+      "target": "1W",
+      "run": 0,
+      "ms": 66.84061699999984,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1W",
+      "run": 1,
+      "ms": 66.4216720000004,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1W",
+      "run": 2,
+      "ms": 66.47227800000019,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1W",
+      "run": 3,
+      "ms": 66.5478720000001,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1W",
+      "run": 4,
+      "ms": 66.93552399999999,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1M",
+      "run": 0,
+      "ms": 66.4402369999998,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1M",
+      "run": 1,
+      "ms": 66.95000600000003,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1M",
+      "run": 2,
+      "ms": 82.70325799999955,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1M",
+      "run": 3,
+      "ms": 66.38261299999976,
+      "realizedRequests": 0
+    },
+    {
+      "target": "1M",
+      "run": 4,
+      "ms": 66.85821399999986,
+      "realizedRequests": 0
+    },
+    {
+      "target": "3M",
+      "run": 0,
+      "ms": 68.31164800000079,
+      "realizedRequests": 0
+    },
+    {
+      "target": "3M",
+      "run": 1,
+      "ms": 66.63991900000019,
+      "realizedRequests": 0
+    },
+    {
+      "target": "3M",
+      "run": 2,
+      "ms": 66.54133600000023,
+      "realizedRequests": 0
+    },
+    {
+      "target": "3M",
+      "run": 3,
+      "ms": 80.90814899999987,
+      "realizedRequests": 0
+    },
+    {
+      "target": "3M",
+      "run": 4,
+      "ms": 66.94225000000006,
+      "realizedRequests": 0
+    },
+    {
+      "target": "ALL",
+      "run": 0,
+      "ms": 66.75991999999951,
+      "realizedRequests": 0
+    },
+    {
+      "target": "ALL",
+      "run": 1,
+      "ms": 66.70898399999987,
+      "realizedRequests": 0
+    },
+    {
+      "target": "ALL",
+      "run": 2,
+      "ms": 66.92184400000042,
+      "realizedRequests": 0
+    },
+    {
+      "target": "ALL",
+      "run": 3,
+      "ms": 66.41650800000025,
+      "realizedRequests": 0
+    },
+    {
+      "target": "ALL",
+      "run": 4,
+      "ms": 66.28914199999963,
+      "realizedRequests": 0
+    },
+    {
+      "revision": {
+        "expected": 15,
+        "observed": 17,
+        "renderedMatchesObserved": true,
+        "fresh": false
+      }
+    }
+  ],
+  "kind": "rejected-realized-ttl-cache",
+  "source": "Build256",
+  "candidate": true,
+  "cpuThrottle": "none",
+  "data": "one synthetic pending sale revised to settled fees/tax; four holdings",
+  "cache": "stock periods warm; realized period return within 30 seconds",
+  "timing": "click dispatch through queue idle and two animation frames; visible revision asserted separately"
+}

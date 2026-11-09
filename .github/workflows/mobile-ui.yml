@@ -73,6 +73,10 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify realized accumulation preserves complete financial results
+        run: node tests/build257_realized_accumulation.mjs && REALIZED_SQL_SOURCE=supabase/build257_realized_accumulation.sql node tests/build247_settlement_precision.mjs && REALIZED_SQL_SOURCE=supabase/build257_realized_accumulation.sql BUILD247=1 node tests/build246_observation_fx.mjs
+      - name: Verify actual realized SQL through both browser loaders
+        run: SECURITIES=10 PAIRS=1 node experiments/realized-browser257.mjs && SECURITIES=10 PAIRS=1 BROWSER=webkit node experiments/realized-browser257.mjs
       - name: Verify independent NAV arithmetic, periods and invalid balance rejection
         run: node tests/build254_contract.mjs
       - name: Verify completed obsolete periods are reused in both browsers

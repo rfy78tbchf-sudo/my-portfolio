@@ -1,0 +1,282 @@
+{
+  "browser": "chromium",
+  "holdingCount": 4,
+  "viewport": "390x844",
+  "transportMs": 50,
+  "securities": 100,
+  "transactions": 3000,
+  "sql": "local PGlite, actual realized and nested stock functions; NAV stubbed",
+  "samples": [
+    {
+      "variant": "baseline",
+      "period": "1W",
+      "run": 0,
+      "ms": 691.7107500000002,
+      "sqlMs": 433.79517900000064,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "1W",
+      "run": 0,
+      "ms": 681.9628499999999,
+      "sqlMs": 425.9790090000006,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "1W",
+      "run": 1,
+      "ms": 785.3600749999987,
+      "sqlMs": 505.9426110000004,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "1W",
+      "run": 1,
+      "ms": 812.9324059999999,
+      "sqlMs": 533.1249260000004,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "1W",
+      "run": 2,
+      "ms": 668.1841629999999,
+      "sqlMs": 421.37243000000126,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "1W",
+      "run": 2,
+      "ms": 685.1619159999991,
+      "sqlMs": 440.16613399999915,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "1M",
+      "run": 0,
+      "ms": 782.1457659999996,
+      "sqlMs": 515.2815449999998,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "1M",
+      "run": 0,
+      "ms": 815.4989629999982,
+      "sqlMs": 506.0524830000013,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "1M",
+      "run": 1,
+      "ms": 766.7279730000009,
+      "sqlMs": 520.265112000001,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "1M",
+      "run": 1,
+      "ms": 825.3553460000003,
+      "sqlMs": 548.4355749999995,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "1M",
+      "run": 2,
+      "ms": 820.5468989999972,
+      "sqlMs": 563.7591959999991,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "1M",
+      "run": 2,
+      "ms": 747.3209019999995,
+      "sqlMs": 483.86959600000046,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "3M",
+      "run": 0,
+      "ms": 1177.1570439999996,
+      "sqlMs": 898.7132219999985,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "3M",
+      "run": 0,
+      "ms": 825.7991480000019,
+      "sqlMs": 558.7302369999998,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "3M",
+      "run": 1,
+      "ms": 749.2642889999988,
+      "sqlMs": 505.6255459999993,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "3M",
+      "run": 1,
+      "ms": 1141.4245219999975,
+      "sqlMs": 886.9271019999978,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "3M",
+      "run": 2,
+      "ms": 1236.7436579999994,
+      "sqlMs": 962.4990570000009,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "3M",
+      "run": 2,
+      "ms": 747.8852530000004,
+      "sqlMs": 491.16170200000124,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "ALL",
+      "run": 0,
+      "ms": 4357.343556,
+      "sqlMs": 4054.4399190000004,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "ALL",
+      "run": 0,
+      "ms": 1063.4626789999966,
+      "sqlMs": 746.9202970000006,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "ALL",
+      "run": 1,
+      "ms": 1043.0586029999977,
+      "sqlMs": 717.9750270000004,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "ALL",
+      "run": 1,
+      "ms": 4223.873931000002,
+      "sqlMs": 3891.347581999995,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "baseline",
+      "period": "ALL",
+      "run": 2,
+      "ms": 4654.364590000005,
+      "sqlMs": 4304.749070999998,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    },
+    {
+      "variant": "candidate",
+      "period": "ALL",
+      "run": 2,
+      "ms": 1083.2500079999954,
+      "sqlMs": 771.3424129999985,
+      "requests": {
+        "realized": 1,
+        "total": 1
+      }
+    }
+  ],
+  "conditions": {
+    "CPU": "unthrottled",
+    "browserCache": "same context, warmed app shell; stock result cache cleared before each sample",
+    "network": "all intercepted, 50ms per mock request plus local realized SQL",
+    "timing": "click dispatch to matching SQL result + rendered total/all securities + two frames",
+    "NAV": "nested NAV function stubbed; no operating server timing"
+  }
+}
