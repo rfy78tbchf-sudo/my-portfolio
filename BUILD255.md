@@ -1,6 +1,6 @@
 # Build255 candidate — synchronous render scroll reuse
 
-Status: candidate only; main remains deployed Build254 until exact-commit CI and comparison gates pass.
+Status: deployed 2026-11-10 KST. Exact code commit 42c5f46a448a30d5bba66bf4f7cd578d4d25aa94 passed required CI42651039759 before main promotion; Pages42654315576 succeeded. Public version.json and index.html both verified as 2026-11-10-render-scroll-255 with scroll reuse code.
 
 Nested performance rendering previously read scrollY after replacing content twice, forcing layout each time. Instrumented actual Chromium startup/refresh stacks attribute about 28–33ms per ordinary nested read. Capture the outer preserved scroll once per synchronous render call tree. Reset state in finally; later independent renders capture a new position. Input-active early returns still avoid geometry reads. No scheduling, financial calculation, cache, RPC or data changes.
 
@@ -11,3 +11,11 @@ Synthetic comparison: actual startup/read queue, Chromium 390x844, 50 holdings, 
 Pending: alternating 1M comparison, exact-commit CI/Pages, browser scroll interaction coverage at402 and125% zoom. Do not deploy if input/scroll/layout gates fail or the gain remains uncertain. After acceptance, next scope is cold/cache reuse and rapid period switches with large synthetic transaction responses; do not re-open rejected batching/outer-tail guard work without new evidence.
 
 Alternating follow-up (three fresh contexts/source, baseline→candidate repeated three times, same synthetic conditions,1M): correct paint baseline median589.7ms range581.0–647.6; candidate509.2ms range498.1–569.4 (13.7% lower median). Every pair improved. Raw data performance/render255-alternating.json. Not enough samples for a tail percentile. Chromium402px/125% actual nested-refresh test passed across1W/1M/3M/ALL with scroll400 retained, evidence expanded, and no horizontal overflow. Added equivalent WebKit gate to CI. Production DB and physical iPhone unmeasured. CI and Pages promotion remain pending until externally verified.
+
+## Deployment handoff
+
+All required exact-commit CI jobs passed, including Chromium/WebKit scroll/evidence at402px/125%, existing390/402/430 layouts and125% coverage, rapid switches, dated estimates/settlement, DB evidence, cold/warm startup, background TTL, pending requests, charts, decisions and wealth. Main was rechecked at5c0064968a9bb384676c12a9a8dfbe9834b22d07 immediately before guarded fast-forward to42c5f46. Main-triggered duplicate CI need not substitute for the already-passed exact-SHA gate. No live financial DB reads/writes and no real iPhone validation.
+
+Additional smaller fixture: four holdings, three samples/source, same Chromium/390x844/50ms/no-throttle/1W refresh. Correct paint median433.5→398.5ms; requests52→52. Raw samples render255-small-{baseline,candidate}.json. Fifty-holding requests remain98→98. These are holdings counts, not transaction-history-size claims; new large-ledger, cold-first-query and memory measurements remain separate work. No blanket app-speed or financial correctness claim.
+
+The production change resolves two nested forced-layout reads; it does not remove independent alert renders or suppress late-result guards. Next action: measure uninstrumented first-query/requery/rapid-switch behavior on Build255 in both scopes with small/large synthetic ledger responses, and isolate remaining layout versus response-payload cost. Reuse existing period/cache regression fixtures and avoid re-running rejected batch and outer-tail prototypes. Keep Build254 reconciliation semantics and incomplete/estimated markers. No additional production change is justified by this run's other measurements.
