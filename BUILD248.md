@@ -16,3 +16,6 @@ Candidate c45446c pushed to the existing branch. Chromium actual-page average/co
 
 ## CI installation diagnosis (2026-11-09)
 The dedicated GitHub job-log connector retrieved job128931124974. ubuntu-latest moved to Ubuntu26.04.1; Playwright1.55.1 explicitly reports it cannot install dependencies or Chromium for ubuntu26.04-x64. Pin only the mobile runner to ubuntu-24.04, retaining the exact browser versions, all tests and release gates. This is independent of the local apt permission limitation. No test is removed or bypassed.
+
+## Rendered comparison
+Chromium390x844, seven fresh pages per version, fixed synthetic100ms service delay, no CPU throttling; real period renderer and real RPC queues, isolated synthetic session. From request start through two animation frames: before median523.2ms (520.1–531.8), after223.7ms (222.3–228.1). Five network calls become two; current ALL amount17 and partial status preserved; repeated selected period makes zero requests. This isolates rapid navigation queue cost and is not a production DB latency claim. New browser test runs both engines in CI. Cold isolated queries, large-history DB profiling and actual iPhone timing remain separate follow-ups.

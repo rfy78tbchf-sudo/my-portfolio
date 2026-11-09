@@ -67,6 +67,8 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify rapid period switching reaches the current rendered result
+        run: node tests/build248_period_browser.mjs
         timeout-minutes: 5
       - name: Verify dated average-cost estimates without changing confirmed P&L
         run: node tests/build247_settlement_precision.mjs && BUILD247=1 node tests/build246_observation_fx.mjs && node tests/build245_average_estimates.mjs && node tests/build245_average_browser.mjs
