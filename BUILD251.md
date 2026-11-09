@@ -16,13 +16,24 @@ Full-function PGlite regression with synthetic broker evidence: the correct boun
 
 Read-only production comparison: only the two independently reconciled items change in1W, restoring full item coverage. The overseas unsettled item remains provisional; coverage completeness does not imply final settlement. Other item JSON remains unchanged. Complete JSON remains equal for today,1M,3M,6M,1Y and ALL. No customer amounts, quantities, account identifiers or raw payloads are included in this record or test fixtures.
 
-Final SQL timing and release verification will be recorded after the full regression gate. This is a correctness release, not a claimed speed improvement. No added browser requests, persistence or cache behavior.
+Execution-only regression measurement: authenticated, read-only EXPLAIN ANALYZE, jit=off, work_mem=16MB, three alternating before/after runs against the same stored inputs, no cache flush. This excludes network and rendering; sample size does not support a tail percentile or a cold-query claim.
+
+| Period | Before median (range), ms | After median (range), ms |
+| --- | --- | --- |
+| 1W | 423.079 (420.955–1780.873) | 453.306 (437.877–515.777) |
+| ALL | 1350.414 (1340.339–1649.599) | 1423.308 (1393.147–1449.660) |
+
+The extra evidence check adds about30ms/73ms to these medians; the first control run was slower. This is a correctness release, not a speed improvement. No added browser requests, persistence or cache behavior.
 
 The first CI candidate caught an expanded-summary height regression (third contributor below bottom navigation). The explanation was moved into calculation details and the partial headline/subtotal compacted; the assertion remains unchanged. Local Chromium synthetic RPC-output tests passed at390/402/430px and100/125% zoom: partial/complete/zero/unknown totals, basis date, scope wording, touch disclosure, returning between home and stock view, amount fit and no horizontal overflow. Existing build210 P&L-state tests and build72 version/update test passed. Full CI adds WebKit and existing financial, mobile, navigation, refresh and wealth regressions. Physical iPhone/PWA/Face ID untested.
 
 ## Release gate and handoff
 Continue the existing work/performance-detail-render-234 branch, based on9674cb4 with main47efd8e (deployed250). No concurrent application run was active at start. Do not ship the post250 experimental optimization fixtures as production SQL.
 
-Pending: final commit CI, apply the exact tested function migration, recheck main SHA, guarded fast-forward, successful Pages and live251 markers. Do not report deployment until verified.
+Application commit ef316c3fde79a0ca75e51b1a69278e488ab462ff passed required CI run42587864487 attempt2, both decision-regression and mobile jobs. Attempt1 timed out in the existing WebKit decision recovery test; an unchanged-commit rerun passed, with no weakened assertions. Chromium/WebKit,390/402/430px and125% tests passed.
+
+Applied build251_opening_reconciliation. The deployed definition matches b08fe9c5e0bab487b0dc1a64aad25800; SECURITY INVOKER, stable volatility, empty search_path and existing execution settings are preserved. Authenticated read-only1W verification returned6/6 calculated, complete=true, provisional_count=1, unmapped_count=0, no excluded reasons and exact aggregate-to-items equality. Security/performance/health advisors add no findings (observation timestamps excluded from comparison).
+
+Rechecked main47efd8e and guarded fast-forwarded to the tested application SHA. Pages run42592253327 succeeded. A read-only GitHub Actions probe checks actual public version.json, HTML build/runtime markers and service-worker shell marker; live marker verification is pending. This probe is needed because the local execution environment ended and the web fetcher cannot access this Pages host. No financial data or credentials are sent to the probe.
 
 The previously unresolved weekly foreign opening mismatch was resolved from already archived native balance observations, without requesting new customer records. No operational broker sync or financial-ledger writes were performed. Other periods can still have unrelated missing evidence; keep existing flags and never extrapolate current average cost. Next action: after release verify fresh1W item coverage and provisional flags, preserve the exact hash and record live Pages markers. Resume the post250 performance hypotheses only with these new reconciliation regressions protected.
