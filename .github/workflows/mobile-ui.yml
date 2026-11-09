@@ -73,6 +73,10 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify empty periods preserve unknowns and financial results
+        run: node tests/build258_empty_period_items.mjs && STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql node tests/build257_realized_accumulation.mjs
+      - name: Verify empty periods through both browser loaders
+        run: PAIRS=1 node experiments/empty-period258.mjs && PAIRS=1 BROWSER=webkit node experiments/empty-period258.mjs
       - name: Verify realized accumulation preserves complete financial results
         run: node tests/build257_realized_accumulation.mjs && REALIZED_SQL_SOURCE=supabase/build257_realized_accumulation.sql node tests/build247_settlement_precision.mjs && REALIZED_SQL_SOURCE=supabase/build257_realized_accumulation.sql BUILD247=1 node tests/build246_observation_fx.mjs
       - name: Verify actual realized SQL through both browser loaders

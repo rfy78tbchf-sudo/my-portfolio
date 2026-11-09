@@ -15,7 +15,7 @@ export async function createRealizedFixture(size){
  await db.exec(nav.slice(0,nav.indexOf('-- This is an arithmetic assertion')));
  // Isolate unchanged stock calculation. NAV subcall intentionally excluded.
  await db.exec(`create function public.get_live_nav_reconciliation(text) returns jsonb language sql stable as $$select '{"diagnostic_stub":true}'::jsonb$$;`);
- const source=readFileSync('supabase/build254_existing_periods.sql','utf8');
+ const source=readFileSync(process.env.STOCK_SQL_SOURCE||'supabase/build254_existing_periods.sql','utf8');
  await db.exec(source.slice(source.indexOf('CREATE OR REPLACE FUNCTION public.get_live_period_stock_pnl')).replaceAll('now()',"timestamptz '2026-11-09 12:00:00+09'"));
 
  await db.exec(`insert into securities(id,symbol,name,currency,isin) select md5('s'||g)::uuid,'SYNTH'||g,'Synthetic '||g,'USD','US'||lpad(g::text,10,'0') from generate_series(1,${size}) g;
