@@ -11,7 +11,7 @@ function block(start,end){
 }
 function fixture(){
   const c=vm.createContext({
-    live:{},stockView:'total',stockPeriod:'THIS_MONTH',stockPnlSort:'impact',period:'오늘',
+    live:{},performanceAssetScope:'stocks',stockView:'total',stockPeriod:'THIS_MONTH',stockPnlSort:'impact',period:'오늘',
     esc:v=>String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\"','&quot;'),num:(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}),
     signedMoney:n=>`${n>0?'+':''}${Number(n).toLocaleString('en-US')}원`,cls:n=>n<0?'down':'up',
     stockMark:()=>'',stockViewButtons:()=>'',stockPeriodButtons:()=>'',stockPeriodLabel:()=> '이번 달',

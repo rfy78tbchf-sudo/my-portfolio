@@ -299,8 +299,26 @@ function attachNativePrices(holdings:any[],nativeRaw:any,observedAt:string) {
     }}};
   });
 }
+// Reject incomplete balance responses before normalizers can turn absent fields into zeros.
+function assertCompleteBalance(domestic:any,overseas:any) {
+  const d=domestic?.dataBody,o=overseas?.dataBody;
+  const finite=(v:any)=>v!==null&&v!==undefined&&String(v).trim()!==""&&/^[-+]?[0-9]+(?:\.[0-9]+)?$/.test(String(v).replace(/,/g,"").trim())&&Number.isFinite(Number(String(v).replace(/,/g,"")));
+  if(!d||!o||!Array.isArray(d.Record1)||!Array.isArray(o.Record2))throw new Error("BALANCE_RESPONSE_INCOMPLETE");
+  for(const key of ["nt_asts_val_amt","val_amt_sum","dy_tfnd","fcrncy_tfnd_krw_exch_amt","byng_amt_sum","val_pl_sum"])
+    if(!finite(d[key]))throw new Error("BALANCE_SUMMARY_MISSING_"+key);
+  if(String(o.nxt_key||"").trim())throw new Error("BALANCE_PAGINATION_INCOMPLETE");
+  const keys=new Set();
+  for(const r of o.Record2){
+    if(!r||!String(r.is_cd||"").trim()||!finite(r.frgn_hld_q_p6)||!finite(r.krw_val_amt)||!finite(r.std_exch_r)||n(r.std_exch_r)<=0)throw new Error("BALANCE_POSITION_INCOMPLETE");
+    const key=String(r.is_cd).trim()+"|"+String(r.mkt_clsf||"").trim();
+    if(keys.has(key))throw new Error("BALANCE_DUPLICATE_POSITION");keys.add(key);
+  }
+  if(!o.Record2.length&&d.Record1.some((r:any)=>r.crncy_cd&&r.crncy_cd!=="KRW"&&(n(r.hld_q)>0||n(r.ec_q)>0||n(r.val_amt)>0)))throw new Error("BALANCE_OVERSEAS_ROWS_MISSING");
+}
 async function syncCurrent(userId:string) {
+  const requestStartedAt=new Date().toISOString();
   const { appKey, token, domesticRaw, overseasRaw } = await fetchCurrent(userId);
+  assertCompleteBalance(domesticRaw,overseasRaw);
   const d = normalizeDomestic(domesticRaw);
   const o = normalizeOverseas(overseasRaw);
   // A failed or incomplete optional native query must not block balance sync.
@@ -321,6 +339,7 @@ async function syncCurrent(userId:string) {
   const officialSecurities = n(dS?.val_amt_sum);
   const officialUnrealized = n(dS?.val_pl_sum);
   const summary = {
+    source_requested_at:requestStartedAt,
     total_assets: officialTotalAssets,
     cash: domesticCash + foreignCashKrw,
     securities_value: officialSecurities,
@@ -341,6 +360,7 @@ async function syncCurrent(userId:string) {
     p_holdings:holdings,
     p_summary:summary,
   });
+  if(applied?.skipped) return {applied,totalHoldings:holdings.length,orderEndpointsEnabled:false};
   await adminRpc("save_kb_cash_observation_for_service",{
     p_user_id:userId,p_domestic_cash_krw:domesticCash,
     p_foreign_cash_krw_equivalent:foreignCashKrw

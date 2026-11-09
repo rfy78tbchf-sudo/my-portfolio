@@ -183,6 +183,7 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
     assert.equal(await page.locator('#homeTrend').count(),0);assert.equal(await page.evaluate(()=>scrollY),portfolioY);
 
     await page.locator('#nav [data-tab="performance"]').click();await idle();
+    if(await page.locator('[data-performance-scope="stocks"]').count())await page.locator('[data-performance-scope="stocks"]').click();
     await page.locator('[data-stock-period="ALL"]').scrollIntoViewIfNeeded();const performanceY=await page.evaluate(()=>scrollY);
     await page.locator('[data-stock-period="ALL"]').click();await idle();
     await visibleActive('[data-stock-period="ALL"]');
