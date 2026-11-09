@@ -56,7 +56,8 @@ jobs:
       - name: Verify interrupted decision submission and persisted request identity
         run: node --test tests/decision_edit_prefill.mjs tests/build211_pending_decision.mjs tests/build211_review_race.mjs
   mobile:
-    runs-on: ubuntu-latest
+    # Playwright 1.55.1 supports this OS; latest moved to unsupported 26.04.
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
