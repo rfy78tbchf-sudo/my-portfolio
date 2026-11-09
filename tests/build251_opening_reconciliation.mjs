@@ -15,7 +15,11 @@ const definition=async()=>(await db.query("select pg_get_functiondef('public.get
 const original=await definition();
 const migration=fs.readFileSync('supabase/build251_domestic_opening.sql','utf8');
 await db.exec(migration);await db.exec(migration);
-const candidate=await definition();
+let candidate=await definition();
+if(process.env.CORPORATE_EXPERIMENT){
+ await db.exec(fs.readFileSync('tests/fixtures/period_corporate_candidate_experiment.sql','utf8').replace('a1c5b0dd24c00467912fc425ce351892','b08fe9c5e0bab487b0dc1a64aad25800'));
+ candidate=await definition();
+}
 console.log('Definition hash', (await db.query("select md5(btrim(pg_get_functiondef('public.get_live_period_stock_pnl(text)'::regprocedure),E' \n\r\t')) h")).rows[0].h);
 const clock=d=>d.replaceAll('now()',"timestamptz '2026-11-09 12:00:00+09'");
 await db.exec(`insert into securities(id,symbol,name,currency,isin) values(md5('s')::uuid,'000001','합성 국내 종목','KRW','KR0000000001');
