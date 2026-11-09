@@ -1,6 +1,6 @@
 import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
 const s=fs.readFileSync('index.html','utf8');
-const c=vm.createContext({liveAuthEpoch:1,session:{accessToken:'test'}});
+const c=vm.createContext({setTimeout,liveAuthEpoch:1,session:{accessToken:'test'}});
 vm.runInContext(s.slice(s.indexOf('  var liveReadQueue='),s.indexOf('  function rest(')),c);
 const started=[],release=[];let running=0,max=0;
 const job=n=>()=>new Promise(resolve=>{started.push(n);running++;max=Math.max(max,running);release[n]=()=>{running--;resolve(n)}});

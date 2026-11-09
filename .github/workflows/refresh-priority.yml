@@ -20,6 +20,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify queue priority and account isolation before browser comparison
+        run: |
+          node tests/build156_read_queue.mjs
+          node tests/build253_refresh_priority.mjs
       - run: npm install --no-save --no-package-lock playwright@1.55.1
       - run: npx playwright install --with-deps chromium webkit
       - name: Compare alternating versions with correct-result paint and request counts
