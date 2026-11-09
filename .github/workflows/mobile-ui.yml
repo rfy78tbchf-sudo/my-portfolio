@@ -73,6 +73,10 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify sale quantity formatting preserves full financial evidence
+        run: node tests/build261_quantity_format.mjs
+      - name: Verify first sale expansion and period results in both browsers
+        run: SECURITIES=1 TRANSACTIONS=300 PAIRS=1 node experiments/realized-interaction261.mjs && SECURITIES=1 TRANSACTIONS=300 PAIRS=1 BROWSER=webkit node experiments/realized-interaction261.mjs
       - name: Verify grouped opening quantities preserve closed-cycle evidence
         run: STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql node tests/build260_closed_opening.mjs && STOCK_SQL_SOURCE=supabase/build260_closed_opening_quantity.sql node tests/build259_daily_records.mjs && STOCK_SQL_SOURCE=supabase/build260_closed_opening_quantity.sql node tests/build259_recovered_dates.mjs
       - name: Verify first total and composition in both browsers
