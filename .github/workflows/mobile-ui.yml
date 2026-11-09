@@ -98,6 +98,10 @@ jobs:
         run: node tests/build243_wealth_basis.mjs --browser
       - name: Verify annual history and rollover on mobile
         run: node tests/build240_wealth_browser.mjs
+      - name: Verify domestic opening settlement reconciliation and partial totals
+        run: node tests/build251_opening_reconciliation.mjs
+      - name: Verify period totals, basis dates and home cash-flow distinction
+        run: node tests/build251_period_browser.mjs
       - name: Verify automatic wealth, scenarios, retry and mobile layout
         run: node tests/build226_browser.mjs
       - name: Verify moving average crossing display in both browsers
