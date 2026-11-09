@@ -23,9 +23,8 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n]
   const hero=page.locator('.performance-hero').first();await hero.waitFor();
   assert.equal(await hero.locator('.asset').innerText(),'전체 손익 미계산');
   assert.match(await hero.locator('.pnl-subtotal').innerText(),/계산된 종목 합계[\s\S]*150원/);
-  assert.match(await hero.innerText(),/2026-11-03 ~ 2026-11-09/);assert.match(await hero.innerText(),/기간 시작 전날 2026-11-02/);
-  assert.match(await hero.innerText(),/홈의 입출금 포함 자산 변화와 계산 범위가 다릅니다/);
-  await hero.locator('.pnl-coverage>summary').tap();assert.match(await hero.innerText(),/합성 대조 대기 종목[\s\S]*시작 보유수량 확인 필요/);
+  assert.match(await hero.innerText(),/2026-11-03 ~ 2026-11-09/);
+  await hero.locator('.pnl-coverage>summary').tap();assert.match(await hero.innerText(),/기간 시작 전날 2026-11-02/);assert.match(await hero.innerText(),/홈의 입출금 포함 자산 변화와 계산 범위가 다릅니다/);assert.match(await hero.innerText(),/합성 대조 대기 종목[\s\S]*시작 보유수량 확인 필요/);
   assert.doesNotMatch(await page.locator('[data-pnl-symbol="MISSING"] .contribution-pill').innerText(),/0원/);
   const sizes=await page.locator('.asset,.pnl-subtotal strong,.pnl-subtotal span').evaluateAll(es=>es.map(e=>({width:e.clientWidth,scroll:e.scrollWidth})));
   assert.ok(sizes.every(e=>e.scroll<=e.width+1),name+'/'+width+'/'+zoom+' amounts fit');
