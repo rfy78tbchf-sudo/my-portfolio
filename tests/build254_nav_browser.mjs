@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {chromium,webkit} from 'playwright';
 const source=fs.readFileSync('index.html','utf8');
 const audit={ok:true,period:'1W',period_start:'2026-11-03',period_end:'2026-11-09',opening_date:'2026-11-02',opening_at:'2026-11-02T12:00:00Z',closing_at:'2026-11-09T12:00:00Z',recorded_opening_nav:10000,recorded_closing_nav:11000,recorded_asset_change:1000,recorded_external_flow:0,external_flow_confirmed:true,primary_asset_path_pnl:1000,whole_pnl_verified:false,whole_pnl:null,reasons:['CASH_FX_COMPONENTS_UNVERIFIED'],data_version:'synthetic-v1'};
+audit.opening_settlement_bridge={ok:true,quantity_matches:true,pending_settlement_net:-1010,remaining_component_gap:0,items:[{symbol:'TEST',pending_buy_quantity:10,pending_sell_quantity:0,quantity_matches:true,trades:[{execution_date:'2026-11-02',settlement_date:'2026-11-04',type:'buy',net_cash:-1010}]}]};
+audit.closing_settlement_bridge={ok:true,quantity_matches:false,matched_trade_net:null,remaining_component_gap:null,items:[{symbol:'TEST',pending_buy_quantity:10,pending_sell_quantity:10,quantity_matches:false,trades:[]}]};
 const pnl={ok:true,period:'1W',period_start:'2026-11-03',period_end:'2026-11-09',complete:true,pnl_krw:-200,krw_included_count:1,candidate_count:1,items:[{symbol:'TEST',name:'Synthetic position',currency:'KRW',pnl_krw:-200,pnl_local:-200,provisional_amount:true,end_quantity:1}],reconciliation:audit};
 const hook=`
  session={accessToken:'synthetic'};kstDate=function(){return '2026-11-09'};
@@ -14,7 +16,7 @@ const hook=`
 fs.mkdirSync('mobile-artifacts/build254',{recursive:true});
 for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n])=>!process.env.UI_BROWSER||n===process.env.UI_BROWSER)){
  const browser=await engine.launch({headless:true});
- try{for(const width of [390,430]){
+ try{for(const width of [390,402,430]){
   const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>r.request().url()==='https://trust.test/'?r.fulfill({contentType:'text/html',body:source.replace('  restoreLogin();',hook)}):r.abort());
   await page.goto('https://trust.test/');
@@ -25,6 +27,15 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([n]
   await page.locator('.nav-reconciliation>summary').click();
   assert.match(await page.locator('.nav-reconciliation').innerText(),/1,000원/);
   assert.match(await page.locator('.nav-reconciliation').innerText(),/외화 현금/);
+  await page.locator('.settlement-evidence>summary').first().click();
+  assert.match(await page.locator('.settlement-evidence').first().innerText(),/-1,010원/);
+  assert.match(await page.locator('.settlement-evidence').first().innerText(),/전체손익 검증 완료를 뜻하지 않습니다/);
+  await page.locator('.settlement-evidence>summary').nth(1).click();
+  assert.match(await page.locator('.settlement-evidence').nth(1).innerText(),/미확인/);
+  assert.deepEqual(await page.locator('.settlement-evidence').nth(1).locator('.financial-row strong').allTextContents(),['미확인','미확인']);
+  await page.evaluate(()=>document.documentElement.style.zoom='1.25');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  await page.evaluate(()=>document.documentElement.style.zoom='1');
   await page.locator('[data-performance-scope="stocks"]').click();
   assert.match(await page.locator('.performance-hero').first().innerText(),/-200원/);
   await page.locator('[data-performance-scope="all"]').click();
