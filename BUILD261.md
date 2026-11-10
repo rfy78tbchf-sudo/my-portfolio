@@ -27,4 +27,16 @@ Separate sequential before/after checks, same CPU4x/viewport/data/transport, thr
 
 ## Delivery and next action
 
-Final-SHA CI, fresh main lease and Pages/live-marker confirmation are required before reporting deployment. No backend migration is needed. After this change, measure refresh/reconnect using current SQL functions and fixed CPU/network conditions; avoid repeating this formatter benchmark unless a regression is found. Remaining ALL long tasks should be attributed to DOM/parse/response ordering before any structural optimization; do not suppress the independent total response, hide financial evidence, or introduce stale amount caching.
+Final-SHA CI, fresh main lease and Pages/live-marker confirmation completed; see delivery proof below. No backend migration is needed. After this change, measure refresh/reconnect using current SQL functions and fixed CPU/network conditions; avoid repeating this formatter benchmark unless a regression is found. Remaining ALL long tasks should be attributed to DOM/parse/response ordering before any structural optimization; do not suppress the independent total response, hide financial evidence, or introduce stale amount caching.
+
+
+### Follow-on nested detail measurement
+
+After the alternating comparison finished, independently measured the nested `매도일·수량 보기` click with the same3000-trade/one-security ALL payload, CPU4x,390×844,3runs/version. Actual Playwright click→two animation frames: baseline median85.1ms(range83.5–97.4), candidate89.5ms(84.2–90.3). Ranges overlap; no change in this layout cost is claimed. Each run exposes1500 sale paragraphs plus the existing explanation paragraph (1501 total). Raw performance/sale-detail261-{baseline,candidate}.json and experiments/sale-detail261.mjs. This is an additional first-use check, not the earlier outer summary measurement. No product change was made from it. Future structural rendering work must retain all evidence, nested expansion and accessibility; do not assume formatter reuse removes this layout cost.
+
+
+## Delivery proof — 2026-11-10 KST
+
+Exact application SHA71386cb45109e2232d2f7a298c2a7fb7d5c2a79d passed CI42722843360 before promotion: mobile99 steps and decision-regression23 steps, both success. Fresh main was still a67fbe47803f7add4a180c2182bc3b501dc64d50 and work head matched the tested SHA; expected-SHA guarded fast-forward succeeded. Pages42725117323 succeeded for that exact SHA. Cache-busted HTTP200 checks confirmed version.json, HTML build and appBuild markers `2026-11-10-sale-quantity-format-261`, and sw.js `my-portfolio-shell-2026111010-261`. Build261 is actually deployed. Automatic same-SHA main CI42725117578 is additional to the successful pre-promotion gate, not a replacement for it.
+
+Follow-on nested-detail diagnostic and this delivery record are committed on the same work branch with [skip ci]; no application code changed after the CI-tested commit. No DB changes or financial writes, no new automation/branch. Continue with current-SQL refresh/reconnect attribution, retaining the measured nested-detail layout limitation. Operating latency and physical iPhone behavior remain unmeasured; do not repeat Build260/261 improvement claims as fresh results.
