@@ -306,7 +306,24 @@ function assertCompleteBalance(domestic:any,overseas:any) {
   if(!d||!o||!Array.isArray(d.Record1)||!Array.isArray(o.Record2))throw new Error("BALANCE_RESPONSE_INCOMPLETE");
   for(const key of ["nt_asts_val_amt","val_amt_sum","dy_tfnd","fcrncy_tfnd_krw_exch_amt","byng_amt_sum","val_pl_sum"])
     if(!finite(d[key]))throw new Error("BALANCE_SUMMARY_MISSING_"+key);
-  if(String(o.nxt_key||"").trim())throw new Error("BALANCE_PAGINATION_INCOMPLETE");
+  if(String(d.nxt_key||"").trim()||String(o.nxt_key||"").trim())throw new Error("BALANCE_PAGINATION_INCOMPLETE");
+  // Validate before normalization can skip a malformed domestic row. Snapshot
+  // replacement removes absent holdings, so missing data must never mean sold.
+  const domesticKeys=new Set();
+  const quantityFields=["hld_q_p6","hld_q","ec_q_p6","ec_q","ordr_psbl_q_p6","ordr_psbl_q"];
+  for(const r of d.Record1){
+    if(!r||!String(r.is_cd||"").trim())throw new Error("BALANCE_DOMESTIC_POSITION_INCOMPLETE");
+    const cur=String(r.crncy_cd||"").trim().toUpperCase();
+    if(cur&&cur!=="KRW")continue; // Detailed foreign rows are checked below.
+    const quantities=quantityFields.map(k=>r[k]).filter(v=>v!==null&&v!==undefined&&String(v).trim()!=="");
+    if(!quantities.length||quantities.some(v=>!finite(v)||n(v)<0)||!finite(r.val_amt))
+      throw new Error("BALANCE_DOMESTIC_POSITION_INCOMPLETE");
+    const key=String(r.is_cd).trim();
+    if(domesticKeys.has(key))throw new Error("BALANCE_DUPLICATE_POSITION");
+    domesticKeys.add(key);
+  }
+  if(!d.Record1.length&&!o.Record2.length&&n(d.val_amt_sum)!==0)
+    throw new Error("BALANCE_POSITION_ROWS_MISSING");
   const keys=new Set();
   for(const r of o.Record2){
     if(!r||!String(r.is_cd||"").trim()||!finite(r.frgn_hld_q_p6)||!finite(r.krw_val_amt)||!finite(r.std_exch_r)||n(r.std_exch_r)<=0)throw new Error("BALANCE_POSITION_INCOMPLETE");
