@@ -19,13 +19,13 @@ begin
    if jsonb_typeof(v_row->k)='number' and (v_row->>k)::numeric<0 then raise exception 'NEGATIVE_QUANTITY';end if;
   end loop;
  end loop;
- insert into evidence_batch_273 values(a,r,t,c,j) on conflict(account,response_id) do nothing;
- if not exists(select 1 from evidence_batch_273 b where b.account=a and b.response_id=r and b.observed_at=t and b.complete=c and b.rows=j) then raise exception 'CONFLICTING_RETRY';end if;
+ insert into public.evidence_batch_273 values(a,r,t,c,j) on conflict(account,response_id) do nothing;
+ if not exists(select 1 from public.evidence_batch_273 b where b.account=a and b.response_id=r and b.observed_at=t and b.complete=c and b.rows=j) then raise exception 'CONFLICTING_RETRY';end if;
 end $$;
 -- Select the response before expanding rows. An empty/partial response must not
 -- silently select older per-symbol evidence. This function does not produce P&L.
 create function read_batch_273(a text) returns jsonb language sql as $$
  select jsonb_build_object('response_id',response_id,'observed_at',observed_at,
- 'complete',complete,'rows',rows) from evidence_batch_273 where account=a
+ 'complete',complete,'rows',rows) from public.evidence_batch_273 where account=a
  order by observed_at desc limit 1
 $$;
