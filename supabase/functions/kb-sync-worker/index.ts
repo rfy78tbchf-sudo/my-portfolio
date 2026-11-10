@@ -378,8 +378,8 @@ async function syncCurrent(userId:string) {
     p_summary:summary,
   });
   if(applied?.skipped) return {applied,totalHoldings:holdings.length,orderEndpointsEnabled:false};
-  await adminRpc("save_kb_cash_observation_for_service",{
-    p_user_id:userId,p_domestic_cash_krw:domesticCash,
+  await adminRpc("save_kb_cash_for_response_for_service",{
+    p_user_id:userId,p_source_requested_at:requestStartedAt,p_domestic_cash_krw:domesticCash,
     p_foreign_cash_krw_equivalent:foreignCashKrw
   });
   const balanceEvidence=(Array.isArray(dS.Record1)?dS.Record1:[])

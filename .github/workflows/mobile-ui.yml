@@ -102,7 +102,7 @@ jobs:
       - name: Verify actual realized SQL through both browser loaders
         run: SECURITIES=10 PAIRS=1 node experiments/realized-browser257.mjs && SECURITIES=10 PAIRS=1 BROWSER=webkit node experiments/realized-browser257.mjs
       - name: Verify independent NAV arithmetic, periods and invalid balance rejection
-        run: node tests/build254_contract.mjs && node tests/build266_settlement_bridge.mjs
+        run: node tests/build254_contract.mjs && node tests/build266_settlement_bridge.mjs && node tests/build269_cash_binding.mjs
       - name: Verify completed obsolete periods are reused in both browsers
         run: EXPECT_REUSE=1 RETURN_RUNS=1 node experiments/period-return255.mjs && EXPECT_REUSE=1 RETURN_RUNS=1 BROWSER=webkit node experiments/period-return255.mjs
       - name: Verify nested refresh scroll and evidence at 125 percent
