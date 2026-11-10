@@ -1,0 +1,27 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+import {createRealizedFixture} from './fixtures/realized257.mjs';
+import {responseMigration} from '../experiments/assemble-response-migration273.mjs';
+const db=await createRealizedFixture(1);
+await db.exec(`create role anon;create role service_role;create function auth.role() returns text language sql as $$select 'service_role'::text$$;
+alter table account_observations add fetched_at timestamptz,add balance_date date;
+create table sync_logs(account_id uuid,started_at timestamptz,scope text,status text,detail jsonb);
+create table portfolio_performance(account_id uuid,performance_date date,daily_pnl numeric);
+create table kb_backfill_months(user_id uuid,month date,completed_at timestamptz,ledger_rows int);`);
+const source=fs.readFileSync('supabase/reconciliation_build44.sql','utf8');
+await db.exec(source.slice(source.indexOf('create table if not exists public.reconciliation_cases'),source.indexOf('create index if not exists reconciliation_cases_status')));
+const sql=responseMigration();assert.equal(sql,fs.readFileSync('experiments/response-migration273.sql','utf8'));
+// A failure in the final consumer must roll back earlier schema/reader changes.
+await assert.rejects(db.exec(sql.replace(/commit;$/, 'select nonexistent_rollout_guard_273();\ncommit;')));
+await db.exec('rollback');
+assert.equal((await db.query("select to_regclass('public.kb_position_response_batches') relation")).rows[0].relation,null);
+await db.exec(sql);
+const funcs=(await db.query("select proname,prosecdef from pg_proc where proname in ('get_live_period_stock_pnl','get_live_realized_cycle_review','get_live_reconciliation_report','get_live_settlement_bridge','get_reconciliation_case_timeline','refresh_reconciliation_cases_for_service')")).rows;
+assert.equal(funcs.length,6);for(const f of funcs)assert.equal(f.prosecdef,f.proname==='refresh_reconciliation_cases_for_service');
+assert.equal((await db.query('select count(*)::int n from kb_position_response_batches')).rows[0].n,0,'no legacy backfill');
+assert.equal((await db.query('select get_live_reconciliation_report() r')).rows[0].r.ok,false);
+for(const p of ['1W','THIS_MONTH','1M','3M','ALL'])assert.equal((await db.query('select get_live_period_stock_pnl($1) r',[p])).rows[0].r.complete,false);
+assert.equal((await db.query("select get_live_settlement_bridge('2026-11-09') r")).rows[0].r.pending_settlement_net,null);
+assert.equal((await db.query('select effective_quantity from live_position_settlement_basis')).rows[0].effective_quantity,null);
+const privileges=(await db.query("select has_function_privilege('authenticated','refresh_reconciliation_cases_for_service(uuid)','execute') client_write,has_function_privilege('service_role','read_batch_at_273(text,timestamptz)','execute') service_read,has_function_privilege('anon','get_live_reconciliation_report()','execute') anon_read")).rows[0];
+assert.deepEqual(privileges,{client_write:false,service_read:true,anon_read:false});
+await db.close();console.log('PASS assembled migration: late failure rolls back; all six consumers compile together, invoker hardening/ACL preserved, no backfill, legacy-only evidence stays unknown');
