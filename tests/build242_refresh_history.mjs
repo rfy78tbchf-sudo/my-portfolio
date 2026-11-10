@@ -8,7 +8,7 @@ for(let run=0;run<5;run++){
  let now=Date.parse('2026-10-31T02:00:00Z'),providerRevision=1,storedRevision=0,shownRevision=0;
  const calls=[],nodes={};
  class Clock extends Date {static now(){return now}}
- const c={Date:Clock,Promise,mode:'live',session:{refreshToken:'synthetic'},live:{},liveError:null,
+ const c={liveLoadPromise:null,Date:Clock,Promise,mode:'live',session:{refreshToken:'synthetic'},live:{},liveError:null,
   liveRefreshPromise:null,lastLiveLoadAt:0,currentTab:'profit',
   recentHistoryMonths:()=>['2026-09','2026-10'],kstMonth:()=> '2026-10',
   document:{visibilityState:'visible',getElementById:id=>nodes[id]??=( {textContent:'',classList:{add(){},remove(){}},setAttribute(){}})},
@@ -37,7 +37,7 @@ for(let run=0;run<5;run++){
 {
  let now=10000000,calls=[],release,fail=false;
  class Clock extends Date {static now(){return now}}
- const c={Date:Clock,Promise,mode:'live',session:{refreshToken:'owner'},live:{},
+ const c={liveLoadPromise:null,Date:Clock,Promise,mode:'live',session:{refreshToken:'owner'},live:{},
   recentHistoryMonths:()=>['2026-09','2026-10'],kstMonth:()=> '2026-10',
   document:{getElementById:()=>({})},loadLive:async()=>{},render(){},
   edgeSync:async(a,p)=>{calls.push([a,p.month]);if(calls.length===1)await new Promise(r=>release=r);if(fail&&p.month==='2026-10')throw Error('synthetic offline')}};

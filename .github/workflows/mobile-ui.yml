@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify collected history survives overlapping reads
+        run: node tests/build264_collected_history.mjs
       - name: Verify retained period result cache boundaries
         run: node --test tests/build256_period_cache.mjs tests/build75_period_ui.mjs tests/build108_today_journey.mjs tests/build131_pnl_recovery.mjs tests/build144_demand_pnl.mjs tests/build145_period_cache.mjs tests/build180_loading.mjs
       - name: Verify nested render scroll preservation

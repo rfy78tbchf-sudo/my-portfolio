@@ -1,0 +1,27 @@
+{
+  "scope": "isolated actual functions; synthetic 10ms edge responses, held account read; no browser paint timing",
+  "fixed": true,
+  "samples": [
+    {
+      "run": 0,
+      "storedRevision": 2,
+      "shownRevision": 2,
+      "loads": 2,
+      "ms": 41.589196
+    },
+    {
+      "run": 1,
+      "storedRevision": 2,
+      "shownRevision": 2,
+      "loads": 2,
+      "ms": 41.412649
+    },
+    {
+      "run": 2,
+      "storedRevision": 2,
+      "shownRevision": 2,
+      "loads": 2,
+      "ms": 42.18150400000002
+    }
+  ]
+}

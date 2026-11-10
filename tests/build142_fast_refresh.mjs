@@ -2,7 +2,7 @@ import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:asser
 const html=fs.readFileSync('index.html','utf8');
 const source=html.slice(html.indexOf('  function runRefreshSync('),html.indexOf('  function refreshLive('));
 let calls=[],loads=0,renders=0;let fail=false;
-const badge={textContent:''};const ctx=vm.createContext({Promise,Date,mode:'live',live:{},session:{refreshToken:'synthetic'},recentHistoryMonths:()=>['2026-09','2026-10'],kstMonth:()=> '2026-10',document:{getElementById:()=>badge},edgeSync:async(a,p)=>{calls.push([a,p.month]);if(fail&&p.month==='2026-10')throw Error('offline')},loadLive:async()=>{loads++},render(){renders++}});
+const badge={textContent:''};const ctx=vm.createContext({liveLoadPromise:null,Promise,Date,mode:'live',live:{},session:{refreshToken:'synthetic'},recentHistoryMonths:()=>['2026-09','2026-10'],kstMonth:()=> '2026-10',document:{getElementById:()=>badge},edgeSync:async(a,p)=>{calls.push([a,p.month]);if(fail&&p.month==='2026-10')throw Error('offline')},loadLive:async()=>{loads++},render(){renders++}});
 vm.runInContext(source,ctx);
 await ctx.runRefreshSync();assert.deepEqual(calls,[['sync-current',undefined]]);
 calls=[];const a=ctx.completeBackgroundSync(),b=ctx.completeBackgroundSync();assert.equal(a,b);await a;assert.equal(calls.length,3);assert.equal(loads,1);
