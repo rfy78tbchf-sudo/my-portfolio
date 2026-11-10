@@ -13,3 +13,11 @@ Normal collection advanced while CI ran. New position evidence is source-linked 
 Next run: inspect the existing required run before starting anything new. If it succeeds, recheck main and fast-forward only the product candidate, then verify Pages SHA and exact version/index/sw bytes. If it fails, inspect the failed step and retry/fix only from concrete evidence. Do not bypass required CI or report deployment while it is pending.
 
 Then resume the existing Build273 batch prototype on work/performance-evidence-batches-273, commit cdde34a9ca24c7b20a72c8ccfc79592ab30c7864. Integrate service authorization, source ownership, nullable field presence and all seven readers plus settlement view together. Preserve legacy evidence and avoid per-symbol fallback from an incomplete/latest empty batch. Do not implement another prototype or backfill historical completeness. Keep whole-account A/B, original-currency cash/FX and ISA opening coverage unresolved until independent evidence exists. The recurring task remains enabled.
+
+## Deployment confirmed on 2026-11-10
+
+Required CI 42811722712 completed successfully on product SHA 86aed9879276ffcb847a28878eed356d94a62f0c, including Chromium and WebKit. Fresh main lease was checked before fast-forwarding. Pages run 42817629079 succeeded on that same SHA. The operating worker remains v86 and its source matched the repository; no DB or worker changes were deployed. Today/week/month reconciliation responses before and after promotion were identical at the same valuation cutoff; whole A/B remains unavailable.
+
+The pending-install statements above are historical. Build274 is now the product revision. The next batch work continues at ec5349996cbe10d2a419fcd0cfa11a2b513f080b on the existing Build273 branch; malformed typed quantities were rejected locally with fixed expectations, but production authorization and consumer integration are still unfinished. Actual iPhone remains untested. Keep the recurring task enabled.
+
+Deployment verification: live version.json/index.html/sw.js were byte-identical to product SHA. Local Playwright public navigation returned ERR_EMPTY_RESPONSE; the cloud browser successfully opened the actual login screen and confirmed the DOM build274 marker. This is unauthenticated shell verification, not a logged-in financial journey or actual iPhone verification.
