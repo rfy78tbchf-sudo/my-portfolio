@@ -55,3 +55,18 @@ missing foreign ledger FX provenance and the original-currency cash collection
 path. Do not replace missing FX by 1, fabricate history, or repeat the rejected
 performance queue-priority experiments. The new guard cannot detect every omitted
 row in a nonempty response without independent response coverage evidence.
+
+## Delivery verified — 2026-11-10
+
+- Integrated upstream Build266 before testing. Product commit: `7a257e33cba369a383f59e615b175b1f80cabb90`.
+- Exact-commit required CI [42763758392](https://github.com/rfy78tbchf-sudo/my-portfolio/actions/runs/42763758392) passed both jobs, including Chromium/WebKit regression coverage. Main was re-read and advanced with an expected-SHA lease.
+- Existing Pages deployment [42765531109](https://github.com/rfy78tbchf-sudo/my-portfolio/actions/runs/42765531109) succeeded for that commit. HTTP 200 version/index/sw bytes matched the checked-out files. UI marker remains `2026-11-10-settlement-evidence-266`; this release changes server collection safety, not the UI shell.
+- Operational `kb-sync-worker` v83 source exactly matches the committed worker. OPTIONS returns 204 and an unauthenticated POST returns 401 AUTH_REQUIRED. No broker collection was invoked for verification.
+- Same-scope Today/1W/THIS_MONTH reconciliation responses were identical before and after deployment. Full-account A/B remain unverified; no financial values were changed or treated as resolved.
+- Local Chromium covered 390/402/430px and 402px at 125% zoom. Local WebKit lacked host libraries; the exact commit's hosted CI provided WebKit coverage. No physical iPhone verification occurred.
+
+## Next investigation, without repeating this change
+
+The required domestic holding fields and contradictory empty balance are now guarded; do not reimplement this fix. Separate cash/position evidence is still saved by later RPCs. The current cash writer selects the latest account observation rather than a response-specific observation, and position evidence fields still use zero-coercing normalizers. Reproduce interleaved response ordering with synthetic data, then verify an explicit response binding or atomic write contract, including missing versus explicit-zero pending quantities and fractional aliases. Do not claim that operating cross-response corruption has already been proven.
+
+A read-only follow-up found original foreign ledger FX zero becoming stored FX one. Current realized/stock period calculations select separate dated FX; no wholesale historical repair was made and no effect on whole P&L is claimed. Verify remaining consumers and native-cash evidence before changing this contract. Source financial records and private audit numbers are not included in this public handoff.
