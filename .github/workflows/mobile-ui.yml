@@ -1,7 +1,7 @@
 name: Mobile portfolio layout
 on:
   push:
-    branches: [main, 'work/performance-*', 'work/trust-*']
+    branches: [main, 'work/performance-*', 'work/trust-*', 'work/integrity-*']
   workflow_dispatch:
 jobs:
   decision-regression:
