@@ -25,4 +25,14 @@ await assert.rejects(save('a','ambiguous-time',7,true,[]),/unique/);
 assert.equal((await read('a')).response_id,'two-currencies');
 assert.equal((await db.query('select count(*)::int n from evidence_batch_273')).rows[0].n,8);
 assert.equal(await read('missing-account'),null);
+for(const invalid of ['', '0', 'NaN', 'Infinity', true, [], {}]){
+ await assert.rejects(save('a','invalid',8,true,[{...row(1),effective_quantity:invalid}]),/INVALID_QUANTITY_TYPE/);
+ assert.equal((await read('a')).response_id,'two-currencies','invalid payload must not replace valid evidence');
+}
+for(const field of ['effective_quantity','settled_quantity','pending_buy_quantity','pending_sell_quantity']){
+ await assert.rejects(save('a','negative',8,true,[{...row(1),[field]:-0.5}]),/NEGATIVE_QUANTITY/);
+}
+await save('a','nullable',8,false,[{symbol:'TEST',currency:'USD',effective_quantity:null,settled_quantity:0.125}]);
+assert.deepEqual((await read('a')).rows,[{symbol:'TEST',currency:'USD',effective_quantity:null,settled_quantity:0.125}]);
+assert.equal((await db.query('select count(*)::int n from evidence_batch_273')).rows[0].n,9);
 await db.close();console.log('PASS: empty/partial/null/explicit zero/rebuy/fraction/late/retry/conflict/currency/account isolation; local-only candidate');

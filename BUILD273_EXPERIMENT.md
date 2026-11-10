@@ -25,3 +25,7 @@ Next implementation: adapt save_kb_positions_for_response_for_service to write a
 
 Overall task remains incomplete; keep the existing recurring task enabled. Product stays Build271 / worker86 / UI266.
 
+
+## 2026-11-10 continuation while Build274 CI runs
+
+Added typed quantity validation to this same local-only prototype. Seven invalid JSON types/values (empty/numeric/NaN/Infinity strings, boolean, array, object) plus a negative fraction previously entered the candidate table (8/8); now 0/8 enter. All four quantity fields reject negatives. Missing and explicit null remain unknown, explicit zero and 0.125 remain unchanged. Existing lifecycle/retry/account/currency tests pass. No production SQL or worker changed. Service authorization/source ownership and all consumers remain the next integration requirement; this additional guard does not establish broker response completeness.

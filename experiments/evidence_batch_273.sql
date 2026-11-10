@@ -7,10 +7,18 @@ create table evidence_batch_273 (
 );
 create function save_batch_273(a text,r text,t timestamptz,c boolean,j jsonb)
 returns void language plpgsql as $$
+declare v_row jsonb;k text;
 begin
  if a is null or r is null or t is null or c is null or jsonb_typeof(j) is distinct from 'array' then raise exception 'INVALID_BATCH';end if;
  if exists(select 1 from jsonb_array_elements(j) e where nullif(e->>'symbol','') is null or nullif(e->>'currency','') is null) then raise exception 'IDENTITY_MISSING';end if;
  if (select count(*)<>count(distinct (e->>'symbol',e->>'currency')) from jsonb_array_elements(j) e) then raise exception 'DUPLICATE_IDENTITY';end if;
+ for v_row in select value from jsonb_array_elements(j) loop
+  foreach k in array array['effective_quantity','settled_quantity','pending_buy_quantity','pending_sell_quantity'] loop
+   -- Missing and explicit null are unknown. Only actual JSON numbers are evidence.
+   if v_row ? k and jsonb_typeof(v_row->k) not in ('number','null') then raise exception 'INVALID_QUANTITY_TYPE';end if;
+   if jsonb_typeof(v_row->k)='number' and (v_row->>k)::numeric<0 then raise exception 'NEGATIVE_QUANTITY';end if;
+  end loop;
+ end loop;
  insert into evidence_batch_273 values(a,r,t,c,j) on conflict(account,response_id) do nothing;
  if not exists(select 1 from evidence_batch_273 b where b.account=a and b.response_id=r and b.observed_at=t and b.complete=c and b.rows=j) then raise exception 'CONFLICTING_RETRY';end if;
 end $$;
