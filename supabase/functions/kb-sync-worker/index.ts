@@ -318,6 +318,12 @@ function assertCompleteBalance(domestic:any,overseas:any) {
     const quantities=quantityFields.map(k=>r[k]).filter(v=>v!==null&&v!==undefined&&String(v).trim()!=="");
     if(!quantities.length||quantities.some(v=>!finite(v)||n(v)<0)||!finite(r.val_amt))
       throw new Error("BALANCE_DOMESTIC_POSITION_INCOMPLETE");
+    // Missing settlement legs are unknown, not zero. Fail before any storage
+    // so a partial evidence response cannot replace a complete observation.
+    for(const keys of [["hld_q_p6","hld_q"],["ec_q_p6","ec_q"],["nstmt_b_q"],["nstmt_s_q"]]){
+      const value=keys.map(k=>r[k]).find(v=>v!==null&&v!==undefined&&String(v).trim()!=="");
+      if(!finite(value)||n(value)<0)throw new Error("BALANCE_DOMESTIC_EVIDENCE_INCOMPLETE");
+    }
     const key=String(r.is_cd).trim();
     if(domesticKeys.has(key))throw new Error("BALANCE_DUPLICATE_POSITION");
     domesticKeys.add(key);
@@ -385,7 +391,7 @@ async function syncCurrent(userId:string) {
   const balanceEvidence=(Array.isArray(dS.Record1)?dS.Record1:[])
     .filter((r:any)=>/^[A-Z0-9.]{1,12}$/i.test(String(r?.is_cd||"").trim()))
     .map((r:any)=>({symbol:String(r.is_cd).trim().toUpperCase(),
-      settled_quantity:n(r?.hld_q),effective_quantity:n(r?.ec_q),
+      settled_quantity:n(String(r?.hld_q_p6??"").trim()!==""?r.hld_q_p6:r?.hld_q),effective_quantity:n(String(r?.ec_q_p6??"").trim()!==""?r.ec_q_p6:r?.ec_q),
       pending_buy_quantity:n(r?.nstmt_b_q),pending_sell_quantity:n(r?.nstmt_s_q)}));
   await adminRpc("save_kb_balance_position_evidence_for_service",{
     p_user_id:userId,p_rows:balanceEvidence

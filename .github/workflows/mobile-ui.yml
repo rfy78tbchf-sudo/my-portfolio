@@ -16,7 +16,7 @@ jobs:
       - name: Verify early history collection retains foreground freshness
         run: node tests/build265_refresh_overlap.mjs
       - name: Verify incomplete domestic balances never reach storage
-        run: node tests/build268_balance_response.mjs
+        run: node tests/build268_balance_response.mjs && node tests/build270_position_fields.mjs
       - name: Verify collected history survives overlapping reads
         run: node tests/build264_collected_history.mjs
       - name: Verify retained period result cache boundaries

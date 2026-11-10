@@ -8,7 +8,7 @@ const worker=fs.readFileSync(process.env.WORKER_SOURCE||'supabase/functions/kb-s
 const section=(start,end)=>worker.slice(worker.indexOf(start),worker.indexOf(end,worker.indexOf(start)));
 const code=section('function n(', 'async function fetchCurrent(')+section('function assertCompleteBalance','function ymd(');
 const baseline=process.argv.includes('--baseline');
-const row={is_cd:'123456',crncy_cd:'KRW',hld_q:'10',ec_q:'10',ordr_psbl_q:'10',nstmt_s_q:'0',val_amt:'1000',byng_amt:'900'};
+const row={is_cd:'123456',crncy_cd:'KRW',hld_q:'10',ec_q:'10',ordr_psbl_q:'10',nstmt_s_q:'0',nstmt_b_q:'0',val_amt:'1000',byng_amt:'900'};
 const domestic=rows=>({dataBody:{Record1:rows,nt_asts_val_amt:'10000',val_amt_sum:'1000',dy_tfnd:'9000',fcrncy_tfnd_krw_exch_amt:'0',byng_amt_sum:'900',val_pl_sum:'100'}});
 const overseas={dataBody:{Record2:[]}};
 const invalid=[
