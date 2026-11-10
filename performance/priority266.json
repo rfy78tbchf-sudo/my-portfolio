@@ -1,0 +1,125 @@
+{
+  "conditions": "VM actual scheduler,3 held active reads then queued P&L then4 detail reads;50ms synthetic network;5 alternating pairs; scheduling counterexample not browser/hosted SQL latency",
+  "samples": [
+    {
+      "pair": 0,
+      "variant": "baseline",
+      "pnlMs": 50.918498,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_live_security_detail",
+        "get_live_security_activity",
+        "get_investment_thesis",
+        "get_investment_decisions"
+      ]
+    },
+    {
+      "pair": 0,
+      "variant": "candidate",
+      "pnlMs": 102.29202200000003,
+      "order": [
+        "get_investment_decisions",
+        "get_investment_thesis",
+        "get_live_security_activity",
+        "get_live_security_detail",
+        "get_live_period_stock_pnl"
+      ]
+    },
+    {
+      "pair": 1,
+      "variant": "candidate",
+      "pnlMs": 102.07727699999998,
+      "order": [
+        "get_investment_decisions",
+        "get_investment_thesis",
+        "get_live_security_activity",
+        "get_live_security_detail",
+        "get_live_period_stock_pnl"
+      ]
+    },
+    {
+      "pair": 1,
+      "variant": "baseline",
+      "pnlMs": 50.50610899999998,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_live_security_detail",
+        "get_live_security_activity",
+        "get_investment_thesis",
+        "get_investment_decisions"
+      ]
+    },
+    {
+      "pair": 2,
+      "variant": "baseline",
+      "pnlMs": 50.34400899999997,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_live_security_detail",
+        "get_live_security_activity",
+        "get_investment_thesis",
+        "get_investment_decisions"
+      ]
+    },
+    {
+      "pair": 2,
+      "variant": "candidate",
+      "pnlMs": 101.67090400000006,
+      "order": [
+        "get_investment_decisions",
+        "get_investment_thesis",
+        "get_live_security_activity",
+        "get_live_security_detail",
+        "get_live_period_stock_pnl"
+      ]
+    },
+    {
+      "pair": 3,
+      "variant": "candidate",
+      "pnlMs": 101.83108500000003,
+      "order": [
+        "get_investment_decisions",
+        "get_investment_thesis",
+        "get_live_security_activity",
+        "get_live_security_detail",
+        "get_live_period_stock_pnl"
+      ]
+    },
+    {
+      "pair": 3,
+      "variant": "baseline",
+      "pnlMs": 50.38405899999998,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_live_security_detail",
+        "get_live_security_activity",
+        "get_investment_thesis",
+        "get_investment_decisions"
+      ]
+    },
+    {
+      "pair": 4,
+      "variant": "baseline",
+      "pnlMs": 50.35704899999996,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_live_security_detail",
+        "get_live_security_activity",
+        "get_investment_thesis",
+        "get_investment_decisions"
+      ]
+    },
+    {
+      "pair": 4,
+      "variant": "candidate",
+      "pnlMs": 101.73858500000006,
+      "order": [
+        "get_investment_decisions",
+        "get_investment_thesis",
+        "get_live_security_activity",
+        "get_live_security_detail",
+        "get_live_period_stock_pnl"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1540 @@
+{
+  "cpuRate": 4,
+  "holdingCount": 4,
+  "transportMs": 50,
+  "conditions": "5 fresh sessions; alternated idle/pending enrichment; synthetic routes; 390x844; warmed tabs; callbacks not physical paint; chart keyboard event after drain",
+  "samples": [
+    {
+      "run": 1,
+      "attempts": [
+        {
+          "condition": "idle",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 72
+            },
+            {
+              "tab": "portfolio",
+              "ms": 48.099999997764826
+            }
+          ],
+          "detailMs": 314.30000000074506,
+          "chartMs": 49.47301400000015,
+          "requests": 7,
+          "renders": [
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 16.600000001490116,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.5,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 3.199999999254942,
+                "periodVisibility": 26,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 12,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.199999999254942,
+                "page": 0.30000000074505806,
+                "wealth": 0,
+                "otherBindings": 0.19999999925494194,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": [
+            127
+          ]
+        },
+        {
+          "condition": "pending",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 74.80000000074506
+            },
+            {
+              "tab": "portfolio",
+              "ms": 65.80000000074506
+            }
+          ],
+          "detailMs": 831.3999999985099,
+          "chartMs": 48.51978500000041,
+          "requests": 71,
+          "renders": [
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14.5,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.6000000014901161,
+                "page": 1.5,
+                "wealth": 0,
+                "otherBindings": 3.5,
+                "periodVisibility": 21.899999998509884,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 12.400000002235174,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.5999999977648258,
+                "page": 1,
+                "wealth": 0,
+                "otherBindings": 1.1000000014901161,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.700000002980232,
+                "restore": 0.19999999925494194,
+                "deferred": 0,
+                "nav": 0.09999999776482582,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.399999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.300000000745058,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 1.4000000022351742,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0.09999999776482582
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 23.299999997019768,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.5999999977648258,
+                "wealth": 0,
+                "otherBindings": 1,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.400000002235174,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 0.9000000022351742,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 0.8999999985098839,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.5,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.3999999985098839,
+                "wealth": 0,
+                "otherBindings": 0.9000000022351742,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.199999999254942,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.2000000029802322,
+                "page": 0.7999999970197678,
+                "wealth": 0,
+                "otherBindings": 1.4000000022351742,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 12.300000000745058,
+                "restore": 0.3999999985098839,
+                "deferred": 0,
+                "nav": 0.10000000149011612,
+                "page": 2.5,
+                "wealth": 0,
+                "otherBindings": 2,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.899999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.6000000014901161,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.599999997764826,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.8999999985098839,
+                "wealth": 0,
+                "otherBindings": 0.8000000007450581,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            }
+          ],
+          "longTasks": [
+            57
+          ]
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "attempts": [
+        {
+          "condition": "pending",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 64.89999999850988
+            },
+            {
+              "tab": "portfolio",
+              "ms": 35.69999999925494
+            }
+          ],
+          "detailMs": 842.5999999977648,
+          "chartMs": 49.020846999999776,
+          "requests": 72,
+          "renders": [
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14.799999997019768,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.9000000022351742,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 1.6000000014901161,
+                "periodVisibility": 20,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.399999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.9000000022351742,
+                "page": 0,
+                "wealth": 0,
+                "otherBindings": 0.5,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.100000001490116,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 1.7000000029802322,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 0.8999999985098839,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.400000002235174,
+                "restore": 0.09999999776482582,
+                "deferred": 0.7000000029802322,
+                "nav": 0.5999999977648258,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 0.8000000007450581,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 23.800000000745058,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.3999999985098839,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 2.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.100000001490116,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 1.5,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 17.600000001490116,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 2.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.199999999254942,
+                "restore": 0.30000000074505806,
+                "deferred": 0,
+                "nav": 0.5,
+                "page": 1,
+                "wealth": 0,
+                "otherBindings": 1.0999999977648258,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7,
+                "restore": 0.19999999925494194,
+                "deferred": 0,
+                "nav": 0.7000000029802322,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 1.1000000014901161,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.199999999254942,
+                "restore": 0.6000000014901161,
+                "deferred": 0,
+                "nav": 0.3999999985098839,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 1.5999999977648258,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.5,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.5,
+                "page": 0.9000000022351742,
+                "wealth": 0,
+                "otherBindings": 1.5999999977648258,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": [
+            128
+          ]
+        },
+        {
+          "condition": "idle",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 58.30000000074506
+            },
+            {
+              "tab": "portfolio",
+              "ms": 44.5
+            }
+          ],
+          "detailMs": 248.30000000074506,
+          "chartMs": 48.712156999999934,
+          "requests": 7,
+          "renders": [
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 3.300000000745058,
+                "periodVisibility": 18.599999997764826,
+                "anchor": 0,
+                "scroll": 1
+              }
+            },
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.19999999925494194,
+                "page": 1.2000000029802322,
+                "wealth": 0,
+                "otherBindings": 1,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": [
+            51
+          ]
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "attempts": [
+        {
+          "condition": "idle",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 52.100000001490116
+            },
+            {
+              "tab": "portfolio",
+              "ms": 46.19999999925494
+            }
+          ],
+          "detailMs": 298.30000000074506,
+          "chartMs": 47.88624599999821,
+          "requests": 7,
+          "renders": [
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 13.300000000745058,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.19999999925494194,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 1.800000000745058,
+                "periodVisibility": 18.800000000745058,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 16.899999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.1000000014901161,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 0.7000000029802322,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": [
+            128
+          ]
+        },
+        {
+          "condition": "pending",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 81.09999999776483
+            },
+            {
+              "tab": "portfolio",
+              "ms": 36.30000000074506
+            }
+          ],
+          "detailMs": 840.5,
+          "chartMs": 32.50988900000084,
+          "requests": 71,
+          "renders": [
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 19,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.5999999977648258,
+                "page": 0.9000000022351742,
+                "wealth": 0,
+                "otherBindings": 3,
+                "periodVisibility": 19.5,
+                "anchor": 0,
+                "scroll": 0.6999999992549419
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.699999999254942,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.30000000074505806,
+                "page": 0.8999999985098839,
+                "wealth": 0,
+                "otherBindings": 0.7000000029802322,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.800000000745058,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.6999999992549419,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 0.6000000014901161,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0.7999999970197678
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.599999997764826,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 0.9000000022351742,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 26.5,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.09999999776482582,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 1,
+                "periodVisibility": 0.3999999985098839,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 11.199999999254942,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.8000000007450581,
+                "wealth": 0,
+                "otherBindings": 1.3999999985098839,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.900000002235174,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 1.7000000029802322,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.699999999254942,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.1000000014901161,
+                "page": 0.8999999985098839,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.399999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.30000000074505806,
+                "wealth": 0,
+                "otherBindings": 0.9000000022351742,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.799999997019768,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.2000000029802322,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.899999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.9000000022351742,
+                "wealth": 0,
+                "otherBindings": 0.29999999701976776,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": []
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "attempts": [
+        {
+          "condition": "pending",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 72.30000000074506
+            },
+            {
+              "tab": "portfolio",
+              "ms": 35
+            }
+          ],
+          "detailMs": 857.6000000014901,
+          "chartMs": 48.53701100000035,
+          "requests": 72,
+          "renders": [
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.100000001490116,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.5999999977648258,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 2.100000001490116,
+                "periodVisibility": 19.5,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.900000002235174,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.09999999776482582,
+                "page": 0,
+                "wealth": 0,
+                "otherBindings": 1.1000000014901161,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0.19999999925494194
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.700000002980232,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.5,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 1.5999999977648258,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.799999997019768,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 26.699999999254942,
+                "restore": 0.6999999992549419,
+                "deferred": 0,
+                "nav": 0.9000000022351742,
+                "page": 0.8999999985098839,
+                "wealth": 0,
+                "otherBindings": 1.3999999985098839,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.899999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.10000000149011612,
+                "page": 1.300000000745058,
+                "wealth": 0,
+                "otherBindings": 1.2999999970197678,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.799999997019768,
+                "restore": 0,
+                "deferred": 0.20000000298023224,
+                "nav": 0.5999999977648258,
+                "page": 0.6000000014901161,
+                "wealth": 0,
+                "otherBindings": 0.8000000007450581,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.600000001490116,
+                "restore": 0.30000000074505806,
+                "deferred": 0.09999999776482582,
+                "nav": 0.20000000298023224,
+                "page": 1,
+                "wealth": 0,
+                "otherBindings": 0.8999999985098839,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.1000000014901161,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 1.300000000745058,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 8.199999999254942,
+                "restore": 0.20000000298023224,
+                "deferred": 0,
+                "nav": 0.5,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.399999998509884,
+                "restore": 0.10000000149011612,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.09999999776482582,
+                "wealth": 0,
+                "otherBindings": 1.1000000014901161,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": [
+            99
+          ]
+        },
+        {
+          "condition": "idle",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 50
+            },
+            {
+              "tab": "portfolio",
+              "ms": 32.400000002235174
+            }
+          ],
+          "detailMs": 230.89999999850988,
+          "chartMs": 50.13339199999973,
+          "requests": 7,
+          "renders": [
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14.199999999254942,
+                "restore": 0,
+                "deferred": 0.10000000149011612,
+                "nav": 0.8000000007450581,
+                "page": 0.3999999985098839,
+                "wealth": 0,
+                "otherBindings": 2.800000000745058,
+                "periodVisibility": 17.399999998509884,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 7.800000000745058,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.5999999977648258,
+                "page": 0.5,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": []
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "attempts": [
+        {
+          "condition": "idle",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 78.69999999925494
+            },
+            {
+              "tab": "portfolio",
+              "ms": 64.19999999925494
+            }
+          ],
+          "detailMs": 331.30000000074506,
+          "chartMs": 48.463888999998744,
+          "requests": 7,
+          "renders": [
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 14.600000001490116,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 2.600000001490116,
+                "periodVisibility": 21.099999997764826,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": false,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 11.899999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.10000000149011612,
+                "wealth": 0,
+                "otherBindings": 1,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": [
+            158
+          ]
+        },
+        {
+          "condition": "pending",
+          "tabs": [
+            {
+              "tab": "home",
+              "ms": 76.40000000223517
+            },
+            {
+              "tab": "portfolio",
+              "ms": 65.20000000298023
+            }
+          ],
+          "detailMs": 831.7000000029802,
+          "chartMs": 48.98613800000021,
+          "requests": 71,
+          "renders": [
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "home",
+              "periodGroups": 1,
+              "parts": {
+                "html": 15.700000002980232,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.2999999970197678,
+                "page": 0.7000000029802322,
+                "wealth": 0,
+                "otherBindings": 3.199999999254942,
+                "periodVisibility": 20.699999999254942,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 12.300000000745058,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8000000007450581,
+                "page": 0.6999999992549419,
+                "wealth": 0,
+                "otherBindings": 1,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.199999999254942,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 0.20000000298023224,
+                "page": 1.0999999977648258,
+                "wealth": 0,
+                "otherBindings": 0.5,
+                "periodVisibility": 0.8000000007450581,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 11.800000000745058,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.199999999254942,
+                "page": 0.7000000029802322,
+                "wealth": 0,
+                "otherBindings": 0.8999999985098839,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": true,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 26.100000001490116,
+                "restore": 0.09999999776482582,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 1.4000000022351742,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": false,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.700000002980232,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.8999999985098839,
+                "page": 0.6000000014901161,
+                "wealth": 0,
+                "otherBindings": 0.5,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 10.399999998509884,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.699999999254942,
+                "page": 0.30000000074505806,
+                "wealth": 0,
+                "otherBindings": 0.9000000022351742,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 12,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1.3999999985098839,
+                "page": 0.7000000029802322,
+                "wealth": 0,
+                "otherBindings": 1.0999999977648258,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0.10000000149011612
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 13.199999999254942,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 0.5,
+                "page": 1.199999999254942,
+                "wealth": 0,
+                "otherBindings": 1.1000000014901161,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": true,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 11.5,
+                "restore": 0.8000000007450581,
+                "deferred": 0,
+                "nav": 0.6999999992549419,
+                "page": 1,
+                "wealth": 0,
+                "otherBindings": 1.1000000014901161,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            },
+            {
+              "background": true,
+              "refresh": false,
+              "detailsLoading": true,
+              "sameHtml": false,
+              "tab": "portfolio",
+              "periodGroups": 0,
+              "parts": {
+                "html": 9.600000001490116,
+                "restore": 0,
+                "deferred": 0,
+                "nav": 1,
+                "page": 0.19999999925494194,
+                "wealth": 0,
+                "otherBindings": 1.199999999254942,
+                "periodVisibility": 0,
+                "anchor": 0,
+                "scroll": 0
+              }
+            }
+          ],
+          "longTasks": [
+            58,
+            50
+          ]
+        }
+      ]
+    }
+  ]
+}
