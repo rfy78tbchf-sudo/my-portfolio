@@ -1,0 +1,203 @@
+{
+  "conditions": "Actual queue/rpc extracted into VM;3 occupied slots;50ms background/P&L and500ms slow-detail synthetic transport;3 alternating pairs/scenario; not hosted/browser latency",
+  "samples": [
+    {
+      "scenario": "queued-pnl",
+      "pair": 0,
+      "variant": "baseline",
+      "pnlMs": 50.911877,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_detail",
+        "get_detail",
+        "get_detail",
+        "get_detail"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "queued-pnl",
+      "pair": 0,
+      "variant": "candidate",
+      "pnlMs": 50.74479600000001,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_detail",
+        "get_detail",
+        "get_detail",
+        "get_detail"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "queued-pnl",
+      "pair": 1,
+      "variant": "candidate",
+      "pnlMs": 50.557345,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_detail",
+        "get_detail",
+        "get_detail",
+        "get_detail"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "queued-pnl",
+      "pair": 1,
+      "variant": "baseline",
+      "pnlMs": 50.40707100000003,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_detail",
+        "get_detail",
+        "get_detail",
+        "get_detail"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "queued-pnl",
+      "pair": 2,
+      "variant": "baseline",
+      "pnlMs": 50.319191000000046,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_detail",
+        "get_detail",
+        "get_detail",
+        "get_detail"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "queued-pnl",
+      "pair": 2,
+      "variant": "candidate",
+      "pnlMs": 50.55728399999998,
+      "order": [
+        "get_live_period_stock_pnl",
+        "get_detail",
+        "get_detail",
+        "get_detail",
+        "get_detail"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "new-pnl",
+      "pair": 0,
+      "variant": "baseline",
+      "pnlMs": 95.72828299999992,
+      "order": [
+        "get_background",
+        "get_background",
+        "get_background",
+        "get_live_period_stock_pnl",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "new-pnl",
+      "pair": 0,
+      "variant": "candidate",
+      "pnlMs": 547.2226830000002,
+      "order": [
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_live_period_stock_pnl",
+        "get_detail_slow",
+        "get_background",
+        "get_background",
+        "get_background"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "new-pnl",
+      "pair": 1,
+      "variant": "candidate",
+      "pnlMs": 547.107262,
+      "order": [
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_live_period_stock_pnl",
+        "get_detail_slow",
+        "get_background",
+        "get_background",
+        "get_background"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "new-pnl",
+      "pair": 1,
+      "variant": "baseline",
+      "pnlMs": 95.82261000000017,
+      "order": [
+        "get_background",
+        "get_background",
+        "get_background",
+        "get_live_period_stock_pnl",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "new-pnl",
+      "pair": 2,
+      "variant": "baseline",
+      "pnlMs": 94.59488200000033,
+      "order": [
+        "get_background",
+        "get_background",
+        "get_background",
+        "get_live_period_stock_pnl",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow"
+      ],
+      "peak": 3
+    },
+    {
+      "scenario": "new-pnl",
+      "pair": 2,
+      "variant": "candidate",
+      "pnlMs": 547.1795900000006,
+      "order": [
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_detail_slow",
+        "get_live_period_stock_pnl",
+        "get_detail_slow",
+        "get_background",
+        "get_background",
+        "get_background"
+      ],
+      "peak": 3
+    }
+  ],
+  "guards": [
+    {
+      "mode": "closed",
+      "result": "SUPERSEDED_READ",
+      "networkCalls": 0
+    },
+    {
+      "mode": "owner",
+      "result": "AUTH_REQUIRED",
+      "networkCalls": 0
+    }
+  ]
+}
