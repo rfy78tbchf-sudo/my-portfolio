@@ -33,7 +33,7 @@ async function run(d,o=overseas){
  const calls=[];let saved=[{symbol:'123456',quantity:10,market_value:1000}];
  const ctx=vm.createContext({Date,Intl,fetchCurrent:async()=>({appKey:'synthetic',token:'synthetic',domesticRaw:d,overseasRaw:o}),
   fetchNativeBalance:async()=>null,attachNativePrices:h=>h,
-  adminRpc:async(name,args)=>{calls.push(name);if(name==='save_kb_positions_for_response_for_service')ctx.evidence=JSON.parse(JSON.stringify(args.p_rows));if(name==='apply_kb_current_snapshot_for_service')saved=args.p_holdings;return {ok:true}}});
+  adminRpc:async(name,args)=>{calls.push(name);if(['save_kb_positions_for_response_for_service','save_kb_position_batch_for_response_for_service'].includes(name))ctx.evidence=JSON.parse(JSON.stringify(args.p_rows));if(name==='apply_kb_current_snapshot_for_service')saved=args.p_holdings;return {ok:true}}});
  vm.runInContext(stripTypeScriptTypes(code),ctx);
  let error=null;try{await ctx.syncCurrent('synthetic-owner')}catch(e){error=e}
  return {calls,saved:JSON.parse(JSON.stringify(saved)),error,evidence:ctx.evidence};
@@ -67,7 +67,7 @@ assert.equal(zeroRow.error,null);assert.deepEqual(zeroRow.saved,[]);
 console.log(JSON.stringify({invalidCases:invalid.length,reachedStorage:reached,validCases:6,result:'PASS'}));
 
 const fractionEvidence=await run(domestic([{...row,hld_q:undefined,ec_q:undefined,hld_q_p6:'0.5',ec_q_p6:'0.5',val_amt:'50'}]));
-assert.deepEqual(fractionEvidence.evidence,[{symbol:'123456',settled_quantity:0.5,effective_quantity:0.5,pending_buy_quantity:0,pending_sell_quantity:0}]);
+assert.deepEqual(fractionEvidence.evidence,[{symbol:'123456',currency:'KRW',source:'SSQM2952',settled_quantity:0.5,effective_quantity:0.5,pending_buy_quantity:0,pending_sell_quantity:0}]);
 const zeroEvidence=await run(domestic([{...row,hld_q_p6:'0',ec_q_p6:'0',hld_q:undefined,ec_q:undefined}]));
 assert.equal(zeroEvidence.evidence[0].settled_quantity,0);assert.equal(zeroEvidence.evidence[0].effective_quantity,0);
 console.log('Fractional evidence and explicit p6 zero preserved: PASS');

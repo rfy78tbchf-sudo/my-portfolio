@@ -338,6 +338,36 @@ function assertCompleteBalance(domestic:any,overseas:any) {
   }
   if(!o.Record2.length&&d.Record1.some((r:any)=>r.crncy_cd&&r.crncy_cd!=="KRW"&&(n(r.hld_q)>0||n(r.ec_q)>0||n(r.val_amt)>0)))throw new Error("BALANCE_OVERSEAS_ROWS_MISSING");
 }
+// Candidate response adapter: preserve original missing fields; never use n() for evidence.
+function positionResponseBatch(domestic:any,holdings:any[]) {
+  const b=domestic?.dataBody,rows:any[]=[],reasons=new Set<string>(),seen=new Set<string>();
+  const number=(r:any,keys:string[])=>{
+    const present=keys.filter(k=>r?.[k]!==null&&r?.[k]!==undefined&&String(r[k]).trim()!=="");
+    if(!present.length)return null;
+    const values=present.map(k=>{
+      const v=r[k],s=typeof v==="number"?String(v):typeof v==="string"?v.replace(/,/g,"").trim():"";
+      return /^[+]?[0-9]+(?:\.[0-9]+)?$/.test(s)&&Number.isFinite(Number(s))?Number(s):null;
+    });
+    if(values.some(v=>v===null)||values.some(v=>v!==values[0]))return null;
+    return values[0];
+  };
+  if(!Array.isArray(b?.Record1))reasons.add("ROWS_MISSING");
+  if(String(b?.nxt_key||"").trim())reasons.add("PAGINATION_INCOMPLETE");
+  for(const r of Array.isArray(b?.Record1)?b.Record1:[]){
+    const symbol=String(r?.is_cd||"").trim().toUpperCase(),currency=String(r?.crncy_cd||"").trim().toUpperCase();
+    if(!/^[A-Z0-9.]{1,12}$/.test(symbol)||! /^[A-Z]{3}$/.test(currency)){reasons.add("IDENTITY_UNVERIFIED");continue;}
+    const key=symbol+"|"+currency;if(seen.has(key)){reasons.add("DUPLICATE_IDENTITY");continue;}seen.add(key);
+    const q={symbol,currency,source:"SSQM2952",settled_quantity:number(r,["hld_q_p6","hld_q"]),effective_quantity:number(r,["ec_q_p6","ec_q"]),pending_buy_quantity:number(r,["nstmt_b_q"]),pending_sell_quantity:number(r,["nstmt_s_q"])};
+    if([q.settled_quantity,q.effective_quantity,q.pending_buy_quantity,q.pending_sell_quantity].some(v=>v===null))reasons.add("QUANTITY_MISSING_OR_CONFLICTING");
+    else if(q.effective_quantity!==q.settled_quantity!+q.pending_buy_quantity!-q.pending_sell_quantity!)reasons.add("QUANTITY_COMPONENT_MISMATCH");
+    const matching=holdings.filter(h=>String(h.symbol).toUpperCase()===symbol&&h.currency===currency);
+    const actual=matching.length===0?0:matching.length===1?matching[0].quantity:null;
+    if(actual!==q.effective_quantity)reasons.add("SNAPSHOT_QUANTITY_MISMATCH");
+    rows.push(q);
+  }
+  for(const h of holdings)if(!seen.has(String(h.symbol).toUpperCase()+"|"+h.currency))reasons.add("SNAPSHOT_POSITION_UNCOVERED");
+  return {complete:reasons.size===0,rows,reasons:[...reasons].sort(),source:"SSQM2952",version:"response-adapter-273"};
+}
 async function syncCurrent(userId:string) {
   const requestStartedAt=new Date().toISOString();
   const { appKey, token, domesticRaw, overseasRaw } = await fetchCurrent(userId);
@@ -388,13 +418,12 @@ async function syncCurrent(userId:string) {
     p_user_id:userId,p_source_requested_at:requestStartedAt,p_domestic_cash_krw:domesticCash,
     p_foreign_cash_krw_equivalent:foreignCashKrw
   });
-  const balanceEvidence=(Array.isArray(dS.Record1)?dS.Record1:[])
-    .filter((r:any)=>/^[A-Z0-9.]{1,12}$/i.test(String(r?.is_cd||"").trim()))
-    .map((r:any)=>({symbol:String(r.is_cd).trim().toUpperCase(),
-      settled_quantity:n(String(r?.hld_q_p6??"").trim()!==""?r.hld_q_p6:r?.hld_q),effective_quantity:n(String(r?.ec_q_p6??"").trim()!==""?r.ec_q_p6:r?.ec_q),
-      pending_buy_quantity:n(r?.nstmt_b_q),pending_sell_quantity:n(r?.nstmt_s_q)}));
-  await adminRpc("save_kb_positions_for_response_for_service",{
-    p_user_id:userId,p_source_requested_at:requestStartedAt,p_rows:balanceEvidence
+  const positionBatch=positionResponseBatch(domesticRaw,holdings);
+  // Not independently deployable: paired batch writer + readers are required.
+  await adminRpc("save_kb_position_batch_for_response_for_service",{
+    p_user_id:userId,p_source_requested_at:requestStartedAt,p_complete:positionBatch.complete,
+    p_rows:positionBatch.rows,p_validation:{source:positionBatch.source,version:positionBatch.version,
+      complete:positionBatch.complete,reasons:positionBatch.reasons}
   });
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
   const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
@@ -409,7 +438,8 @@ async function syncCurrent(userId:string) {
     domesticHoldings:d.holdings.length,
     overseasHoldings:o.holdings.length,
     totalHoldings:holdings.length,
-    balanceEvidenceRows:balanceEvidence.length,
+    balanceEvidenceRows:positionBatch.rows.length,
+    balanceEvidenceComplete:positionBatch.complete,
     snapshotDate:todaySeoul(),
     reconciliation,
     cashAccounting,
