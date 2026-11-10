@@ -1,0 +1,95 @@
+{
+  "scope": "3 alternating manual-refresh first realized-view pairs; controlled held history and total; intercepted synthetic services; each source serves its matching build manifest",
+  "samples": [
+    {
+      "pair": 0,
+      "source": "before",
+      "browser": "chromium",
+      "holdingCount": 4,
+      "viewport": "390x844",
+      "transportMs": 50,
+      "extraDelayMs": 1000,
+      "samples": [
+        {
+          "immediateFresh": true,
+          "realizedViewMs": 32.644587999999885
+        }
+      ]
+    },
+    {
+      "pair": 0,
+      "source": "after",
+      "browser": "chromium",
+      "holdingCount": 4,
+      "viewport": "390x844",
+      "transportMs": 50,
+      "extraDelayMs": 1000,
+      "samples": [
+        {
+          "immediateFresh": true,
+          "realizedViewMs": 38.11574299999984
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "source": "after",
+      "browser": "chromium",
+      "holdingCount": 4,
+      "viewport": "390x844",
+      "transportMs": 50,
+      "extraDelayMs": 1000,
+      "samples": [
+        {
+          "immediateFresh": true,
+          "realizedViewMs": 39.33800600000018
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "source": "before",
+      "browser": "chromium",
+      "holdingCount": 4,
+      "viewport": "390x844",
+      "transportMs": 50,
+      "extraDelayMs": 1000,
+      "samples": [
+        {
+          "immediateFresh": true,
+          "realizedViewMs": 40.757294
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "source": "before",
+      "browser": "chromium",
+      "holdingCount": 4,
+      "viewport": "390x844",
+      "transportMs": 50,
+      "extraDelayMs": 1000,
+      "samples": [
+        {
+          "immediateFresh": true,
+          "realizedViewMs": 27.081924999999956
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "source": "after",
+      "browser": "chromium",
+      "holdingCount": 4,
+      "viewport": "390x844",
+      "transportMs": 50,
+      "extraDelayMs": 1000,
+      "samples": [
+        {
+          "immediateFresh": true,
+          "realizedViewMs": 43.8059159999998
+        }
+      ]
+    }
+  ]
+}
