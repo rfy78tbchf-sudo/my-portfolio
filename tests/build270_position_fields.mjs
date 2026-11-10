@@ -33,7 +33,7 @@ async function run(d,o=overseas){
  const calls=[];let saved=[{symbol:'123456',quantity:10,market_value:1000}];
  const ctx=vm.createContext({Date,Intl,fetchCurrent:async()=>({appKey:'synthetic',token:'synthetic',domesticRaw:d,overseasRaw:o}),
   fetchNativeBalance:async()=>null,attachNativePrices:h=>h,
-  adminRpc:async(name,args)=>{calls.push(name);if(name==='save_kb_balance_position_evidence_for_service')ctx.evidence=JSON.parse(JSON.stringify(args.p_rows));if(name==='apply_kb_current_snapshot_for_service')saved=args.p_holdings;return {ok:true}}});
+  adminRpc:async(name,args)=>{calls.push(name);if(name==='save_kb_positions_for_response_for_service')ctx.evidence=JSON.parse(JSON.stringify(args.p_rows));if(name==='apply_kb_current_snapshot_for_service')saved=args.p_holdings;return {ok:true}}});
  vm.runInContext(stripTypeScriptTypes(code),ctx);
  let error=null;try{await ctx.syncCurrent('synthetic-owner')}catch(e){error=e}
  return {calls,saved:JSON.parse(JSON.stringify(saved)),error,evidence:ctx.evidence};

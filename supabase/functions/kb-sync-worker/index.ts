@@ -393,8 +393,8 @@ async function syncCurrent(userId:string) {
     .map((r:any)=>({symbol:String(r.is_cd).trim().toUpperCase(),
       settled_quantity:n(String(r?.hld_q_p6??"").trim()!==""?r.hld_q_p6:r?.hld_q),effective_quantity:n(String(r?.ec_q_p6??"").trim()!==""?r.ec_q_p6:r?.ec_q),
       pending_buy_quantity:n(r?.nstmt_b_q),pending_sell_quantity:n(r?.nstmt_s_q)}));
-  await adminRpc("save_kb_balance_position_evidence_for_service",{
-    p_user_id:userId,p_rows:balanceEvidence
+  await adminRpc("save_kb_positions_for_response_for_service",{
+    p_user_id:userId,p_source_requested_at:requestStartedAt,p_rows:balanceEvidence
   });
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
   const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
