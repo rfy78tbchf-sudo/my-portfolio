@@ -9,7 +9,7 @@ create table portfolio_performance(account_id uuid,performance_date date,daily_p
 create table kb_backfill_months(user_id uuid,month date,completed_at timestamptz,ledger_rows int);`);
 const source=fs.readFileSync('supabase/reconciliation_build44.sql','utf8');
 await db.exec(source.slice(source.indexOf('create table if not exists public.reconciliation_cases'),source.indexOf('create index if not exists reconciliation_cases_status')));
-const sql=responseMigration();assert.equal(sql,fs.readFileSync('experiments/response-migration273.sql','utf8'));
+const sql=responseMigration();assert.equal(sql,fs.readFileSync('experiments/response-migration273.sql','utf8'));assert.equal(sql,fs.readFileSync('supabase/migrations/20261111030000_explicit_position_responses.sql','utf8'));
 // A failure in the final consumer must roll back earlier schema/reader changes.
 await assert.rejects(db.exec(sql.replace(/commit;$/, 'select nonexistent_rollout_guard_273();\ncommit;')));
 await db.exec('rollback');

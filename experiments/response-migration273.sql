@@ -1,10 +1,10 @@
--- CANDIDATE ONLY: requires response-coverage approval and full rollout checks. No backfill.
+-- Build275: explicit source rows only; absence is unknown. No historical backfill.
 
 begin;
 set local lock_timeout='5s';
 set local statement_timeout='60s';
 
--- Production-shaped schema candidate; local only until all readers/report producer integrate.
+-- Build275 response schema, deployed together with its bound readers and writer.
 -- No backfill: old normalized evidence never acquires alleged completeness.
 create table public.kb_position_response_batches (
  source_observation_id uuid primary key references public.account_observations(id),

@@ -338,7 +338,7 @@ function assertCompleteBalance(domestic:any,overseas:any) {
   }
   if(!o.Record2.length&&d.Record1.some((r:any)=>r.crncy_cd&&r.crncy_cd!=="KRW"&&(n(r.hld_q)>0||n(r.ec_q)>0||n(r.val_amt)>0)))throw new Error("BALANCE_OVERSEAS_ROWS_MISSING");
 }
-// Candidate response adapter: preserve original missing fields; never use n() for evidence.
+// Explicit-row response adapter: preserve original missing fields; never use n() for evidence.
 function positionResponseBatch(domestic:any,holdings:any[]) {
   const b=domestic?.dataBody,rows:any[]=[],reasons=new Set<string>(),seen=new Set<string>();
   const number=(r:any,keys:string[])=>{

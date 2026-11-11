@@ -505,15 +505,16 @@ try{
       if(await page.locator('#wealthLegacy').count())await page.locator('#wealthLegacy>summary').click();
       const allocation=page.locator('.allocation-card');await allocation.waitFor();
       assert.equal(await allocation.locator('button.allocation-row').count(),7);
-      assert.match(await allocation.locator('button.allocation-row').first().innerText(),/19.5%/);
-      assert.ok(await allocation.locator('.allocation-residual').isVisible());
+      assert.match(await allocation.innerText(),/확인된 종목 평가액 합계 = 100%/);
+      assert.equal(await allocation.locator('.allocation-residual').count(),0);
+      assert.ok(await page.locator('[data-allocation-scope="assets"]').isDisabled());
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'allocation overflow');
       await page.screenshot({path:`${out}/allocation-assets-${width}.png`,fullPage:true});
       await page.locator('[data-allocation-scope="stocks"]').click();
       assert.equal(await page.locator('.allocation-residual').count(),0);assert.match(await allocation.innerText(),/확인된 종목 평가액 합계 = 100%/);
       if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'allocation enlarged text overflow');await page.screenshot({path:`${out}/allocation-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
       await allocation.locator('[data-decision-detail="s0"]').click();await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.locator('#detailClose').click();assert.ok(await allocation.isVisible());
-      await page.locator('[data-allocation-scope="assets"]').click();
+      // Unverified total-asset cutoff remains disabled.
       await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
     }
     if(source.includes('review-home-item')){

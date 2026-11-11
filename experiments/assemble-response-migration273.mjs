@@ -10,7 +10,7 @@ export function responseMigration(){
  const cases=batchResolutionGate(batchReconciliationCandidate(read('supabase/reconciliation_build44.sql')));
  const report=read('supabase/reconciliation_build44_event_types.sql');
  const readerSignatures=['get_live_period_stock_pnl(text)','get_live_realized_cycle_review(text)','get_live_reconciliation_report()','get_live_settlement_bridge(date)','get_reconciliation_case_timeline(uuid)'];
- return ['-- CANDIDATE ONLY: requires response-coverage approval and full rollout checks. No backfill.',
+ return ['-- Build275: explicit source rows only; absence is unknown. No historical backfill.',
  'begin;\nset local lock_timeout=\'5s\';\nset local statement_timeout=\'60s\';',
  read('experiments/position_response_schema273.sql'),read('experiments/batch-reconciliation273.sql'),read('experiments/batch-effective273.sql'),
  read('experiments/batch_settlement_bridge_273.sql').replaceAll('get_batch_settlement_bridge_273','get_live_settlement_bridge'),
