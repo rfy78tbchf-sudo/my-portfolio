@@ -15,6 +15,8 @@ jobs:
           node-version: '22'
       - name: Verify early history collection retains foreground freshness
         run: node tests/build265_refresh_overlap.mjs
+      - name: Verify incomplete paginated history never applies or retires evidence
+        run: node tests/build279_history_pages.mjs
       - name: Verify incomplete domestic balances never reach storage
         run: node tests/build268_balance_response.mjs && node tests/build270_position_fields.mjs && node tests/build277_foreign_pnl.mjs
       - name: Verify collected history survives overlapping reads

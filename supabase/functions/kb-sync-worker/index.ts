@@ -517,15 +517,21 @@ async function pagedTr(
   let pages=0;
   let rows:any[]=[];
   let lastSummary:any={};
+  const seenContinuation=new Set<string>();
   while(pages<maxPages){
     const body={...baseBody,nxt_key:next};
     const data=await callTr(appKey,token,path,body);
     const b=data?.dataBody||{};
-    if(Array.isArray(b?.[recordKey])) rows=rows.concat(b[recordKey]);
+    // Missing rows are not a successful empty page. Abort before a monthly
+    // apply/retirement can treat a partial response as complete history.
+    if(!Array.isArray(b?.[recordKey])) throw new Error("HISTORY_PAGE_ROWS_MISSING");
+    rows=rows.concat(b[recordKey]);
     lastSummary=b;
     pages++;
     next=String(b?.nxt_key||"").trim();
     if(!next) break;
+    if(seenContinuation.has(next)) throw new Error("HISTORY_PAGE_CONTINUATION_REPEATED");
+    seenContinuation.add(next);
     await new Promise(r=>setTimeout(r,150));
   }
   return {rows,pages,truncated:Boolean(next),summary:lastSummary};
