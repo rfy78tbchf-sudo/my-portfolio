@@ -68,8 +68,11 @@ jobs:
       - name: Verify interrupted decision submission and persisted request identity
         run: node --test tests/decision_edit_prefill.mjs tests/build211_pending_decision.mjs tests/build211_review_race.mjs
   mobile:
-    # Playwright 1.55.1 supports this OS; latest moved to unsupported 26.04.
+    # Pin the browser image to the npm version; avoid unbounded per-run OS setup.
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.1-noble
     permissions:
       contents: read
     steps:
@@ -78,7 +81,6 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
-      - run: npx playwright install --with-deps chromium webkit
       - name: Verify zero or matching flows never certify incomplete coverage
         run: node tests/build278_flow_coverage.mjs
       - name: Verify source-bound response migration and explicit quantities
