@@ -6,7 +6,7 @@ Build278 fails closed until an interval-bound source-completeness contract exist
 
 Synthetic PGlite tests execute the actual old and new SQL. They reproduce the previous empty-ledger zero being reconstructed, then verify missing/zero/near-zero/positive/negative flows, matching and additional events, misaligned/missing snapshots, repeated refresh, migration idempotence, source preservation, account isolation and NAV version invalidation. Literal expected arithmetic covers no-flow gain, deposit, withdrawal and unchanged net assets. No expected value is generated from the implementation.
 
-Frontend remains Build275 and worker remains89; neither requires a source change. Required CI and operational deployment are pending. Actual iPhone is untested. This correction removes false assurance; it does not complete collection coverage or reconcile whole A/B.
+Frontend remains Build275 and worker remains89; neither requires a source change. Required CI and operational deployment are complete; see the latest receipt below. Actual iPhone is untested. This correction removes false assurance; it does not complete collection coverage or reconcile whole A/B.
 
 Next: preserve original ledger classification/continuation evidence and establish interval/account/currency-bound external-flow coverage, including explicit no-event intervals, before enabling certification. Do not turn successful monthly sync counts into proof or infer missing flows from NAV. Continue the domestic settlement, original-currency cash, ISA opening and source-semantics work in BUILD276/277. Never backdate ISA observations or bypass blocked broker calls.
 
@@ -22,3 +22,15 @@ Next run must inspect the final candidate CI outcome first. If it fails, inspect
 ## CI preparation recovery, 2026-11-12 00:18 KST
 
 Both preceding runs were still in browser/dependency installation after about48 minutes; no mobile test outcome exists. Main and worker89 remain unchanged. Switch the mobile job to the official mcr.microsoft.com/playwright:v1.55.1-noble image, matching the existing pinned npm version, with a45-minute job bound. All test commands and assertions remain. This replaces per-run browser/OS installation, not test coverage. The exact reason for the old installer delay is unknown because live logs were unavailable; do not claim a package/network diagnosis. Official supported CI route: https://playwright.dev/docs/ci#via-containers . The new candidate CI must pass before the pending SQL deployment.
+
+
+## Verified rollout, 2026-11-12 00:40 KST
+
+Commit `4a03cfd93b5f1041794f6d4ca0f8eb5b411bc2a7` passed both required jobs in [CI43047337145](https://github.com/rfy78tbchf-sudo/my-portfolio/actions/runs/43047337145), including actual SQL regressions and Chromium/WebKit mobile checks. Matching preinstalled browser images resolved CI preparation; the cause of the old installer stall remains unknown. No test commands or assertions were removed.
+
+After rechecking main and both operating function hashes, migration `build278_external_flow_coverage` applied with a stale-function guard. Both deployed function bodies exactly match source and their execute grants are unchanged. Existing derived false certifications are invalidated. All eight inspected original observation, ledger, adjustment and historical snapshot tables retain identical row counts and content hashes across deployment. Same-cutoff recorded NAV, recorded flows and primary A arithmetic are unchanged; unsupported interval flow flags now remain unconfirmed. Whole A/B remains unavailable. Private financial values are not in this handoff.
+
+Main advanced to the tested commit using an expected-SHA lease. [Pages43050581281](https://github.com/rfy78tbchf-sudo/my-portfolio/actions/runs/43050581281) succeeded. Live version.json/index.html/sw.js match source; frontend stays Build275 deliberately. Worker89 is ACTIVE and byte-identical. The main-triggered duplicate CI does not replace the already successful exact-commit required run. No real logged-in browser or real iPhone verification was performed.
+
+Next: verify no false certification reappears after normal collection, then implement evidence-backed interval external-flow coverage. Latest normal observation still predates this SQL release. Current-day closing data is absent after KST rollover and must remain absent. Continue domestic settlement/source semantics, original-currency cash/FX and ISA opening work from BUILD276/277. The unexplained composition gap and independent B remain unresolved. Do not reinterpret the residual or force broker collection; keep the recurring task active.
+
