@@ -79,6 +79,8 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify zero or matching flows never certify incomplete coverage
+        run: node tests/build278_flow_coverage.mjs
       - name: Verify source-bound response migration and explicit quantities
         run: |
           node tests/build273_snapshot_binding.mjs
