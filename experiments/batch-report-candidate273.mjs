@@ -5,6 +5,7 @@ export function batchReportCandidate(sql){
  once('  v_date:=v_snap.snapshot_date;',`  v_date:=v_snap.snapshot_date;
   v_response:=public.read_batch_at_273(v_account::text,v_snap.snapshot_at);
   v_coverage:=coalesce((v_response->>'complete')::boolean,false)
+    and jsonb_array_length(v_response->'rows')>0
     and (v_response->>'observed_at')::timestamptz=v_snap.snapshot_at;
   -- Compare both directions; a response cannot omit a live holding or silently
   -- include a position absent from the snapshot used by the report.

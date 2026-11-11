@@ -6,6 +6,8 @@ export function batchCycleCandidate(sql){
  const zero=(bound,minDate,maxDate,target)=>`  select coalesce((b.j->>'complete')::boolean,false)
     and (b.j->>'observed_at')::timestamptz >= ${minDate}
     and (b.j->>'observed_at')::timestamptz < ${maxDate}
+    and exists(select 1 from jsonb_array_elements(coalesce(b.j->'rows','[]'::jsonb)) r
+      where r->>'symbol'=upper(trim(p_symbol)) and r->>'currency'=v_currency)
     and not exists(select 1 from jsonb_to_recordset(coalesce(b.j->'rows','[]'::jsonb))
       as r(symbol text,currency text,source text,effective_quantity numeric,settled_quantity numeric,pending_buy_quantity numeric,pending_sell_quantity numeric)
       where r.symbol=upper(trim(p_symbol)) and (

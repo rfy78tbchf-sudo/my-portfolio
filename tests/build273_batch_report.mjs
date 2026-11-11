@@ -31,7 +31,7 @@ await set(true,[row],'2026-11-09 12:01Z');assert.equal((await get()).ok,false);
 await set(true,[row],'2026-11-09 11:59Z');assert.equal((await get()).ok,false);
 await set(true,[row]);await db.exec("update holdings set as_of='2026-11-09 11:59Z'");assert.equal((await get()).ok,false);
 await db.exec("update holdings set as_of='2026-11-09 12:00Z',quantity=1");assert.equal((await get()).ok,false);
-await db.exec('delete from holdings');await set(true,[]);r=await get();assert.equal(r.ok,true);assert.equal(r.items[0].actual_qty,0);assert.equal(r.items[0].difference_qty,-2);assert.notEqual(r.data_version,version);
+await db.exec('delete from holdings');await set(true,[]);assert.equal((await get()).ok,false,'empty response cannot certify absence');await set(true,[{...row,effective_quantity:0,settled_quantity:0}]);r=await get();assert.equal(r.ok,true);assert.equal(r.items[0].actual_qty,0);assert.equal(r.items[0].difference_qty,-2);assert.notEqual(r.data_version,version);
 await set(true,[{...row,effective_quantity:null}]);assert.equal((await get()).ok,false);
 // Connect the real producer to the real service consumer in the same UUID database.
 // No fabricated report flags or report stub are used for this integration.
@@ -53,9 +53,9 @@ await set(false,[]);await refresh();assert.deepEqual(await saved(),before,'incom
 await set(true,[row]);await refresh();assert.deepEqual(await saved(),before,'uncovered position leaves cases untouched');
 await db.exec("insert into holdings(id,account_id,security_id,as_of,quantity,currency) values(md5('h')::uuid,md5('a1')::uuid,md5('s1')::uuid,'2026-11-09 12:00Z',2,'USD')");
 await refresh();assert.equal((await saved()).status,'resolved');assert.equal((await saved()).user_note,'Synthetic note');
-await db.exec('delete from holdings');await set(true,[]);await refresh();
-assert.notEqual((await saved()).status,'resolved','proven zero vs ledger2 remains an unexplained difference');
+await db.exec('delete from holdings');await set(true,[{...row,effective_quantity:0,settled_quantity:0}]);await refresh();
+assert.notEqual((await saved()).status,'resolved','explicit zero vs ledger2 remains an unexplained difference');
 assert.equal((await saved()).user_note,'Synthetic note');
 const mismatch=await saved();await set(false,[]);await refresh();assert.deepEqual(await saved(),mismatch,'later incomplete response does not overwrite the last case verification');
 await db.exec("select set_config('request.jwt.claim.sub',md5('other')::uuid::text,false)");assert.equal((await get()).ok,false);
-await db.close();console.log('PASS actual report + UUID batches + actual resolution service: missing not zero; exact2 vs ledger2 gap0 resolves; proven empty vs ledger2 gap-2 remains open; stale/future/partial/inventory/owner rejected; notes and prior verification preserved; version changes');
+await db.close();console.log('PASS actual report + UUID batches + actual resolution service: missing not zero; exact2 vs ledger2 gap0 resolves; explicit zero vs ledger2 gap-2 remains open; stale/future/partial/inventory/owner rejected; notes and prior verification preserved; version changes');

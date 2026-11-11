@@ -35,7 +35,7 @@ const candidate=batchResolutionGate(batchReconciliationCandidate(source));
 await db.exec(extract(candidate,'refresh_reconciliation_cases_for_service'));
 const save=async(complete,rows)=>{await db.exec('delete from evidence_batch_273');await db.query("select save_batch_273(md5('a1')::uuid::text,'test','2026-11-09 12:00Z',$1,$2)",[complete,JSON.stringify(rows)]);};
 const zero={symbol:'SYNTH1',currency:'USD',source:'SSQM2952',settled_quantity:0,effective_quantity:0,pending_buy_quantity:0,pending_sell_quantity:0};
-await save(true,[]);
+await save(true,[zero]);
 for(const value of [null,'0',false]){
  await reset();await report([{...item,difference_qty:value}]);assert.equal((await call()).reason,'QUANTITY_FIELDS_INCOMPLETE');assert.equal((await status()).status,'source_data_insufficient');assert.equal((await status()).user_note,'Synthetic note');
 }
@@ -43,16 +43,17 @@ await reset();await report([item],{quantity_coverage_complete:false});assert.equ
 await report([item],{items:null});assert.equal((await call()).reason,'QUANTITY_COVERAGE_UNVERIFIED');
 await report([item]);await save(false,[]);assert.equal((await call()).reason,'QUANTITY_EVIDENCE_UNVERIFIED');
 await save(true,[{...zero,effective_quantity:2,settled_quantity:2}]);assert.equal((await call()).reason,'QUANTITY_EVIDENCE_UNVERIFIED');
-await save(true,[]);await call();assert.equal((await status()).status,'resolved');assert.equal((await status()).user_note,'Synthetic note');
+await save(true,[zero]);await call();assert.equal((await status()).status,'resolved');assert.equal((await status()).user_note,'Synthetic note');
 // Omitted case: empty report is not proof of closure. Positive or partial balance must survive.
 await reset();await report([]);await save(true,[{...zero,effective_quantity:2,settled_quantity:2}]);await call();assert.equal((await status()).status,'source_data_insufficient');
 await save(false,[]);await call();assert.equal((await status()).status,'source_data_insufficient');
 await save(true,[{...zero,currency:'KRW'}]);await call();assert.equal((await status()).status,'source_data_insufficient');
-await save(true,[]);await call();assert.equal((await status()).status,'resolved');
+await save(true,[]);await call();assert.equal((await status()).status,'source_data_insufficient');
+await save(true,[zero]);await call();assert.equal((await status()).status,'resolved');
 // One invalid row prevents all mutations, even if an earlier row is valid.
 await reset();await report([item,{...item,difference_qty:null}]);await call();assert.equal((await status()).status,'source_data_insufficient');
 // Historical missing observations must not manufacture a previously matched day.
 await db.exec("insert into account_observations(id,account_id,fetched_at,balance_date) values(md5('historical')::uuid,md5('a1')::uuid,'2026-11-01 12:00Z','2026-11-01')");
 await reset();await report([item]);await call();
 assert.equal((await db.query('select first_mismatch_from from reconciliation_cases')).rows[0].first_mismatch_from,null);
-await db.close();console.log('PASS resolution gate: null/string/bool/partial report no writes; exact complete zero resolves; omitted positive/partial/currency mismatch stays open; notes preserved');
+await db.close();console.log('PASS resolution gate: null/string/bool/partial report no writes; explicit zero resolves; omitted positive/partial/currency mismatch stays open; notes preserved');

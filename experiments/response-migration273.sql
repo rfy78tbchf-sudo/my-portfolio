@@ -56,7 +56,7 @@ grant execute on function public.save_kb_position_batch_for_response_for_service
 -- Transitional name keeps the tested consumers on the same read contract.
 create function public.read_batch_at_273(a text,t timestamptz) returns jsonb
 language sql stable security invoker set search_path='' as $$
- select jsonb_build_object('response_id',source_observation_id,'observed_at',observed_at,'complete',complete,'rows',rows)
+ select jsonb_build_object('response_id',source_observation_id,'observed_at',observed_at,'complete',complete,'rows',rows,'coverage_policy','EXPLICIT_ROWS_ONLY')
  from public.kb_position_response_batches where account_id=a::uuid and observed_at<=t order by observed_at desc limit 1
 $$;
 revoke all on function public.read_batch_at_273(text,timestamptz) from public,anon;
@@ -93,14 +93,11 @@ revoke all on function public.batch_balance_273(text,text,text,timestamptz) from
 grant execute on function public.batch_balance_273(text,text,text,timestamptz) to authenticated,service_role;
 
 
--- Holdings quantity only: complete account absence can establish zero, NOT pending cash.
+-- Explicit rows only. Structural completeness does not prove absent positions are zero.
 create function public.batch_effective_273(a text,s text,c text,t timestamptz) returns numeric
 language sql stable security invoker set search_path='' as $$
-with b as(select public.batch_balance_273(a,s,c,t) j,public.read_batch_at_273(a,t) envelope)
-select case when j->>'status'='complete_row' then (j->>'effective')::numeric
- when j->>'status'='complete_absent' and not exists(
- select 1 from jsonb_array_elements(envelope->'rows') r where r->>'symbol'=s)
- then 0 else null end from b
+select case when j->>'status'='complete_row' then (j->>'effective')::numeric else null end
+from (select public.batch_balance_273(a,s,c,t) j) b
 $$;
 revoke all on function public.batch_effective_273(text,text,text,timestamptz) from public,anon;
 grant execute on function public.batch_effective_273(text,text,text,timestamptz) to authenticated,service_role;
@@ -1131,6 +1128,8 @@ begin
   select coalesce((b.j->>'complete')::boolean,false)
     and (b.j->>'observed_at')::timestamptz >= ((v_first-1)::timestamp at time zone 'Asia/Seoul')
     and (b.j->>'observed_at')::timestamptz < (v_first::timestamp at time zone 'Asia/Seoul')
+    and exists(select 1 from jsonb_array_elements(coalesce(b.j->'rows','[]'::jsonb)) r
+      where r->>'symbol'=upper(trim(p_symbol)) and r->>'currency'=v_currency)
     and not exists(select 1 from jsonb_to_recordset(coalesce(b.j->'rows','[]'::jsonb))
       as r(symbol text,currency text,source text,effective_quantity numeric,settled_quantity numeric,pending_buy_quantity numeric,pending_sell_quantity numeric)
       where r.symbol=upper(trim(p_symbol)) and (
@@ -1142,6 +1141,8 @@ begin
   select coalesce((b.j->>'complete')::boolean,false)
     and (b.j->>'observed_at')::timestamptz >= ((v_last+1)::timestamp at time zone 'Asia/Seoul')
     and (b.j->>'observed_at')::timestamptz < now()+interval '1 microsecond'
+    and exists(select 1 from jsonb_array_elements(coalesce(b.j->'rows','[]'::jsonb)) r
+      where r->>'symbol'=upper(trim(p_symbol)) and r->>'currency'=v_currency)
     and not exists(select 1 from jsonb_to_recordset(coalesce(b.j->'rows','[]'::jsonb))
       as r(symbol text,currency text,source text,effective_quantity numeric,settled_quantity numeric,pending_buy_quantity numeric,pending_sell_quantity numeric)
       where r.symbol=upper(trim(p_symbol)) and (
@@ -1198,6 +1199,7 @@ begin
   v_date:=v_snap.snapshot_date;
   v_response:=public.read_batch_at_273(v_account::text,v_snap.snapshot_at);
   v_coverage:=coalesce((v_response->>'complete')::boolean,false)
+    and jsonb_array_length(v_response->'rows')>0
     and (v_response->>'observed_at')::timestamptz=v_snap.snapshot_at;
   -- Compare both directions; a response cannot omit a live holding or silently
   -- include a position absent from the snapshot used by the report.

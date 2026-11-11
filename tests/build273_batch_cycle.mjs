@@ -27,8 +27,10 @@ assert.equal((await get()).status,'opening_or_ending_balance_unverified');
 await save('old','2026-11-01 12:00+09',true,[zero]);
 await save('same-day','2026-11-06 08:00+09',true,[zero]);
 assert.equal((await get()).opening_zero_verified,false);assert.equal((await get()).ending_zero_verified,false);
-await save('opening','2026-11-03 20:00+09',true,[]);
-await save('ending','2026-11-07 10:00+09',true,[]);
+await save('opening','2026-11-03 20:00+09',true,[zero]);
+await save('ending','2026-11-07 10:00+09',true,[]);assert.equal((await get()).ending_zero_verified,false,'structural empty is not authoritative zero');
+await db.exec("delete from evidence_batch_273 where response_id='ending'");
+await save('ending','2026-11-07 10:00+09',true,[zero]);
 let r=await get();assert.equal(r.status,'closed_cycle_verified');assert.equal(r.candidate_cash_difference,20);
 assert.equal(r.buy_quantity,2);assert.equal(r.sell_quantity,2);
 await save('reacquired','2026-11-08 10:00+09',true,[{...zero,effective_quantity:1,settled_quantity:1}]);
@@ -41,4 +43,4 @@ await save('future','2026-11-11 14:00+09',true,[{...zero,effective_quantity:1,se
 await save('opening-partial','2026-11-03 21:00+09',false,[]);assert.equal((await get()).opening_zero_verified,false);
 await db.exec("select set_config('request.jwt.claim.sub',md5('other')::uuid::text,false)");assert.equal((await get()).ok,false);
 await db.exec("select set_config('request.jwt.claim.sub','',false)");await assert.rejects(get(),/authentication required/);
-await db.close();console.log('PASS actual cycle consumer: stale/same-day zero rejected; complete empty, rebuy, partial, null, currency, future, owner checks; literal 2 units / USD20');
+await db.close();console.log('PASS actual cycle consumer: stale/same-day zero rejected; empty rejected, explicit zero, rebuy, partial, null, currency, future, owner checks; literal 2 units / USD20');

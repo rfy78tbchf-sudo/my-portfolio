@@ -50,7 +50,7 @@ grant execute on function public.save_kb_position_batch_for_response_for_service
 -- Transitional name keeps the tested consumers on the same read contract.
 create function public.read_batch_at_273(a text,t timestamptz) returns jsonb
 language sql stable security invoker set search_path='' as $$
- select jsonb_build_object('response_id',source_observation_id,'observed_at',observed_at,'complete',complete,'rows',rows)
+ select jsonb_build_object('response_id',source_observation_id,'observed_at',observed_at,'complete',complete,'rows',rows,'coverage_policy','EXPLICIT_ROWS_ONLY')
  from public.kb_position_response_batches where account_id=a::uuid and observed_at<=t order by observed_at desc limit 1
 $$;
 revoke all on function public.read_batch_at_273(text,timestamptz) from public,anon;
