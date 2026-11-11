@@ -525,6 +525,8 @@ async function pagedTr(
     // Missing rows are not a successful empty page. Abort before a monthly
     // apply/retirement can treat a partial response as complete history.
     if(!Array.isArray(b?.[recordKey])) throw new Error("HISTORY_PAGE_ROWS_MISSING");
+    if(b[recordKey].some((row:unknown)=>row===null||typeof row!=="object"||Array.isArray(row)))
+      throw new Error("HISTORY_PAGE_ROW_INVALID");
     rows=rows.concat(b[recordKey]);
     lastSummary=b;
     pages++;

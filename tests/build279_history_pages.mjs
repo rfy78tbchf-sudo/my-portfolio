@@ -45,3 +45,16 @@ for(const target of targets){
  assert.equal(repeat.calls.length,0);assert.equal(repeat.requests.filter(x=>x.path===target).length,2);
 }
 console.log('PASS: 12 malformed partial responses write nothing; valid pagination and explicit empty arrays preserved; repeated continuation rejected');
+let malformedRowsWritten=0;
+for(const target of targets)for(const invalidRow of [null,42,'broken',[]]){
+ const r=await run(target,[{dataBody:{Record1:[{synthetic:1}],nxt_key:'next'}},
+  {dataBody:{Record1:[{synthetic:2},invalidRow],nxt_key:''}}]);
+ if(r.calls.length)malformedRowsWritten++;
+ if(!process.argv.includes('--baseline-rows')){
+  assert.match(String(r.error),/HISTORY_PAGE_ROW_INVALID/);
+  assert.equal(r.calls.length,0,'malformed row must not disappear before evidence retirement');
+ }
+}
+if(process.argv.includes('--baseline-rows')){
+ assert.equal(malformedRowsWritten,12);console.log({malformedRowsWritten});
+}else console.log('PASS: 12 malformed mixed-row pages never reach monthly writes');
