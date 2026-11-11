@@ -379,6 +379,45 @@ function positionResponseBatch(domestic:any,holdings:any[]) {
   for(const h of holdings)if(!seen.has(String(h.symbol).toUpperCase()+"|"+h.currency))reasons.add("SNAPSHOT_POSITION_UNCOVERED");
   return {complete:reasons.size===0,rows,reasons:[...reasons].sort(),source:"SSQM2952",version:"response-adapter-273"};
 }
+// Keep the source fields that normalization otherwise discards. This is private
+// diagnostic evidence, NOT a second valuation, cash flow or completeness proof.
+// Stored inside the existing account/observation-bound envelope; no extra RPCs.
+function balanceSourceEvidence(domestic:any,overseas:any,native:any) {
+  const select=(row:any,keys:string[])=>{
+    if(!row||typeof row!=="object"||Array.isArray(row))return {unavailable_reason:"INVALID_RECORD"};
+    const out:any={};
+    for(const key of keys)if(Object.prototype.hasOwnProperty.call(row,key)){
+      const v=row[key];
+      // Preserve exact strings (including blanks/leading zeros) and null. Never
+      // retain arbitrary nested payloads, identifiers, auth headers or messages.
+      out[key]=v===null||typeof v==="boolean"||(typeof v==="number"&&Number.isFinite(v))||
+        (typeof v==="string"&&v.length<=128)?v:{unavailable_reason:"UNSUPPORTED_VALUE"};
+    }
+    return out;
+  };
+  const records=(raw:any,fields:string[])=>{
+    if(raw===undefined||raw===null)return {state:"missing",rows:null};
+    if(!Array.isArray(raw))return {state:"invalid",rows:null};
+    return {state:"array",total_rows:raw.length,truncated:raw.length>1000,
+      rows:raw.slice(0,1000).map(row=>select(row,fields))};
+  };
+  const source=(raw:any,code:string,request:any,fields:string[])=>({
+    source:code,request,response_state:raw&&typeof raw==="object"?"present":"missing",
+    header:raw?.dataHeader?select(raw.dataHeader,["processTime","resultCode","processCode","processFlag"]):null,
+    // A continuation key is private routing data; preserve only whether more
+    // pages are signalled. Do not infer exhaustive coverage from a blank key.
+    continuation_present:raw?.dataBody?String(raw.dataBody.nxt_key||"").trim()!=="":null,
+    records:records(raw?.dataBody?.Record1,fields)
+  });
+  const cashFields=["crncy_clsf_nm","tfnd","tfnd_val_amt","std_exch_r","cnvr_exch_r_p4"];
+  return {version:"source-evidence-276",purpose:"UNVERIFIED_SOURCE_ONLY",
+    positions:source(domestic,"SSQM2952",{excg_mktpr_ccd:"A"},[
+      "is_cd","crncy_cd","hld_q","hld_q_p6","ec_q","ec_q_p6",
+      "nstmt_b_q","nstmt_b_q_p6","nstmt_s_q","nstmt_s_q_p6"]),
+    cash_krw_request:source(overseas,"SPQM2226",{std_crncy_f:"2",exch_r_aplc_f:"2",fee_clsf:"0"},cashFields),
+    cash_native_request:source(native,"SPQM2226",{std_crncy_f:"1",exch_r_aplc_f:"2",fee_clsf:"0"},cashFields)
+  };
+}
 async function syncCurrent(userId:string) {
   const requestStartedAt=new Date().toISOString();
   const { appKey, token, domesticRaw, overseasRaw } = await fetchCurrent(userId);
@@ -434,7 +473,8 @@ async function syncCurrent(userId:string) {
   await adminRpc("save_kb_position_batch_for_response_for_service",{
     p_user_id:userId,p_source_requested_at:requestStartedAt,p_complete:positionBatch.complete,
     p_rows:positionBatch.rows,p_validation:{source:positionBatch.source,version:positionBatch.version,
-      complete:positionBatch.complete,reasons:positionBatch.reasons}
+      complete:positionBatch.complete,reasons:positionBatch.reasons,
+      source_evidence:balanceSourceEvidence(domesticRaw,overseasRaw,nativeRaw)}
   });
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
   const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
