@@ -37,6 +37,12 @@ let r=await run(d([kr,foreign]),o);assert.equal(r.p_complete,true);assert.equal(
 r=await run(d([kr,{...foreign,ec_q:undefined}]),o);assert.equal(r.p_complete,false);assert.equal(r.p_rows[1].effective_quantity,null,'foreign missing stays null through actual worker and SQL');
 r=await run(d([kr,{...foreign,hld_q_p6:'0.5'}]),o);assert.equal(r.p_complete,false);assert.equal(r.p_rows[1].settled_quantity,null,'conflicting aliases do not pick arbitrary first');
 r=await run(d([kr]),o);assert.equal(r.p_complete,false);assert.ok(r.p_validation.reasons.includes('SNAPSHOT_POSITION_UNCOVERED'));
+const fractionalOverseas={dataBody:{Record2:[{...o.dataBody.Record2[0],frgn_hld_q_p6:'0.3'}]}};
+r=await run(d([kr,{...foreign,hld_q:'0.1',ec_q:'0.3',nstmt_b_q:'0.2'}]),fractionalOverseas);
+assert.equal(r.p_complete,true,'literal decimal 0.1 settled + 0.2 pending = 0.3 effective');
+assert.equal(r.p_rows[1].effective_quantity,0.3);
+r=await run(d([kr,{...foreign,hld_q:'0.1',ec_q:'0.300001',nstmt_b_q:'0.2'}]),{dataBody:{Record2:[{...o.dataBody.Record2[0],frgn_hld_q_p6:'0.300001'}]}});
+assert.equal(r.p_complete,false,'a real 0.000001 mismatch is not rounded away');
 r=await run(d([]),{dataBody:{Record2:[]}});assert.equal(r.p_complete,true);assert.deepEqual(r.p_rows,[]);
 if(productionSchema){
  const source=(await db.query('select fetched_at from account_observations')).rows[0].fetched_at;

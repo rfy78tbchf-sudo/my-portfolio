@@ -341,6 +341,17 @@ function assertCompleteBalance(domestic:any,overseas:any) {
 // Explicit-row response adapter: preserve original missing fields; never use n() for evidence.
 function positionResponseBatch(domestic:any,holdings:any[]) {
   const b=domestic?.dataBody,rows:any[]=[],reasons=new Set<string>(),seen=new Set<string>();
+  // Compare the decimal quantities sent to Postgres exactly, without a floating
+  // epsilon: 0.1 + 0.2 is 0.3, while a genuine 0.000001 discrepancy stays invalid.
+  const quantityIdentity=(effective:number,settled:number,buy:number,sell:number)=>{
+    const parts=[effective,settled,buy,sell].map(v=>{
+      const [mantissa,exponent="0"]=String(v).split("e"),fraction=(mantissa.split(".")[1]||"").length;
+      return {digits:BigInt(mantissa.replace(".","")),scale:fraction-Number(exponent)};
+    });
+    const scale=Math.max(0,...parts.map(p=>p.scale));
+    const units=parts.map(p=>p.digits*10n**BigInt(scale-p.scale));
+    return units[0]===units[1]+units[2]-units[3];
+  };
   const number=(r:any,keys:string[])=>{
     const present=keys.filter(k=>r?.[k]!==null&&r?.[k]!==undefined&&String(r[k]).trim()!=="");
     if(!present.length)return null;
@@ -359,7 +370,7 @@ function positionResponseBatch(domestic:any,holdings:any[]) {
     const key=symbol+"|"+currency;if(seen.has(key)){reasons.add("DUPLICATE_IDENTITY");continue;}seen.add(key);
     const q={symbol,currency,source:"SSQM2952",settled_quantity:number(r,["hld_q_p6","hld_q"]),effective_quantity:number(r,["ec_q_p6","ec_q"]),pending_buy_quantity:number(r,["nstmt_b_q"]),pending_sell_quantity:number(r,["nstmt_s_q"])};
     if([q.settled_quantity,q.effective_quantity,q.pending_buy_quantity,q.pending_sell_quantity].some(v=>v===null))reasons.add("QUANTITY_MISSING_OR_CONFLICTING");
-    else if(q.effective_quantity!==q.settled_quantity!+q.pending_buy_quantity!-q.pending_sell_quantity!)reasons.add("QUANTITY_COMPONENT_MISMATCH");
+    else if(!quantityIdentity(q.effective_quantity!,q.settled_quantity!,q.pending_buy_quantity!,q.pending_sell_quantity!))reasons.add("QUANTITY_COMPONENT_MISMATCH");
     const matching=holdings.filter(h=>String(h.symbol).toUpperCase()===symbol&&h.currency===currency);
     const actual=matching.length===0?0:matching.length===1?matching[0].quantity:null;
     if(actual!==q.effective_quantity)reasons.add("SNAPSHOT_QUANTITY_MISMATCH");
