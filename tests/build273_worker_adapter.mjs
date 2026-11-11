@@ -13,7 +13,7 @@ for(const f of productionSchema?['position_response_schema273.sql']:['evidence_b
 const kr={is_cd:'123456',crncy_cd:'KRW',hld_q:'2',ec_q:'2',nstmt_b_q:'0',nstmt_s_q:'0',val_amt:'200',byng_amt:'180',ordr_psbl_q:'2'};
 const foreign={is_cd:'XYZ',crncy_cd:'USD',hld_q:'2',ec_q:'2',nstmt_b_q:'0',nstmt_s_q:'0',val_amt:'2600'};
 const d=rs=>({dataBody:{Record1:rs,nt_asts_val_amt:'10000',val_amt_sum:rs.length?'2800':'0',dy_tfnd:'7200',fcrncy_tfnd_krw_exch_amt:'0',byng_amt_sum:'180',val_pl_sum:'20'}});
-const o={dataBody:{Record2:[{is_cd:'XYZ',mkt_clsf:'NAS',crncy_clsf_nm:'USD',frgn_hld_q_p6:'2',krw_val_amt:'2600',std_exch_r:'1300'}]}};
+const o={dataBody:{Record2:[{is_cd:'XYZ',mkt_clsf:'NAS',crncy_clsf_nm:'USD',frgn_hld_q_p6:'2',krw_val_amt:'2600',krw_exch_val_pl:'130',std_exch_r:'1300'}]}};
 let counter=0,lastSnapshot;
 async function run(domestic,overseas,native=null){
  await db.exec(`delete from ${batchTable};delete from account_observations;delete from sync_logs`);

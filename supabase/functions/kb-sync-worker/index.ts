@@ -333,6 +333,10 @@ function assertCompleteBalance(domestic:any,overseas:any) {
   const keys=new Set();
   for(const r of o.Record2){
     if(!r||!String(r.is_cd||"").trim()||!finite(r.frgn_hld_q_p6)||!finite(r.krw_val_amt)||!finite(r.std_exch_r)||n(r.std_exch_r)<=0)throw new Error("BALANCE_POSITION_INCOMPLETE");
+    // Active rows are persisted with official P&L. Missing/invalid P&L must
+    // never pass through n() as a confirmed zero and replace prior evidence.
+    if((n(r.frgn_hld_q_p6)!==0||n(r.krw_val_amt)!==0)&&!finite(r.krw_exch_val_pl))
+      throw new Error("BALANCE_OVERSEAS_PNL_INCOMPLETE");
     const key=String(r.is_cd).trim()+"|"+String(r.mkt_clsf||"").trim();
     if(keys.has(key))throw new Error("BALANCE_DUPLICATE_POSITION");keys.add(key);
   }

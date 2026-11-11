@@ -50,7 +50,7 @@ const pending=domestic([{...row,val_amt:'0',byng_amt:'0',ordr_psbl_q:'0',nstmt_s
 assert.deepEqual((await run(pending)).saved,[],'settled sold row remains excluded');
 const fractional=await run(domestic([{...row,hld_q:undefined,hld_q_p6:'0.5',val_amt:'50'}]));
 assert.equal(fractional.error,null);assert.equal(fractional.saved[0].quantity,0.5);
-const foreign={dataBody:{Record2:[{is_cd:'XYZ',mkt_clsf:'NAS',frgn_hld_q_p6:'2',krw_val_amt:'2600',std_exch_r:'1300',crncy_clsf_nm:'USD'}]}};
+const foreign={dataBody:{Record2:[{is_cd:'XYZ',mkt_clsf:'NAS',frgn_hld_q_p6:'2',krw_val_amt:'2600',krw_exch_val_pl:'130',std_exch_r:'1300',crncy_clsf_nm:'USD'}]}};
 const mixed=await run(domestic([row,{is_cd:'XYZ',crncy_cd:'USD',hld_q:'2',val_amt:'2600'}]),foreign);
 assert.equal(mixed.error,null);assert.equal(mixed.saved.length,2,'foreign integrated rows are not duplicated');
 assert.equal(mixed.saved.find(x=>x.symbol==='XYZ').quantity,2);
