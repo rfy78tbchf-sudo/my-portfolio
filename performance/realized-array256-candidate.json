@@ -1,0 +1,733 @@
+{
+  "candidate": true,
+  "conditions": {
+    "database": "PGlite",
+    "nav": "stubbed/excluded",
+    "time": "2026-11-09T12:00:00+09:00",
+    "network": "none",
+    "fixture": "USD alternating buys/sells, 30 transactions per security; empty observation/domestic/pending tables",
+    "indexes": "representative production lookup indexes; no production data"
+  },
+  "rows": [
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1W",
+      "run": 0,
+      "ms": 117.69521200000008,
+      "phases": {
+        "dates": 4,
+        "closed": 57,
+        "ledger": 44,
+        "account": 1,
+        "pending": 2,
+        "official": 1,
+        "estimates": 5,
+        "stock_subcall": 52
+      },
+      "sales": 10
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1W",
+      "run": 1,
+      "ms": 90.11023900000009,
+      "phases": {
+        "dates": 2,
+        "closed": 47,
+        "ledger": 34,
+        "account": 1,
+        "pending": 2,
+        "official": 0,
+        "estimates": 3,
+        "stock_subcall": 45
+      },
+      "sales": 10
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1W",
+      "run": 2,
+      "ms": 89.76383400000009,
+      "phases": {
+        "dates": 2,
+        "closed": 49,
+        "ledger": 32,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 3,
+        "stock_subcall": 47
+      },
+      "sales": 10
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1W",
+      "run": 3,
+      "ms": 89.516437,
+      "phases": {
+        "dates": 2,
+        "closed": 49,
+        "ledger": 31,
+        "account": 1,
+        "pending": 1,
+        "official": 2,
+        "estimates": 3,
+        "stock_subcall": 47
+      },
+      "sales": 10
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1W",
+      "run": 4,
+      "ms": 82.85677499999997,
+      "phases": {
+        "dates": 2,
+        "closed": 43,
+        "ledger": 31,
+        "account": 1,
+        "pending": 1,
+        "official": 1,
+        "estimates": 3,
+        "stock_subcall": 40
+      },
+      "sales": 10
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1M",
+      "run": 0,
+      "ms": 82.5070119999998,
+      "phases": {
+        "dates": 2,
+        "closed": 41,
+        "ledger": 33,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 3,
+        "stock_subcall": 40
+      },
+      "sales": 20
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1M",
+      "run": 1,
+      "ms": 87.89712099999997,
+      "phases": {
+        "dates": 1,
+        "closed": 46,
+        "ledger": 38,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 46
+      },
+      "sales": 20
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1M",
+      "run": 2,
+      "ms": 77.59018399999968,
+      "phases": {
+        "dates": 1,
+        "closed": 44,
+        "ledger": 29,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 44
+      },
+      "sales": 20
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1M",
+      "run": 3,
+      "ms": 77.53633199999967,
+      "phases": {
+        "dates": 1,
+        "closed": 45,
+        "ledger": 29,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 45
+      },
+      "sales": 20
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "1M",
+      "run": 4,
+      "ms": 99.78089999999975,
+      "phases": {
+        "dates": 0,
+        "closed": 54,
+        "ledger": 42,
+        "account": 1,
+        "pending": 0,
+        "official": 1,
+        "estimates": 1,
+        "stock_subcall": 54
+      },
+      "sales": 20
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "3M",
+      "run": 0,
+      "ms": 87.69530299999997,
+      "phases": {
+        "dates": 1,
+        "closed": 45,
+        "ledger": 38,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 44
+      },
+      "sales": 50
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "3M",
+      "run": 1,
+      "ms": 92.90371600000026,
+      "phases": {
+        "dates": 1,
+        "closed": 50,
+        "ledger": 33,
+        "account": 0,
+        "pending": 0,
+        "official": 0,
+        "estimates": 7,
+        "stock_subcall": 50
+      },
+      "sales": 50
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "3M",
+      "run": 2,
+      "ms": 74.74671699999999,
+      "phases": {
+        "dates": 0,
+        "closed": 40,
+        "ledger": 31,
+        "account": 1,
+        "pending": 0,
+        "official": 0,
+        "estimates": 2,
+        "stock_subcall": 39
+      },
+      "sales": 50
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "3M",
+      "run": 3,
+      "ms": 71.552412,
+      "phases": {
+        "dates": 1,
+        "closed": 41,
+        "ledger": 26,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 1,
+        "stock_subcall": 41
+      },
+      "sales": 50
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "3M",
+      "run": 4,
+      "ms": 94.3795869999999,
+      "phases": {
+        "dates": 1,
+        "closed": 60,
+        "ledger": 27,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 3,
+        "stock_subcall": 60
+      },
+      "sales": 50
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "ALL",
+      "run": 0,
+      "ms": 147.96848900000032,
+      "phases": {
+        "dates": 1,
+        "closed": 87,
+        "ledger": 50,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 5,
+        "stock_subcall": 86
+      },
+      "sales": 150
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "ALL",
+      "run": 1,
+      "ms": 134.67377299999998,
+      "phases": {
+        "dates": 1,
+        "closed": 68,
+        "ledger": 54,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 6,
+        "stock_subcall": 68
+      },
+      "sales": 150
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "ALL",
+      "run": 2,
+      "ms": 116.11125300000003,
+      "phases": {
+        "dates": 1,
+        "closed": 63,
+        "ledger": 44,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 4,
+        "stock_subcall": 63
+      },
+      "sales": 150
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "ALL",
+      "run": 3,
+      "ms": 100.99613899999986,
+      "phases": {
+        "dates": 1,
+        "closed": 57,
+        "ledger": 36,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 4,
+        "stock_subcall": 57
+      },
+      "sales": 150
+    },
+    {
+      "size": 10,
+      "transactions": 300,
+      "period": "ALL",
+      "run": 4,
+      "ms": 95.89750000000004,
+      "phases": {
+        "dates": 1,
+        "closed": 53,
+        "ledger": 34,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 4,
+        "stock_subcall": 53
+      },
+      "sales": 150
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1W",
+      "run": 0,
+      "ms": 415.5739560000002,
+      "phases": {
+        "dates": 8,
+        "closed": 143,
+        "ledger": 250,
+        "account": 1,
+        "pending": 3,
+        "official": 1,
+        "estimates": 5,
+        "stock_subcall": 140
+      },
+      "sales": 100
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1W",
+      "run": 1,
+      "ms": 401.3311139999996,
+      "phases": {
+        "dates": 6,
+        "closed": 134,
+        "ledger": 253,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 4,
+        "stock_subcall": 132
+      },
+      "sales": 100
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1W",
+      "run": 2,
+      "ms": 416.79012299999977,
+      "phases": {
+        "dates": 6,
+        "closed": 138,
+        "ledger": 263,
+        "account": 1,
+        "pending": 2,
+        "official": 0,
+        "estimates": 5,
+        "stock_subcall": 136
+      },
+      "sales": 100
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1W",
+      "run": 3,
+      "ms": 458.8913969999994,
+      "phases": {
+        "dates": 7,
+        "closed": 164,
+        "ledger": 278,
+        "account": 0,
+        "pending": 2,
+        "official": 0,
+        "estimates": 5,
+        "stock_subcall": 161
+      },
+      "sales": 100
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1W",
+      "run": 4,
+      "ms": 460.525611,
+      "phases": {
+        "dates": 8,
+        "closed": 144,
+        "ledger": 299,
+        "account": 0,
+        "pending": 2,
+        "official": 1,
+        "estimates": 4,
+        "stock_subcall": 142
+      },
+      "sales": 100
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1M",
+      "run": 0,
+      "ms": 482.5927449999999,
+      "phases": {
+        "dates": 8,
+        "closed": 169,
+        "ledger": 288,
+        "account": 0,
+        "pending": 2,
+        "official": 1,
+        "estimates": 10,
+        "stock_subcall": 166
+      },
+      "sales": 200
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1M",
+      "run": 1,
+      "ms": 482.8901619999997,
+      "phases": {
+        "dates": 7,
+        "closed": 166,
+        "ledger": 299,
+        "account": 1,
+        "pending": 1,
+        "official": 0,
+        "estimates": 6,
+        "stock_subcall": 164
+      },
+      "sales": 200
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1M",
+      "run": 2,
+      "ms": 502.30960400000004,
+      "phases": {
+        "dates": 8,
+        "closed": 169,
+        "ledger": 315,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 4,
+        "stock_subcall": 168
+      },
+      "sales": 200
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1M",
+      "run": 3,
+      "ms": 458.2370179999998,
+      "phases": {
+        "dates": 6,
+        "closed": 166,
+        "ledger": 270,
+        "account": 0,
+        "pending": 1,
+        "official": 1,
+        "estimates": 10,
+        "stock_subcall": 166
+      },
+      "sales": 200
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "1M",
+      "run": 4,
+      "ms": 462.1796890000005,
+      "phases": {
+        "dates": 6,
+        "closed": 146,
+        "ledger": 299,
+        "account": 0,
+        "pending": 1,
+        "official": 0,
+        "estimates": 6,
+        "stock_subcall": 146
+      },
+      "sales": 200
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "3M",
+      "run": 0,
+      "ms": 495.94254399999954,
+      "phases": {
+        "dates": 6,
+        "closed": 159,
+        "ledger": 308,
+        "account": 0,
+        "pending": 2,
+        "official": 1,
+        "estimates": 13,
+        "stock_subcall": 159
+      },
+      "sales": 500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "3M",
+      "run": 1,
+      "ms": 511.10816200000045,
+      "phases": {
+        "dates": 5,
+        "closed": 169,
+        "ledger": 314,
+        "account": 1,
+        "pending": 2,
+        "official": 1,
+        "estimates": 12,
+        "stock_subcall": 169
+      },
+      "sales": 500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "3M",
+      "run": 2,
+      "ms": 569.3819320000002,
+      "phases": {
+        "dates": 4,
+        "closed": 222,
+        "ledger": 318,
+        "account": 1,
+        "pending": 2,
+        "official": 1,
+        "estimates": 13,
+        "stock_subcall": 222
+      },
+      "sales": 500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "3M",
+      "run": 3,
+      "ms": 496.2156009999999,
+      "phases": {
+        "dates": 5,
+        "closed": 163,
+        "ledger": 302,
+        "account": 1,
+        "pending": 2,
+        "official": 1,
+        "estimates": 12,
+        "stock_subcall": 163
+      },
+      "sales": 500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "3M",
+      "run": 4,
+      "ms": 513.0353900000009,
+      "phases": {
+        "dates": 7,
+        "closed": 169,
+        "ledger": 311,
+        "account": 0,
+        "pending": 2,
+        "official": 1,
+        "estimates": 15,
+        "stock_subcall": 169
+      },
+      "sales": 500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "ALL",
+      "run": 0,
+      "ms": 695.7843240000002,
+      "phases": {
+        "dates": 5,
+        "closed": 290,
+        "ledger": 334,
+        "account": 0,
+        "pending": 6,
+        "official": 2,
+        "estimates": 40,
+        "stock_subcall": 290
+      },
+      "sales": 1500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "ALL",
+      "run": 1,
+      "ms": 719.7972840000002,
+      "phases": {
+        "dates": 5,
+        "closed": 301,
+        "ledger": 339,
+        "account": 1,
+        "pending": 6,
+        "official": 1,
+        "estimates": 46,
+        "stock_subcall": 301
+      },
+      "sales": 1500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "ALL",
+      "run": 2,
+      "ms": 778.2909360000012,
+      "phases": {
+        "dates": 6,
+        "closed": 318,
+        "ledger": 385,
+        "account": 1,
+        "pending": 7,
+        "official": 1,
+        "estimates": 41,
+        "stock_subcall": 318
+      },
+      "sales": 1500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "ALL",
+      "run": 3,
+      "ms": 749.9166500000028,
+      "phases": {
+        "dates": 5,
+        "closed": 305,
+        "ledger": 372,
+        "account": 0,
+        "pending": 6,
+        "official": 1,
+        "estimates": 39,
+        "stock_subcall": 305
+      },
+      "sales": 1500
+    },
+    {
+      "size": 100,
+      "transactions": 3000,
+      "period": "ALL",
+      "run": 4,
+      "ms": 725.8049339999998,
+      "phases": {
+        "dates": 4,
+        "closed": 300,
+        "ledger": 355,
+        "account": 1,
+        "pending": 5,
+        "official": 2,
+        "estimates": 39,
+        "stock_subcall": 299
+      },
+      "sales": 1500
+    }
+  ]
+}

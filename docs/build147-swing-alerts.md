@@ -1,0 +1,7 @@
+# Build147 — confirmed swing-peak drawdown alerts
+
+Adds an in-app unread alert state to the existing held-security recent-swing-peak card. A fresh validated close at or below −15% creates an event; continued closes below the same peak do not repeat it. An observed recovery above −15% followed by a later close below, or a later close below a newly confirmed peak, creates a new event. Existing peak confirmation, freshness and currency checks remain authoritative. Missing/stale quotes do not rearm alerts, and older responses cannot overwrite state.
+
+“확인했어요” clears unread badges without removing the ongoing drawdown rows. The bounded state is stored locally under sorted account IDs, retained across refreshes and pruned for no-longer-held securities. No data is sent to external search or a new server. Browser notifications are attempted for newly created events only when permission was already granted. No background push, cross-device read sync, intraday detection, unobserved between-visit excursion detection, or non-held market-wide coverage is claimed. These remain separate from the user's broader market monitoring request.
+
+Checks: exact threshold, ongoing declines, observed recovery/reentry, new peak, malformed storage, missing/old data, KRW/USD, acknowledgement persistence and account isolation; existing swing-peak and parsing regressions. Mobile suite adds unread-count/acknowledgement checks while retaining the current top-three list and stock-detail flow.

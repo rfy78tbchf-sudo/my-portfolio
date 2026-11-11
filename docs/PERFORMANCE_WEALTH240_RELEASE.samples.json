@@ -1,0 +1,73 @@
+{
+  "measurement": "existing build231 dashboard without annual-history rows; compatibility/fallback path, not an annual-history scaling benchmark",
+  "baseline": {
+    "conditions": "5 fresh sessions, synthetic 50ms API delay per request, real three-request queue, Chromium 390x844 CPU4x, SW blocked; wealth click to displayed amount + two animation frames; not live server or iPhone timing",
+    "samples": [
+      {
+        "run": 1,
+        "wealthPaintMs": 369,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 2,
+        "wealthPaintMs": 272,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 3,
+        "wealthPaintMs": 272,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 4,
+        "wealthPaintMs": 315,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 5,
+        "wealthPaintMs": 257,
+        "requests": 1,
+        "technicalRequests": 0
+      }
+    ]
+  },
+  "candidate": {
+    "conditions": "5 fresh sessions, synthetic 50ms API delay per request, real three-request queue, Chromium 390x844 CPU4x, SW blocked; wealth click to displayed amount + two animation frames; not live server or iPhone timing",
+    "samples": [
+      {
+        "run": 1,
+        "wealthPaintMs": 284,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 2,
+        "wealthPaintMs": 304,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 3,
+        "wealthPaintMs": 264,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 4,
+        "wealthPaintMs": 315,
+        "requests": 1,
+        "technicalRequests": 0
+      },
+      {
+        "run": 5,
+        "wealthPaintMs": 267,
+        "requests": 1,
+        "technicalRequests": 0
+      }
+    ]
+  }
+}

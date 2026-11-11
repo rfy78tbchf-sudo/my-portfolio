@@ -1,0 +1,9 @@
+# Build193 — Preserve saved judgment identity after reloading
+
+Baseline: main 260d2e5 / Build192. Review of the actual home reload path found that investment_decisions selected reason and checkpoint but omitted id. Build191's home-to-detail identity guard therefore incorrectly reported a changed judgment after a fresh fetch, even when the record was unchanged. Direct in-memory fixtures had hidden the missing API field.
+
+Added id to the existing authenticated home query. No schema, permissions, calculation, or write-path changes. Home context continues into the same saved decision, while genuinely different decision IDs still produce the existing changed-record notice.
+
+Regression test uses the production query and returns only selected columns. Reproduced failure on baseline (undefined identity); corrected query passes fresh visits, reason/checkpoint preservation, changed-ID protection, and retained confirmed identity on failed refresh. Mobile review journey now reloads through the real loader with selected-column responses before tapping home review and continuing the decision.
+
+Verification: the new reload regression, existing review-entry guard, review-home behavior and loading/failure recovery tests passed locally. Initial CI exposed a legacy test pinned to the old field list; its contract was updated. Full mobile run 38117226701 passed at 390/402/430px plus focused WebKit checks. Inspected the 390px reloaded review context and follow-up captures. Production index.html matches the implementation (SHA256 f3251b2751c5f56ffaafab21c39fc30434a0610db5dfcd528747766324a102e9). This verifies selected-column synthetic API behavior and deployed code, not an authenticated real-account session. Synthetic data only; authenticated physical iPhone revisit remains confirmation needed. Next priority is real-device daily return validation, including current saved reason/checkpoint and quiet-day completion; do not repeat completed UI work.

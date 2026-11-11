@@ -1,0 +1,241 @@
+{
+  "conditions": {
+    "database": "isolated local PGlite, NAV stubbed",
+    "transactions": 3000,
+    "sales": 1500,
+    "period": "ALL",
+    "freshProcesses": 6,
+    "queriesPerProcess": 5,
+    "metric": "Linux process maximum resident set size; includes Node/WASM/fixture setup, not a production Postgres limit"
+  },
+  "rows": [
+    {
+      "pair": 0,
+      "variant": "baseline",
+      "initialRss": 417349632,
+      "hash": "bda87b9028e3d66723c7f4fd5346f8e7810043afe902c6369036d9ed9b83814f",
+      "checkpoints": [
+        {
+          "n": 0,
+          "peakRssBytes": 924602368,
+          "rssBytes": 460472320,
+          "heapUsed": 18113880
+        },
+        {
+          "n": 1,
+          "peakRssBytes": 924602368,
+          "rssBytes": 465137664,
+          "heapUsed": 18111144
+        },
+        {
+          "n": 2,
+          "peakRssBytes": 924602368,
+          "rssBytes": 464715776,
+          "heapUsed": 18081488
+        },
+        {
+          "n": 3,
+          "peakRssBytes": 924602368,
+          "rssBytes": 464728064,
+          "heapUsed": 18087744
+        },
+        {
+          "n": 4,
+          "peakRssBytes": 924602368,
+          "rssBytes": 467165184,
+          "heapUsed": 18086432
+        }
+      ]
+    },
+    {
+      "pair": 0,
+      "variant": "candidate",
+      "initialRss": 443858944,
+      "hash": "bda87b9028e3d66723c7f4fd5346f8e7810043afe902c6369036d9ed9b83814f",
+      "checkpoints": [
+        {
+          "n": 0,
+          "peakRssBytes": 953683968,
+          "rssBytes": 488947712,
+          "heapUsed": 18114472
+        },
+        {
+          "n": 1,
+          "peakRssBytes": 953683968,
+          "rssBytes": 492290048,
+          "heapUsed": 18112416
+        },
+        {
+          "n": 2,
+          "peakRssBytes": 953683968,
+          "rssBytes": 492298240,
+          "heapUsed": 18082384
+        },
+        {
+          "n": 3,
+          "peakRssBytes": 953683968,
+          "rssBytes": 493744128,
+          "heapUsed": 18088736
+        },
+        {
+          "n": 4,
+          "peakRssBytes": 953683968,
+          "rssBytes": 493744128,
+          "heapUsed": 18087328
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "variant": "candidate",
+      "initialRss": 444276736,
+      "hash": "bda87b9028e3d66723c7f4fd5346f8e7810043afe902c6369036d9ed9b83814f",
+      "checkpoints": [
+        {
+          "n": 0,
+          "peakRssBytes": 911966208,
+          "rssBytes": 487886848,
+          "heapUsed": 18112776
+        },
+        {
+          "n": 1,
+          "peakRssBytes": 911966208,
+          "rssBytes": 490479616,
+          "heapUsed": 18110976
+        },
+        {
+          "n": 2,
+          "peakRssBytes": 911966208,
+          "rssBytes": 491028480,
+          "heapUsed": 18083120
+        },
+        {
+          "n": 3,
+          "peakRssBytes": 911966208,
+          "rssBytes": 492273664,
+          "heapUsed": 18089984
+        },
+        {
+          "n": 4,
+          "peakRssBytes": 911966208,
+          "rssBytes": 492417024,
+          "heapUsed": 18088064
+        }
+      ]
+    },
+    {
+      "pair": 1,
+      "variant": "baseline",
+      "initialRss": 410615808,
+      "hash": "bda87b9028e3d66723c7f4fd5346f8e7810043afe902c6369036d9ed9b83814f",
+      "checkpoints": [
+        {
+          "n": 0,
+          "peakRssBytes": 915398656,
+          "rssBytes": 453021696,
+          "heapUsed": 18112056
+        },
+        {
+          "n": 1,
+          "peakRssBytes": 915398656,
+          "rssBytes": 457986048,
+          "heapUsed": 18109960
+        },
+        {
+          "n": 2,
+          "peakRssBytes": 915398656,
+          "rssBytes": 458084352,
+          "heapUsed": 18082104
+        },
+        {
+          "n": 3,
+          "peakRssBytes": 915398656,
+          "rssBytes": 458080256,
+          "heapUsed": 18088360
+        },
+        {
+          "n": 4,
+          "peakRssBytes": 915398656,
+          "rssBytes": 460517376,
+          "heapUsed": 18086440
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "variant": "baseline",
+      "initialRss": 414314496,
+      "hash": "bda87b9028e3d66723c7f4fd5346f8e7810043afe902c6369036d9ed9b83814f",
+      "checkpoints": [
+        {
+          "n": 0,
+          "peakRssBytes": 910778368,
+          "rssBytes": 456814592,
+          "heapUsed": 18115776
+        },
+        {
+          "n": 1,
+          "peakRssBytes": 910778368,
+          "rssBytes": 460464128,
+          "heapUsed": 18113208
+        },
+        {
+          "n": 2,
+          "peakRssBytes": 910778368,
+          "rssBytes": 460656640,
+          "heapUsed": 18083776
+        },
+        {
+          "n": 3,
+          "peakRssBytes": 910778368,
+          "rssBytes": 460668928,
+          "heapUsed": 18090032
+        },
+        {
+          "n": 4,
+          "peakRssBytes": 910778368,
+          "rssBytes": 463106048,
+          "heapUsed": 18087504
+        }
+      ]
+    },
+    {
+      "pair": 2,
+      "variant": "candidate",
+      "initialRss": 408076288,
+      "hash": "bda87b9028e3d66723c7f4fd5346f8e7810043afe902c6369036d9ed9b83814f",
+      "checkpoints": [
+        {
+          "n": 0,
+          "peakRssBytes": 911384576,
+          "rssBytes": 455393280,
+          "heapUsed": 18113344
+        },
+        {
+          "n": 1,
+          "peakRssBytes": 911384576,
+          "rssBytes": 457437184,
+          "heapUsed": 18110864
+        },
+        {
+          "n": 2,
+          "peakRssBytes": 911384576,
+          "rssBytes": 457240576,
+          "heapUsed": 18083032
+        },
+        {
+          "n": 3,
+          "peakRssBytes": 911384576,
+          "rssBytes": 458833920,
+          "heapUsed": 18089288
+        },
+        {
+          "n": 4,
+          "peakRssBytes": 911384576,
+          "rssBytes": 458833920,
+          "heapUsed": 18087368
+        }
+      ]
+    }
+  ]
+}

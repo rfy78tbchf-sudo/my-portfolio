@@ -1,0 +1,289 @@
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import {gzipSync} from 'node:zlib';
+import {readFileSync,existsSync,mkdirSync} from 'node:fs';
+import {dirname,resolve,extname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {chromium,webkit} from 'playwright';
+
+// Actual startup, stored-session authentication, API queue, resume events and renderers.
+// Every browser request is fulfilled/aborted locally; all account values are synthetic.
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+let dispatch,transfers=[],versionOverride=null,versionStatus=200,fallbackBuild=null,updateUnavailable=false,navigationUnavailable=false;
+const portfolioStages=process.argv.includes('--portfolio-stages'),renderOwnership=process.argv.includes('--render-ownership');
+const pacedStartup=process.argv.includes('--paced-startup'),pacedGzip=!!process.env.PACED_GZIP;
+const verify=process.argv.includes('--verify'),profileStartup=pacedStartup||process.argv.includes('--profile-startup')||process.argv.includes('--trace-startup'),traceStartup=process.argv.includes('--trace-startup'),earlyCore=process.argv.includes('--early-core'),earlyInteraction=process.argv.includes('--early-interaction')||earlyCore;
+assert.ok(!(earlyInteraction&&profileStartup),'early interaction is a separate condition');
+assert.ok(!portfolioStages||profileStartup,'portfolio stages require startup profiling');
+assert.ok(!renderOwnership||profileStartup,'render ownership requires startup profiling');
+const pacedQueue=[];
+// Shared across ALL HTTP responses, including service-worker requests. Body-only pacing, not a physical network model.
+const pacer=pacedStartup?setInterval(()=>{const job=pacedQueue.shift();if(!job)return;const end=Math.min(job.offset+4096,job.payload.length);job.res.write(job.payload.subarray(job.offset,end));job.offset=end;if(end===job.payload.length){job.res.end();job.resolve()}else pacedQueue.push(job)},20):null;if(pacer)pacer.unref();
+const server=http.createServer(async(req,res)=>{
+ let body='';for await(const chunk of req)body+=chunk;
+ const url='http://'+req.headers.host+req.url;
+ const route={request:()=>({url:()=>url,method:()=>req.method,headers:()=>req.headers,postDataJSON:()=>body?JSON.parse(body):{}}),
+ fulfill:async({status=200,contentType,headers={},body=''})=>{
+   let payload=Buffer.from(body);if(pacedStartup&&pacedGzip&&/text|json|javascript|svg/.test(contentType||'')){payload=gzipSync(payload);headers={...headers,'content-encoding':'gzip'};}
+   transfers.push({url,bytes:Buffer.byteLength(body),encodedBodyBytes:payload.length});
+   if(pacedStartup)await new Promise(r=>setTimeout(r,80));
+   res.writeHead(status,{'content-type':contentType||'text/plain','cache-control':'no-cache',...headers});
+   if(!pacedStartup){res.end(payload);return}
+   await new Promise(resolve=>pacedQueue.push({res,payload,offset:0,resolve}));
+ },
+ abort:async()=>{res.writeHead(502);res.end()}};
+ try{await dispatch(route)}catch(e){console.error(e);res.writeHead(500);res.end()}
+});
+await new Promise(r=>server.listen(0,'0.0.0.0',r));
+const site='http://127.0.0.1:'+server.address().port+'/',apiOrigin='http://localhost:'+server.address().port;
+const raw=readFileSync(process.env.UI_SOURCE||resolve(root,'index.html'),'utf8');
+const source=raw.replace(/var SUPABASE_URL='[^']+'/,'var SUPABASE_URL='+JSON.stringify(apiOrigin));
+const output=resolve(root,process.env.UI_OUTPUT||'mobile-artifacts/build216');
+mkdirSync(output,{recursive:true});
+const hook=`
+  window.__dailyTest={
+    checkUpdate:function(){lastUpdateCheck=0;window.portfolioCheckUpdate()},
+    refresh:function(){return refreshLive(true,false)},
+    age:function(){lastLiveLoadAt=Date.now()-4*60*1000},
+    state:function(){return {swingLoaded:Object.keys(live&&live.swingPrices||{}).length,tab:currentTab,period:stockPeriod,query:stockPnlQuery,scope:stockPnlScope,
+      resumePending:liveResumePending,renderPending:contentRenderPending,loadEpoch:liveLoadEpoch,
+      updatePending:updateCheckPending,idle:!liveRefreshPromise&&!liveLoadPromise&&!liveResumePromise&&!liveReadsActive&&!liveReadQueue.length,
+      pnl:live&&live.stockPnl&&live.stockPnl.pnl_krw,error:liveError,deferred:!!(live&&live.detailsDeferred),enrichment:!!(live&&live.enrichmentLoading),background:!!backgroundSyncPromise}}
+  };
+`;
+assert.ok(source.includes('  restoreLogin();'));
+let served=source;
+if(traceStartup){
+  const start=served.indexOf('  function render(preserveScroll)'),end=served.indexOf('  function renderNav()',start);assert.ok(start>=0&&end>start);
+  let block=served.slice(start,end);
+  block=block.replace('contentRenderPending=false;',"contentRenderPending=false;performance.mark('startupRenderStart:'+currentTab+':'+(live?'data':'empty'));");
+  block=block.replace('window.scrollTo(0,scrollY)}',"window.scrollTo(0,scrollY);performance.mark('startupRenderEnd')}");
+  served=served.slice(0,start)+block+served.slice(end);
+}
+const ownershipHook=renderOwnership?`
+  window.__renderOwnership=[];var ownershipPreviousHtml=null,ownershipRender=render;
+  render=function(){var started=performance.now(),caller=new Error().stack.split('\\n').slice(2,4).join(' | '),flags={tab:currentTab,refreshOwned:!!liveRefreshPromise,homeOnly:!!(live&&live.homeOnlyRefresh),reviewLoading:!!(live&&live.homeReviewLoading),startupLoading:!!(live&&live.startupHomeLoading),detailsLoading:!!(live&&live.detailsLoading),startupError:!!(live&&live.startupHomeError)};
+    var result=ownershipRender.apply(this,arguments),elapsed=performance.now()-started,html=document.getElementById('content').innerHTML;
+    window.__renderOwnership.push({caller:caller,flags:flags,durationMs:elapsed,sameAsPrevious:html===ownershipPreviousHtml});ownershipPreviousHtml=html;return result};
+`:'';
+const html=served.replace('  restoreLogin();',hook+ownershipHook+'  restoreLogin();');
+const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
+const before=n=>new Date(Date.parse(day+'T00:00:00Z')-n*86400000).toISOString().slice(0,10);
+const now=day+'T00:00:00Z';
+const securities=[['ARM','ARM 검증 종목','USD'],['MRNA','MRNA 검증 종목','USD'],['MU','MU 검증 종목','USD'],['005930','국내 검증 종목','KRW']]
+  .map(([symbol,name,currency],i)=>({id:'daily-'+i,symbol,name,currency,market:currency==='KRW'?'KRX':'NAS',country:currency==='KRW'?'KR':'US'}));
+const accounts=[{id:'daily-account',name:'검증용 계좌',provider:'kb_securities',base_currency:'KRW',mode:'live',is_active:true}];
+const holdings=securities.map((s,i)=>({account_id:accounts[0].id,security_id:s.id,quantity:10,as_of:now,currency:s.currency,market_value:1000000-i*100000,avg_cost:90000,market_price:100000,unrealized_pnl:100000,fx_rate_to_base:1}));
+const basis=holdings.map(h=>({...h,valuation_krw:h.market_value,cost_krw:h.market_value-100000,pnl_krw:100000,rate_pct:10,average_unit_krw:(h.market_value-100000)/10,valued_unit_krw:h.market_value/10}));
+const snapshots=Array.from({length:8},(_,i)=>({snapshot_date:before(i*3),snapshot_at:before(i*3)+'T00:00:00Z',total_assets:5400000-i*10000,cash:2000000,securities_value:3400000-i*10000,unrealized_pnl:400000,external_flow:0}));
+const scope={ok:true,current_display_total:5400000,current_primary_value:5400000,current_isa_value:0,current_primary_observed_at:now,snapshot_at:now,broker_account_overlap_verified:true};
+const prices=securities.flatMap((s,i)=>Array.from({length:24},(_,n)=>({security_id:s.id,price_date:before(n),observed_at:before(n)+'T00:00:00Z',close:120-i*10-n,currency:s.currency})));
+const gate={ok:true,state:'estimated',partial:false,reliable_start:before(30),observed_through:day,investment_pnl:90000,return_estimate_pct:1.7,opening_assets:5310000,closing_assets:5400000,external_flow:0,as_of:now};
+const summary={ok:true,return_ready:true,investment_pnl:90000,return_pct:1.7,period_start:before(30),period_end:day,realized_pnl:0,dividends_net:0};
+function stockResult(period,generation){
+  const items=securities.map((s,i)=>({...s,security_id:s.id,end_quantity:10,start_quantity:10,pnl_krw:i===3?null:[110000+generation*10000,-20000,0][i],reason:i===3?'가격 자료 확인 필요':null}));
+  return {ok:true,period,period_start:period==='오늘'?day:before(30),period_end:day,basis_at:now,complete:false,all_items_displayed:true,candidate_count:4,source_candidate_count:4,krw_included_count:3,local_only_count:0,pnl_krw:items.slice(0,3).reduce((n,x)=>n+x.pnl_krw,0),items};
+}
+function deferred(){let release,entered;const wait=new Promise(r=>{release=r}),hit=new Promise(r=>{entered=r});return {wait,hit,release,entered};}
+async function waitGate(gate,label){let timer;try{await Promise.race([gate.hit,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' request did not arrive')),15000)})])}finally{clearTimeout(timer)}}
+
+const samples=[];
+try{for(let run=0;run<(verify?(process.env.CHROMIUM_ONLY?1:2):5);run++){
+ const name=verify&&run===1?'webkit':'chromium',engine=name==='webkit'?webkit:chromium;
+ versionOverride=null;versionStatus=200;fallbackBuild=null;
+  scope.current_display_total=5400000; // Each browser starts with its own baseline value.
+  const browser=await engine.launch({headless:true});
+  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'allow'});
+  const jwt=['eyJhbGciOiJub25lIn0',Buffer.from(JSON.stringify({sub:'daily-browser-'+name,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'synthetic'].join('.');
+  await context.addInitScript(({token,key})=>localStorage.setItem(key,JSON.stringify({accessToken:token,refreshToken:'synthetic-local-refresh',expiresAt:Date.now()+3600000})),{token:jwt,key:'my_portfolio_session_v2'});
+  const calls=[],forbidden=[],errors=[];let emptyHoldings=false,earlyGate=null,generation=0,coreDelay=null,pnlDelay=null,failCore=false,extraDelay=null,backgroundDelay=deferred(),failExtra=false;
+  let portfolioRecordStart=null;const requestRecords=new WeakMap();
+  const json=(route,value,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type','access-control-allow-methods':'GET,POST,OPTIONS'},body:JSON.stringify(value)}).then(()=>{const record=requestRecords.get(route);if(record)record.responseCompleteMs=performance.now()-portfolioRecordStart;});
+  dispatch=async route=>{
+    const request=route.request(),url=new URL(request.url()),method=request.method();
+    if(navigationUnavailable&&url.origin===new URL(site).origin&&(url.pathname==='/'||url.pathname==='/index.html')&&!url.searchParams.has('check_build'))return route.fulfill({status:503,body:'temporary outage'});
+    if(updateUnavailable&&url.searchParams.has('check_build'))return route.fulfill({status:503,body:''});
+    if(url.origin===new URL(site).origin){
+      if(url.pathname==='/version.json'&&(versionOverride!==null||versionStatus!==200))return route.fulfill({status:versionStatus,contentType:'application/json',body:versionOverride||''});
+      if(url.pathname==='/'||url.pathname==='/index.html')return route.fulfill({contentType:'text/html',body:fallbackBuild&&url.searchParams.has('check_build')?html.replace(/<!-- build: [^ ]+ -->/,'<!-- build: '+fallbackBuild+' -->'):html});
+      const file=resolve(root,'.'+url.pathname);
+      if(file.startsWith(root+'/')&&existsSync(file)&&/\.(js|json|webmanifest|svg|png|ico)$/.test(file))return route.fulfill({contentType:extname(file)==='.js'?'text/javascript':extname(file)==='.svg'?'image/svg+xml':extname(file)==='.png'?'image/png':'application/json',body:readFileSync(url.pathname==='/sw.js'&&process.env.UI_SW?process.env.UI_SW:file)});
+      return route.fulfill({status:404,body:''});
+    }
+    if(url.origin!==apiOrigin){forbidden.push(url.origin);return route.abort()}
+    if(method==='OPTIONS')return json(route,{});
+    const path=url.pathname,body=method==='POST'?request.postDataJSON()||{}:{};
+    if(path==='/auth/v1/passkeys/authentication/options')return json(route,{error_code:'passkey_disabled'},400);
+    if(path==='/auth/v1/token')return json(route,{access_token:jwt,refresh_token:'synthetic-local-refresh',expires_in:3600});
+    assert.equal(request.headers().authorization,'Bearer '+jwt,'real authFetch supplies the isolated stored-session token');
+    const record={path,body};if(portfolioStages&&portfolioRecordStart!==null){record.startMs=performance.now()-portfolioRecordStart;requestRecords.set(route,record);}calls.push(record);await new Promise(r=>setTimeout(r,50));
+    if(path.startsWith('/functions/')){
+      if(body.action==='sync-current')return json(route,{ok:true});
+      if(body.action==='sync-history-month'||body.action==='sync-prices'){await backgroundDelay.wait;return json(route,{ok:true})}
+
+      if(body.action==='overseas-day-pnl')return json(route,{ok:true,available:false,items:[]});
+      if(body.action==='sync-target-prices'&&body.security_ids?.every(id=>securities.some(s=>s.id===id)))return json(route,{ok:true,results:[]});
+      forbidden.push(path+':'+String(body.action||''));return json(route,{message:'Live writes and model calls are blocked'},403);
+    }
+    if(path.startsWith('/rest/v1/rpc/')){
+      const rpc=path.split('/').pop();
+      if(rpc==='get_live_performance_summary'&&earlyGate){earlyGate.entered();await earlyGate.wait;}
+      if(!rpc.startsWith('get_')&&rpc!=='reconcile_live_cash_flows'){forbidden.push(rpc);return json(route,{message:'Writes are blocked'},403)}
+      if(rpc==='get_live_period_stock_pnl'){if(pnlDelay){const pending=pnlDelay;pending.entered();await pending.wait}return json(route,stockResult(body.p_period,generation))}
+      if(rpc==='get_live_benchmark_comparison'&&extraDelay){extraDelay.entered();await extraDelay.wait}
+      const security=securities.find(s=>s.id===body.p_security_id)||securities[0];
+      const values={get_wealth_dashboard:{ok:true,plan:{base_amount:5000000,base_date:day,std_rate:20,best_rate:30,revision:0},current:{amount:5400000,as_of:day},records:[]},get_app_settings:{},reconcile_live_cash_flows:{ok:true},get_live_current_account_scope:scope,
+        get_live_performance_summary:summary,get_live_reliable_performance:gate,
+        get_live_home_chart:{items:snapshots.slice().reverse().map(s=>({date:s.snapshot_date,total_assets:s.total_assets}))},
+        get_live_security_performance:{ok:true,items:[]},get_live_technical_summary:{ok:true,items:[]},get_live_monthly_performance:{ok:true,items:[]},
+        get_live_security_detail:{ok:true,security,holding:{quantity:10},technical:{},prices:prices.filter(p=>p.security_id===security.id).slice().reverse().map(p=>({date:p.price_date,close:p.close,currency:p.currency}))},
+        get_live_security_activity:{ok:true,items:[]},get_investment_thesis:{ok:true,thesis:{version:1,rationale:'실적 발표에서 보유 근거를 다시 확인',updated_at:now}},
+        get_investment_decisions:[],get_investment_breakout_rule:null,get_live_realized_sales:{ok:true,items:[],period:body.p_period},get_pending_kb_position_events:[]};
+      return json(route,Object.hasOwn(values,rpc)?values[rpc]:{ok:false,items:[]});
+    }
+    if(method!=='GET'){forbidden.push(path);return json(route,{message:'Writes are blocked'},403)}
+    const table=path.split('/').pop();
+    if(table==='holdings'&&coreDelay){const pending=coreDelay;pending.entered();await pending.wait}
+    if(table==='holdings'&&failCore)return json(route,{message:'synthetic offline'},503);
+    if(table==='transactions'&&failExtra)return json(route,{message:'synthetic extra failure'},503);
+    const tables={accounts,securities,holdings:emptyHoldings?[]:holdings,daily_account_snapshots:snapshots,live_holding_display_basis:basis,daily_security_prices:prices,investment_decisions:[],ai_analysis_history:[]};
+    return json(route,tables[table]||[]);
+  };
+  if(profileStartup)await context.addInitScript(()=>{
+    window.__startup={assetMs:null,longTasks:PerformanceObserver.supportedEntryTypes.includes('longtask')?[]:null};
+    if(PerformanceObserver.supportedEntryTypes.includes('longtask'))new PerformanceObserver(list=>window.__startup.longTasks.push(...list.getEntries().map(e=>({start:e.startTime,duration:e.duration})))).observe({type:'longtask'});
+    let scheduled=false;const observer=new MutationObserver(()=>{
+      if(!scheduled&&document.querySelector('.hero .asset')?.textContent.includes('5,400,000')){
+        scheduled=true;requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__startup.assetMs=performance.now();performance.mark('startupAssetReady');observer.disconnect()}));
+      }
+    });observer.observe(document,{subtree:true,childList:true,characterData:true});
+  });
+  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));
+  if(name==='chromium'){const cdp=await context.newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});}
+  const metrics=profileStartup&&name==='chromium'?await context.newCDPSession(page):null;if(metrics)await metrics.send('Performance.enable');
+  try{
+    for(const cache of ['cold','warm']){
+      transfers=[];calls.length=0;
+      let early=null;if(earlyInteraction){if(earlyCore)coreDelay=deferred();else earlyGate=deferred();}
+      let traceEvents=[],traceListener;
+      if(traceStartup&&metrics){traceListener=x=>traceEvents.push(...x.value);metrics.on('Tracing.dataCollected',traceListener);await metrics.send('Tracing.start',{categories:'devtools.timeline,blink.user_timing,toplevel',transferMode:'ReportEvents'});}
+
+      const cpuBefore=metrics?(await metrics.send('Performance.getMetrics')).metrics:[];
+      if(cache==='cold')await page.goto(site,{waitUntil:'load'});else await page.reload({waitUntil:'load'});
+      if(earlyInteraction){
+        await waitGate(earlyCore?coreDelay:earlyGate,earlyCore?'startup holdings':'startup summary');
+        if(earlyCore)await page.waitForFunction(()=>document.querySelector('.hero .asset')?.textContent.includes('5,400,000'));
+        assert.equal(await page.evaluate(()=>window.__dailyTest.state().idle),false);
+        const before=calls.length;
+        await page.evaluate(()=>{window.__earlyStart=performance.now();document.querySelector('#nav [data-tab="portfolio"]').click()});
+        if(!earlyCore)await page.locator('.portfolio-list .portfolio-row').first().waitFor();
+        const callbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__earlyStart)))));
+        let pendingText=null;
+        if(earlyCore){pendingText=await page.locator('#content').innerText();assert.match(pendingText,/종목 불러오는 중/);assert.doesNotMatch(pendingText,/보유종목 없음/);assert.equal(await page.locator('#content [role="status"]').count(),1);
+          if(verify)for(const zoom of [1,1.25])for(const width of [390,402,430]){
+            await page.setViewportSize({width,height:844});await page.evaluate(z=>document.documentElement.style.zoom=String(z),zoom);
+            assert.ok(await page.locator('#content').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'loading message fits');
+            assert.ok(await page.locator('#nav button').evaluateAll(es=>es.every(e=>e.getBoundingClientRect().height>=44)),'navigation touch targets');
+          }
+          await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.documentElement.style.zoom='1');
+        coreDelay.release();coreDelay=null;await page.locator('.portfolio-list .portfolio-row').first().waitFor();}
+        assert.equal(await page.locator('.portfolio-list .portfolio-row').count(),4);
+        await page.locator('#search').fill('ARM');
+        early={pendingText,callbackMs,readsAtClick:before,readsWhileGated:calls.length,gateIdle:await page.evaluate(()=>window.__dailyTest.state().idle)};
+        if(earlyGate){earlyGate.release();earlyGate=null;}
+        await page.waitForFunction(()=>window.__dailyTest.state().idle);
+        assert.equal(await page.locator('#nav [aria-current="page"]').getAttribute('data-tab'),'portfolio');
+        assert.equal(await page.locator('#search').inputValue(),'ARM');
+        assert.equal(await page.evaluate(()=>document.activeElement?.id),'search');
+        assert.equal(await page.locator('.portfolio-list .portfolio-row:visible').count(),1);
+        early.completionAfterClickMs=await page.evaluate(()=>performance.now()-window.__earlyStart);
+        early.reads=calls.map(c=>c.path.split('/').pop());
+        assert.equal(early.reads.filter(n=>n==='get_live_performance_summary').length,1,'early navigation shares pending startup summary');
+        await page.locator('#search').blur();
+        await page.locator('#nav [data-tab="home"]').click();
+        assert.match(await page.locator('.hero .asset').innerText(),/5,400,000/);
+      }
+      await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0&&!window.__dailyTest.state().updatePending);
+      await page.evaluate(()=>navigator.serviceWorker.ready);
+      const updates=transfers.filter(x=>x.url.includes('check_build='));
+      assert.equal(updates.length,1);
+      let startup=null;
+      if(profileStartup){
+        await page.waitForFunction(()=>window.__startup.assetMs!==null);
+        const cpuAfter=metrics?(await metrics.send('Performance.getMetrics')).metrics:[];
+        startup={...await page.evaluate(()=>({...window.__startup,idleObservedMs:performance.now()})),reads:calls.length,
+          scriptMs:metrics?1000*((cpuAfter.find(m=>m.name==='ScriptDuration')?.value||0)-(cpuBefore.find(m=>m.name==='ScriptDuration')?.value||0)):null,
+          responses:transfers.map(x=>({path:new URL(x.url).pathname,bytes:x.bytes,...(pacedStartup?{encodedBodyBytes:x.encodedBodyBytes}:{})}))};
+      }
+      if(renderOwnership){startup.renderOwnership=await page.evaluate(()=>window.__renderOwnership);assert.ok(startup.renderOwnership.length>0&&startup.renderOwnership.every(r=>Number.isFinite(r.durationMs)&&typeof r.sameAsPrevious==='boolean'),'render ownership samples are complete');}
+      if(traceStartup&&metrics){
+        const done=new Promise(r=>metrics.once('Tracing.tracingComplete',r));await metrics.send('Tracing.end');await done;metrics.off('Tracing.dataCollected',traceListener);
+        const asset=traceEvents.find(e=>e.name==='startupAssetReady');assert.ok(asset,'asset trace mark exists');
+        startup.renderMarks=traceEvents.filter(e=>e.pid===asset.pid&&e.tid===asset.tid&&e.name.startsWith('startupRender')).map(e=>({name:e.name,startFromAssetMs:(e.ts-asset.ts)/1000}));
+        startup.trace=traceEvents.filter(e=>e.pid===asset.pid&&e.tid===asset.tid&&e.dur&&['RunTask','Layout','UpdateLayoutTree','ParseHTML','EvaluateScript','FunctionCall','CompileScript','Paint'].includes(e.name)).map(e=>({name:e.name,startFromAssetMs:(e.ts-asset.ts)/1000,durationMs:e.dur/1000,...(['FunctionCall','EvaluateScript','Layout'].includes(e.name)?{data:e.args?.data}:{} )}));
+      }
+      samples.push({run:run+1,cache,...(early?{early}:{}),...(startup?{startup}:{}),updateBytes:updates.reduce((n,x)=>n+x.bytes,0),updateRequests:updates.length,networkResponses:transfers.length,decodedBytes:transfers.reduce((n,x)=>n+x.bytes,0),controlled:await page.evaluate(()=>!!navigator.serviceWorker.controller)});
+      if(profileStartup){
+        calls.length=0;
+        if(portfolioStages)portfolioRecordStart=performance.now();
+        await page.evaluate(stages=>{
+          window.__firstTabStart=performance.now();
+          if(stages){window.__portfolioStages={rowsMs:null,swingDataMs:null};window.__portfolioWatch=new MutationObserver(()=>{if(window.__portfolioStages.rowsMs===null&&document.querySelectorAll('.portfolio-list .portfolio-row').length===4)window.__portfolioStages.rowsMs=performance.now()-window.__firstTabStart;});window.__portfolioWatch.observe(document.querySelector('#content'),{childList:true,subtree:true});
+          const poll=()=>{if(window.__dailyTest.state().swingLoaded===4){window.__portfolioStages.swingDataMs=performance.now()-window.__firstTabStart;return}window.__portfolioFrame=requestAnimationFrame(poll)};window.__portfolioFrame=requestAnimationFrame(poll);}
+          document.querySelector('#nav [data-tab="portfolio"]').click();
+        },portfolioStages);
+        startup.firstPortfolioCallbackMs=await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r(performance.now()-window.__firstTabStart)))));
+        await page.waitForFunction(()=>window.__dailyTest.state().idle);
+        startup.firstPortfolioIdleMs=await page.evaluate(()=>performance.now()-window.__firstTabStart);
+        startup.firstPortfolioReads=calls.length;
+        if(portfolioStages){
+          startup.portfolioStages=await page.evaluate(()=>{window.__portfolioWatch.disconnect();cancelAnimationFrame(window.__portfolioFrame);return window.__portfolioStages});
+          startup.portfolioRequests=calls.map(c=>({name:c.path.split('/').pop(),startMs:c.startMs,responseCompleteMs:c.responseCompleteMs}));
+          assert.ok(startup.portfolioStages.rowsMs!==null&&startup.portfolioStages.swingDataMs!==null,'list DOM and all four swing data stages observed');
+          assert.ok(startup.portfolioRequests.every(r=>Number.isFinite(r.startMs)&&Number.isFinite(r.responseCompleteMs)),'all stage requests accounted for');portfolioRecordStart=null;
+        }
+        assert.ok(Number.isFinite(startup.assetMs)&&startup.assetMs>0);
+        if(metrics)assert.ok(startup.scriptMs>=0,'CDP script counter delta is nonnegative');
+        assert.equal(await page.locator('.portfolio-list .portfolio-row').count(),4);
+        await page.locator('#nav [data-tab="home"]').click();
+      }
+    }
+    if(verify&&earlyCore){
+      emptyHoldings=true;await page.reload({waitUntil:'load'});await page.waitForFunction(()=>window.__dailyTest.state().idle);
+      await page.locator('#nav [data-tab="portfolio"]').click();await page.waitForFunction(()=>window.__dailyTest.state().idle);
+      assert.match(await page.locator('#content').innerText(),/보유종목 없음/,'completed empty holdings still use the empty state');
+      assert.doesNotMatch(await page.locator('#content').innerText(),/종목 불러오는 중/);
+      emptyHoldings=false;await page.reload({waitUntil:'load'});await page.waitForFunction(()=>window.__dailyTest.state().idle);
+    }
+    if(verify){
+      assert.ok(samples.slice(-2).every(x=>x.updateBytes===readFileSync(resolve(root,'version.json')).length),'cold and warm service-worker paths use the manifest');
+      await page.evaluate(()=>{const input=document.createElement('input');input.id='preservedDraft';input.value='synthetic unsaved draft';document.body.appendChild(input)});
+      const url=page.url();
+      versionOverride=JSON.stringify({build:'2026-10-29-future-999'});
+      await page.evaluate(()=>window.__dailyTest.checkUpdate());await page.locator('#appUpdateNotice').waitFor();
+      assert.equal(page.url(),url);assert.equal(await page.locator('#preservedDraft').inputValue(),'synthetic unsaved draft');
+      await page.locator('#appUpdateNotice').evaluate(e=>e.remove());
+      versionStatus=404;fallbackBuild='2026-10-29-fallback-999';transfers=[];
+      await page.evaluate(()=>window.__dailyTest.checkUpdate());await page.locator('#appUpdateNotice').waitFor();
+      assert.equal(transfers.filter(x=>x.url.includes('check_build=')).length,2,'missing manifest falls back to HTML');
+      await page.locator('#appUpdateNotice').evaluate(e=>e.remove());
+      versionStatus=200;versionOverride='{malformed';transfers=[];
+      await page.evaluate(()=>window.__dailyTest.checkUpdate());await page.locator('#appUpdateNotice').waitFor();
+      assert.equal(transfers.filter(x=>x.url.includes('check_build=')).length,2,'invalid JSON falls back to HTML');
+      await page.locator('#appUpdateNotice').evaluate(e=>e.remove());
+      updateUnavailable=true;await page.evaluate(()=>window.__dailyTest.checkUpdate());
+      await page.waitForFunction(()=>!window.__dailyTest.state().updatePending);
+      assert.equal(await page.locator('#appUpdateNotice').count(),0);
+      assert.equal(await page.locator('#preservedDraft').inputValue(),'synthetic unsaved draft');
+      updateUnavailable=false;versionOverride=null;fallbackBuild=null;
+      navigationUnavailable=true;
+      await page.reload({waitUntil:'load'});
+      await page.waitForFunction(()=>window.__dailyTest?.state().idle&&window.__dailyTest.state().loadEpoch>0);
+      assert.match(await page.locator('.hero .asset').innerText(),/5,400,000/,'cached index serves failed root navigation');
+      navigationUnavailable=false;
+      console.log(name+': real SW cold/warm manifest checks, new release, HTML fallback, malformed/unavailable draft preservation and cached navigation fallback passed');
+    }
+    assert.deepEqual(errors,[]);assert.deepEqual(forbidden,[]);
+  }finally{if(coreDelay)coreDelay.release();if(earlyGate)earlyGate.release();if(extraDelay)extraDelay.release();backgroundDelay.release();await context.close();await browser.close()}
+}}finally{await new Promise(r=>server.close(r))}
+console.log(JSON.stringify({...(pacedStartup?{pacing:{aggregateBodyBytesPerSecond:204800,chunkBytes:4096,tickMs:20,responseHeaderDelayMs:80,gzip:pacedGzip,scope:'all local HTTP responses including SW; headers/TLS not paced; no actual operating server measurement'}}:{}),conditions:(verify?'Browser regression; ':'5 pairs cold/warm; ')+' real HTTP and service worker caching, synthetic session/API 50ms, 390x844; Chromium CPU4x, WebKit default in verification; server response body bytes, no compression, not production wire bytes or iPhone timing',samples},null,2));

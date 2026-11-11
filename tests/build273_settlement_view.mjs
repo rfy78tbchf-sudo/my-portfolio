@@ -1,0 +1,31 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+import {createRealizedFixture} from './fixtures/realized257.mjs';
+const db=await createRealizedFixture(1);
+await db.exec(`create role anon;create role service_role;
+alter table account_observations add fetched_at timestamptz;
+create table sync_logs(account_id uuid,started_at timestamptz,scope text,status text,detail jsonb);
+delete from holdings;
+insert into holdings(id,account_id,security_id,as_of,quantity,currency) values(md5('h')::uuid,md5('a1')::uuid,md5('s1')::uuid,'2026-11-09 12:00Z',2,'USD');
+insert into daily_account_snapshots(account_id,snapshot_date,snapshot_at) values(md5('a1')::uuid,'2026-11-09','2026-11-09 12:00Z');
+insert into kb_balance_position_evidence values(md5('old')::uuid,md5('a1')::uuid,'SYNTH1','2026-11-08 12:00Z',1,2,1,0,'SSQM2952');`);
+await db.exec(fs.readFileSync('supabase/build48_settlement_display.sql','utf8'));
+const get=async()=>(await db.query('select * from live_position_settlement_basis')).rows;
+assert.equal((await get())[0].effective_quantity,'2','baseline revives old per-symbol evidence');
+for(const f of ['position_response_schema273.sql','batch-reconciliation273.sql','batch-settlement-view273.sql'])await db.exec(fs.readFileSync('experiments/'+f,'utf8'));
+assert.equal((await get())[0].effective_quantity,null);assert.equal((await get())[0].evidence_status,'missing');
+await db.exec("insert into account_observations(id,account_id,fetched_at) values(md5('o')::uuid,md5('a1')::uuid,'2026-11-09 12:00Z')");
+const row={symbol:'SYNTH1',currency:'USD',source:'SSQM2952',effective_quantity:2,settled_quantity:1,pending_buy_quantity:1,pending_sell_quantity:0};
+const set=async(complete,rows,at='2026-11-09 12:00Z')=>{await db.exec('delete from kb_position_response_batches');await db.query("insert into kb_position_response_batches values(md5('o')::uuid,md5('a1')::uuid,$1,$2,$3,'{}')",[at,complete,JSON.stringify(rows)]);};
+await set(true,[row]);let r=(await get())[0];assert.equal(r.effective_quantity,'2');assert.equal(r.settled_quantity,'1');assert.equal(r.pending_buy_quantity,'1');assert.equal(r.quantity_identity_ok,true);
+for(const [complete,rows,status] of [[false,[row],'incomplete'],[true,[],'complete_absent'],[true,[{...row,currency:'KRW'}],'complete_absent'],[true,[{...row,effective_quantity:null}],'quantity_unknown']]){
+ await set(complete,rows);r=(await get())[0];assert.equal(r.evidence_status,status);assert.equal(r.effective_quantity,null);assert.equal(r.pending_buy_quantity,null);assert.equal(r.quantity_identity_ok,null);
+}
+await set(true,[row],'2026-11-09 12:01Z');assert.equal((await get())[0].evidence_status,'missing');
+await set(true,[row],'2026-11-09 11:59Z');assert.equal((await get())[0].evidence_status,'cutoff_mismatch');
+await set(true,[row]);await db.exec('update holdings set quantity=3');assert.equal((await get())[0].evidence_status,'holding_mismatch');
+await db.exec("update holdings set quantity=2,as_of='2026-11-09 11:59Z'");assert.equal((await get())[0].evidence_status,'snapshot_mismatch');
+await db.exec("update holdings set as_of='2026-11-09 12:00Z',currency='KRW'");assert.equal((await get())[0].evidence_status,'identity_unverified');
+await db.exec("update holdings set currency='USD';grant select on all tables in schema public to authenticated;set role authenticated");assert.equal((await get())[0].effective_quantity,'2');
+await db.exec("select set_config('request.jwt.claim.sub',md5('other')::uuid::text,false)");assert.deepEqual(await get(),[]);
+await db.exec('reset role;set role anon');await assert.rejects(get(),/permission denied/);
+await db.close();console.log('PASS actual settlement view: stale2 becomes unknown; exact effective2=settled1+pending1 preserved; empty/partial/null/currency/future/stale/holdings mismatch and owner access checked');

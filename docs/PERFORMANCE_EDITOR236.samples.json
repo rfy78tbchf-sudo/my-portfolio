@@ -1,0 +1,1313 @@
+{
+  "baseline": {
+    "scenario": "gate shared history then decision reread; retain chart period/point and draft focus/selection",
+    "conditions": "5 fresh Chromium sessions at 390x844; warmed portfolio,365 prices,10 saved decisions,10 long AI histories; synthetic 50ms API reads plus controlled gates; Chromium CPU4x/WebKit default; SW blocked; callback/readiness includes automation and two rAF; aggregate CPU/longtasks cover both late phases AND intervening editor input; phaseCpu separates history/editor/review including automation assertions; phaseLongTasks grouped by task start; no heap/byte measurement",
+    "samples": [
+      {
+        "run": 1,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 408.59999999403954,
+            "periodCallbackMs": 114.59999999403954,
+            "historyReadyMs": 131.09999999403954,
+            "reviewReadyMs": 117.70000000298023,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 179.59999999403954,
+                "cpu": {
+                  "LayoutDuration": 0.08528899999999998,
+                  "RecalcStyleDuration": 0.019089999999999996,
+                  "ScriptDuration": 0.0056139999999999975,
+                  "TaskDuration": 0.147578,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  114
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 1010.7999999970198,
+                "cpu": {
+                  "LayoutDuration": 0.03870000000000001,
+                  "RecalcStyleDuration": 0.009953000000000004,
+                  "ScriptDuration": 0.014889,
+                  "TaskDuration": 0.13722299999999998,
+                  "LayoutCount": 3
+                },
+                "longTasks": [
+                  67
+                ]
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 72.80000001192093,
+                "cpu": {
+                  "LayoutDuration": 0.004149999999999987,
+                  "RecalcStyleDuration": 0.005850000000000001,
+                  "ScriptDuration": 0.004172000000000002,
+                  "TaskDuration": 0.046394000000000046,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 76.70000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.004141000000000006,
+                  "RecalcStyleDuration": 0.006624999999999992,
+                  "ScriptDuration": 0.0060059999999999975,
+                  "TaskDuration": 0.04115000000000002,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.14112299999999997,
+              "RecalcStyleDuration": 0.055201,
+              "ScriptDuration": 0.034462,
+              "TaskDuration": 0.5643689999999999,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0030090000000000013,
+                "ScriptDuration": 0.0011640000000000018,
+                "TaskDuration": 0.049671999999999994,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.13227999999999998,
+                "RecalcStyleDuration": 0.046746,
+                "ScriptDuration": 0.031703999999999996,
+                "TaskDuration": 0.41472699999999996,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.00884299999999999,
+                "RecalcStyleDuration": 0.0054459999999999925,
+                "ScriptDuration": 0.0015939999999999982,
+                "TaskDuration": 0.09997,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 2909.2000000029802,
+                "duration": 114
+              },
+              {
+                "start": 3993.9000000059605,
+                "duration": 67
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                114,
+                67
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 569,
+            "periodCallbackMs": 96.5,
+            "historyReadyMs": 130.70000000298023,
+            "reviewReadyMs": 109,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 254.70000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.126677,
+                  "RecalcStyleDuration": 0.021088999999999997,
+                  "ScriptDuration": 0.006630999999999998,
+                  "TaskDuration": 0.19819600000000004,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  159
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 1006.6999999880791,
+                "cpu": {
+                  "LayoutDuration": 0.03195500000000001,
+                  "RecalcStyleDuration": 0.011355999999999998,
+                  "ScriptDuration": 0.011821000000000005,
+                  "TaskDuration": 0.13904500000000009,
+                  "LayoutCount": 3
+                },
+                "longTasks": [
+                  55
+                ]
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 44.20000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.0045600000000000085,
+                  "RecalcStyleDuration": 0.006933000000000009,
+                  "ScriptDuration": 0.004078999999999999,
+                  "TaskDuration": 0.03694199999999992,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 59.29999999701977,
+                "cpu": {
+                  "LayoutDuration": 0.006052999999999975,
+                  "RecalcStyleDuration": 0.006622000000000003,
+                  "ScriptDuration": 0.004407000000000001,
+                  "TaskDuration": 0.04282699999999995,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.17700200000000002,
+              "RecalcStyleDuration": 0.062095000000000004,
+              "ScriptDuration": 0.029938,
+              "TaskDuration": 0.614744,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0024419999999999997,
+                "ScriptDuration": 0.0012980000000000005,
+                "TaskDuration": 0.05692700000000006,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.169245,
+                "RecalcStyleDuration": 0.050730000000000004,
+                "ScriptDuration": 0.02771,
+                "TaskDuration": 0.4589169999999999,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.007757000000000014,
+                "RecalcStyleDuration": 0.008923,
+                "ScriptDuration": 0.0009300000000000003,
+                "TaskDuration": 0.09889999999999999,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 3145.3999999910593,
+                "duration": 159
+              },
+              {
+                "start": 4277.70000000298,
+                "duration": 55
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                159,
+                55
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 445.70000000298023,
+            "periodCallbackMs": 96.40000000596046,
+            "historyReadyMs": 117.29999999701977,
+            "reviewReadyMs": 83.90000000596046,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 174.5,
+                "cpu": {
+                  "LayoutDuration": 0.07327299999999998,
+                  "RecalcStyleDuration": 0.010473999999999997,
+                  "ScriptDuration": 0.002603000000000001,
+                  "TaskDuration": 0.12237300000000001,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  88
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 992.8000000119209,
+                "cpu": {
+                  "LayoutDuration": 0.03195800000000004,
+                  "RecalcStyleDuration": 0.014257000000000006,
+                  "ScriptDuration": 0.009488999999999997,
+                  "TaskDuration": 0.11772300000000002,
+                  "LayoutCount": 3
+                },
+                "longTasks": [
+                  60
+                ]
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 44.30000001192093,
+                "cpu": {
+                  "LayoutDuration": 0.0036249999999999893,
+                  "RecalcStyleDuration": 0.00469,
+                  "ScriptDuration": 0.0029479999999999992,
+                  "TaskDuration": 0.029939999999999967,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 61.400000005960464,
+                "cpu": {
+                  "LayoutDuration": 0.003452999999999984,
+                  "RecalcStyleDuration": 0.006282999999999997,
+                  "ScriptDuration": 0.003593000000000006,
+                  "TaskDuration": 0.037575000000000025,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.118452,
+              "RecalcStyleDuration": 0.047684000000000004,
+              "ScriptDuration": 0.021767,
+              "TaskDuration": 0.453622,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0034290000000000015,
+                "ScriptDuration": 0.0008599999999999997,
+                "TaskDuration": 0.035356,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.11230899999999999,
+                "RecalcStyleDuration": 0.039487999999999995,
+                "ScriptDuration": 0.020283000000000002,
+                "TaskDuration": 0.35024200000000005,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.0061430000000000096,
+                "RecalcStyleDuration": 0.004767000000000007,
+                "ScriptDuration": 0.0006239999999999996,
+                "TaskDuration": 0.06802399999999997,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 3087.1000000089407,
+                "duration": 88
+              },
+              {
+                "start": 4122.9000000059605,
+                "duration": 60
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                88,
+                60
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 450.79999999701977,
+            "periodCallbackMs": 95.69999998807907,
+            "historyReadyMs": 118.40000000596046,
+            "reviewReadyMs": 77.09999999403954,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 189.90000000596046,
+                "cpu": {
+                  "LayoutDuration": 0.07441699999999998,
+                  "RecalcStyleDuration": 0.013113999999999997,
+                  "ScriptDuration": 0.005896000000000002,
+                  "TaskDuration": 0.12549700000000003,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  96
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 993.3999999910593,
+                "cpu": {
+                  "LayoutDuration": 0.029949000000000003,
+                  "RecalcStyleDuration": 0.009568,
+                  "ScriptDuration": 0.009509,
+                  "TaskDuration": 0.11354599999999992,
+                  "LayoutCount": 3
+                },
+                "longTasks": [
+                  53
+                ]
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 58.70000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.003599999999999992,
+                  "RecalcStyleDuration": 0.003821000000000005,
+                  "ScriptDuration": 0.0061290000000000025,
+                  "TaskDuration": 0.04262699999999997,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 60.8999999910593,
+                "cpu": {
+                  "LayoutDuration": 0.0035720000000000196,
+                  "RecalcStyleDuration": 0.006739999999999996,
+                  "ScriptDuration": 0.003604999999999997,
+                  "TaskDuration": 0.041822000000000026,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.11754,
+              "RecalcStyleDuration": 0.04532,
+              "ScriptDuration": 0.026915,
+              "TaskDuration": 0.46138399999999996,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0031249999999999993,
+                "ScriptDuration": 0.0008869999999999989,
+                "TaskDuration": 0.03698399999999996,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.111538,
+                "RecalcStyleDuration": 0.037789,
+                "ScriptDuration": 0.025796,
+                "TaskDuration": 0.358186,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.006002000000000007,
+                "RecalcStyleDuration": 0.004405999999999993,
+                "ScriptDuration": 0.00023200000000000304,
+                "TaskDuration": 0.066214,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 2869.7000000029802,
+                "duration": 96
+              },
+              {
+                "start": 3922.8999999910593,
+                "duration": 53
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                96,
+                53
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 436.29999999701977,
+            "periodCallbackMs": 114.20000000298023,
+            "historyReadyMs": 119.8999999910593,
+            "reviewReadyMs": 90.79999999701977,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 176.19999998807907,
+                "cpu": {
+                  "LayoutDuration": 0.08107799999999998,
+                  "RecalcStyleDuration": 0.015612999999999998,
+                  "ScriptDuration": 0.0038660000000000014,
+                  "TaskDuration": 0.13022899999999993,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  103
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 975.7999999970198,
+                "cpu": {
+                  "LayoutDuration": 0.02884500000000001,
+                  "RecalcStyleDuration": 0.009105000000000002,
+                  "ScriptDuration": 0.007173999999999996,
+                  "TaskDuration": 0.11680500000000005,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 59.8999999910593,
+                "cpu": {
+                  "LayoutDuration": 0.003558999999999979,
+                  "RecalcStyleDuration": 0.0039920000000000025,
+                  "ScriptDuration": 0.0030790000000000053,
+                  "TaskDuration": 0.03521299999999994,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 60.79999999701977,
+                "cpu": {
+                  "LayoutDuration": 0.003932000000000047,
+                  "RecalcStyleDuration": 0.004687999999999998,
+                  "ScriptDuration": 0.0029749999999999985,
+                  "TaskDuration": 0.02662500000000001,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.1261,
+              "RecalcStyleDuration": 0.045146000000000006,
+              "ScriptDuration": 0.020191999999999998,
+              "TaskDuration": 0.45479200000000003,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0024999999999999988,
+                "ScriptDuration": 0.0009310000000000013,
+                "TaskDuration": 0.03762300000000002,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.11741400000000002,
+                "RecalcStyleDuration": 0.03719700000000001,
+                "ScriptDuration": 0.018084,
+                "TaskDuration": 0.34660199999999997,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.008685999999999972,
+                "RecalcStyleDuration": 0.0054490000000000025,
+                "ScriptDuration": 0.0011769999999999975,
+                "TaskDuration": 0.07056700000000005,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 2798.8999999910593,
+                "duration": 103
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                103
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "rejectedClosedDetailsCandidate": {
+    "scenario": "gate shared history then decision reread; retain chart period/point and draft focus/selection",
+    "conditions": "5 fresh Chromium sessions at 390x844; warmed portfolio,365 prices,10 saved decisions,10 long AI histories; synthetic 50ms API reads plus controlled gates; Chromium CPU4x/WebKit default; SW blocked; callback/readiness includes automation and two rAF; aggregate CPU/longtasks cover both late phases AND intervening editor input; phaseCpu separates history/editor/review including automation assertions; phaseLongTasks grouped by task start; no heap/byte measurement",
+    "samples": [
+      {
+        "run": 1,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 441.09999999403954,
+            "periodCallbackMs": 95.09999999403954,
+            "historyReadyMs": 117.29999999701977,
+            "reviewReadyMs": 91.79999999701977,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 204.1000000089407,
+                "cpu": {
+                  "LayoutDuration": 0.09543099999999996,
+                  "RecalcStyleDuration": 0.018340000000000002,
+                  "ScriptDuration": 0.004378,
+                  "TaskDuration": 0.15551699999999996,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  123
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 1024.7999999970198,
+                "cpu": {
+                  "LayoutDuration": 0.040700000000000014,
+                  "RecalcStyleDuration": 0.012503,
+                  "ScriptDuration": 0.011181000000000003,
+                  "TaskDuration": 0.13790000000000002,
+                  "LayoutCount": 3
+                },
+                "longTasks": [
+                  67
+                ]
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 58.70000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.0048940000000000095,
+                  "RecalcStyleDuration": 0.006842000000000001,
+                  "ScriptDuration": 0.0038669999999999954,
+                  "TaskDuration": 0.0389250000000001,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 59.79999999701977,
+                "cpu": {
+                  "LayoutDuration": 0.0037429999999999963,
+                  "RecalcStyleDuration": 0.005774000000000001,
+                  "ScriptDuration": 0.0051250000000000046,
+                  "TaskDuration": 0.04095599999999999,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.15289099999999997,
+              "RecalcStyleDuration": 0.053691,
+              "ScriptDuration": 0.031438999999999995,
+              "TaskDuration": 0.530712,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0022719999999999997,
+                "ScriptDuration": 0.0038060000000000004,
+                "TaskDuration": 0.04156099999999996,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.14476799999999998,
+                "RecalcStyleDuration": 0.04663900000000001,
+                "ScriptDuration": 0.025426999999999998,
+                "TaskDuration": 0.40898200000000007,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.008122999999999991,
+                "RecalcStyleDuration": 0.004779999999999993,
+                "ScriptDuration": 0.0022059999999999996,
+                "TaskDuration": 0.08016899999999993,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 3096.1000000089407,
+                "duration": 123
+              },
+              {
+                "start": 4180.79999999702,
+                "duration": 67
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                123,
+                67
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 500.40000000596046,
+            "periodCallbackMs": 128.29999999701977,
+            "historyReadyMs": 117,
+            "reviewReadyMs": 75.09999999403954,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 190.59999999403954,
+                "cpu": {
+                  "LayoutDuration": 0.08122599999999996,
+                  "RecalcStyleDuration": 0.014571999999999998,
+                  "ScriptDuration": 0.004913000000000001,
+                  "TaskDuration": 0.13316699999999992,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  102
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 994,
+                "cpu": {
+                  "LayoutDuration": 0.03081600000000001,
+                  "RecalcStyleDuration": 0.011500000000000003,
+                  "ScriptDuration": 0.007960000000000002,
+                  "TaskDuration": 0.11106899999999997,
+                  "LayoutCount": 3
+                },
+                "longTasks": [
+                  53
+                ]
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 43.8999999910593,
+                "cpu": {
+                  "LayoutDuration": 0.006974000000000036,
+                  "RecalcStyleDuration": 0.004647999999999999,
+                  "ScriptDuration": 0.004036999999999999,
+                  "TaskDuration": 0.03639400000000004,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 76.79999999701977,
+                "cpu": {
+                  "LayoutDuration": 0.0025399999999999867,
+                  "RecalcStyleDuration": 0.0076970000000000025,
+                  "ScriptDuration": 0.0029509999999999953,
+                  "TaskDuration": 0.04309800000000008,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.127969,
+              "RecalcStyleDuration": 0.048325999999999994,
+              "ScriptDuration": 0.022032000000000003,
+              "TaskDuration": 0.45372199999999996,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.001978999999999998,
+                "ScriptDuration": 0.0011029999999999998,
+                "TaskDuration": 0.030405000000000015,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.121556,
+                "RecalcStyleDuration": 0.04249800000000001,
+                "ScriptDuration": 0.020013999999999997,
+                "TaskDuration": 0.35925799999999997,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.006413000000000002,
+                "RecalcStyleDuration": 0.0038489999999999913,
+                "ScriptDuration": 0.0009150000000000061,
+                "TaskDuration": 0.06405899999999998,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 2888.5,
+                "duration": 102
+              },
+              {
+                "start": 3936.5999999940395,
+                "duration": 53
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                102,
+                53
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 393.5,
+            "periodCallbackMs": 97.29999999701977,
+            "historyReadyMs": 123.20000000298023,
+            "reviewReadyMs": 70.5,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 190.20000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.081291,
+                  "RecalcStyleDuration": 0.014311999999999998,
+                  "ScriptDuration": 0.003945000000000001,
+                  "TaskDuration": 0.13046100000000005,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  102
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 960,
+                "cpu": {
+                  "LayoutDuration": 0.026888999999999996,
+                  "RecalcStyleDuration": 0.008542000000000001,
+                  "ScriptDuration": 0.009793999999999997,
+                  "TaskDuration": 0.10577199999999998,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 45.6000000089407,
+                "cpu": {
+                  "LayoutDuration": 0.0044239999999999835,
+                  "RecalcStyleDuration": 0.004385,
+                  "ScriptDuration": 0.0037739999999999996,
+                  "TaskDuration": 0.032484999999999986,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 62,
+                "cpu": {
+                  "LayoutDuration": 0.003280000000000005,
+                  "RecalcStyleDuration": 0.005970999999999997,
+                  "ScriptDuration": 0.004135,
+                  "TaskDuration": 0.03602300000000003,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.12406600000000001,
+              "RecalcStyleDuration": 0.04453299999999999,
+              "ScriptDuration": 0.024977000000000003,
+              "TaskDuration": 0.46180499999999997,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0024519999999999993,
+                "ScriptDuration": 0.001122999999999999,
+                "TaskDuration": 0.04067799999999999,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.11588399999999999,
+                "RecalcStyleDuration": 0.03764,
+                "ScriptDuration": 0.022485,
+                "TaskDuration": 0.34780300000000003,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.008182000000000023,
+                "RecalcStyleDuration": 0.0044409999999999936,
+                "ScriptDuration": 0.0013690000000000022,
+                "TaskDuration": 0.07332399999999994,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 2846.0999999940395,
+                "duration": 102
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                102
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 412.70000000298023,
+            "periodCallbackMs": 97.29999999701977,
+            "historyReadyMs": 116.70000000298023,
+            "reviewReadyMs": 83.20000000298023,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 191.09999999403954,
+                "cpu": {
+                  "LayoutDuration": 0.08534799999999998,
+                  "RecalcStyleDuration": 0.014284000000000002,
+                  "ScriptDuration": 0.004938000000000001,
+                  "TaskDuration": 0.136571,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  107
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 992.6999999880791,
+                "cpu": {
+                  "LayoutDuration": 0.029842000000000035,
+                  "RecalcStyleDuration": 0.010119999999999997,
+                  "ScriptDuration": 0.009829000000000001,
+                  "TaskDuration": 0.11882700000000002,
+                  "LayoutCount": 3
+                },
+                "longTasks": [
+                  51
+                ]
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 62.1000000089407,
+                "cpu": {
+                  "LayoutDuration": 0.0031449999999999534,
+                  "RecalcStyleDuration": 0.006037000000000001,
+                  "ScriptDuration": 0.0036500000000000005,
+                  "TaskDuration": 0.03841799999999995,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 62.30000001192093,
+                "cpu": {
+                  "LayoutDuration": 0.005396000000000012,
+                  "RecalcStyleDuration": 0.004361000000000004,
+                  "ScriptDuration": 0.003714999999999996,
+                  "TaskDuration": 0.03073199999999998,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.131896,
+              "RecalcStyleDuration": 0.044768,
+              "ScriptDuration": 0.02509,
+              "TaskDuration": 0.46478100000000006,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0021839999999999984,
+                "ScriptDuration": 0.0009440000000000004,
+                "TaskDuration": 0.030638000000000054,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.12373099999999998,
+                "RecalcStyleDuration": 0.038354,
+                "ScriptDuration": 0.02293,
+                "TaskDuration": 0.3557989999999999,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.008165000000000033,
+                "RecalcStyleDuration": 0.004230000000000005,
+                "ScriptDuration": 0.0012160000000000018,
+                "TaskDuration": 0.07834400000000008,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 2867.2000000029802,
+                "duration": 107
+              },
+              {
+                "start": 3918.6000000089407,
+                "duration": 51
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                107,
+                51
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "engine": "chromium",
+        "attempts": [
+          {
+            "readyMs": 491.20000000298023,
+            "periodCallbackMs": 113.20000000298023,
+            "historyReadyMs": 106.29999999701977,
+            "reviewReadyMs": 84.5,
+            "selected": {
+              "date": "2026-07-29 · 종가",
+              "start": "272",
+              "count": "93",
+              "period": "3",
+              "selected": "272"
+            },
+            "editorSteps": [
+              {
+                "label": "revealSavedReview",
+                "callbackMs": 175.70000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.07366,
+                  "RecalcStyleDuration": 0.013849000000000004,
+                  "ScriptDuration": 0.0034020000000000022,
+                  "TaskDuration": 0.12362200000000001,
+                  "LayoutCount": 2
+                },
+                "longTasks": [
+                  94
+                ]
+              },
+              {
+                "label": "openEditor",
+                "callbackMs": 991.8999999910593,
+                "cpu": {
+                  "LayoutDuration": 0.02566799999999997,
+                  "RecalcStyleDuration": 0.011695999999999998,
+                  "ScriptDuration": 0.010873999999999995,
+                  "TaskDuration": 0.12369600000000003,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReason",
+                "callbackMs": 60.20000000298023,
+                "cpu": {
+                  "LayoutDuration": 0.003925000000000012,
+                  "RecalcStyleDuration": 0.0053389999999999965,
+                  "ScriptDuration": 0.002480000000000003,
+                  "TaskDuration": 0.03353600000000001,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              },
+              {
+                "label": "fillReview",
+                "callbackMs": 60,
+                "cpu": {
+                  "LayoutDuration": 0.0045520000000000005,
+                  "RecalcStyleDuration": 0.0045550000000000035,
+                  "ScriptDuration": 0.0038530000000000023,
+                  "TaskDuration": 0.03966800000000004,
+                  "LayoutCount": 3
+                },
+                "longTasks": []
+              }
+            ],
+            "cpu": {
+              "LayoutDuration": 0.11476900000000001,
+              "RecalcStyleDuration": 0.047485,
+              "ScriptDuration": 0.025143,
+              "TaskDuration": 0.47183800000000004,
+              "LayoutCount": 12
+            },
+            "phaseCpu": {
+              "history": {
+                "LayoutDuration": 0,
+                "RecalcStyleDuration": 0.0026720000000000008,
+                "ScriptDuration": 0.0013070000000000026,
+                "TaskDuration": 0.02845599999999998,
+                "LayoutCount": 0
+              },
+              "editor": {
+                "LayoutDuration": 0.10780499999999998,
+                "RecalcStyleDuration": 0.03925100000000001,
+                "ScriptDuration": 0.021149,
+                "TaskDuration": 0.36138099999999995,
+                "LayoutCount": 11
+              },
+              "review": {
+                "LayoutDuration": 0.006964000000000026,
+                "RecalcStyleDuration": 0.0055619999999999975,
+                "ScriptDuration": 0.002686999999999995,
+                "TaskDuration": 0.0820010000000001,
+                "LayoutCount": 1
+              }
+            },
+            "longTasks": [
+              {
+                "start": 2932.2000000029802,
+                "duration": 94
+              }
+            ],
+            "phaseLongTasks": {
+              "history": [],
+              "editor": [
+                94
+              ],
+              "review": []
+            },
+            "requests": 8,
+            "requestNames": [
+              "get_live_security_detail",
+              "get_live_security_activity",
+              "get_investment_thesis",
+              "get_investment_decisions",
+              "ai_analysis_history",
+              "investment_breakout_rules",
+              "get_live_decision_metrics",
+              "get_investment_decisions"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

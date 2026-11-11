@@ -1,0 +1,67 @@
+{
+  "conditions": "Alternating AB/BA, five fresh sessions per source; synthetic 50ms API delay, Chromium 390x844 CPU4x, SW blocked. Wealth click through amount presence and two rAF callbacks. Not physical iPhone or live server timing.",
+  "before": [
+    {
+      "run": 1,
+      "wealthPaintMs": 320,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 287,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 276,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 421,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 770,
+      "requests": 1,
+      "technicalRequests": 0
+    }
+  ],
+  "after": [
+    {
+      "run": 1,
+      "wealthPaintMs": 274,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 252,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 328,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 305,
+      "requests": 1,
+      "technicalRequests": 0
+    },
+    {
+      "run": 1,
+      "wealthPaintMs": 318,
+      "requests": 1,
+      "technicalRequests": 0
+    }
+  ]
+}

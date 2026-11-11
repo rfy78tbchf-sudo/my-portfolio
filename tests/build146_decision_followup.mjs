@@ -1,0 +1,12 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const source=fs.readFileSync('index.html','utf8'),c=vm.createContext({});
+vm.runInContext(source.slice(source.indexOf('  function decisionFollowupDraft('),source.indexOf('  function decisionReviewHtml(')),c);
+const saved={choice:'pause_addition',reason:'실적 확인까지 추가매수 보류',review_condition:'2026-10-06'};
+const empty={reason:'',review:''},make=(d=saved,draft=empty,edited=false)=>c.decisionFollowupDraft(d,draft,'2026-10-06',edited);
+assert.equal(make().reason,saved.reason);assert.equal(make().choice,saved.choice);assert.equal(make().review,'');assert.equal(make().expired,true);
+assert.equal(make({...saved,review_condition:'2026-10-05'}).review,'');assert.equal(make({...saved,review_condition:'2026-10-07'}).review,'2026-10-07');
+assert.equal(make({...saved,review_condition:'종가 250 달러 이하'}).review,'종가 250 달러 이하');
+assert.equal(make(saved,{reason:'새 이유',review:''}),null);assert.equal(make(saved,{reason:'',review:'새 조건'}),null);assert.equal(make(saved,empty,true),null,'intentionally cleared drafts remain cleared');
+assert.equal(saved.review_condition,'2026-10-06','old decision stays immutable');
+assert.match(source,/data-review-entry="true"/);assert.match(source,/if\(reviewEntry\)revealDetailTarget/);
+console.log('Build146: prior reason/choice, expired vs future conditions, edited-draft preservation and review entry passed');

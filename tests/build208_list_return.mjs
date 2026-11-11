@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+let timer,focused=0;
+const classes=new Set();
+const row={isConnected:true,tagName:'DIV',getClientRects:()=>[1],matches:()=>false,setAttribute(k,v){this[k]=v},focus(opts){assert.equal(opts.preventScroll,true);focused++},classList:{add:x=>classes.add(x),remove:x=>classes.delete(x)},getAttribute:()=> 'stock',hasAttribute:k=>k==='data-security-id'};
+const context=vm.createContext({document:{getElementById:()=>({querySelectorAll:()=>[row]})},setTimeout(cb,ms){assert.equal(ms,2400);timer=cb;return 1},clearTimeout(){timer=null}});
+vm.runInContext(source.slice(source.indexOf('  var detailReturnMark='),source.indexOf('  var detailNextCleanup=')),context);
+context.restoreDetailReturnFocus(row);assert.equal(focused,1);assert.equal(row.tabindex,'-1');assert.ok(classes.has('detail-return-highlight'));
+timer();assert.equal(classes.size,0);
+context.restoreDetailReturnFocus({...row,isConnected:false});assert.equal(focused,2,'background replacement resolves same stock');
+context.clearDetailReturnMark();assert.equal(classes.size,0);assert.equal(timer,null);
+context.restoreDetailReturnFocus({...row,getClientRects:()=>[]});assert.equal(focused,2,'hidden origin does not steal focus');
+assert.ok(source.includes("x.focus({preventScroll:true});openSecurityDetail(x.getAttribute('data-security-id'))"),'touch card captures its own origin');
+console.log('Build208: touch origin, replaced row, hidden row, timed marker cleanup passed');

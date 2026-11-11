@@ -1,0 +1,12 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');let complete;const calls=[];
+const c=vm.createContext({mode:'live',document:{visibilityState:'visible',getElementById:()=>({setAttribute(){},classList:{add(){},remove(){}}})},liveRefreshPromise:null,lastLiveLoadAt:0,currentTab:'home',window:{scrollY:100,scrollTo(){throw Error('stale position must not be restored')}},live:{},loadLive:()=>new Promise(resolve=>complete=resolve),render:preserve=>calls.push([preserve,c.window.scrollY,c.currentTab])});
+vm.runInContext(html.slice(html.indexOf('  function refreshLive('),html.indexOf('  (function bindPullToRefresh')),c);
+const pending=c.refreshLive(true,false);await Promise.resolve();c.window.scrollY=650;c.currentTab='performance';complete();await pending;
+assert.deepEqual(calls,[[true,650,'performance']]);
+vm.runInContext(html.slice(html.indexOf('  function captureExpandedSections('),html.indexOf('  function render(preserveScroll)')),c);
+const node=(id,label,open)=>({id,open,querySelector:()=>({textContent:label})});
+let nodes=[node('known','before',true),node('','unchanged',true),node('','old',true)];const content={querySelectorAll:()=>nodes},states=c.captureExpandedSections(content);
+nodes=[node('known','after',false),node('','unchanged',false),node('','different',false)];c.restoreExpandedSections(content,states);
+assert.deepEqual(nodes.map(x=>x.open),[true,true,false]);
+console.log('Build164: refresh respects current scroll/tab and restores only matching expanded sections');

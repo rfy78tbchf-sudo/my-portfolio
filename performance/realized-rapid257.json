@@ -1,0 +1,212 @@
+{
+  "browser": "chromium",
+  "holdingCount": 4,
+  "viewport": "390x844",
+  "transportMs": 50,
+  "securities": 100,
+  "transactions": 3000,
+  "sql": "local PGlite, actual realized and nested stock functions; NAV stubbed",
+  "samples": [
+    {
+      "variant": "baseline",
+      "run": 0,
+      "ms": 4825.80000000447,
+      "trace": [
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": -150.89999999850988,
+          "networkMs": -150.59999999403954,
+          "resolvedMs": 4285
+        },
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": 11.700000002980232,
+          "networkMs": 4285,
+          "resolvedMs": 4779.4000000059605
+        },
+        {
+          "name": "get_live_period_stock_pnl",
+          "requestedMs": 12.200000002980232,
+          "networkMs": 4779.4000000059605,
+          "resolvedMs": 4876.80000000447
+        }
+      ],
+      "sql": [
+        {
+          "variant": "baseline",
+          "period": "ALL",
+          "ms": 4349.024912000003
+        },
+        {
+          "variant": "baseline",
+          "period": "1W",
+          "ms": 437.81521299999804
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 0,
+      "ms": 1180.1999999955297,
+      "trace": [
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": -150.10000000149012,
+          "networkMs": -150,
+          "resolvedMs": 677.5
+        },
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": 8.100000001490116,
+          "networkMs": 677.5,
+          "resolvedMs": 1137.2999999970198
+        }
+      ],
+      "sql": [
+        {
+          "variant": "candidate",
+          "period": "ALL",
+          "ms": 738.0235479999974
+        },
+        {
+          "variant": "candidate",
+          "period": "1W",
+          "ms": 403.296112
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 1,
+      "ms": 1304.8999999985099,
+      "trace": [
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": -150.10000000149012,
+          "networkMs": -150.10000000149012,
+          "resolvedMs": 769.0999999940395
+        },
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": 12.199999995529652,
+          "networkMs": 769.1999999955297,
+          "resolvedMs": 1264
+        }
+      ],
+      "sql": [
+        {
+          "variant": "candidate",
+          "period": "ALL",
+          "ms": 828.5059609999989
+        },
+        {
+          "variant": "candidate",
+          "period": "1W",
+          "ms": 439.247335
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "run": 1,
+      "ms": 4660.79999999702,
+      "trace": [
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": -150.20000000298023,
+          "networkMs": -150.10000000149012,
+          "resolvedMs": 4124.79999999702
+        },
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": 5.699999995529652,
+          "networkMs": 4124.79999999702,
+          "resolvedMs": 4620.69999999553
+        }
+      ],
+      "sql": [
+        {
+          "variant": "baseline",
+          "period": "ALL",
+          "ms": 4187.163486000001
+        },
+        {
+          "variant": "baseline",
+          "period": "1W",
+          "ms": 433.0177879999974
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "run": 2,
+      "ms": 4710.10000000149,
+      "trace": [
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": -150.29999999701977,
+          "networkMs": -150.10000000149012,
+          "resolvedMs": 4174.10000000149
+        },
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": 5.600000001490116,
+          "networkMs": 4174.10000000149,
+          "resolvedMs": 4659.79999999702
+        }
+      ],
+      "sql": [
+        {
+          "variant": "baseline",
+          "period": "ALL",
+          "ms": 4237.840940000002
+        },
+        {
+          "variant": "baseline",
+          "period": "1W",
+          "ms": 422.3873920000042
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 2,
+      "ms": 1220.8000000044703,
+      "trace": [
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": -150.19999999552965,
+          "networkMs": -150.10000000149012,
+          "resolvedMs": 668.6000000014901
+        },
+        {
+          "name": "get_live_realized_sales",
+          "requestedMs": 6.5,
+          "networkMs": 668.6000000014901,
+          "resolvedMs": 1178.6000000014901
+        }
+      ],
+      "sql": [
+        {
+          "variant": "candidate",
+          "period": "ALL",
+          "ms": 732.925264999998
+        },
+        {
+          "variant": "candidate",
+          "period": "1W",
+          "ms": 454.7861619999967
+        }
+      ]
+    }
+  ],
+  "conditions": {
+    "input": "force old ALL realized request then select1W after150ms in browser timer",
+    "metric": "new selection timestamp to matching current result plus two frames",
+    "CPU": "unthrottled",
+    "network": "50ms intercepted request delay plus actual local SQL",
+    "NAV": "stubbed",
+    "pairs": 3,
+    "oldRequestRequiredToSpanNewInput": true
+  }
+}

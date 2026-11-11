@@ -1,0 +1,120 @@
+{
+  "holdingCount": 4,
+  "failureSamples": [
+    {
+      "run": 0,
+      "version": "before",
+      "ms": 100.87508400000002,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 0,
+      "version": "after",
+      "ms": 100.94707199999993,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 1,
+      "version": "before",
+      "ms": 100.86265000000003,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 1,
+      "version": "after",
+      "ms": 101.14001999999982,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 2,
+      "version": "before",
+      "ms": 100.89602500000001,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 2,
+      "version": "after",
+      "ms": 101.8859500000001,
+      "requests": 4,
+      "max": 3
+    }
+  ],
+  "scope": "isolated loader VM, synthetic securities, 50ms response, no browser or real backend speed claim",
+  "samples": [
+    {
+      "run": 0,
+      "version": "before",
+      "ms": 100.963325,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 0,
+      "version": "after",
+      "ms": 101.491782,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 1,
+      "version": "after",
+      "ms": 100.03001799999998,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 1,
+      "version": "before",
+      "ms": 101.018712,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 2,
+      "version": "before",
+      "ms": 101.25518099999994,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 2,
+      "version": "after",
+      "ms": 100.44377899999995,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 3,
+      "version": "after",
+      "ms": 100.85513800000001,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 3,
+      "version": "before",
+      "ms": 100.9278569999999,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 4,
+      "version": "before",
+      "ms": 100.823083,
+      "requests": 4,
+      "max": 3
+    },
+    {
+      "run": 4,
+      "version": "after",
+      "ms": 100.856672,
+      "requests": 4,
+      "max": 3
+    }
+  ]
+}

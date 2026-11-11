@@ -1,0 +1,289 @@
+{
+  "browser": "chromium",
+  "holdingCount": 4,
+  "viewport": "390x844",
+  "transportMs": 50,
+  "samples": [
+    {
+      "scope": "stocks",
+      "target": "1W",
+      "run": 0,
+      "ms": 80.90000000596046,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1W",
+      "run": 1,
+      "ms": 76.5,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1W",
+      "run": 2,
+      "ms": 83.79999999701977,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1W",
+      "run": 3,
+      "ms": 82.09999999403954,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1W",
+      "run": 4,
+      "ms": 84.29999999701977,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1M",
+      "run": 0,
+      "ms": 74.29999999701977,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1M",
+      "run": 1,
+      "ms": 81.79999999701977,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1M",
+      "run": 2,
+      "ms": 82.10000000149012,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1M",
+      "run": 3,
+      "ms": 81,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "1M",
+      "run": 4,
+      "ms": 76.20000000298023,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "3M",
+      "run": 0,
+      "ms": 83.5,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "3M",
+      "run": 1,
+      "ms": 75,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "3M",
+      "run": 2,
+      "ms": 74.79999999701977,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "3M",
+      "run": 3,
+      "ms": 77.70000000298023,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "3M",
+      "run": 4,
+      "ms": 76,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "ALL",
+      "run": 0,
+      "ms": 85.69999999552965,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "ALL",
+      "run": 1,
+      "ms": 83,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "ALL",
+      "run": 2,
+      "ms": 76.29999999701977,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "ALL",
+      "run": 3,
+      "ms": 76.09999999403954,
+      "requests": 0
+    },
+    {
+      "scope": "stocks",
+      "target": "ALL",
+      "run": 4,
+      "ms": 83,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1W",
+      "run": 0,
+      "ms": 82,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1W",
+      "run": 1,
+      "ms": 83.59999999403954,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1W",
+      "run": 2,
+      "ms": 79.89999999850988,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1W",
+      "run": 3,
+      "ms": 82.89999999850988,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1W",
+      "run": 4,
+      "ms": 82.89999999850988,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1M",
+      "run": 0,
+      "ms": 71.60000000149012,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1M",
+      "run": 1,
+      "ms": 72.19999999552965,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1M",
+      "run": 2,
+      "ms": 82.60000000149012,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1M",
+      "run": 3,
+      "ms": 85.10000000149012,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "1M",
+      "run": 4,
+      "ms": 79.5,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "3M",
+      "run": 0,
+      "ms": 81.09999999403954,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "3M",
+      "run": 1,
+      "ms": 70.59999999403954,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "3M",
+      "run": 2,
+      "ms": 71.89999999850988,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "3M",
+      "run": 3,
+      "ms": 59.399999998509884,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "3M",
+      "run": 4,
+      "ms": 83.80000000447035,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "ALL",
+      "run": 0,
+      "ms": 83.60000000149012,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "ALL",
+      "run": 1,
+      "ms": 84.89999999850988,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "ALL",
+      "run": 2,
+      "ms": 72.69999999552965,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "ALL",
+      "run": 3,
+      "ms": 72.89999999850988,
+      "requests": 0
+    },
+    {
+      "scope": "all",
+      "target": "ALL",
+      "run": 4,
+      "ms": 77.69999999552965,
+      "requests": 0
+    }
+  ],
+  "supersededExtraDelayMs": 300
+}

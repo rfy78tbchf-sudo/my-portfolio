@@ -1,0 +1,65 @@
+{
+  "scope": "Chromium390,4 synthetic holdings,50ms transport,held old response,3 alternating pairs; final state check not a speed gain",
+  "samples": [
+    {
+      "run": 0,
+      "version": "before",
+      "scenario": "history completes during held old-period response",
+      "ms": 1173.911694,
+      "finalRevision": 1,
+      "displayedRevision": 0,
+      "requests": 54,
+      "periodRequests": 1
+    },
+    {
+      "run": 0,
+      "version": "after",
+      "scenario": "history completes during held old-period response",
+      "ms": 2271.667345,
+      "finalRevision": 1,
+      "displayedRevision": 1,
+      "requests": 106,
+      "periodRequests": 2
+    },
+    {
+      "run": 1,
+      "version": "after",
+      "scenario": "history completes during held old-period response",
+      "ms": 2325.29797,
+      "finalRevision": 1,
+      "displayedRevision": 1,
+      "requests": 106,
+      "periodRequests": 2
+    },
+    {
+      "run": 1,
+      "version": "before",
+      "scenario": "history completes during held old-period response",
+      "ms": 1223.8352309999998,
+      "finalRevision": 1,
+      "displayedRevision": 0,
+      "requests": 54,
+      "periodRequests": 1
+    },
+    {
+      "run": 2,
+      "version": "before",
+      "scenario": "history completes during held old-period response",
+      "ms": 1249.0457799999997,
+      "finalRevision": 1,
+      "displayedRevision": 0,
+      "requests": 54,
+      "periodRequests": 1
+    },
+    {
+      "run": 2,
+      "version": "after",
+      "scenario": "history completes during held old-period response",
+      "ms": 2294.628871,
+      "finalRevision": 1,
+      "displayedRevision": 1,
+      "requests": 106,
+      "periodRequests": 2
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const c=vm.createContext({esc:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'),kstStamp:String});
+vm.runInContext(html.slice(html.indexOf('  function decisionChangeHtml('),html.indexOf('  function decisionReviewHtml(')),c);
+const previous={security_id:'a',created_at:'2026-10-06T01:00:00Z',choice:'hold',reason:'기존 이유',review_condition:'2026-10-07'};
+const current={...previous,created_at:'2026-10-08T01:00:00Z'};
+assert.match(c.decisionChangeHtml(current,previous),/같은 결정·이유·조건 재확인/);
+assert.doesNotMatch(c.decisionChangeHtml(current,previous),/<details[^>]*open/);
+const result=c.decisionChangeHtml({...current,choice:'pause_addition',reason:'새 이유 <img onerror=alert(1)>',review_condition:'2026-10-15'},previous);
+assert.match(result,/결정·이유·재점검 조건 변경/);assert.match(result,/이전: 현재 유지/);assert.match(result,/이번: 추가매수 보류/);assert.match(result,/기존 이유/);assert.match(result,/&lt;img/);assert.doesNotMatch(result,/<img/);
+for(const old of [null,{...previous,security_id:'b'},{...previous,created_at:current.created_at},{...previous,created_at:'bad'},{...previous,created_at:'2026-10-09'}])assert.equal(c.decisionChangeHtml(current,old),'');
+assert.equal(previous.reason,'기존 이유');
+assert.match(c.decisionChangeHtml({...current,reason:'  기존 이유  '},previous),/같은 결정·이유·조건/);
+console.log('Build159: chronological same-security judgment comparison, unchanged reconfirmation, escaping and immutable originals passed');

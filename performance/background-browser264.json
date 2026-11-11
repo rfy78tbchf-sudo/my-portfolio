@@ -1,0 +1,1 @@
+{"browser":"chromium","holdingCount":4,"viewport":"390x844","transportMs":50,"extraDelayMs":1000,"samples":[{"scenario":"history completes during held old-period response","ms":2274.099654,"finalRevision":1,"displayedRevision":1,"requests":106,"periodRequests":2}]}

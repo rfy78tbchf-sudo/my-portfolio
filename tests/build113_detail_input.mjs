@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+let closed=0,accepted=false;
+const c=vm.createContext({detailEpoch:0,document:{getElementById:()=>({classList:{add:()=>closed++}})},window:{confirm:()=>accepted}});
+vm.runInContext(source.slice(source.indexOf('  var detailReturnState='),source.indexOf('  function performanceReviewContext(')),c);
+c.detailDirtyGroups={thesisForm:1,detailDecisionForm:2};c.detailInputChanged=true;
+c.clearDetailDirty('detailDecisionForm',2);assert.equal(c.detailInputChanged,true,'saving decision does not discard an edited thesis');
+c.closeSecurityDetail();assert.equal(closed,0,'cancel preserves open detail');assert.equal(c.detailEpoch,0,'cancel preserves active request');
+c.clearDetailDirty('thesisForm',0);assert.equal(c.detailInputChanged,true,'late save must not clear a newer edit');
+c.clearDetailDirty('thesisForm',1);assert.equal(c.detailInputChanged,false);
+c.closeSecurityDetail();assert.equal(closed,1,'verified saved fields close without confirmation');
+c.detailDirtyGroups={detailDecisionForm:1};c.detailInputChanged=true;accepted=true;c.closeSecurityDetail();assert.equal(closed,2);assert.equal(c.detailInputChanged,false);
+console.log('Build113: cancel close, scoped saved state and late-save guard passed');

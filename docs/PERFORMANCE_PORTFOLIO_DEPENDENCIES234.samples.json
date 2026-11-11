@@ -1,0 +1,1712 @@
+{
+  "baseline": {
+    "conditions": "5 fresh Chromium sessions; each 3 rounds portfolio/performance/analysis/home; 390x844 CPU4x; synthetic 50ms API delay, real request queue, SW blocked; ready means idle required reads and two rAF callbacks, not presented paint/INP; forced GC on home after each round; --verify uses one session per engine and a gated rapid wealth/home round trip",
+    "samples": [
+      {
+        "run": 1,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 974,
+            "firstContentMs": 145,
+            "swingReadyMs": 946,
+            "requests": 31,
+            "names": [
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "get_live_flow_basis",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 445,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 242,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 90,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 130,
+            "firstContentMs": 96,
+            "swingReadyMs": 107,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 106,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 144,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 72,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 152,
+            "firstContentMs": 118,
+            "swingReadyMs": 125,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 123,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 123,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 78,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 971,
+            "firstContentMs": 172,
+            "swingReadyMs": 944,
+            "requests": 31,
+            "names": [
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "get_live_price_lifecycle_coverage",
+              "live_cash_case_assessments",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "get_live_flow_basis",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 498,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 273,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 137,
+            "firstContentMs": 104,
+            "swingReadyMs": 110,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 123,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 158,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 144,
+            "firstContentMs": 111,
+            "swingReadyMs": 117,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 189,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 157,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 77,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 917,
+            "firstContentMs": 183,
+            "swingReadyMs": 899,
+            "requests": 31,
+            "names": [
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "get_live_flow_basis",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 501,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 289,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 84,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 125,
+            "firstContentMs": 92,
+            "swingReadyMs": 98,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 126,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 142,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 73,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 145,
+            "firstContentMs": 113,
+            "swingReadyMs": 119,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 125,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 158,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 77,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 881,
+            "firstContentMs": 148,
+            "swingReadyMs": 853,
+            "requests": 31,
+            "names": [
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "get_live_flow_basis",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 397,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 244,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 105,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 141,
+            "firstContentMs": 107,
+            "swingReadyMs": 115,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 135,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 157,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 88,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 169,
+            "firstContentMs": 135,
+            "swingReadyMs": 147,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 172,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 158,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 78,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 906,
+            "firstContentMs": 142,
+            "swingReadyMs": 887,
+            "requests": 31,
+            "names": [
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "get_live_flow_basis",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 494,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 241,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 73,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 128,
+            "firstContentMs": 95,
+            "swingReadyMs": 100,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 138,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 143,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 145,
+            "firstContentMs": 112,
+            "swingReadyMs": 119,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 125,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 139,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 92,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      }
+    ]
+  },
+  "rejectedEarlySwing": {
+    "conditions": "5 fresh Chromium sessions; each 3 rounds portfolio/performance/analysis/home; 390x844 CPU4x; synthetic 50ms API delay, real request queue, SW blocked; ready means idle required reads and two rAF callbacks, not presented paint/INP; forced GC on home after each round; --verify uses one session per engine and a gated rapid wealth/home round trip",
+    "samples": [
+      {
+        "run": 1,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 940,
+            "firstContentMs": 157,
+            "swingReadyMs": 865,
+            "requests": 31,
+            "names": [
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "daily_security_prices",
+              "get_live_flow_basis"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 470,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 293,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 86,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 142,
+            "firstContentMs": 109,
+            "swingReadyMs": 126,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 123,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 156,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 129,
+            "firstContentMs": 96,
+            "swingReadyMs": 103,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 127,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 126,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 77,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 2,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 884,
+            "firstContentMs": 138,
+            "swingReadyMs": 792,
+            "requests": 31,
+            "names": [
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "daily_security_prices",
+              "get_live_flow_basis"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 406,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 225,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 74,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 129,
+            "firstContentMs": 95,
+            "swingReadyMs": 103,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 141,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 143,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 73,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 136,
+            "firstContentMs": 102,
+            "swingReadyMs": 108,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 107,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 109,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 78,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 3,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 942,
+            "firstContentMs": 191,
+            "swingReadyMs": 854,
+            "requests": 31,
+            "names": [
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "daily_security_prices",
+              "get_live_flow_basis"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 463,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 240,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 108,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 134,
+            "firstContentMs": 100,
+            "swingReadyMs": 108,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 124,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 141,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 146,
+            "firstContentMs": 112,
+            "swingReadyMs": 122,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 127,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 159,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 75,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 4,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 888,
+            "firstContentMs": 121,
+            "swingReadyMs": 816,
+            "requests": 31,
+            "names": [
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "daily_security_prices",
+              "get_live_flow_basis"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 413,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 275,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 78,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 176,
+            "firstContentMs": 144,
+            "swingReadyMs": 152,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 159,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 175,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 138,
+            "firstContentMs": 105,
+            "swingReadyMs": 112,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 153,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 155,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      },
+      {
+        "run": 5,
+        "engine": "chromium",
+        "transitions": [
+          {
+            "round": 1,
+            "tab": "portfolio",
+            "readyMs": 1133,
+            "firstContentMs": 251,
+            "swingReadyMs": 1025,
+            "requests": 31,
+            "names": [
+              "daily_security_prices",
+              "daily_security_prices",
+              "daily_security_prices",
+              "transactions",
+              "get_live_security_performance",
+              "get_live_technical_summary",
+              "get_live_monthly_performance",
+              "get_live_fx_attribution",
+              "get_live_daily_heatmap",
+              "get_live_sync_status",
+              "get_app_health_check",
+              "get_live_period_attribution",
+              "fx_rates",
+              "get_live_dividend_history",
+              "get_live_dividend_overview",
+              "get_live_ledger_period_estimate",
+              "get_live_risk_snapshot",
+              "get_live_benchmark_comparison",
+              "get_leverage_etf_comparison",
+              "get_live_reconciliation_report",
+              "reconciliation_cases",
+              "get_live_cash_accounting",
+              "live_cash_observation_bridges",
+              "get_live_analysis_coverage",
+              "get_live_verified_position_movements",
+              "live_cash_case_assessments",
+              "get_live_price_lifecycle_coverage",
+              "get_live_observation_cutoffs",
+              "get_live_one_month_input_coverage",
+              "daily_security_prices",
+              "get_live_flow_basis"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "performance",
+            "readyMs": 527,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 4,
+            "names": [
+              "kb-sync-worker",
+              "get_pending_kb_position_events",
+              "get_live_period_stock_pnl",
+              "get_live_realized_sales"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "analysis",
+            "readyMs": 287,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 1,
+            "names": [
+              "get_wealth_dashboard"
+            ]
+          },
+          {
+            "round": 1,
+            "tab": "home",
+            "readyMs": 88,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "portfolio",
+            "readyMs": 129,
+            "firstContentMs": 101,
+            "swingReadyMs": 118,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "performance",
+            "readyMs": 142,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "analysis",
+            "readyMs": 174,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 2,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "portfolio",
+            "readyMs": 147,
+            "firstContentMs": 114,
+            "swingReadyMs": 121,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "performance",
+            "readyMs": 142,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "analysis",
+            "readyMs": 158,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          },
+          {
+            "round": 3,
+            "tab": "home",
+            "readyMs": 91,
+            "firstContentMs": null,
+            "swingReadyMs": null,
+            "requests": 0,
+            "names": []
+          }
+        ],
+        "retained": [
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          },
+          {
+            "documents": 2,
+            "nodes": 817,
+            "jsEventListeners": 94
+          }
+        ]
+      }
+    ]
+  }
+}

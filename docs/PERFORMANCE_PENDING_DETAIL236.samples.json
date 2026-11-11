@@ -1,0 +1,401 @@
+{
+  "scenario": "close gated ARM core response, open MRNA, touch/keyboard chart, release ARM and preserve active chart",
+  "conditions": "5 fresh Chromium sessions; one pending-return case per session; 390x844 touch/mobile CPU4x; synthetic 365-point prices; ARM saved history; MRNA without saved decisions; synthetic 50ms API reads, gated ARM detail; SW blocked; emulated tap and keyboard input; no GC or heap measurement",
+  "samples": [
+    {
+      "run": 1,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "closeMs": 68.3999999910593,
+          "otherReadyMs": 461.79999999701977,
+          "chartCallbackMs": 94.09999999403954,
+          "chartState": {
+            "date": "2025-10-30 · 종가",
+            "start": "0",
+            "count": "365"
+          },
+          "oldReadsBeforeRelease": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions"
+          ],
+          "requestNames": [
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "ai_analysis_history",
+              "security": null,
+              "query": "select=id%2Cquestion%2Canswer%2Ccreated_at%2Cthesis_version%2Cresponse_kind%2Cexternal_sources%2Cofficial_evidence%2Cprice_evidence%2Ccomparison_evidence%2Caccount_basis&symbol=eq.MRNA&order=created_at.desc&limit=10"
+            },
+            {
+              "name": "investment_breakout_rules",
+              "security": null,
+              "query": "select=kind%2Cthreshold%2Ccurrency%2Cevent_date%2Ccreated_at&security_id=eq.daily-1&order=created_at.desc&limit=1"
+            },
+            {
+              "name": "get_live_decision_metrics",
+              "security": null,
+              "query": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "closeMs": 91.59999999403954,
+          "otherReadyMs": 373.29999999701977,
+          "chartCallbackMs": 96.29999999701977,
+          "chartState": {
+            "date": "2025-10-30 · 종가",
+            "start": "0",
+            "count": "365"
+          },
+          "oldReadsBeforeRelease": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions"
+          ],
+          "requestNames": [
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "ai_analysis_history",
+              "security": null,
+              "query": "select=id%2Cquestion%2Canswer%2Ccreated_at%2Cthesis_version%2Cresponse_kind%2Cexternal_sources%2Cofficial_evidence%2Cprice_evidence%2Ccomparison_evidence%2Caccount_basis&symbol=eq.MRNA&order=created_at.desc&limit=10"
+            },
+            {
+              "name": "investment_breakout_rules",
+              "security": null,
+              "query": "select=kind%2Cthreshold%2Ccurrency%2Cevent_date%2Ccreated_at&security_id=eq.daily-1&order=created_at.desc&limit=1"
+            },
+            {
+              "name": "get_live_decision_metrics",
+              "security": null,
+              "query": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "closeMs": 85.09999999403954,
+          "otherReadyMs": 345.70000000298023,
+          "chartCallbackMs": 97.5,
+          "chartState": {
+            "date": "2025-10-30 · 종가",
+            "start": "0",
+            "count": "365"
+          },
+          "oldReadsBeforeRelease": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions"
+          ],
+          "requestNames": [
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "ai_analysis_history",
+              "security": null,
+              "query": "select=id%2Cquestion%2Canswer%2Ccreated_at%2Cthesis_version%2Cresponse_kind%2Cexternal_sources%2Cofficial_evidence%2Cprice_evidence%2Ccomparison_evidence%2Caccount_basis&symbol=eq.MRNA&order=created_at.desc&limit=10"
+            },
+            {
+              "name": "investment_breakout_rules",
+              "security": null,
+              "query": "select=kind%2Cthreshold%2Ccurrency%2Cevent_date%2Ccreated_at&security_id=eq.daily-1&order=created_at.desc&limit=1"
+            },
+            {
+              "name": "get_live_decision_metrics",
+              "security": null,
+              "query": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "closeMs": 74.3999999910593,
+          "otherReadyMs": 396.20000000298023,
+          "chartCallbackMs": 97.1000000089407,
+          "chartState": {
+            "date": "2025-10-30 · 종가",
+            "start": "0",
+            "count": "365"
+          },
+          "oldReadsBeforeRelease": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions"
+          ],
+          "requestNames": [
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "ai_analysis_history",
+              "security": null,
+              "query": "select=id%2Cquestion%2Canswer%2Ccreated_at%2Cthesis_version%2Cresponse_kind%2Cexternal_sources%2Cofficial_evidence%2Cprice_evidence%2Ccomparison_evidence%2Caccount_basis&symbol=eq.MRNA&order=created_at.desc&limit=10"
+            },
+            {
+              "name": "investment_breakout_rules",
+              "security": null,
+              "query": "select=kind%2Cthreshold%2Ccurrency%2Cevent_date%2Ccreated_at&security_id=eq.daily-1&order=created_at.desc&limit=1"
+            },
+            {
+              "name": "get_live_decision_metrics",
+              "security": null,
+              "query": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "engine": "chromium",
+      "attempts": [
+        {
+          "closeMs": 79.5,
+          "otherReadyMs": 456,
+          "chartCallbackMs": 111.29999999701977,
+          "chartState": {
+            "date": "2025-10-30 · 종가",
+            "start": "0",
+            "count": "365"
+          },
+          "oldReadsBeforeRelease": [
+            "get_live_security_detail",
+            "get_live_security_activity",
+            "get_investment_thesis",
+            "get_investment_decisions"
+          ],
+          "requestNames": [
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-0",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_detail",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_live_security_activity",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_thesis",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "get_investment_decisions",
+              "security": "daily-1",
+              "query": ""
+            },
+            {
+              "name": "ai_analysis_history",
+              "security": null,
+              "query": "select=id%2Cquestion%2Canswer%2Ccreated_at%2Cthesis_version%2Cresponse_kind%2Cexternal_sources%2Cofficial_evidence%2Cprice_evidence%2Ccomparison_evidence%2Caccount_basis&symbol=eq.MRNA&order=created_at.desc&limit=10"
+            },
+            {
+              "name": "investment_breakout_rules",
+              "security": null,
+              "query": "select=kind%2Cthreshold%2Ccurrency%2Cevent_date%2Ccreated_at&security_id=eq.daily-1&order=created_at.desc&limit=1"
+            },
+            {
+              "name": "get_live_decision_metrics",
+              "security": null,
+              "query": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

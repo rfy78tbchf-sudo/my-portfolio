@@ -1,0 +1,14 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const c=vm.createContext({});vm.runInContext(html.slice(html.indexOf('  function detailNextStep('),html.indexOf('  function bindDetailNext(')),c);
+const step=x=>c.detailNextStep(x)[0];
+assert.equal(step({}),'ai');assert.equal(step({analysis:true}),'compare');
+assert.equal(step({comparison:true}),'ai');assert.equal(step({comparison:true,linked:true}),'record');
+assert.equal(step({form:true}),'save');assert.equal(step({form:true,reduction:true}),'compare');
+assert.equal(step({form:true,comparison:true,linked:false}),'ai');
+assert.equal(step({form:true,comparison:true,linked:true}),'save');
+assert.equal(step({dirty:true,analysis:true}),'compare');
+assert.equal(step({busy:true,done:true}),'busy');assert.equal(step({done:true}),'done');
+assert.equal(step({done:true,form:true}),'save');
+assert.match(html,/form.requestSubmit\(\)/);assert.match(html,/detailNextCleanup\)detailNextCleanup\(\)/);
+console.log('Build206: next-action states, dirty comparison, linked AI, explicit save, busy and completion passed');

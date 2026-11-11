@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const s=fs.readFileSync('index.html','utf8');
+const c=vm.createContext({});
+vm.runInContext(s.slice(s.indexOf('  function sortedStockPnl('),s.indexOf('  function stockPeriodLabel(')),c);
+const item={symbol:'NEW',name:'새 종목',aliases:['OLDNAME'],currency:'USD',end_quantity:2};
+const text=c.stockPnlSearchText(item);
+assert.equal(c.stockPnlMatches(text,'USD',true,'oldname','all'),true);
+assert.equal(c.stockPnlMatches(text,'USD',true,'새 종목','foreign'),true);
+assert.equal(c.stockPnlMatches(text,'USD',true,'ＮＥＷ','held'),true);
+assert.equal(c.stockPnlMatches(text,'USD',true,'new','kr'),false);
+assert.equal(c.stockPnlMatches(text,'USD',false,'','held'),false);
+assert.equal(c.stockPnlMatches(text,'KRW',true,'','kr'),true);
+assert.equal(c.stockPnlMatches(text,'KRW',true,'','foreign'),false);
+assert.equal(c.stockPnlMatches(text,'USD',true,'not found','all'),false);
+assert.equal(item.symbol,'NEW');assert.equal(item.end_quantity,2);
+console.log('Build130: name/ticker/alias normalization, intersected search and scope, holdings and non-mutating matching passed');

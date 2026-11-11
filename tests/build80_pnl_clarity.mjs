@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import fs from 'node:fs';
+const s=fs.readFileSync('index.html','utf8'),ctx={num:String,esc:String};vm.createContext(ctx);
+vm.runInContext(s.slice(s.indexOf('  function stockRealizedRows('),s.indexOf('  function stockTotalPartsHtml(')),ctx);
+const dates={period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29'};
+const r={...dates,ok:true,items:[{symbol:'A',currency:'USD',realized_local:-10,historical_krw_estimate:200,status:'calculated'},{symbol:'A',currency:'USD',realized_local:null,status:'order_unverified'},{symbol:'A',currency:'USD',realized_local:5,historical_krw_estimate:null}]};
+const row=ctx.stockRealizedRows(r)[0];assert.equal(row.amount,200);assert.equal(row.local,-5);assert.equal(row.known,1);assert.equal(row.issues['매매 순서 확인 필요'],1);assert.equal(row.issues['환율 자료 필요'],1);
+const detail=ctx.stockRealizedEvidenceHtml(row);assert.match(detail,/외화 2건 · 원화 1건/);assert.match(detail,/부호가 다를/);
+const p={...dates,pnl_krw:-999.4,items:[{symbol:'A',pnl_krw:-999.4}],calculation:{dividend_krw:11.7}};
+const parts=ctx.stockTotalParts(p,r);assert.equal(parts.dividend,12);assert.equal(parts.realized+parts.dividend+parts.remainder,parts.total);
+assert.equal(ctx.stockTotalParts({...p,calculation:null},r).dividend,null);
+assert.equal(ctx.stockTotalParts({...p,calculation:{dividend_krw:0}},r).dividend,0);
+assert.equal(ctx.stockTotalParts(p,{...r,period:'1W'}),null);
+console.log('Build80: opposite currency signs, partial coverage reasons, dividend/no-double-count and unknown-zero passed');

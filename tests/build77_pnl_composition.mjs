@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+const s=readFileSync(new URL('../index.html',import.meta.url),'utf8'),ctx={};vm.createContext(ctx);
+vm.runInContext(s.slice(s.indexOf('  function stockTotalParts('),s.indexOf('  function stockTotalPartsHtml(')),ctx);
+const p={period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',pnl_krw:-3672154.3,items:[{symbol:'ARM',pnl_krw:-200},{symbol:'A123456',pnl_krw:10},{symbol:'UNKNOWN',pnl_krw:null}]};
+const r={ok:true,period:p.period,period_start:p.period_start,period_end:p.period_end,items:[{symbol:'ARM',currency:'USD',realized_local:2,historical_krw_estimate:297390.7},{symbol:'123456',currency:'KRW',realized_local:2},{symbol:'ARM',currency:'USD',realized_local:null},{symbol:'UNKNOWN',currency:'KRW',realized_local:100000}]};
+const v=ctx.stockTotalParts(p,r);assert.equal(v.realized,297393);assert.equal(v.realized+v.remainder,v.total);assert.equal(v.missing,1);assert.equal(v.excluded,1);
+assert.equal(ctx.stockTotalParts(p,{...r,period_start:'2026-08-29'}),null);
+assert.equal(ctx.stockTotalParts({...p,pnl_krw:null},r),null);
+assert.equal(ctx.stockTotalParts(p,{...r,items:[{symbol:'ARM',currency:'USD',realized_local:null}]}).realized,null);
+console.log('P&L composition: matched period/scope, unknowns and displayed sum reconciliation passed');

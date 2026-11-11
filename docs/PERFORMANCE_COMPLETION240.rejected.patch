@@ -1,0 +1,62 @@
+--- a/index.html
++++ b/index.html
+@@ -2514,15 +2514,15 @@
+   function csvCell(v){var x=String(v==null?'':v).replace(/"/g,'""');return /[",\n]/.test(x)?'"'+x+'"':x}
+   function fetchAllLedger(){var all=[],offset=0,total=null;function page(){return rpc('get_live_ledger',{p_limit:500,p_offset:offset,p_type:null,p_search:null}).then(function(x){total=Number(x.total||0);var items=x.items||[];all=all.concat(items);offset+=items.length;if(items.length&&all.length<total)return page();return all})}return page()}
+   var liveLoadPromise=null;
+-  function loadLive(homeOnly){
+-    if(!liveLoadPromise){liveLoadPromise=loadLiveOnce(homeOnly===true).finally(function(){liveLoadPromise=null});liveLoadPromise.homeOnly=homeOnly===true}
++  function loadLive(homeOnly,completionRender){
++    if(!liveLoadPromise){liveLoadPromise=loadLiveOnce(homeOnly===true,completionRender===true).finally(function(){liveLoadPromise=null});liveLoadPromise.homeOnly=homeOnly===true}
+     var pending=liveLoadPromise;
+     if(homeOnly===true||!pending.homeOnly)return pending;
+     if(!pending.withDetails)pending.withDetails=pending.then(function(result){if(live&&live.ensureDetails)return live.ensureDetails().then(function(){return result});return result});
+     return pending.withDetails;
+   }
+   var liveLoadEpoch=0,liveAuthEpoch=0;
+-  function loadLiveOnce(homeOnly){
++  function loadLiveOnce(homeOnly,completionRender){
+     var epoch=++liveLoadEpoch,owner=liveAuthEpoch,previous=live,corePending=true;performanceRequestEpoch++;realizedRequestEpoch++;
+     function active(){return epoch===liveLoadEpoch&&liveAuthEpoch===owner&&!!session}
+     loadLiveOnce.quickAsset=null;
+@@ -2569,10 +2569,10 @@
+       }
+       target.homeReviewLoading=true;
+       live=target;liveError=null;if(typeof rememberHomeSnapshot==='function')rememberHomeSnapshot(target);if(mode==='live')render(true);
+-      return loadLiveDetails(core,target,active,homeOnly).finally(function(){if(active()&&live===target)target.detailsLoading=false});
++      return loadLiveDetails(core,target,active,homeOnly,completionRender).finally(function(){if(active()&&live===target)target.detailsLoading=false});
+     }).catch(function(e){if(!active())return;corePending=false;loadLiveOnce.quickAsset=null;liveError=e.message||'계좌 데이터를 불러오지 못했습니다.';live=previous;if(mode==='live')render(true)});
+   }
+-  function loadLiveDetails(core,target,active,homeOnly){liveError=null;var homeReads=loadHomeReviewData(target,active);return Promise.all([rpc('reconcile_live_cash_flows',{}).catch(function(e){return {ok:false,error:e.message||'입출금 점검 실패'}}),rpc('get_app_settings',{}).catch(function(){return {}})]).then(function(initial){if(!active()||live!==target)return;var cashFlowCheck=initial[0],settings=initial[1]||{};var saved=settings.home_period;if(!periodTouched&&typeof saved==='string'&&['오늘','1W','1M','3M','6M','YTD','1Y','ALL'].indexOf(saved)>=0)period=saved;if(!realizedPeriodExplicit)realizedPeriod=period;var requestedPerformanceEpoch=performanceRequestEpoch,requestedPeriod=period,requestedRealizedPeriod=realizedPeriod,requestedRealizedAccount=realizedAccount;compactMode=!!settings.compact_mode;hideZeroHoldings=!!settings.hide_zero_holdings;applyUiSettings();target.settings=settings;target.cashFlowCheck=cashFlowCheck;var startup=loadStartupHomeData(target,active,requestedPeriod,requestedPerformanceEpoch);return startup.then(function(){if(!active()||live!==target)return;
++  function loadLiveDetails(core,target,active,homeOnly,completionRender){liveError=null;var homeReads=loadHomeReviewData(target,active);return Promise.all([rpc('reconcile_live_cash_flows',{}).catch(function(e){return {ok:false,error:e.message||'입출금 점검 실패'}}),rpc('get_app_settings',{}).catch(function(){return {}})]).then(function(initial){if(!active()||live!==target)return;var cashFlowCheck=initial[0],settings=initial[1]||{};var saved=settings.home_period;if(!periodTouched&&typeof saved==='string'&&['오늘','1W','1M','3M','6M','YTD','1Y','ALL'].indexOf(saved)>=0)period=saved;if(!realizedPeriodExplicit)realizedPeriod=period;var requestedPerformanceEpoch=performanceRequestEpoch,requestedPeriod=period,requestedRealizedPeriod=realizedPeriod,requestedRealizedAccount=realizedAccount;compactMode=!!settings.compact_mode;hideZeroHoldings=!!settings.hide_zero_holdings;applyUiSettings();target.settings=settings;target.cashFlowCheck=cashFlowCheck;var startup=loadStartupHomeData(target,active,requestedPeriod,requestedPerformanceEpoch,homeOnly===true&&completionRender===true);return startup.then(function(){if(!active()||live!==target)return;
+     function enrich(){return Promise.all([
+     Promise.resolve(core[0]),
+     Promise.resolve(core[1]),
+@@ -2633,7 +2633,7 @@
+       if(mode==='live'&&!liveRefreshPromise)render(true);
+     });
+   })}).catch(function(e){if(!active()||live!==target)return;target.detailsError=e.message||'분석 조회 실패';})}
+-  function loadStartupHomeData(target,active,selected,selectedEpoch){
++  function loadStartupHomeData(target,active,selected,selectedEpoch,completionRender){
+     var request=(target.startupHomeRequestEpoch||0)+1,day=kstDate(),failures=[];
+     if(target.startupHomePrevious&&target.performancePeriod!==selected){target.performance=null;target.homeChart=null;target.performanceGate=null;target.startupHomePrevious=!!target.todayGate}
+     target.startupHomeRequestEpoch=request;target.startupHomeLoading=true;
+@@ -2649,7 +2649,8 @@
+       target.todayGate=confirmed(rows[3],'todayGate','오늘 성과',target.startupTodayDataDay===day);if(selectedCurrent)target.startupHomeDataDay=day;target.startupTodayDataDay=day;target.startupHomeRetained=Array.from(new Set(retained));target.startupHomeLoading=false;target.startupTodayError=failures.indexOf('오늘 성과')>=0;target.startupHomeError=target.startupTodayError||(selectedCurrent&&failures.length>0);
+       target.startupHomePrevious=false;
+       if(typeof reportLiveStage==='function')reportLiveStage(target.startupHomeError?'잔고 확인 · 추이 일부 갱신 실패':target.homeOnlyRefresh?'잔고·추이 확인':'잔고·추이 확인 · 부가 자료 갱신 중');
+-      if(mode==='live')render(true);
++      // The owning home refresh will render immediately after completed review data and loader cleanup.
++      if(mode==='live'&&!(completionRender&&currentTab==='home'&&!target.homeReviewLoading))render(true);
+       return rows;
+     });
+   }
+@@ -4248,7 +4249,7 @@
+     liveRefreshPromise=(syncBroker?runRefreshSync(function(label){indicator.textContent=label+' 확인 중…'}).then(function(errors){brokerError=errors.length?errors.join(' · '):null}):Promise.resolve()).then(function(){
+       if(syncBroker){indicator.textContent='기간 성과 다시 계산 중…';btn.setAttribute('aria-label','성과 갱신 중')}
+       var homeOnly=typeof currentTab!=='undefined'&&currentTab==='home',tools=document.getElementById('homeTools');
+-      return loadLive(homeOnly&&!(tools&&tools.open))
++      return loadLive(homeOnly&&!(tools&&tools.open),true)
+     }).then(function(){if(mode==='live'){if(brokerError&&live&&live.cashFlowCheck)live.cashFlowCheck.broker_error=brokerError;render(true)}
+       if(syncBroker){indicator.textContent=liveError?'자료 갱신 실패 · 다시 시도해 주세요':brokerError?'일부 동기화 실패 · '+brokerError:'잔고 갱신 완료';setTimeout(function(){indicator.classList.remove('visible')},2300)}
+     }).finally(function(){btn.disabled=false;btn.textContent='↻';btn.setAttribute('aria-busy','false');btn.setAttribute('aria-label','최신 계좌 데이터 불러오기');liveRefreshPromise=null});

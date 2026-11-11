@@ -1,0 +1,26 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const s=fs.readFileSync('index.html','utf8');
+const ctx=vm.createContext({num:(n,d)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}),esc:String,signedMoney:n=>n.toLocaleString('en-US')+'원',cls:n=>n<0?'down':'up',stockPeriod:'ALL',stockPeriodLabel:()=> '전체',stockTotalPartsHtml:()=>'<div>원화 구성</div>'});
+vm.runInContext(s.slice(s.indexOf('  function sortedStockPnl('),s.indexOf('  function stockPeriodLabel(')),ctx);
+const domestic={symbol:'KR',currency:'KRW',pnl_local:100000,pnl_krw:100000};
+const foreign={symbol:'USLOSS',currency:'USD',pnl_local:-200,pnl_krw:null,local_cash_only:true,reason:'거래일 확인 필요',separate_cash_krw:-30000};
+const smaller={...foreign,symbol:'SMALL',pnl_local:-5,separate_cash_krw:0};
+const converted={symbol:'CONVERTED',currency:'USD',pnl_local:10,pnl_krw:14000};
+const bad={symbol:'BAD',currency:'USD',pnl_local:99999,pnl_krw:99999,reason:'자료 부족'};
+const p={items:[domestic,smaller,foreign,converted,bad],period_start:'2025-01-01',period_end:'2026-01-01',provisional_count:1};
+assert.equal(ctx.sortedStockPnl(p.items,'loss',{USD:1400}).map(x=>x.symbol).join(','),'USLOSS,SMALL,CONVERTED,KR,BAD');
+assert.equal(ctx.sortedStockPnl(p.items,'profit',{USD:1400})[0].symbol,'KR');
+assert.equal(ctx.sortedStockPnl(p.items,'impact',{USD:1400})[0].symbol,'USLOSS');
+assert.equal(ctx.sortedStockPnl([smaller,foreign],'loss',{})[0].symbol,'USLOSS');
+for(const rate of [null,'',0,-1,'NaN'])assert.equal(ctx.stockSortValue(foreign,{USD:rate}),null);
+const o=ctx.stockPnlOverview(p);
+assert.equal(o.krw,114000);assert.equal(o.separateKrw,-30000);assert.equal(o.krwWithTax,84000);
+assert.equal(o.localRows,2);assert.equal(o.foreign[0].amount,-205);assert.equal(o.foreign[0].count,2);
+assert.equal(p.items[2].pnl_krw,null); // Reference sorting never changes monetary evidence.
+const hero=ctx.stockMixedHero(p,o);
+assert.match(hero,/전체 원화 합계는 아직 미확정/);assert.match(hero,/84,000원/);assert.match(hero,/-205.00 USD/);
+assert.ok(!hero.includes('114,000원'));assert.ok(!hero.includes('수익 종목 합계'));
+assert.match(ctx.stockScopedPartsHtml(p,o),/미환산 외화 2종목/);
+console.log('Build126: mixed-currency scope, tax counted once, converted rows not duplicated, foreign loss ranking and missing FX passed');

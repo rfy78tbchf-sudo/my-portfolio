@@ -1,0 +1,244 @@
+name: Mobile portfolio layout
+on:
+  push:
+    branches: [main, 'work/performance-*', 'work/trust-*', 'work/integrity-*']
+  workflow_dispatch:
+jobs:
+  decision-regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify early history collection retains foreground freshness
+        run: node tests/build265_refresh_overlap.mjs
+      - name: Verify incomplete domestic balances never reach storage
+        run: node tests/build268_balance_response.mjs && node tests/build270_position_fields.mjs && node tests/build277_foreign_pnl.mjs
+      - name: Verify collected history survives overlapping reads
+        run: node tests/build264_collected_history.mjs
+      - name: Verify retained period result cache boundaries
+        run: node --test tests/build256_period_cache.mjs tests/build75_period_ui.mjs tests/build108_today_journey.mjs tests/build131_pnl_recovery.mjs tests/build144_demand_pnl.mjs tests/build145_period_cache.mjs tests/build180_loading.mjs
+      - name: Verify nested render scroll preservation
+        run: node tests/build255_render_scroll.mjs
+      - name: Verify interactive queue refill preserves calculation order and concurrency
+        run: node tests/build253_refresh_priority.mjs
+      - name: Verify superseded period calculations skip queued network work
+        run: node tests/build248_period_queue.mjs
+      - name: Verify detail history sharing does not cache completed results
+        run: node tests/build234_read_sharing.mjs
+      - name: Verify update manifest matches HTML and cached shell
+        run: node tests/build72_app_update.mjs
+      - name: Verify saved decisions and next-visit review
+        run: >-
+          node --test
+          tests/build157_decision_receipt.mjs
+          tests/build158_review_consistency.mjs
+          tests/build159_decision_changes.mjs
+          tests/build162_quick_review.mjs
+          tests/build179_review_acknowledgements.mjs
+          tests/build191_review_entry.mjs
+          tests/build193_review_reload.mjs
+      - name: Verify daily access, retained performance and return actions
+        run: >-
+          node --test
+          tests/build209_resume.mjs
+          tests/build209_performance_refresh.mjs
+          tests/build209_next_review.mjs
+          tests/build209_touch_return.mjs
+          tests/build209_shell_recovery.mjs
+      - name: Verify provisional amounts and reconciliation scope
+        run: node --test tests/build210_pnl_state.mjs
+      - name: Verify fixed annual goals and exact excess amounts
+        run: node tests/build243_wealth_basis.mjs && node tests/build244_fixed_goals.mjs
+      - name: Verify annual actual rebasing and history calculations
+        run: node tests/build240_wealth_annual.mjs
+      - name: Verify automatic wealth, projections and milestone calculations
+        run: node tests/build226_wealth.mjs
+      - name: Verify daily five-day moving average crossings
+        run: node tests/build224_ma_cross.mjs
+      - name: Verify on-demand refresh data and isolation
+        run: node tests/build216_refresh.mjs
+      - name: Verify early assets and staged loading
+        run: node tests/build215_startup.mjs
+      - name: Verify asset composition and home separation
+        run: node tests/build214_asset_map.mjs
+      - name: Verify interrupted decision submission and persisted request identity
+        run: node --test tests/decision_edit_prefill.mjs tests/build211_pending_decision.mjs tests/build211_review_race.mjs
+  mobile:
+    # Playwright 1.55.1 supports this OS; latest moved to unsupported 26.04.
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Verify source-bound response migration and explicit quantities
+        run: |
+          node tests/build273_snapshot_binding.mjs
+          node tests/build273_response_migration.mjs
+          node tests/build273_batch_report.mjs
+          node tests/build273_resolution_gate.mjs
+          node tests/build273_batch_cycle.mjs
+          node tests/build273_settlement_view.mjs
+          node tests/build273_settlement_display.mjs
+          node tests/build273_settlement_browser.mjs
+          node tests/build273_worker_adapter.mjs --uuid-schema
+      - name: Verify manual refresh overlap in both browsers
+        run: PERIODS=1M RUNS=1 node experiments/manual-refresh265.mjs && BROWSER=webkit PERIODS=1M RUNS=1 node experiments/manual-refresh265.mjs
+      - name: Verify sale quantity formatting preserves full financial evidence
+        run: node tests/build261_quantity_format.mjs
+      - name: Verify first sale expansion and period results in both browsers
+        run: SECURITIES=1 TRANSACTIONS=300 PAIRS=1 node experiments/realized-interaction261.mjs && SECURITIES=1 TRANSACTIONS=300 PAIRS=1 BROWSER=webkit node experiments/realized-interaction261.mjs
+      - name: Verify grouped opening quantities preserve closed-cycle evidence
+        run: STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql node tests/build260_closed_opening.mjs && STOCK_SQL_SOURCE=supabase/build260_closed_opening_quantity.sql node tests/build259_daily_records.mjs && STOCK_SQL_SOURCE=supabase/build260_closed_opening_quantity.sql node tests/build259_recovered_dates.mjs
+      - name: Verify first total and composition in both browsers
+        run: STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql SECURITIES=10 TRANSACTIONS=300 PAIRS=1 node experiments/closed-browser260.mjs && STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql SECURITIES=10 TRANSACTIONS=300 PAIRS=1 BROWSER=webkit node experiments/closed-browser260.mjs
+      - name: Verify daily record reuse preserves dates, ordering and financial evidence
+        run: STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql node tests/build259_daily_records.mjs && STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql node tests/build259_recovered_dates.mjs && REALIZED_SQL_SOURCE=supabase/build259_daily_realized_records.sql node tests/build247_settlement_precision.mjs && REALIZED_SQL_SOURCE=supabase/build259_daily_realized_records.sql BUILD247=1 node tests/build246_observation_fx.mjs
+      - name: Verify daily record reuse in both browser loaders and mobile widths
+        run: STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql SECURITIES=1 TRANSACTIONS=300 PAIRS=1 node experiments/ledger-browser259.mjs && STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql SECURITIES=1 TRANSACTIONS=300 PAIRS=1 BROWSER=webkit node experiments/ledger-browser259.mjs
+      - name: Verify empty periods preserve unknowns and financial results
+        run: node tests/build258_empty_period_items.mjs && STOCK_SQL_SOURCE=supabase/build258_empty_period_items.sql node tests/build257_realized_accumulation.mjs
+      - name: Verify empty periods through both browser loaders
+        run: PAIRS=1 node experiments/empty-period258.mjs && PAIRS=1 BROWSER=webkit node experiments/empty-period258.mjs
+      - name: Verify realized accumulation preserves complete financial results
+        run: node tests/build257_realized_accumulation.mjs && REALIZED_SQL_SOURCE=supabase/build257_realized_accumulation.sql node tests/build247_settlement_precision.mjs && REALIZED_SQL_SOURCE=supabase/build257_realized_accumulation.sql BUILD247=1 node tests/build246_observation_fx.mjs
+      - name: Verify actual realized SQL through both browser loaders
+        run: SECURITIES=10 PAIRS=1 node experiments/realized-browser257.mjs && SECURITIES=10 PAIRS=1 BROWSER=webkit node experiments/realized-browser257.mjs
+      - name: Verify independent NAV arithmetic, periods and invalid balance rejection
+        run: node tests/build254_contract.mjs && node tests/build266_settlement_bridge.mjs && node tests/build269_cash_binding.mjs && node tests/build271_position_binding.mjs
+      - name: Verify completed obsolete periods are reused in both browsers
+        run: EXPECT_REUSE=1 RETURN_RUNS=1 node experiments/period-return255.mjs && EXPECT_REUSE=1 RETURN_RUNS=1 BROWSER=webkit node experiments/period-return255.mjs
+      - name: Verify nested refresh scroll and evidence at 125 percent
+        run: node tests/build255_scroll_browser.mjs && BROWSER=webkit node tests/build255_scroll_browser.mjs
+      - name: Verify all-account reconciliation on mobile
+        run: node tests/build254_nav_browser.mjs
+      - name: Verify daily journey with production login and data-loading paths
+        run: node tests/build209_daily_browser.mjs
+      - name: Verify home asset map and portfolio selection
+        run: node tests/build214_browser.mjs
+      - name: Verify trend period continuity
+        run: node tests/build210_trend_browser.mjs
+      - name: Verify detail actions during text entry and control selection
+        run: node tests/build210_detail_controls.mjs
+      - name: Verify decision save, interrupted receipt and next-visit readback
+        run: node tests/build211_decision_browser.mjs
+      - run: node tests/build90_chart_ma.mjs --browser
+      - run: node tests/build93_review_conditions.mjs
+      - name: Verify deployed corporate reuse preserves reconciliation and idempotence
+        run: CORPORATE_EXPERIMENT=1 CORPORATE_MIGRATION=supabase/build252_corporate_candidates.sql node tests/build251_opening_reconciliation.mjs
+      - name: Verify owned date evidence, RLS and period latency
+        run: PERIOD_BROWSER=1 node tests/build250_date_evidence.mjs
+        timeout-minutes: 8
+      - name: Verify period evidence equivalence and database-to-render latency
+        run: PERIOD_BROWSER=1 node tests/build249_period_evidence.mjs && node tests/build249_existing_finance.mjs
+        timeout-minutes: 8
+      - name: Verify rapid period switching reaches the current rendered result
+        run: node tests/build248_period_browser.mjs
+        timeout-minutes: 5
+      - name: Verify dated average-cost estimates without changing confirmed P&L
+        run: node tests/build247_settlement_precision.mjs && BUILD247=1 node tests/build246_observation_fx.mjs && node tests/build245_average_estimates.mjs && node tests/build245_average_browser.mjs
+      - name: Verify realized sale dates with isolated synthetic Postgres and both browsers
+        run: node tests/build244_wealth_rollover.mjs && node tests/build242_refresh_history.mjs && node tests/build241_realized_dates.mjs && node tests/build241_realized_browser.mjs
+      - name: Verify saved detail history sharing and fresh reopening
+        run: node tests/build234_detail_reads.mjs --verify
+      - name: Verify chart window reuse preserves selection and new prices
+        run: node tests/build233_chart_latency.mjs --verify
+      - name: Verify early portfolio interaction retains pending startup and search
+        run: node tests/build232_update_latency.mjs --verify --early-interaction
+      - name: Verify pending holdings never appear as an empty portfolio
+        run: node tests/build232_update_latency.mjs --verify --early-core
+      - name: Verify cold and warm update checks with real service workers
+        run: node tests/build232_update_latency.mjs --verify --profile-startup --render-ownership
+      - name: Verify wealth only requests visible data and reuses cached results
+        run: WEALTH_HISTORY_YEARS=10 node tests/build231_wealth_latency.mjs --verify
+      - name: Verify lazy Excel parsing, shared loading and retry
+        run: node tests/build230_lazy_xlsx.mjs
+      - name: Verify fixed goal cards and table agree on mobile
+        run: node tests/build243_wealth_basis.mjs --browser
+      - name: Verify annual history and rollover on mobile
+        run: node tests/build240_wealth_browser.mjs
+      - name: Verify domestic and native opening reconciliation and partial totals
+        run: node tests/build251_opening_reconciliation.mjs
+      - name: Verify period totals, basis dates and home cash-flow distinction
+        run: node tests/build251_period_browser.mjs
+      - name: Verify automatic wealth, scenarios, retry and mobile layout
+        run: node tests/build226_browser.mjs
+      - name: Verify moving average crossing display in both browsers
+        run: node tests/build224_ma_cross.mjs --browser
+      - name: Verify on-demand crossing focus and restore in both browsers
+        run: node tests/build225_cross_focus.mjs
+      - name: Verify position and saved judgment entry
+        run: node tests/build217_browser.mjs
+      - run: node tests/build49_ai_cache.mjs
+      - run: node tests/build49c_ai_error.mjs
+      - run: node tests/build49d_ai_readability.mjs
+      - run: node tests/build57c_ai_history.mjs
+      - run: node tests/build49_mobile_visual.mjs
+      - run: node tests/build49d_ai_mobile.mjs
+      - run: node tests/build50_decision_metrics.mjs
+      - run: node tests/build50c_account_scope.mjs
+      - run: node tests/build51_account_realized_scenario.mjs
+      - run: node tests/build52_current_isa.mjs
+      - run: node tests/build53_isa_upload.mjs
+      - run: node tests/build53_isa_mobile.mjs
+      - run: node tests/build54_realized_ai_flow.mjs
+      - run: node tests/build54a_isa_correction.mjs
+      - run: node tests/build55_domestic_charge.mjs
+      - run: node tests/build54_mobile.mjs
+      - run: node tests/build57_decision_journey.mjs
+      - run: node tests/build203_risk_budget.mjs
+      - run: node tests/build57d_choice_decision.mjs
+      - run: node tests/comparison_target_clear.mjs
+      - run: node tests/detail_ready.mjs
+      - run: node tests/comparison_current_weight.mjs
+      - run: node tests/decision_edit_prefill.mjs
+      - run: node tests/manual_review_conditions.mjs
+      - run: node tests/build57_decision_mobile.mjs
+      - run: node tests/build57d_detail_mobile.mjs
+      - run: node tests/build58_review_evidence.mjs
+      - run: node tests/build58_kr_official_evidence.mjs
+      - run: node tests/build59_decision_flow.mjs
+      - run: node tests/build59e_price_thesis_opinion.mjs
+      - run: node tests/build60_reading_order_mobile.mjs
+      - run: node tests/build61_period_journey.mjs
+      - run: node tests/build63_journey.mjs
+      - run: node tests/build64a_unconfirmed_close.mjs
+      - run: node tests/build65_decision_completion.mjs
+      - name: Verify home chart with full-year synthetic observations
+        run: HOME_POINTS=365 node tests/refresh_interaction_profile234.mjs --verify --home-chart
+      - name: Verify complete refresh stages and background TTL reuse
+        run: node tests/refresh_interaction_profile234.mjs --verify --complete-refresh
+      - name: Verify refresh interaction with fifty synthetic holdings
+        run: SYNTHETIC_HOLDINGS=50 node tests/refresh_interaction_profile234.mjs --verify --row-geometry
+      - name: Verify navigation and search while refresh response is pending
+        run: node tests/refresh_interaction_profile234.mjs --verify
+      - name: Verify tab cache reuse and late wealth response isolation
+        run: node tests/tab_runtime_profile234.mjs --verify
+      - name: Verify full detail chart label reuse and navigation
+        run: EXPECT_CHART_LABEL_REUSE=1 CHART_EXTERNAL_INPUT=1 node tests/detail_render_profile234.mjs --verify --chart-input
+      - name: Verify delayed saved history preserves chart and decision draft
+        run: node tests/detail_render_profile234.mjs --verify --late-history
+      - name: Verify late detail response preserves return position and active chart
+        run: node tests/detail_render_profile234.mjs --verify --pending-return
+      - name: Verify detail rendering profile and repeated entry positions
+        run: node tests/detail_render_profile234.mjs --verify
+      - name: Verify refresh completion and lazy data in both browsers
+        run: node tests/build216_browser.mjs
+      - name: Verify early assets, refresh failure and retry in both browsers
+        run: node tests/build215_browser.mjs
+      - run: node tests/build67_ui_visual.mjs
+      - run: UI_WEBKIT_NAV=1 UI_OUTPUT=mobile-artifacts/webkit-navigation node tests/build67_ui_visual.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-portfolio-screenshots
+          path: mobile-artifacts/**/*.png
+          if-no-files-found: ignore

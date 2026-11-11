@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const sql=fs.readFileSync('supabase/build121_verified_domestic_cash.sql','utf8');
+const cte=sql.slice(sql.indexOf('verified_domestic_cash as materialized ('),sql.indexOf('), ledger as materialized ('))+')';
+const base={source:'api',currency:'KRW',type:'sell',quantity:10,price:100,fee:10,tax:190,net_amount:800,provider_payload:{dl_amt:'1,000',ec_amt:'000800',fee:'0010'}};
+const cases=[['valid',{},true],['zero_net',{tax:990,net_amount:0,provider_payload:{...base.provider_payload,ec_amt:'0'}},true],['wrong_source',{source:'manual'},false],['foreign',{currency:'USD'},false],['buy',{type:'buy'},false],['zero_qty',{quantity:0},false],['bad_price',{price:101},false],['null_fee',{fee:null},false],['negative_tax',{tax:-190},false],['net_mismatch',{net_amount:801},false],['charges_mismatch',{tax:180},false],['negative_raw',{provider_payload:{...base.provider_payload,ec_amt:'-800'}},false],['missing_gross',{provider_payload:{ec_amt:'800',fee:'10'}},false],['malformed',{provider_payload:{...base.provider_payload,dl_amt:'unknown'}},false],['wrong_raw_fee',{provider_payload:{...base.provider_payload,fee:'11'}},false]];
+const rows=cases.map(([id,patch,expected])=>({id,...base,...patch,expected}));
+assert.ok(sql.includes('and not t.cash_verified'));
+assert.ok(sql.includes('true,null::date,false,false from pending'));
+if(process.argv.includes('--sql'))console.log(`with dated_transactions as(select * from jsonb_to_recordset('${JSON.stringify(rows)}'::jsonb) as x(id text,source text,currency text,type text,quantity numeric,price numeric,fee numeric,tax numeric,net_amount numeric,provider_payload jsonb,expected boolean)),${cte} select count(*) cases,count(*) filter(where (v.id is not null)<>t.expected) failures from dated_transactions t left join verified_domestic_cash v using(id);`);
+else console.log('Build121: verified cash propagation and pending-trade exclusion checked; use --sql for 15 database cases');

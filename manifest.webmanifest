@@ -1,0 +1,19 @@
+{
+  "name": "My Portfolio",
+  "short_name": "Portfolio",
+  "description": "KB Securities linked personal asset management app",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5f6f8",
+  "theme_color": "#0b0d12",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

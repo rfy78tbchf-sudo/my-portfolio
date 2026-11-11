@@ -1,0 +1,1359 @@
+import './build209_next_review.mjs';
+import './build208_list_return.mjs';
+import './build207_period_summary.mjs';
+import './build206_detail_next.mjs';
+import './build201_login_recovery.mjs';
+import './build199_contribution_return.mjs';
+import './build198_home_period_link.mjs';
+import './build197_full_refresh.mjs';
+import './build196_home_retention.mjs';
+import './build195_resume_retry.mjs';
+import './build194_resume_day.mjs';
+import './build193_review_reload.mjs';
+import './build191_review_entry.mjs';
+import './build190_home_basis.mjs';
+import './build188_detail_history.mjs';
+import './build184_startup_home.mjs';
+import './build183_home_priority.mjs';
+import './build182_home_period.mjs';
+import './build181_home_snapshot.mjs';
+import './build180_loading.mjs';
+import './build179_review_acknowledgements.mjs';
+import './build178_home_context.mjs';
+import './build169_chart_preferences.mjs';
+import './build165_chart_recovery.mjs';
+import './build164_resume.mjs';
+import './build162_quick_review.mjs';
+import './build159_decision_changes.mjs';
+import './build158_review_consistency.mjs';
+import './build157_decision_receipt.mjs';
+import './build156_read_queue.mjs';
+import './build153_load_recovery.mjs';
+import './build149_execution_sales.mjs';
+import './build148_sale_review.mjs';
+import './build147_swing_alerts.mjs';
+import './build146_decision_followup.mjs';
+import './build145_period_cache.mjs';
+import './build144_demand_pnl.mjs';
+import './build143_month_review.mjs';
+import './build142_fast_refresh.mjs';
+import './build141_sync_resilience.mjs';
+import './build131_pnl_recovery.mjs';
+import './build130_pnl_find.mjs';
+import './build128_reference_fx.mjs';
+import './build126_pnl_scope.mjs';
+import './build122_ipo_history.mjs';
+import './build121_domestic_cash.mjs';
+import './build120_local_history.mjs';
+import './build119_composition.mjs';
+import './build114_portfolio_average.mjs';
+import './build113_detail_input.mjs';
+import './build108_today_journey.mjs';
+import {points as swingPoints,values as swingValues} from './build106_swing_peak.mjs';
+import './build104_native_prices.mjs';
+import './build102_home_today.mjs';
+import './build98_holding_prices.mjs';
+import assert from 'node:assert/strict';
+async function openOptionalTools(page){
+ await page.locator('#detailNext').waitFor({state:'attached'});
+ await page.evaluate(()=>document.activeElement?.blur());
+ const next=page.locator('#detailNext');await next.waitFor({state:'visible'});
+ const rect=await next.boundingBox();assert.ok(rect.y>=0&&rect.y+rect.height<=page.viewportSize().height+1,'next action stays inside mobile viewport');
+ assert.ok(rect.width>=160&&rect.height>=44,'next action has a usable touch target');
+
+ if(!await page.locator('#detailExtras').count())await page.locator('#detailExtras').waitFor({state:'attached'});
+ const group=page.locator('#detailExtras');
+ if(!await group.evaluate(el=>el.open)){
+  if(await page.locator('.detail-price-chart').count())assert.ok(await page.locator('.detail-price-chart').isVisible());
+  assert.equal(await page.locator('#detailFreshReview').isVisible(),false,'AI input is optional on initial screen');
+  await page.screenshot({path:'mobile-artifacts/simple-detail-'+page.viewportSize().width+'.png'});
+  const prices=page.locator('.holding-unit-prices');
+  if(await prices.count()){
+   const labels=await prices.locator(':scope > .row > span').allTextContents();
+   if(labels.includes('환산 평균 매입가'))assert.ok((await prices.locator('strong').allTextContents()).every(x=>/USD|JPY|HKD|확인 중/.test(x)));
+   await page.locator('.detail-overview').screenshot({path:'mobile-artifacts/holding-unit-prices-'+page.viewportSize().width+'.png'});
+  }
+  await group.locator(':scope > summary').click();
+ }
+}
+
+async function assertPortfolioControlsReadable(page,label){
+ const originalScroll=await page.evaluate(()=>({x:scrollX,y:scrollY}));
+ await page.evaluate(()=>document.fonts.ready);
+ try{
+  for(const selector of ['#portfolioAccount','#portfolioSort']){
+   const control=page.locator(selector);await control.scrollIntoViewIfNeeded();
+   const size=await control.evaluate(el=>{
+    const rect=el.getBoundingClientRect(),style=getComputedStyle(el),scale=rect.width/el.offsetWidth;
+    const text=el.selectedOptions[0].textContent.trim(),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+    ctx.font=`${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    const textWidth=(ctx.measureText(text).width+(parseFloat(style.letterSpacing)||0)*Math.max(0,Array.from(text).length-1))*scale;
+    // Native selects reserve room for their arrow in addition to text padding.
+    const available=(el.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-20)*scale;
+    const hit=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
+    return {text,textWidth,available,width:rect.width,height:rect.height,inside:rect.left>=-1&&rect.right<=innerWidth+1&&rect.top>=-1&&rect.bottom<=innerHeight+1,actionable:!el.disabled&&(hit===el||el.contains(hit))};
+   });
+   assert.ok(size.inside,`${label} ${selector} stays inside the viewport: ${JSON.stringify(size)}`);
+   assert.ok(size.width>=44&&size.height>=44&&size.actionable,`${label} ${selector} remains touchable: ${JSON.stringify(size)}`);
+   assert.ok(size.textWidth<=size.available+1,`${label} ${selector} shows the complete selected value: ${JSON.stringify(size)}`);
+  }
+  const chips=page.locator('#portfolioControls .holdings-markets button');
+  assert.deepEqual(await chips.evaluateAll(xs=>xs.map(el=>el.dataset.scope)),['ALL','KR','OVERSEAS'],`${label} keeps all three market choices`);
+  for(let i=0;i<3;i++){
+   const chip=chips.nth(i);await chip.scrollIntoViewIfNeeded();
+   const size=await chip.evaluate(el=>{
+    const rect=el.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(el);
+    const text=range.getBoundingClientRect(),clip={left:0,right:innerWidth,top:0,bottom:innerHeight};
+    for(let parent=el.parentElement;parent;parent=parent.parentElement){
+     const style=getComputedStyle(parent),box=parent.getBoundingClientRect();
+     if(/hidden|clip|auto|scroll/.test(style.overflowX)){clip.left=Math.max(clip.left,box.left);clip.right=Math.min(clip.right,box.right)}
+     if(/hidden|clip|auto|scroll/.test(style.overflowY)){clip.top=Math.max(clip.top,box.top);clip.bottom=Math.min(clip.bottom,box.bottom)}
+    }
+    const hit=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
+    return {text:el.textContent.trim(),width:rect.width,height:rect.height,inside:rect.left>=-1&&rect.right<=innerWidth+1&&rect.top>=-1&&rect.bottom<=innerHeight+1,complete:text.width>0&&text.height>0&&text.left>=Math.max(rect.left,clip.left)-1&&text.right<=Math.min(rect.right,clip.right)+1&&text.top>=Math.max(rect.top,clip.top)-1&&text.bottom<=Math.min(rect.bottom,clip.bottom)+1,actionable:!el.disabled&&(hit===el||el.contains(hit))};
+   });
+   assert.match(size.text,[/^전체 \d+$/,/^국내 \d+$/,/^해외 \d+$/][i],`${label} retains each market label and count`);
+   assert.ok(size.inside&&size.complete,`${label} market chip is fully readable: ${JSON.stringify(size)}`);
+   assert.ok(size.width>=44&&size.height>=44&&size.actionable,`${label} market chip remains touchable: ${JSON.stringify(size)}`);
+  }
+ }finally{await page.evaluate(({x,y})=>window.scrollTo({left:x,top:y,behavior:'instant'}),originalScroll)}
+}
+
+async function assertPortfolioRowsReadable(page,label){
+ const rows=await page.locator('.portfolio-list .portfolio-row:visible').evaluateAll(xs=>xs.map(row=>{
+  const box=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};
+  const fields={};
+  for(const name of ['identity','name','quote','value','result','exception']){
+   const el=row.querySelector('.position-'+name);if(el)fields[name]={...box(el),text:el.textContent.trim(),visible:getComputedStyle(el).visibility==='visible',fits:el.scrollWidth<=el.clientWidth+1};
+  }
+  return {row:box(row),fields,viewport:innerWidth};
+ }));
+ assert.ok(rows.length>0,`${label} has holdings to inspect`);
+ for(const [index,{row,fields,viewport}] of rows.entries()){
+  const caption=`${label} holding ${index+1} (${fields.name?.text})`;
+  assert.ok(row.left>=-1&&row.right<=viewport+1,`${caption} stays inside the viewport`);
+  for(const name of ['identity','name','quote','value','result'])assert.ok(fields[name],`${caption} retains ${name}`);
+  for(const [name,field] of Object.entries(fields)){
+   assert.ok(field.visible&&field.width>0&&field.height>0&&field.fits,`${caption} ${name} is visible without clipped text: ${JSON.stringify(field)}`);
+   assert.ok(field.left>=row.left-1&&field.right<=row.right+1&&field.top>=row.top-1&&field.bottom<=row.bottom+1,`${caption} ${name} stays within its row: ${JSON.stringify(field)}`);
+  }
+  for(const [a,b] of [['identity','value'],['identity','result'],['value','result'],['exception','identity'],['exception','value'],['exception','result']]){
+   const first=fields[a],second=fields[b];if(!first||!second)continue;
+   const overlap=Math.min(first.right,second.right)-Math.max(first.left,second.left)>1&&Math.min(first.bottom,second.bottom)-Math.max(first.top,second.top)>1;
+   assert.equal(overlap,false,`${caption} ${a} does not cover ${b}: ${JSON.stringify({first,second})}`);
+  }
+ }
+}
+
+import vm from 'node:vm';
+import {readFileSync,mkdirSync,writeFileSync,existsSync} from 'node:fs';
+import {dirname,resolve} from 'node:path';
+import {chromium,webkit} from 'playwright';
+
+// Production HTML, CSS, renderers and handlers; isolated deterministic data only.
+// No owner login, network or records are used or changed by this visual test.
+const source=readFileSync(process.env.UI_SOURCE||new URL('../index.html',import.meta.url),'utf8');
+const baseline=!!process.env.UI_BASELINE;
+if(!baseline){if(source.includes('performanceReviewContext'))await import('./build82_performance_review.mjs');await import('./build72_app_update.mjs');await import('./build73_recent_sales.mjs');if(source.includes('stockPeriodPerformance'))await import('./build75_period_ui.mjs');if(source.includes('stockSeparatedHtml'))await import('./build76_separated_pnl.mjs');if(source.includes('stockTotalPartsHtml'))await import('./build77_pnl_composition.mjs');if(source.includes('stockCalculationHtml'))await import('./build78_pnl_reconciliation.mjs');if(source.includes('stockRealizedItems'))await import('./build79_closed_realized.mjs');if(source.includes('stockRealizedEvidenceHtml'))await import('./build80_pnl_clarity.mjs');}
+if(!baseline&&source.includes('review-home-item'))await import('./build86_review_home.mjs');
+if(!baseline&&source.includes('function allocationData'))await import('./build87_allocation.mjs');
+if(!baseline&&source.includes('function requestDetailOpinion'))await import('./build88_recovery.mjs');
+if(!baseline&&source.includes('detail-thesis-check'))await import('./build89_ma_thesis.mjs');
+const denseUi=source.includes('contribution-toggle');
+// Exercise the real refresh lifecycle, which the previous static fixture missed.
+if(!process.env.UI_BASELINE){
+ const fn=source.slice(source.indexOf('  function runRefreshSync('),source.indexOf('  (function bindPullToRefresh'));
+ for(const fail of [false,true]){
+  const labels=[],button={set textContent(v){labels.push(v)},setAttribute(){},disabled:false};
+  const indicator={classList:{add(){},remove(){}}};
+  const ctx={mode:'live',document:{visibilityState:'visible',getElementById:id=>id==='refreshBtn'?button:indicator},session:null,liveRefreshPromise:null,liveError:null,lastLiveLoadAt:0,currentTab:'home',window:{scrollY:0,scrollTo(){}},edgeSync:()=>Promise.resolve(),syncRecentHistory:()=>Promise.resolve(),recentHistoryMonths:()=>['2026-10'],loadLive:()=>fail?Promise.reject(new Error('isolated failure')):Promise.resolve(),live:{},render(){},setTimeout(){}};
+  vm.createContext(ctx);vm.runInContext(fn,ctx);await ctx.refreshLive(true,true).catch(()=>{});
+  assert.ok(labels.length>=2);assert.ok(labels.every(x=>x==='↻'),'refresh must stay an icon during load and after success/failure');assert.equal(button.disabled,false);
+ }
+}
+
+const out=process.env.UI_OUTPUT||'mobile-artifacts/build67';mkdirSync(out,{recursive:true});
+const names=[['ARM','에이알엠 홀딩스(ADR)',32,12472000,-534000],['RXRX','리커전 파머슈티컬스',2100,10812500,426000],['MRNA','모더나',40,9627400,672000],['LLY','일라이 릴리',3,5138000,218000],['MU','마이크론 테크놀로지',3,4437100,-67000],['META','메타 플랫폼스',4,4146000,114000],['385560','RISE KIS국고채30년Enhanced',110,7822100,322100]];
+const now='2026-09-28T22:10:00Z';
+const live={accounts:[{id:'broker',name:'KB 종합위탁',mode:'live',provider:'kb_securities'},{id:'isa',name:'ISA',mode:'live'}],securityMap:{},securities:[],holdings:[],holdingBasis:[],settings:{},manualSnapshots:[],settlementBasis:[],transactions:[],reviewDecisions:[],reviewAnalyses:[],
+  snapshots:[{snapshot_at:now,snapshot_date:'2026-09-29',total_assets:63842170,securities_value:54455100,unrealized_pnl:1151100}],
+  accountScope:{ok:true,current_display_total:63842170,snapshot_at:now,overlay_matches_manual:true,broker_account_overlap_verified:true,current_primary_value:56020070,current_isa_value:7822100,current_primary_observed_at:now,current_isa_capture_at:'2026-09-26T02:42:00Z',current_isa_source:'kb_account_breakdown_screenshot'},
+  performancePeriod:'1M',performance:{ok:true,return_ready:true,investment_pnl:326840,return_pct:.52,period_start:'2026-08-29',period_end:'2026-09-29',realized_pnl:251200,dividends_net:42000},
+  performanceGate:{ok:true,state:'estimated',partial:false,reliable_start:'2026-08-29',observed_through:'2026-09-29',investment_pnl:326840,return_estimate_pct:.52,opening_assets:62810330,closing_assets:63842170,external_flow:705000,as_of:now},
+  homeChart:{items:[{date:'2026-08-29',total_assets:62810330},{date:'2026-09-04',total_assets:63221000},{date:'2026-09-10',total_assets:61986500},{date:'2026-09-16',total_assets:62178000},{date:'2026-09-22',total_assets:63576900},{date:'2026-09-29',total_assets:63842170}]},
+  securityPerformance:{items:[{symbol:'LLY',name:'일라이 릴리',confirmed_contribution:243200,realized_pnl:231200,dividend_net:12000},{symbol:'META',name:'메타 플랫폼스',confirmed_contribution:86000,realized_pnl:76000,dividend_net:10000},{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',confirmed_contribution:-72000,realized_pnl:-72000,dividend_net:0}]}}
+for(const [i,[symbol,name,quantity,value,pnl]] of names.entries()){const id='s'+i,currency=i===6?'KRW':'USD',account_id=i===6?'isa':'broker';live.securityMap[id]={id,symbol,name,currency,market:i===6?'KRX':'NAS'};live.securities.push(live.securityMap[id]);live.holdings.push({security_id:id,account_id,quantity,as_of:now,currency,market_value:value,fx_rate_to_base:1});live.holdingBasis.push({security_id:id,account_id,valuation_krw:value,cost_krw:value-pnl,pnl_krw:pnl,average_unit_krw:(value-pnl)/quantity,valued_unit_krw:value/quantity,quantity,as_of:now})}
+live.holdings[0].native_prices={source:'KB_SPQM2226_NATIVE',currency:'USD',quantity:live.holdings[0].quantity,average_price:311.2343,market_price:286.58,observed_at:now};
+const today=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Seoul'});
+live.todayGate={ok:true,state:'estimated',partial:false,observed_through:today,investment_pnl:326840};
+live.todayStocks={ok:true,period:'오늘',period_start:today,period_end:today,basis_at:now,complete:false,items:[{security_id:'s0',symbol:'ARM',name:'에이알엠 홀딩스(ADR)',pnl_krw:220000},{security_id:'s1',symbol:'RXRX',name:'리커전 파머슈티컬스',pnl_krw:-80000}]};
+live.priceMeta={s0:{latest:{close:285,currency:'USD',price_date:'2026-09-28'}},s1:{latest:{close:5.2,currency:'USD',price_date:'2026-09-28'}}};
+const comparison={target_pct:10,price_assumptions:{down_pct:-10,up_pct:10},observation_at:now,denominator:{value:63842170},assets_before_krw:63842170,position_currency:'USD',hold:{quantity:32,value_krw:12472000,weight_pct:19.53,down_impact_krw:-1247200,up_impact_krw:1247200},reduce:{mode:'integer_shares',shares_to_sell:16,quantity_reference:16,value_krw:6236000,weight_pct:9.77,cash_increase_krw:6236000,down_impact_krw:-623600,up_impact_krw:623600,cash_native_estimate:4570}};
+const decision={id:'isolated-ui-decision',security_id:'s0',choice:'consider_reduction',reason:'눌림목을 살펴보고 보유 전제가 약해지면 축소 검토',review_condition:'눌림목 모니터링',analysis_id:'isolated-ui-analysis',created_at:now,basis_at:now,thesis_version:1,price_snapshot:{price_date:'2026-09-28',close:285,currency:'USD'},account_snapshot:{observation_at:now},scenario_snapshot:{choice_comparison:comparison}};
+const analysis={id:'isolated-ui-analysis',symbol:'ARM',created_at:now,thesis_version:1,response_kind:'model_interpretation_server_metrics',answer:'판단: 저장한 유지 조건이 약해졌다면 축소를 검토하되, 기준을 확인하기 전에는 현재 판단을 유보합니다.\n근거: 가격 참고 고점만으로 사용자의 돌파 조건을 확정할 수 없습니다.\n선택지: 일부 축소는 하락 영향과 상승 참여를 함께 줄입니다.\n다음 확인: 사용자가 정한 보유 조건과 다음 종가를 대조합니다.',comparison_evidence:comparison,price_evidence:{ready:true,price_date:'2026-09-28',latest_close:285,currency:'USD'},external_sources:[]};
+const injected=`
+  var fixtureOriginalLoadLive=loadLive;
+  window.__uiHomePeriodProbe=function(data){
+    var sales=[],extras=[];window.__periodReads=0;window.__periodFail=false;window.__periodHoldDetails=false;window.__periodFailDetails=false;
+    window.__releasePeriodDetails=function(){extras.splice(0).forEach(function(r){r({ok:true,items:[]})})};
+    window.__periodStatus=function(){return {loaded:live.performancePeriod,salesLoading:live.realizedSalesLoading,reads:window.__periodReads,detailsLoading:live.performanceDetailsLoading,detailsError:live.performanceDetailsError}};
+    window.__releasePeriodSales=function(){sales.splice(0).forEach(function(r){r({ok:true,items:[]})})};
+    rest=async function(){return []};
+    rpc=async function(name,p){
+      if(name==='get_live_realized_sales')return new Promise(function(resolve){sales.push(resolve)});
+      if(name==='get_live_benchmark_comparison'){if(window.__periodFailDetails)throw Error('synthetic auxiliary offline');if(window.__periodHoldDetails)return new Promise(function(resolve){extras.push(resolve)})}
+      if(name==='get_live_performance_summary'){window.__periodReads++;return data.performance}
+      if(name==='get_live_home_chart'){if(window.__periodFail)throw Error('synthetic offline');return data.homeChart}
+      if(name==='get_live_reliable_performance')return data.performanceGate;
+      if(name==='get_live_security_performance')return data.securityPerformance;
+      return {ok:true,items:[]};
+    };
+  };
+
+  window.__uiPreserveRender=function(){render(true)};
+  window.__uiStartCached=function(){var refresh=refreshLive;window.__previewRefreshRequested=0;refreshLive=function(){window.__previewRefreshRequested++;return Promise.resolve()};try{startLive(session)}finally{refreshLive=refresh}};
+  window.__uiPreviewFailure=function(){liveError='synthetic offline';render()};
+  window.__uiWaitPreviewRefresh=function(){return liveRefreshPromise};
+  window.__uiSnapshotTotal=function(){var p=readHomeSnapshot();return p&&p.data.total};
+  window.__uiClearSession=function(){writeSession(null)};
+
+  window.__uiLoadingProbe=function(data,waitForRetry){
+    loadLive=fixtureOriginalLoadLive;
+    window.__homeProbeReads=[];
+    var delayed=new Promise(function(resolve){window.__releaseHomeProbe=resolve});
+    var extras=new Promise(function(resolve){window.__releaseStartupExtras=resolve});
+    window.__startupStatus=function(){return {ready:!!live.performanceGate,loading:live.detailsLoading}};
+    window.__retryStartup=function(){return loadStartupHomeData(live,function(){return true},period,performanceRequestEpoch)};
+    rest=async function(path){window.__homeProbeReads.push(path);await new Promise(function(r){setTimeout(r,80)});
+      if(path.startsWith('accounts?'))return data.accounts;
+      if(path.startsWith('securities?'))return data.securities;
+      if(path.startsWith('holdings?'))return data.holdings;
+      if(path.startsWith('daily_account_snapshots?'))return data.snapshots.slice().reverse();
+      if(path.startsWith('manual_subaccount_snapshots?'))return data.manualSnapshots||[];
+      if(path.startsWith('investment_decisions?')){if(window.__failHomeReview)throw Error('synthetic offline');return data.reviewDecisions||[]}
+      if(path.startsWith('daily_security_prices?'))return [{security_id:'s0',price_date:'2026-09-28',close:90,currency:'USD'}];
+      return [];
+    };
+    rpc=async function(name,p){if(name==='reconcile_live_cash_flows')return delayed;if(name==='get_live_current_account_scope')return data.accountScope||null;if(name==='get_app_settings')return {};if(name==='get_live_performance_summary')return data.performance;if(name==='get_live_home_chart'){if(window.__failStartupChart)throw Error('synthetic chart offline');return data.homeChart}if(name==='get_live_reliable_performance')return p.p_period==='오늘'?data.todayGate:data.performanceGate;if(name==='get_live_benchmark_comparison'&&window.__holdStartupExtras)return extras;return null};
+    window.__retryHomeProbe=function(){return loadHomeReviewData(live,function(){return true})};
+    window.__quickReturnProbe=async function(){const previous=loadLive;lastLiveLoadAt=Date.now();loadLive=async()=>{throw Error('quick retry must not reload full account')};try{await refreshLive(false)}finally{loadLive=previous}};
+    if(!waitForRetry)window.__homeProbe=loadLiveOnce();
+  };
+
+  window.__uiFixture=function(data,record,opinion,comparison){
+    if(typeof performanceAssetScope!=='undefined')performanceAssetScope='stocks';
+    liveAuthEpoch++;live=data;liveError=null;mode='live';period='1M';session={accessToken:'test.'+btoa(JSON.stringify({sub:data.draftOwner||('fixture-'+crypto.randomUUID())}))+'.test'};
+    var stockResponse=data.stockPnl,failStockOnce=false,savedDecision=null;window.__decisionWrites=0;
+    window.__uiSavedDecision=function(){return savedDecision?JSON.parse(JSON.stringify(savedDecision)):null};
+    window.__uiFailDecisionRead=function(value){data.failDecisionRead=value};
+    window.__decisionNetworkAttempts={model:0,sync:0};
+    if(!crypto.randomUUID){let syntheticId=0;Object.defineProperty(crypto,'randomUUID',{value:()=> '00000000-0000-4000-8000-'+String(++syntheticId).padStart(12,'0')})}
+    window.__uiFailStockOnce=function(){failStockOnce=true};
+    window.__saleNotes=window.__saleNotes||{};
+    rpc=async function(name,p){
+      if(name==='get_wealth_dashboard')return {ok:true,today:kstDate(),plan:{version:2,base_amount:63842170,base_date:kstDate(),std_rate:20,best_rate:30,revision:0},current:{amount:63842170,as_of:kstDate()},records:[]};
+      var saleKey=p&&[p.p_security_id,p.p_start,p.p_end].join('|');
+      if(name==='get_sale_review')return {ok:true,security_id:p.p_security_id,period_start:p.p_start,period_end:p.p_end,note:window.__saleNotes[saleKey]||null,before:null,during:[],history:[{period_start:'2026-08-01',period_end:'2026-08-31',reason:'이전 기간 복기',lesson:'이전 교훈',next_action:'이전 기준'}]};
+      if(name==='save_sale_review'){if(window.__saleFail)throw Error('Synthetic save failure');window.__saleNotes[saleKey]={reason:p.p_reason,lesson:p.p_lesson,next_action:p.p_next_action,revision:p.p_revision+1,updated_at:'2026-10-06T00:00:00Z'};return {ok:true,revision:p.p_revision+1}};
+
+      if(name==='get_live_realized_sales'&&data.closedRealizedFixture)return data.closedRealizedFixture;
+      if(name==='get_live_realized_sales')return {ok:true,period:p.p_period,period_start:p.p_period==='1W'?'2026-09-23':'2026-09-01',period_end:'2026-09-29',items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',realized_local:100,historical_krw_estimate:140000,status:'calculated'},{symbol:'SOXS',name:'SOXS',currency:'USD',realized_local:null,historical_krw_estimate:null,status:'cost_review'}]};
+      if(name==='get_live_period_stock_pnl'){if(failStockOnce){failStockOnce=false;throw Error('Simulated timeout')}return {...stockResponse,period:p.p_period,period_start:p.p_period==='1M'?'2026-08-29':'2026-09-01'}};
+      if(name==='get_live_security_detail')return {ok:true,security:live.securityMap[p.p_security_id],holding:{quantity:32},technical:{},prices:live.swingPrices[p.p_security_id]||[{date:'2026-09-25',close:297,currency:'USD'},{date:'2026-09-28',close:285,currency:'USD'}]};
+      if(name==='get_pending_kb_position_events')return [{symbol:'TEST',type:'sell',order_date:kstDaysAgo(1),settlement_date:kstDate(),quantity:7}];
+      if(name==='get_live_security_activity')return {items:[]};
+      if(name==='save_investment_thesis'){data.testThesis={...p.p_fields,version:2};return {ok:true,version:2}};
+      if(name==='get_investment_thesis')return {ok:true,thesis:data.testThesis||{version:1,rationale:'최근 추세돌파와 상승 흐름을 확인하며 보유',updated_at:record?record.created_at:'2026-09-28T22:10:00Z'}};
+      if(name==='save_investment_decision'&&data.decisionSaveFixture){
+        window.__decisionWrites++;
+        savedDecision={id:'recovered-decision',security_id:p.p_security_id,request_id:p.p_request_id,choice:p.p_choice,reason:p.p_reason,review_condition:p.p_review_condition,analysis_id:p.p_analysis_id,created_at:new Date().toISOString(),thesis_version:1,scenario_snapshot:{}};
+        if(data.deferDecisionSave){data.deferDecisionSave=false;await new Promise(resolve=>{window.__releaseDecisionSave=resolve})}
+        throw Error('Synthetic response lost after commit');
+      }
+      if(name==='get_investment_decisions'){if(data.failDecisionRead)throw Error('Synthetic decision read failed');return savedDecision?[savedDecision,...(record?[record]:[])]:record?[record]:[]};
+      if(name==='get_investment_breakout_rule')return null;
+      if(name==='get_live_choice_comparison')return {...comparison,ok:true};
+      if(name==='get_live_decision_metrics'){if(data.deferMetrics)return new Promise(resolve=>{window.__releaseDetailMetrics=()=>resolve({ok:false})});return {ok:false}};
+      return {ok:false,items:[]};
+    };
+    authFetch=async function(url,options){if(options&&options.method==='POST'){window.__decisionNetworkAttempts.model++;throw Error('No model generation or writes allowed in UI capture')}return {ok:true,json:async()=>url.includes('investment_decisions?')?(savedDecision?[savedDecision]:[]):[opinion]}};
+    loadLive=async()=>{};edgeSync=async(action)=>{window.__decisionNetworkAttempts.sync++;if(action==='overseas-day-pnl')return {ok:true,available:false,items:[]};throw Error('No account sync during UI capture')};
+    document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('refreshBtn').classList.remove('hidden');
+    window.__reloadReviewRecords=async function(){
+      const originalRest=rest,records=data.reviewDecisions||[];
+      live.reviewDecisions=[];
+      rest=async function(path){
+        if(!path.startsWith('investment_decisions?'))return [];
+        const fields=new URLSearchParams(path.split('?')[1]).get('select').split(',');
+        return records.map(row=>Object.fromEntries(fields.map(key=>[key,row[key]])));
+      };
+      try{await loadHomeReviewData(live,function(){return true})}finally{rest=originalRest}
+    };
+    window.__uiResumeMidnight=async function(){
+      const NativeDate=window.Date,originalLoad=loadLive,previousLoadAt=lastLiveLoadAt;
+      let tick=NativeDate.parse('2026-10-11T23:59:30+09:00'),reads=0;
+      window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[tick]))}static now(){return tick}};
+      loadLive=async function(){reads++};
+      try{
+        lastLiveLoadAt=tick;currentTab='home';render();
+        const before=reviewHomeCard('status');
+        tick+=60000;await refreshLive(false);
+        return {reads,before,after:reviewHomeCard('status')};
+      }finally{window.Date=NativeDate;loadLive=originalLoad;lastLiveLoadAt=previousLoadAt}
+    };
+    window.__uiAiTest=function(testMode){
+      window.__aiMode=testMode;window.__aiIds=[];window.__syncCount=0;
+      let idCount=0;window.portfolioAnalysisRequestId=async()=> '00000000-0000-4000-8000-'+String(++idCount).padStart(12,'0');
+      const originalRpc=rpc;
+      rpc=async function(name,p){if(name==='get_live_decision_metrics')return {ok:true,denominator:{value:63842170},observation_at:'2026-09-28T22:10:00Z'};return originalRpc(name,p)};
+      edgeSync=async()=>{window.__syncCount++;return {ok:true}};
+      authFetch=async function(url,options){
+        if(options&&options.method==='POST'){
+          window.__aiIds.push(JSON.parse(options.body).request_id);
+          if(window.__aiMode==='failure'||window.__aiMode==='recovery')throw Error('Load failed');
+          return {ok:true,json:async()=>({...opinion,comparison_evidence:null,history_saved:true,analysis_id:opinion.id})};
+        }
+        return {ok:true,json:async()=>window.__aiMode==='recovery'&&url.includes('request_id=eq.')?[{...opinion,comparison_evidence:null}]:[]};
+      };
+    };
+    window.__uiLocalHistory=function(data){live=data;stockPeriod='ALL';stockView='total';currentTab='performance';render()};
+    window.__uiHomeFailure=function(){liveError='synthetic refresh failure';live.performanceError='기간 성과 조회 실패';currentTab='home';render()};
+    window.__uiSelectHomePeriod=function(p){period=p;live.performancePeriod=p;stockPnlQuery='unmatched-old-search';stockPnlScope='closed';stockView='realized';currentTab='home';render()};
+    window.__uiPeriodSummary=function(data){live.stockPnl=data;live.stockPnlDeferred=false;live.stockPnlLoading=false;stockPeriod=data.period;stockView='total';currentTab='performance';render()};
+    window.__uiRender=function(tab){currentTab=tab;render()};window.__uiDetail=openSecurityDetail;
+    render();
+  };
+`;
+let html=source.replace('  restoreLogin();',injected).replace(/<script[^>]+src=[^>]+><\/script>/g,'').replace("navigator.serviceWorker.register('./sw.js'","Promise.reject('fixture only').then('./sw.js'");
+// Keep the application's actual AI response renderer as well.
+html=html.replace('</body>',`<script>${readFileSync(new URL('../app-enhancements.js',import.meta.url),'utf8')}</script></body>`);
+if(process.env.UI_WEBKIT_NAV==='1')html=html.replace('</body>',`<script>${readFileSync(new URL('../realized-sales-ui.js',import.meta.url),'utf8')}</script></body>`);
+writeFileSync(out+'/fixture.html',html);
+live.swingAlertState=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,{unread:true}]));
+live.swingPrices=Object.fromEntries(names.slice(0,4).map((n,i)=>['s'+i,swingPoints([...swingValues.slice(0,-1),85-i],today)]));
+const navigationOnly=process.env.UI_WEBKIT_NAV==='1';
+const browser=await (navigationOnly?webkit:chromium).launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:(await import('@sparticuz/chromium')).default.args}:{} )});
+try{
+  for(const width of [390,402,430]){
+    const page=await browser.newPage({viewport:{width,height:844},isMobile:true,hasTouch:true});page.on('dialog',dialog=>{if(page.listenerCount('dialog')===1)dialog.accept()});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+    await page.route('**/*',route=>route.request().url()==='https://portfolio.test/'?route.fulfill({status:200,contentType:'text/html',body:html}):route.abort());await page.goto('https://portfolio.test/',{waitUntil:'domcontentloaded'});
+    const fontFile=resolve(process.env.UI_FONT_CSS||'node_modules/@fontsource/noto-sans-kr/400.css');
+    if(existsSync(fontFile)){const css=readFileSync(fontFile,'utf8').replace(/url\(([^)]+)\)/g,(_,p)=>`url(data:font/woff2;base64,${readFileSync(resolve(dirname(fontFile),p.replaceAll("'",''))).toString('base64')})`);await page.addStyleTag({content:css+' body{font-family:"Noto Sans KR",sans-serif}'});await page.evaluate(()=>document.fonts.ready)}
+    if(navigationOnly){
+      const data=JSON.parse(JSON.stringify(live));delete data.stockPnl;
+      data.accounts.push({id:'second-fixture-account',provider:'kb_securities_manual',name:'검증용 별도 계좌'});
+      data.reviewDecisions=[];data.decisionSaveFixture=true;data.draftOwner='webkit-navigation-'+width;
+      await page.evaluate(args=>window.__uiFixture(...args),[data,null,analysis,comparison]);
+      await page.evaluate(()=>window.__uiRender('performance'));
+      for(const group of await page.locator('#realizedAccount').locator('xpath=ancestor::details').all()){
+        if(!await group.evaluate(el=>el.open))await group.locator(':scope > summary').click();
+      }
+      await page.locator('#realizedAccount').selectOption('second-fixture-account');
+      await page.locator('#realizedPeriod').selectOption('3M');
+      await page.waitForFunction(()=>document.querySelector('#realizedAccount')?.value==='second-fixture-account'&&document.querySelector('#realizedPeriod')?.value==='3M');
+      await page.locator('#realizedAccount').scrollIntoViewIfNeeded();
+      const originalScroll=await page.evaluate(()=>scrollY);
+      await page.evaluate(()=>window.__uiDetail('s0'));
+      await page.locator('#detailDirectDecision').click();
+      await page.locator('#detailReason').fill('WebKit 복귀 검증용 초안');
+      await page.locator('#detailReview').fill('다음 실적 확인');
+      await page.evaluate(()=>window.__uiPreserveRender());
+      await page.evaluate(()=>history.back());await page.locator('#detailModal').waitFor({state:'hidden'});
+      assert.equal(await page.locator('#realizedAccount').inputValue(),'second-fixture-account');
+      assert.equal(await page.locator('#realizedPeriod').inputValue(),'3M');
+      assert.ok(Math.abs(await page.evaluate(()=>scrollY)-originalScroll)<3,'WebKit returns to original list position');
+      await page.screenshot({path:out+'/webkit-account-return-'+width+'.png'});
+      await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+      assert.equal(await page.locator('#detailReason').inputValue(),'WebKit 복귀 검증용 초안');
+      assert.equal(await page.locator('#detailReview').inputValue(),'다음 실적 확인');
+      assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+      await page.locator('#detailReturn').click();await page.waitForFunction(()=>!history.state?.portfolioDetail);
+      assert.equal(await page.locator('#realizedAccount').inputValue(),'second-fixture-account');
+      assert.equal(await page.locator('#realizedPeriod').inputValue(),'3M');
+      assert.deepEqual(errors,[]);await page.close();continue;
+    }
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    assert.match(await page.locator('.hero .home-basis-time').textContent(),/KB .*ISA .*한국시간/);
+    assert.equal(await page.locator('.hero .balance-meta').evaluate(el=>el.open),false,'basis dates retained inside account disclosure');
+    await page.screenshot({path:out+'/home-basis-'+width+'.png'});
+    const confirmedAssets=await page.locator('.hero .asset').innerText();
+    await page.evaluate(()=>window.__uiHomeFailure());
+    assert.equal(await page.locator('.hero .asset').innerText(),confirmedAssets);
+    assert.equal(await page.locator('[data-home-load-retry]').isVisible(),true,'account retry remains visible alongside period failure');
+    assert.match(await page.locator('.hero .home-basis-time').textContent(),/KB .*ISA/);
+    await page.screenshot({path:out+'/home-basis-failure-'+width+'.png'});
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+
+    await page.locator('.home-today-details>summary').click();
+    await page.locator('#homeToday [data-security-id="s0"]').click();
+    await page.locator('.detail-price-chart').waitFor();
+    await page.locator('#detailClose').click();
+    await page.evaluate(()=>window.__uiRender('portfolio'));
+    assert.match(await page.locator('#homePriceWatch').innerText(),/새 하락 알림 4개/);
+    await page.locator('#swingAlertAck').click();
+    assert.equal(await page.locator('#swingAlertAck').count(),0);
+    assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),3);
+    await page.locator('#homePriceWatch .price-watch-row').first().click();
+    await page.locator('.detail-price-chart').waitFor();
+    assert.ok(await page.locator('.security-swing-marker').isVisible());
+    assert.match(await page.locator('.security-peak-summary').innerText(),/110 USD/);
+    await page.locator('.detail-price-chart').screenshot({path:out+'/swing-chart-'+width+'.png'});
+    await page.locator('[data-chart-zoom="in"]').click();await page.locator('[data-chart-zoom="in"]').click();
+    await page.locator('[data-chart-pan]').focus();await page.keyboard.press('Home');
+    assert.equal(await page.locator('.security-swing-marker').isVisible(),false);
+    await page.locator('[data-chart-zoom="reset"]').click();
+    assert.ok(await page.locator('.security-swing-marker').isVisible());
+    await page.locator('#detailClose').click();
+    await page.locator('#homePriceWatch').screenshot({path:out+'/swing-home-'+width+'.png'});
+    await page.locator('#homePriceWatch summary').first().click();
+    assert.equal(await page.locator('#homePriceWatch .price-watch-row:visible').count(),4);
+    await page.locator('#homePriceWatch summary').first().click();
+    const pendingWatch=page.locator('.price-watch-pending');
+    assert.equal(await pendingWatch.locator('button:visible').count(),0);
+    await pendingWatch.locator('summary').click();
+    assert.ok(await pendingWatch.locator('button:visible').count()>0);
+    assert.match(await pendingWatch.innerText(),/가격 자료 없음/);
+    await pendingWatch.screenshot({path:out+'/watch-pending-'+width+'.png'});
+    await pendingWatch.locator('button').first().click();
+    await page.locator('.detail-price-chart').waitFor();
+    await page.locator('#detailClose').click();
+    assert.ok(await pendingWatch.locator('button').first().isVisible());
+    await pendingWatch.locator('summary').click();
+    const statusFixture={...live,swingPrices:{...live.swingPrices,s0:swingPoints([...swingValues,120],today)}};
+    await page.evaluate(args=>window.__uiFixture(...args),[statusFixture,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
+    const formingWatch=page.locator('.price-watch-forming');
+    assert.match(await formingWatch.locator('summary').innerText(),/새 전고점 형성 중 1종목/);
+    assert.equal(await formingWatch.locator('button:visible').count(),0);
+    await formingWatch.locator('summary').click();
+    assert.match(await formingWatch.innerText(),/이전 전고점 돌파 후 형성 중/);
+    await page.locator('#homePriceWatch').screenshot({path:out+'/watch-status-'+width+'.png'});
+    await formingWatch.locator('button').click();await page.locator('.detail-price-chart').waitFor();
+    await page.locator('#detailClose').click();
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    for(const tab of ['home','portfolio','performance']){
+      await page.evaluate(tab=>window.__uiRender(tab),tab);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} ${width}px overflow`);
+      if(tab==='home'&&!baseline){assert.ok(await page.locator('#homeHoldings').isVisible());const box=await page.locator('#homeHoldings').boundingBox();assert.ok(box.y<764,`${width}px review follows the chart on first screen`);assert.match(await page.locator('#homeToday').textContent(),/326,840/)}
+      if(tab==='portfolio'&&!baseline){
+        assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),false,'settings start collapsed');
+        const fourthBottom=await page.locator('.portfolio-row').nth(3).evaluate(el=>el.getBoundingClientRect().bottom);
+        const navTop=await page.locator('.nav').evaluate(el=>el.getBoundingClientRect().top);
+        assert.ok(fourthBottom<=navTop,`${width}px four portfolio rows with prices stay above navigation (${fourthBottom} <= ${navTop})`);
+      }
+      if(tab==='portfolio'){
+        const controls=page.locator('#portfolioControls');if(await controls.count()&&!await controls.evaluate(el=>el.open))await controls.locator('summary').click();
+        if(!baseline)await assertPortfolioControlsReadable(page,`portfolio ${width}px expanded settings`);
+        await page.locator('#portfolioPriceView').selectOption('average');
+        assert.match(await page.locator('.position-quote').first().innerText(),/평단|평균 매입가/);
+        await page.locator('.portfolio-list').screenshot({path:out+'/portfolio-average-'+width+'.png'});
+        await page.locator('#portfolioPriceView').selectOption('close');
+        assert.match(await page.locator('.position-quote').first().innerText(),/종가/);
+        assert.match(await page.locator('.position-quote').first().innerText(),/285 USD/);
+        assert.equal(await page.locator('#portfolioControls').evaluate(el=>el.open),true,'price changes preserve expanded controls');
+        await page.locator('#portfolioSort').selectOption('loss');
+        assert.equal(await page.locator('.portfolio-row').first().getAttribute('data-security-id'),'s0');
+        await page.locator('#portfolioSort').selectOption('profit');
+        assert.equal(await page.locator('.portfolio-row').first().getAttribute('data-security-id'),'s2');
+        await page.locator('#portfolioSort').selectOption('value');
+        if(!baseline)await assertPortfolioRowsReadable(page,`portfolio ${width}px`);
+      }
+      await page.screenshot({path:`${out}/${tab}-${width}.png`});
+      if(tab==='performance'&&source.includes('brokerDayCard')){if(source.includes('quiet-realized'))await page.locator('#brokerDayCard>summary').click();await page.locator('#brokerDayResult').getByText('TEST',{exact:true}).waitFor();await page.locator('#brokerDayCard').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/sales-${width}.png`});}
+      if(denseUi&&tab==='performance'){
+        assert.equal(await page.locator('.performance-breakdown').first().isVisible(),false);
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
+        assert.ok(await page.locator('.performance-breakdown').first().isVisible());
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).uncheck();
+      }
+      if(denseUi&&tab==='portfolio'){
+        await page.locator('#portfolioAccount').selectOption('isa');assert.equal(await page.locator('.portfolio-row').count(),1);
+        await page.locator('#portfolioAccount').selectOption('ALL');await page.locator('#search').fill('ARM');
+        assert.equal(await page.locator('.portfolio-row:visible').count(),1);
+        if(source.includes('holdings-ux-69')){
+          await page.locator('#portfolioSort').selectOption('name');assert.equal(await page.locator('#search').inputValue(),'ARM');assert.equal(await page.locator('.portfolio-row:visible').count(),1);
+          await page.locator('#search').fill('없는종목XYZ');assert.ok(await page.locator('#portfolioSearchEmpty').isVisible());
+          await page.locator('#portfolioSort').selectOption('value');
+        }
+        await page.locator('#search').fill('ARM');
+        const listY=await page.evaluate(()=>window.scrollY);
+        await page.locator('.portfolio-row:visible').first().click();
+        await page.locator('#detailClose').waitFor({state:'visible'});
+        await page.locator('#detailClose').click();
+        assert.equal(await page.locator('#search').inputValue(),'ARM','closing stock retains search');
+        assert.equal(await page.locator('.portfolio-row:visible').count(),1);
+        assert.ok(Math.abs(await page.evaluate(()=>window.scrollY)-listY)<3,'closing stock retains list position');
+        await page.locator('#search').fill('');
+      }
+
+      if(width===390){
+        await page.evaluate(()=>document.documentElement.style.zoom='1.25');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${tab} 125% overflow`);
+        if(tab==='portfolio'&&!baseline){await assertPortfolioControlsReadable(page,'portfolio 390px at 125%');await assertPortfolioRowsReadable(page,'portfolio 390px at 125%')}
+        await page.screenshot({path:`${out}/${tab}-390-large.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
+      }
+    }
+    if(denseUi){
+      await page.evaluate(()=>{window.__uiRender('portfolio');document.querySelector('.position-name').textContent='아주 긴 국내 상장 종목 이름을 확인하는 화면';document.querySelector('.position-value').textContent='1,234,567,890원'});
+      await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'long names / billion amount / enlarged text');
+      if(!baseline)await assertPortfolioRowsReadable(page,`long name / billion amount at ${width}px and 125%`);
+      await page.screenshot({path:`${out}/stress-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='');
+    }
+    if(source.includes('function allocationData')){
+      const allocationFixture={...live,risk:{ok:true,official_assets_krw:63842170,as_of:now,largest_symbol:'ARM',largest_krw:12472000,top_three_krw:32911900,foreign_currency_krw:46633000,leveraged_etf_krw:0,known_positions_krw:54455100}};
+      await page.evaluate(args=>window.__uiFixture(...args),[allocationFixture,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('analysis'));
+      if(await page.locator('#wealthLegacy').count())await page.locator('#wealthLegacy>summary').click();
+      const allocation=page.locator('.allocation-card');await allocation.waitFor();
+      assert.equal(await allocation.locator('button.allocation-row').count(),7);
+      assert.match(await allocation.innerText(),/확인된 종목 평가액 합계 = 100%/);
+      assert.equal(await allocation.locator('.allocation-residual').count(),0);
+      assert.ok(await page.locator('[data-allocation-scope="assets"]').isDisabled());
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'allocation overflow');
+      await page.screenshot({path:`${out}/allocation-assets-${width}.png`,fullPage:true});
+      await page.locator('[data-allocation-scope="stocks"]').click();
+      assert.equal(await page.locator('.allocation-residual').count(),0);assert.match(await allocation.innerText(),/확인된 종목 평가액 합계 = 100%/);
+      if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'allocation enlarged text overflow');await page.screenshot({path:`${out}/allocation-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
+      await allocation.locator('[data-decision-detail="s0"]').click();await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.locator('#detailClose').click();assert.ok(await allocation.isVisible());
+      // Unverified total-asset cutoff remains disabled.
+      await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    }
+    if(source.includes('review-home-item')){
+      const midnightDecision={...decision,choice:'hold',review_condition:'2026-10-12',created_at:'2026-10-10T00:00:00Z'};
+      const midnightData={...live,reviewDecisions:[midnightDecision]};
+      await page.evaluate(args=>window.__uiFixture(...args),[midnightData,midnightDecision,analysis,comparison]);
+      await page.evaluate(()=>window.__uiRender('portfolio'));
+      const midnight=await page.evaluate(()=>window.__uiResumeMidnight());await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.equal(midnight.before.attention,0,'checkpoint is not due before Korean midnight');
+      assert.equal(midnight.reads,1,'one-minute return crossing midnight refreshes');
+      assert.equal(midnight.after.attention,1,'checkpoint becomes due on return after midnight');
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history starts collapsed below the focused review');
+      await page.locator('.home-reviews>summary').click();
+      assert.match(await page.locator('.review-home-item').first().innerText(),/점검 날짜 도래.*2026-10-12/);
+      await page.evaluate(()=>scrollTo(0,0));
+      await page.screenshot({path:out+'/midnight-resume-'+width+'.png'});
+
+      const contextDecision={...decision,choice:'hold',reason:'매출 성장을 다음 실적까지 확인',review_condition:'종가 100 달러 이하',created_at:'2026-09-27T00:00:00Z',price_snapshot:{price_date:'2026-09-26',currency:'USD'}};
+      const contextData={...live,reviewDecisions:[contextDecision],priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:110}}}};
+      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false);
+      assert.match(await page.locator('.home-review-brief').innerText(),/자동 조건에 해당하는 항목 없음/);
+      await page.locator('.home-reviews>summary').click();
+      assert.match(await page.locator('.home-decision-context').innerText(),/매출 성장을 다음 실적까지 확인/);
+      assert.match(await page.locator('.home-review-quote').innerText(),/110 USD.*2026-09-28/);
+      await page.locator('.review-home').screenshot({path:out+'/home-decision-context-'+width+'.png'});
+      await page.locator('.review-home [data-decision-detail="s0"]').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+      assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장을 다음 실적까지 확인/);
+      assert.match(await page.locator('#detailDecisionSummary').innerText(),/종가 100 달러 이하/);
+      await page.locator('#detailClose').click();
+      contextData.priceMeta.s0.latest.close=null;
+      await page.evaluate(args=>window.__uiFixture(...args),[contextData,contextDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.match(await page.locator('.home-review-brief').innerText(),/자료·조건 확인 1개/);
+
+      const ackDecision={...contextDecision};
+      const ackData={...contextData,draftOwner:'ack-owner-'+width,decisionSaveFixture:true,priceMeta:{s0:{latest:{price_date:'2026-09-28',currency:'USD',close:90}}}};
+      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history starts collapsed below the focused review');
+      await page.locator('.home-reviews>summary').click();
+      await page.locator('[data-home-review-ack="s0"]').click();
+      assert.match(await page.locator('.home-review-brief').innerText(),/확인한 항목 1개/);
+      assert.doesNotMatch(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단/);
+      assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'last acknowledged item closes the completed review');
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/새로 점검할 판단 없음/);
+      await page.locator('.home-reviews').screenshot({path:out+'/home-review-checked-'+width+'.png'});
+      await page.reload();await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false);
+      assert.match(await page.locator('.home-review-brief').innerText(),/새로 점검할 항목 없음/);
+      await page.locator('.home-reviews>summary').click();await page.locator('[data-home-review-undo="s0"]').click();
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      await page.locator('[data-home-review-ack="s0"]').click();
+      ackData.priceMeta.s0.latest.price_date='2026-09-29';
+      await page.evaluate(args=>window.__uiFixture(...args),[ackData,ackDecision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      await page.locator('.home-reviews>summary').click();
+      assert.equal(await page.locator('[data-home-review-ack="s0"]').isVisible(),true);
+      const reviewData={...live,reviewDecisions:[{...decision,review_condition:'실적을 확인한 뒤 다시 판단'}, {...decision,security_id:'s1',review_condition:'2026-09-29',created_at:'2026-09-27T00:00:00Z'}]};
+      await page.evaluate(args=>window.__uiFixture(...args),[reviewData,decision,analysis,comparison]);
+      await page.evaluate(()=>window.__reloadReviewRecords());
+      await page.evaluate(()=>window.__uiRender('portfolio'));
+      assert.ok(await page.locator('.portfolio-list').evaluate(el=>!!(el.compareDocumentPosition(document.querySelector('.home-reviews'))&Node.DOCUMENT_POSITION_FOLLOWING)));
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      assert.equal(await page.locator('.home-reviews').evaluate(el=>el.open),false,'history remains collapsed; focused review follows the chart');
+      await page.evaluate(()=>scrollTo(0,0));
+      await page.locator('.home-reviews>summary').click();
+      await page.screenshot({path:`${out}/home-priority-${width}.png`});
+      const card=page.locator('.review-home');await card.scrollIntoViewIfNeeded();
+      assert.match(await page.locator('.home-reviews>summary').innerText(),/다시 점검할 판단 1개/);
+      assert.equal(await card.locator(':scope > h3').isVisible(),false,'nested title is not repeated');
+      assert.match(await page.locator('.home-review-brief').innerText(),/직접 확인 1개/);
+      assert.equal(await card.locator('[data-decision-detail]').first().getAttribute('data-decision-detail'),'s1');
+      assert.equal(await card.locator('[data-decision-detail="s0"]').isVisible(),false);
+      await card.getByText('다른 종목 판단 1개 보기',{exact:true}).click();
+      await page.screenshot({path:`${out}/review-home-${width}.png`});
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'review list overflow');
+      const entryReason=await card.locator('[data-decision-detail="s0"]').getAttribute('data-review-reason');
+      await card.locator('[data-decision-detail="s0"]').click();await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+      assert.ok((await page.locator('#detailDecisionReview .review-entry-context').innerText()).includes(entryReason));
+      assert.equal(await page.evaluate(()=>document.getElementById('detailExtras').open),true,'home review route opens saved-decision section');
+      await page.locator('#detailContinueDecision').click();
+      assert.equal(await page.locator('#detailReason').inputValue(),decision.reason);
+      assert.equal(await page.locator('#detailReview').inputValue(),decision.review_condition);
+      assert.ok((await page.locator('#detailDecisionForm .review-entry-context').innerText()).includes(entryReason));
+      await page.locator('#detailDecisionForm .review-entry-context').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+      await page.locator('#detailDecisionForm .review-entry-context').screenshot({path:out+'/review-entry-context-'+width+'.png'});
+      await page.locator('#detailReason').fill('작성 중인 새 이유');await page.locator('#detailContinueDecision').click();
+      assert.equal(await page.locator('#detailReason').inputValue(),'작성 중인 새 이유','follow-up does not replace edits');
+      await page.screenshot({path:`${out}/decision-followup-${width}.png`});
+      await page.locator('#detailClose').click();assert.ok(await card.locator('[data-decision-detail="s0"]').isVisible());
+      await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    }
+    await page.evaluate(()=>window.__uiRender('home'));
+    if(await page.locator('#homeTrend').count()){await page.locator('#homeTrend').scrollIntoViewIfNeeded();await page.evaluate(()=>document.getElementById('homeTrend').scrollIntoView({block:'start'}))}
+    else{await page.getByRole('heading',{name:/자산 추이/}).scrollIntoViewIfNeeded();await page.getByRole('heading',{name:/자산 추이/}).evaluate(el=>el.closest('section').scrollIntoView({block:'start'}))}
+    await page.screenshot({path:`${out}/trend-${width}.png`});
+    await page.locator('#assetChartHit').tap();assert.ok(await page.locator('#assetChartTip').isVisible(),'chart observation is touch-readable');
+    await page.evaluate(()=>window.__uiDetail('s0'));
+    await page.locator('#detailStartAction').waitFor({state:'visible'});
+    await page.locator('[data-chart-period="3"]').click();
+    await page.locator('#detailReturn').click();
+    assert.equal(await page.locator('#detailModal').isVisible(),false);
+    await page.evaluate(()=>window.__uiDetail('s0'));
+    await page.locator('#detailStartAction').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
+    assert.equal(await page.locator('#detailStart').evaluate(el=>el.parentElement.id),'detailBody');
+    assert.ok(await page.locator('#detailStart #detailDecisionSummary').isVisible());
+    assert.equal(await page.locator('[data-chart-period="3"]').getAttribute('aria-pressed'),'true','reopened detail remembers chosen chart period');
+    await page.locator('[data-chart-period="all"]').click();
+    assert.equal(await page.locator('.detail-shortcuts').count(),1);
+    await page.locator('[data-detail-jump="holding"]').click();
+    assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('detail-overview')),true);
+    await page.locator('[data-detail-jump="reason"]').click();
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),true);
+    assert.equal(await page.evaluate(()=>document.activeElement.contains(document.getElementById('detailThesisSummary'))),true);
+    await page.locator('[data-detail-jump="decision"]').click();
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),true);
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    await openOptionalTools(page);await page.locator('#detailDecisionSummary').waitFor();await page.getByText('눌림목을 살펴보고').first().waitFor();
+    assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'saved judgment precedes form');
+    await page.screenshot({path:`${out}/detail-${width}.png`});
+    if(source.includes('detail-price-chart')){
+      assert.equal(await page.locator('#detailBody > :first-child').getAttribute('id'),'detailOverview');
+      assert.equal(await page.locator('.detail-price-chart').evaluate(el=>!!el.closest('details:not([open])')),false);
+      assert.equal(await page.locator('.detail-price-chart .security-chart-hit').count(),1);
+    }
+    if(source.includes("startPanel.id='detailStart'")){
+      if(width===390){await page.locator('.detail-usage').evaluate(x=>x.open=true);await page.screenshot({path:`${out}/detail-guide-${width}.png`});await page.locator('.detail-usage').evaluate(x=>x.open=false)}
+      await page.locator('#detailStartAction').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    }
+    await page.locator('#detailDecisionSummary').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/judgment-${width}.png`});
+    if(source.includes('brokerDayCard')){await page.locator('#detailDecisionReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/review-${width}.png`});}
+    if(source.includes('detailSetupRule')){
+      if(source.includes("result('manual'")){
+        assert.equal(await page.locator('#detailDecisionReview .review-status b').innerText(),'직접 확인할 조건');
+        assert.equal(await page.locator('#detailSetupRule').count(),0,'manual text must not be presented as an invalid condition');
+        const evidence=page.locator('#detailDecisionReview .review-evidence');
+        assert.equal(await evidence.evaluate(el=>el.open),false);
+        assert.doesNotMatch(await page.locator('#detailDecisionReview').innerText(),/자동으로 판정하지 않습니다/);
+        await evidence.locator('summary').click();
+        assert.match(await evidence.innerText(),/자동으로 판정하지 않습니다/);
+        await evidence.locator('summary').click();
+        await page.locator('#detailDecisionAction').click();
+        assert.equal(await page.locator('#detailReview').inputValue(),decision.review_condition,'manual condition remains exact when editing');
+        await page.locator('#detailRuleOptions > summary').click();
+        assert.equal(await page.locator('#detailRuleOptions').evaluate(el=>el.open),true,'structured comparisons remain available as an optional edit');
+      }else{
+        await page.locator('#detailSetupRule').click();
+        assert.equal(await page.evaluate(()=>document.activeElement.id),'detailRuleType');
+      }
+      assert.ok(await page.locator('#detailDecisionForm').isVisible());
+      const original=await page.locator('#detailReview').inputValue();
+      const saved=await page.locator('#detailDecisionSummary').innerText();
+      await page.locator('#detailRuleType').selectOption('ma');
+      assert.equal(await page.locator('#detailReview').inputValue(),original,'select alone does not overwrite draft');
+      await page.locator('#detailApplyRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'20·60·120개 종가 단순평균 정배열 이탈');
+      await page.locator('#detailRuleType').selectOption('price');
+      await page.locator('#detailRuleAmount').fill('-1');await page.locator('#detailApplyRule').click();
+      assert.match(await page.locator('#detailRuleFeedback').innerText(),/0보다 큰/);
+      await page.locator('#detailRuleAmount').fill('250.5');await page.locator('#detailRuleCurrency').selectOption('USD');await page.locator('#detailRuleDirection').selectOption('이하');await page.locator('#detailApplyRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'종가 250.5 달러 이하');
+      await page.locator('#detailRuleType').selectOption('date');await page.locator('#detailRuleDay').fill('2099-12-01');await page.locator('#detailApplyRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'2099-12-01');
+      assert.equal(await page.locator('#detailDecisionSummary').innerText(),saved,'applying a draft must not change saved judgment');
+      await page.locator('#detailRuleType').selectOption('ma');
+      await page.locator('#detailRuleBuilder').scrollIntoViewIfNeeded();
+      await page.screenshot({path:`${out}/condition-builder-${width}.png`});
+      await page.locator('#detailReview').fill(original);
+    }
+    await page.locator('#detailDecisionAction').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
+    if(source.includes('detailMaRule')){
+      const previous=await page.locator('#detailReview').inputValue();
+      await page.getByText('자동 비교 기준 안내',{exact:true}).click();
+      await page.locator('#detailMaRule').click();
+      assert.equal(await page.locator('#detailReview').inputValue(),'20·60·120개 종가 단순평균 정배열 이탈');
+      await page.locator('#detailReview').fill(previous);
+    }
+    await page.setViewportSize({width,height:500});await page.locator('#detailReason').fill('검증 중 작성한 이유');await page.locator('#detailDecisionForm button[type=submit]').scrollIntoViewIfNeeded();const save=await page.locator('#detailDecisionForm button[type=submit]').boundingBox();assert.ok(save.y>=0&&save.y+save.height<=500,'save reachable with simulated keyboard');
+    if(source.includes("startPanel.id='detailStart'")&&width===390){
+      await page.setViewportSize({width,height:844});
+      await page.evaluate(args=>window.__uiFixture(...args),[live,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));await page.locator('#detailStartAction').waitFor();
+      await page.getByRole('button',{name:'AI 의견부터 확인하기'}).waitFor();await page.screenshot({path:`${out}/detail-first-review-${width}.png`});
+      await page.locator('#detailStartAction').click();assert.ok(await page.locator('#detailFreshReview').isVisible());
+      if(source.includes('detailDirectDecision')){
+        await page.locator('#detailDirectDecision').click();assert.ok(await page.locator('#detailDecisionForm').isVisible());
+        await page.locator('#detailChoice').selectOption('hold');assert.match(await page.locator('#detailChoiceGuide').innerText(),/목표 비중 없이/);
+        if(source.includes('function updateDecisionGuide')){
+          assert.match(await page.locator('#detailReview').getAttribute('placeholder'),/실적/);
+          assert.match(await page.locator('#detailDecisionForm button[type=submit]').innerText(),/현재 유지/);
+        }
+        await page.locator('#detailReason').fill('비교 후에도 보존할 작성 이유');
+        await page.locator('#detailChoice').selectOption('consider_reduction');await page.getByRole('button',{name:'매도 수량 비교하기',exact:true}).click();
+        assert.equal(await page.evaluate(()=>document.activeElement.id),'detailWeightTarget');
+        assert.equal(await page.locator('#detailReason').inputValue(),'비교 후에도 보존할 작성 이유');
+        if(source.includes('function updateDecisionGuide'))assert.match(await page.locator('#detailDecisionForm button[type=submit]').innerText(),/일부 축소 검토/);
+        await page.locator('#detailDecisionAction').click();await page.screenshot({path:`${out}/decision-guide-${width}.png`});
+      }
+      const noReason={...live,testThesis:{version:0,rationale:''}};
+      await page.evaluate(args=>window.__uiFixture(...args),[noReason,null,analysis,comparison]);await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
+      await page.locator('#detailStartAction').waitFor({state:'visible'});assert.equal(await page.locator('#detailStartAction').innerText(),'먼저 보유 이유 적기');await page.locator('#detailStartAction').click();assert.ok(await page.locator('[data-thesis-field="rationale"]').isVisible());assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-thesis-field')),'rationale');
+      if(source.includes('function openReasonEditor')){
+        assert.equal(await page.locator('#detailStart #thesisGroup').count(),1);
+        await page.locator('#thesisForm button[type=submit]').click();assert.match(await page.locator('#thesisStatus').innerText(),/한 줄/);
+        if(source.includes('thesisMaApply')){
+          await page.locator('[data-thesis-field="rationale"]').fill('이평선 정배열로 보유');
+          await page.locator('#thesisMaSetup > summary').click();
+          await page.locator('#thesisMaPeriods').selectOption('5·20·60');
+          await page.locator('#thesisMaApply').click();
+          assert.equal(await page.locator('[data-thesis-field="rationale"]').inputValue(),'이평선 정배열로 보유\n이평선 기준: 5·20·60일 단순이동평균 정배열');
+          await page.locator('#thesisMaApply').click();
+          assert.match(await page.locator('#thesisMaFeedback').innerText(),/이미 숫자/);
+          await page.screenshot({path:`${out}/thesis-periods-${width}.png`});
+        }
+        await page.locator('[data-thesis-field="rationale"]').fill('실적 개선을 기대하며 보유');
+        await page.locator('#thesisForm button[type=submit]').click();
+        await page.getByRole('button',{name:'AI로 보유 이유 점검',exact:true}).waitFor();
+        assert.match(await page.locator('#detailThesisSummary').innerText(),/실적 개선/);
+        assert.equal(await page.locator('#thesisGroup').getAttribute('open'),null);
+        await page.waitForFunction(()=>{const r=document.getElementById('detailStartAction').getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight});
+        await page.screenshot({path:`${out}/reason-saved-${width}.png`});
+      }
+
+    }
+    if(source.includes('stockPeriodPerformance')){
+      await page.locator('#detailClose').click();await page.setViewportSize({width,height:844});
+      const stockData={...live,stockPnl:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',basis_at:now,complete:true,pnl_krw:-1500000,calculation:{opening_krw:20000000,ending_krw:23000000,net_trade_cash_krw:-4510000,dividend_krw:10000,difference_krw:0},included_count:2,krw_included_count:2,candidate_count:2,items:[{symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',pnl_local:-1500,pnl_krw:-2000000,start_quantity:0,end_quantity:32,start_value_local:0,end_value_local:10000,trade_cash_local:-11500,dividend_local:0,pending_count:2},{symbol:'MRNA',name:'모더나',currency:'USD',pnl_local:400,pnl_krw:500000,start_quantity:10,end_quantity:20,start_value_local:1000,end_value_local:2500,trade_cash_local:-1100,dividend_local:0,pending_count:1}]}};
+      await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+      await page.getByRole('heading',{name:'어디서 벌고 잃었나'}).waitFor();
+      assert.match(await page.locator('.performance-hero').first().innerText(),/-1,500,000/);
+      assert.equal(await page.locator('.performance-position').count(),2);
+      if(source.includes('period-summary-head')){
+        const three={...stockData,stockPnl:{...stockData.stockPnl,complete:false,krw_included_count:3,candidate_count:4,items:[...stockData.stockPnl.items,{symbol:'SOXL',name:'DIREXION SEMICONDUCT LONG NAME',currency:'USD',pnl_krw:100000,end_quantity:0}]}};
+        await page.evaluate(data=>window.__uiPeriodSummary(data),three.stockPnl);
+        await page.waitForFunction(()=>document.querySelectorAll('.pnl-leader').length===3);
+        assert.equal(await page.locator('.pnl-leader').count(),3);
+        const last=await page.locator('.pnl-leader').last().boundingBox(),nav=await page.locator('.nav').boundingBox();
+        assert.ok(last.y+last.height<=nav.y,'three contributors fit above bottom navigation');
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        await page.screenshot({path:`${out}/period-summary-${width}.png`});
+        if(source.includes('function stockPnlProvisionalCount')){
+          const pending={...three.stockPnl,all_items_displayed:false,provisional_count:1,
+            items:three.stockPnl.items.map(x=>x.symbol==='ARM'?{...x,provisional_amount:true}:x)};
+          await page.evaluate(data=>window.__uiPeriodSummary(data),pending);
+          assert.match(await page.locator('.performance-hero').first().innerText(),/일부 미계산[\s\S]*추정 1종목 포함/);
+          assert.match(await page.locator('[data-pnl-leader="ARM"]').innerText(),/추정/);
+          assert.match(await page.locator('[data-pnl-symbol="ARM"] .contribution-pill').innerText(),/추정/);
+          const end=await page.locator('.pnl-leader').last().boundingBox(),bottom=await page.locator('.nav').boundingBox();
+          assert.ok(end.y+end.height<=bottom.y,'provisional context and three contributors remain above bottom navigation');
+          assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+          await page.screenshot({path:`${out}/period-provisional-${width}.png`});
+          await page.locator('[data-pnl-leader="ARM"]').click();
+          await page.locator('.performance-review-context').waitFor();
+          assert.match(await page.locator('.performance-review-context').innerText(),/-2,000,000원[\s\S]*일부 미계산 · 추정/);
+          await page.locator('#detailReturn').click();
+        }
+        await page.evaluate(data=>window.__uiPeriodSummary(data),stockData.stockPnl);
+        await page.waitForFunction(()=>document.querySelectorAll('.pnl-leader').length===2);
+      }
+
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'stock period overflow');
+      if(source.includes('stockTotalPartsHtml')){assert.equal(await page.locator('.pnl-composition').evaluate(el=>el.open),false);await page.locator('.pnl-composition>summary').click();await page.locator('.stock-total-parts').getByText('미분리 금액',{exact:true}).waitFor();assert.match(await page.locator('.stock-total-parts').innerText(),/-1,650,000/)}
+      if(source.includes('stockCalculationHtml')){if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.locator('.stock-calculation summary').click();await page.locator('.stock-calculation').scrollIntoViewIfNeeded();assert.match(await page.locator('.stock-calculation').innerText(),/20,000,000/);await page.screenshot({path:`${out}/calculation-${width}.png`});await page.locator('.stock-calculation summary').click();if(source.includes('quiet-realized'))await page.getByText('구성과 계산 기준',{exact:true}).click();await page.evaluate(()=>scrollTo(0,0));}
+      await page.locator('.pnl-composition').scrollIntoViewIfNeeded();
+      const resumeY=await page.evaluate(()=>window.scrollY);
+      await page.evaluate(()=>window.__uiPreserveRender());
+      assert.equal(await page.locator('.pnl-composition').evaluate(el=>el.open),true,'background render keeps expanded composition');
+      assert.ok(Math.abs(await page.evaluate(()=>window.scrollY)-resumeY)<3,'background render keeps current scroll');
+      await page.locator('.pnl-composition>summary').click();
+      assert.match(await page.locator('.pnl-leaders').innerText(),/원화 계산 종목 중/);
+      const returnButton=page.locator('[data-pnl-leader="ARM"]');
+      await page.locator('#stockPnlSearch').fill('MRNA');
+      await page.locator('[data-pnl-scope="foreign"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      assert.match(await returnButton.innerText(),/종목 점검/);
+      await returnButton.scrollIntoViewIfNeeded();
+      const returnY=await page.evaluate(()=>scrollY);
+      const beforeReturn=await page.locator('.performance-hero').innerText();
+      await returnButton.click();await page.locator('.performance-review-context').waitFor();
+      await page.evaluate(()=>window.__uiPreserveRender());
+      await page.locator('#detailReturn').click();
+      assert.ok(Math.abs(await page.evaluate(()=>scrollY)-returnY)<3,'return keeps scroll after background replacement');
+      assert.equal(await page.locator('.performance-hero').innerText(),beforeReturn,'return keeps selected period and performance');
+      assert.equal(await returnButton.evaluate(el=>el===document.activeElement),true,'return restores the replaced originating stock button');
+      assert.equal(await returnButton.evaluate(el=>el.classList.contains('detail-return-highlight')),true,'returned stock is briefly identified');
+      assert.equal(await page.locator('#stockPnlSearch').inputValue(),'MRNA');
+      assert.equal(await page.locator('[data-pnl-scope="foreign"]').getAttribute('aria-pressed'),'true');
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').getAttribute('data-pnl-symbol'),'MRNA');
+      await page.screenshot({path:out+'/contribution-filter-return-'+width+'.png'});
+      await page.locator('#stockPnlReset').click();
+      await page.screenshot({path:`${out}/performance-return-${width}.png`});
+      await page.screenshot({path:`${out}/period-stock-${width}.png`});
+      await page.locator('.contribution-toggle input').check();assert.match(await page.locator('.performance-breakdown').first().innerText(),/거래통화 손익/);
+      if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/period-stock-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
+      if(width===390)await page.evaluate(()=>window.__uiFailStockOnce());
+      await page.locator('[data-stock-period="1M"]').click();
+      if(width===390){await page.locator('#stockPnlRetry').waitFor();assert.equal(await page.locator('.performance-hero').count(),0,'failed period must not show old numbers');await page.locator('#stockPnlRetry').click()}
+      assert.match(await page.locator('.performance-hero').first().innerText(),/2026-08-29/);
+      await page.locator('[data-stock-period="THIS_MONTH"]').click();assert.match(await page.locator('.performance-hero').first().innerText(),/2026-09-01/);
+      const foreignReview={...stockData,stockPnl:{...stockData.stockPnl,items:stockData.stockPnl.items.map(x=>x.symbol==='ARM'?{...x,pnl_krw:null,pnl_local:-1500,local_cash_only:true,separate_cash_krw:-1234,provisional_amount:true}:x)}};
+      await page.evaluate(args=>window.__uiFixture(...args),[foreignReview,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+      await page.locator('[data-performance-detail="ARM"]').click();
+      await page.locator('.performance-review-context').waitFor();
+      assert.match(await page.locator('.performance-review-context').innerText(),/-1,500(?:\.00)? USD/);
+      assert.match(await page.locator('.performance-review-context').innerText(),/별도 원화 세금 -1,234원/);
+      assert.match(await page.locator('.performance-review-context').innerText(),/이번 달 기간손익/);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/foreign-review-${width}.png`});
+      await page.locator('#detailClose').click();
+      await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);await page.evaluate(()=>window.__uiRender('performance'));
+      if(source.includes('stockSeparatedHtml')){
+        await page.locator('[data-stock-view="unrealized"]').click();
+        assert.match(await page.locator('.performance-hero').innerText(),/현재 보유분/);
+        assert.equal(await page.locator('[data-stock-period]').count(),0);
+        assert.equal(await page.locator('#brokerDayCard').count(),0);
+        assert.equal(await page.locator('.performance-position').count(),6,'ISA excluded');
+        await page.screenshot({path:`${out}/unrealized-${width}.png`});
+        await page.locator('[data-stock-view="realized"]').click();
+        await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();
+        assert.match(await page.locator('.performance-hero').innerText(),/140,000/);
+        assert.match(await page.locator('.performance-hero').innerText(),/일부 미계산/);
+        assert.equal(await page.locator('.performance-position').count(),2);
+
+
+        if(source.includes('stockRealizedEvidenceHtml')){
+          if(source.includes('quiet-realized')){
+            assert.equal(await page.locator('.stock-component-detail').first().isVisible(),false);
+            assert.equal(await page.locator('#brokerDayDate').isVisible(),false);
+            await page.screenshot({path:`${out}/quiet-realized-${width}.png`});
+            var reviewScroll=await page.evaluate(()=>scrollY);await page.locator('.quiet-realized [data-performance-detail="ARM"]').click();
+            await page.locator('#detailClose').waitFor();
+            assert.match(await page.locator('#detailBody').innerText(),/ARM|에이알엠/);
+            if(source.includes('performanceReviewContext')){await page.locator('.performance-review-context').waitFor();assert.match(await page.locator('.performance-review-context').innerText(),/이번 달 실현손익/);assert.match(await page.locator('.performance-review-context').innerText(),/100(?:\.00)? USD/);await page.screenshot({path:`${out}/performance-review-${width}.png`});}
+            await page.locator('#detailClose').click();if(source.includes('performanceReviewContext'))assert.ok(Math.abs((await page.evaluate(()=>scrollY))-reviewScroll)<3);
+            await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();
+            await page.locator('#brokerDayCard>summary').click();
+          }
+          await page.locator('.sale-row-details').last().locator(':scope > summary').click();
+          await page.locator('.stock-row-evidence').last().locator('summary').click();
+          assert.match(await page.locator('.stock-row-evidence').last().innerText(),/매수원가 확인 필요/);
+          const boxes=await page.locator('#brokerDayCard .tool-row').evaluate(el=>{const a=el.querySelector('input').getBoundingClientRect(),b=el.querySelector('button').getBoundingClientRect();return {inputRight:a.right,buttonLeft:b.left,inputBottom:a.bottom,buttonTop:b.top}});
+          assert.ok(boxes.inputRight<=boxes.buttonLeft||boxes.inputBottom<=boxes.buttonTop,'date and button must not overlap');
+        }
+        await page.screenshot({path:`${out}/realized-${width}.png`});
+        if(width===390){await page.evaluate(()=>document.documentElement.style.zoom='1.25');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${out}/realized-large-${width}.png`});await page.evaluate(()=>document.documentElement.style.zoom='')}
+        await page.locator('[data-stock-period="1W"]').click();await page.getByRole('heading',{name:'종목별 실현손익'}).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/2026-09-23/);
+        await page.locator('[data-stock-period="THIS_MONTH"]').click();await page.locator('[data-stock-view="total"]').click();
+      }
+      if(source.includes('stockRealizedItems')){
+        const closedData={...stockData,securityMap:{...stockData.securityMap,sold:{id:'sold',symbol:'TEST',name:'기간 내 전량 매도 종목',currency:'USD'}},stockRealizedPeriod:null,stockRealized:null,closedRealizedFixture:{ok:true,period:'THIS_MONTH',period_start:'2026-09-01',period_end:'2026-09-29',items:[{symbol:'TEST',currency:'USD',realized_local:null},{symbol:'TEST',currency:'USD',realized_local:10,historical_krw_estimate:14000}],closed_cycles:[{symbol:'TEST',name:'기간 내 전량 매도 종목',currency:'USD',aliases:['TEST'],closed_realized:{method:'flat_to_flat_net_cash',sale_count:2,realized_local:-100,realized_krw:-140000,provisional_date_count:0}}]}};
+        await page.evaluate(args=>window.__uiFixture(...args),[closedData,decision,analysis,comparison]);await page.locator('[data-stock-view="realized"]').click();await page.getByRole('checkbox',{name:'매도 건수와 계산 근거 표시'}).check();await page.getByText(/매도 2건 · 기간 합계 계산/).waitFor();assert.match(await page.locator('.performance-hero').innerText(),/-140,000/);assert.equal(await page.locator('.performance-position').count(),1);await page.screenshot({path:`${out}/closed-realized-${width}.png`});
+        await page.locator('.sale-row-details>summary').click();await page.locator('[data-sale-review="TEST"]').click();await page.locator('#saleReviewForm').waitFor();
+        assert.match(await page.locator('#detailBody').innerText(),/-140,000/);
+        await page.locator('#saleReviewReason').fill('계획한 비중 축소');await page.locator('#saleReviewLesson').fill('분할 매도 기준을 미리 정하기');await page.locator('#saleReviewNext').fill('매도 전 조건 확인');
+        await page.evaluate(()=>window.__saleFail=true);await page.locator('#saleReviewForm button').click();await page.getByText(/저장 확인 실패/).waitFor();assert.equal(await page.locator('#saleReviewReason').inputValue(),'계획한 비중 축소');
+        await page.evaluate(()=>window.__saleFail=false);await page.locator('#saleReviewForm button').click();await page.getByText(/복기 저장 완료/).waitFor();
+        await page.screenshot({path:`${out}/sale-review-${width}.png`});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        await page.locator('#detailClose').click();await page.locator('[data-sale-review="TEST"]').click();await page.locator('#saleReviewForm').waitFor();assert.equal(await page.locator('#saleReviewLesson').inputValue(),'분할 매도 기준을 미리 정하기');await page.getByText('지난 복기 1개 보기',{exact:true}).click();assert.ok(await page.getByText('이전 기간 복기',{exact:true}).isVisible());await page.locator('#detailClose').click();
+        await page.locator('[data-stock-view="total"]').click();
+      }
+      const localHistory={...stockData,stockRealizedPeriod:'ALL',stockRealizedFailed:true,stockPnl:{...stockData.stockPnl,period:'ALL',complete:false,local_only_count:1,candidate_count:3,items:[...stockData.stockPnl.items,{symbol:'LOCAL',name:'외화 전체 손익 검증',currency:'USD',pnl_local:12345.67,pnl_krw:null,local_cash_only:true,reason:'거래일 확인 필요',start_quantity:0,end_quantity:0,start_value_local:0,end_value_local:0,trade_cash_local:12340.67,dividend_local:5}]}};
+      await page.evaluate(data=>window.__uiLocalHistory(data),localHistory);
+      const localRow=page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'});
+      assert.match(await localRow.innerText(),/12,345.67 USD/);
+      assert.match(await localRow.innerText(),/원화 환산 대기/);
+      assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/local-history-${width}.png`});
+      for(const basis of ['held','split_closed','ledger_closed']){
+        const basisData={...localHistory,stockPnl:{...localHistory.stockPnl,items:localHistory.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,local_history_basis:basis,end_quantity:basis==='held'?2:0}:x)}};
+        await page.evaluate(data=>window.__uiLocalHistory(data),basisData);
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
+        assert.match(await page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'}).innerText(),basis==='held'?/현재 평가액 \+ 전체 원장/:basis==='ledger_closed'?/전체 원장 날짜·수량 대조/:/분할 입출고 대조/);
+        assert.match(await page.locator('.performance-hero').innerText(),/-1,500,000/);
+      }
+
+      for(const basis of ['pending','corporate_group']){
+        const next={...localHistory,stockPnl:{...localHistory.stockPnl,all_items_displayed:true,source_candidate_count:4,provisional_count:basis==='pending'?1:0,items:localHistory.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,local_history_basis:basis,provisional_amount:basis==='pending',aliases:['OLDTEST','LOCAL'],corporate_cash_local:2,separate_cash_krw:basis==='corporate_group'?-1234:0}:x)}};
+        await page.evaluate(data=>window.__uiLocalHistory(data),next);
+        const row=page.locator('.performance-position').filter({hasText:'외화 전체 손익 검증'});
+        assert.match(await row.innerText(),basis==='pending'?/추정/:/별도 세금 -1,234원/);
+        await page.getByText('조회 대상 4개 종목 기록',{exact:false}).waitFor();
+        await page.getByRole('checkbox',{name:'종목별 손익 구성과 근거 표시'}).check();
+        assert.match(await row.innerText(),basis==='pending'?/결제 후 금액이 달라질 수 있는/:/OLDTEST · LOCAL/);
+        assert.match(await page.locator('.performance-hero').innerText(),basis==='corporate_group'?/-1,501,234/:/-1,500,000/);
+        assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+        await page.screenshot({path:`${out}/history-${basis}-${width}.png`});
+      }
+      const scopeFixture={...localHistory,stockPnl:{...localHistory.stockPnl,comparison_fx:{USD:1400},items:[{symbol:'LOCAL',name:'외화 큰 손실',currency:'USD',pnl_local:-2000,pnl_krw:null,local_cash_only:true,local_history_basis:'corporate_group',reason:'거래일 확인 필요',separate_cash_krw:-100000,corporate_realized_local:-5000,corporate_distribution_local:3000,start_quantity:0,end_quantity:0,start_value_local:0,end_value_local:0,trade_cash_local:-5000,dividend_local:3000,aliases:['OLDLOCAL','LOCAL']},{symbol:'KRLOSS',name:'원화 작은 손실',currency:'KRW',pnl_local:-500000,pnl_krw:-500000},{symbol:'KRGAIN',name:'원화 이익',currency:'KRW',pnl_local:1000000,pnl_krw:1000000}],pnl_krw:500000,candidate_count:3,krw_included_count:2,local_only_count:1}};
+      await page.evaluate(data=>window.__uiLocalHistory(data),scopeFixture);
+      await page.locator('#stockPnlSort').selectOption('loss');
+      assert.match(await page.locator('.performance-position').first().innerText(),/외화 큰 손실/);
+      assert.match(await page.locator('.performance-hero').innerText(),/전체 원화 합계는 아직 미확정/);
+      assert.match(await page.locator('.performance-hero').innerText(),/400,000원/);
+      assert.match(await page.locator('.performance-hero').innerText(),/-2,000(?:\.00)? USD/);
+      assert.match(await page.locator('.corporate-summary').innerText(),/매매 -5,000(?:\.00)? USD/);
+      assert.equal(await page.locator('.scoped-pnl-parts').evaluate(el=>el.open),false);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/mixed-pnl-scope-${width}.png`});
+      assert.equal(await page.locator('.reference-pnl-unavailable').count(),1);
+      const referenceFixture={...scopeFixture,stockPnl:{...scopeFixture.stockPnl,period:'ALL',items:scopeFixture.stockPnl.items.map(x=>x.symbol==='LOCAL'?{...x,reference_pnl_krw:-3000000,reference_fx_basis:'event_date_with_ledger_fallback',reference_ledger_date_count:4}:x)}};
+      await page.evaluate(data=>window.__uiLocalHistory(data),referenceFixture);
+      assert.equal(await page.locator('.reference-pnl').evaluate(el=>el.open),false);
+      await page.locator('.reference-pnl summary').click();
+      assert.match(await page.locator('.reference-pnl').innerText(),/-2,600,000원/);
+      assert.match(await page.locator('.reference-pnl').innerText(),/체결일 미확인 4건/);
+      assert.match(await page.locator('.performance-hero').innerText(),/400,000원/);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/reference-fx-${width}.png`});
+      const heroBeforeFind=await page.locator('.performance-hero').innerText();
+      await page.locator('#stockPnlSearch').fill('oldlocal');
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      assert.equal(await page.locator('#stockPnlSearch').evaluate(el=>document.activeElement===el),true);
+      assert.equal(await page.locator('.performance-hero').innerText(),heroBeforeFind);
+      await page.locator('[data-pnl-scope="kr"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),0);
+      assert.equal(await page.locator('#stockPnlEmpty').isVisible(),true);
+      await page.locator('#stockPnlReset').click();
+      await page.locator('[data-pnl-scope="foreign"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      await page.locator('#stockPnlSort').selectOption('profit');
+      assert.equal(await page.locator('[data-pnl-scope="foreign"]').getAttribute('aria-pressed'),'true');
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),1);
+      await page.locator('[data-pnl-scope="held"]').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),0);
+      await page.locator('#stockPnlReset').click();
+      assert.equal(await page.locator('[data-stock-pnl-row]:visible').count(),3);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${out}/pnl-find-${width}.png`});
+
+
+    await page.evaluate(args=>window.__uiFixture(...args),[stockData,decision,analysis,comparison]);
+    await page.evaluate(()=>window.__uiSelectHomePeriod('3M'));
+    assert.equal(await page.locator('[data-home-period-performance]').count(),0,'home does not repeat the performance shortcut');
+    await page.locator('#nav [data-tab="performance"]').click();
+    await page.locator('[data-stock-view="total"]').click();
+    await page.locator('[data-stock-period="3M"]').click();
+    await page.locator('#stockPnlSearch').fill('');
+    await page.locator('#stockPnlSort').selectOption('impact');
+    await page.locator('#stockPnlSearch').waitFor();
+    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
+    assert.equal(await page.locator('#stockPnlSort').inputValue(),'impact');
+    assert.ok(await page.locator('[data-stock-pnl-row]').count());
+    await page.screenshot({path:out+'/home-selected-period-'+width+'.png'});
+    const periodDetail=page.locator('[data-performance-detail="ARM"]').first();
+    await periodDetail.scrollIntoViewIfNeeded();
+    const periodListScroll=await page.evaluate(()=>scrollY);
+    await periodDetail.click();
+    await page.locator('.performance-review-context').waitFor();
+    assert.match(await page.locator('.performance-review-context').innerText(),/3개월.*기간손익/);
+    await page.locator('#detailReturn').click();
+    await page.locator('#detailModal').waitFor({state:'hidden'});
+    assert.equal(await page.locator('[data-stock-period="3M"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('#stockPnlSearch').inputValue(),'');
+    assert.ok(Math.abs(await page.evaluate(()=>scrollY)-periodListScroll)<3);
+    assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute('data-performance-detail')),'ARM');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+
+
+      await page.locator('[data-stock-period="THIS_MONTH"]').click();
+      await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    }
+    if(!baseline&&source.includes('function requestDetailOpinion')){
+      const maOpinion=source.includes('detail-thesis-check')?{...analysis,price_evidence:{...analysis.price_evidence,moving_averages:{ready:true,periods:[20,60,120],basis:'reference_periods',order:'bullish'}}}:analysis;
+      const maLive=source.includes('detail-thesis-check')?{...live,testThesis:{version:1,rationale:'이평선 정배열'}}:live;
+      await page.evaluate(args=>{window.__uiFixture(...args);window.__uiAiTest('failure');window.__uiDetail('s0')},[maLive,decision,maOpinion,comparison]);await openOptionalTools(page);
+      await page.locator('#detailFreshReview').waitFor();
+      await page.evaluate(()=>{document.getElementById('detailReason').value='보유 이유 유지';document.getElementById('detailReview').value='다음 종가 확인';document.getElementById('detailWeightTarget').value=''});
+      await page.locator('#detailFreshReview').click();
+      await page.waitForFunction(()=>document.getElementById('thesisAnalysis').textContent.includes('AI 응답을 받지 못했습니다'));
+      assert.equal(await page.locator('#detailFreshReview').isEnabled(),true);
+      assert.equal(await page.locator('#detailFreshStatus').innerText(),'');
+      assert.equal(await page.locator('#detailReason').inputValue(),'보유 이유 유지');
+      assert.equal(await page.locator('#detailReview').inputValue(),'다음 종가 확인');
+      await page.screenshot({path:`${out}/ai-retry-${width}.png`});
+      await page.evaluate(()=>window.__aiMode='recovery');
+      await page.locator('#detailFreshReview').click();
+      await page.waitForFunction(()=>document.getElementById('thesisAnalysis').textContent.includes('이전 저장 답변'));
+      assert.equal(await page.locator('#detailFreshReview').isEnabled(),true);
+      const requestState=await page.evaluate(()=>({ids:window.__aiIds,syncs:window.__syncCount}));
+      assert.equal(requestState.ids.length,2);assert.equal(requestState.ids[0],requestState.ids[1]);assert.equal(requestState.syncs,2,'uncertain response retry preserves original snapshot');
+      assert.doesNotMatch(await page.locator('#detailWeightResult').innerText(),/갱신하는 중/);
+      if(source.includes('detail-thesis-check')){assert.match(await page.locator('.detail-thesis-check').innerText(),/정배열 방향.*내 기간 미지정/);assert.equal(await page.locator('#detailBreakoutGroup').isVisible(),false)}
+      await page.screenshot({path:`${out}/ai-recovered-${width}.png`});
+      await page.locator('#detailClose').click();
+    }
+    const browsePrices=swingPoints(Array.from({length:160},(_,i)=>100+i),today);
+    const todayJourney={...live,swingPrices:{...live.swingPrices,s0:browsePrices,s1:browsePrices,s3:browsePrices.slice(-2)},todayGate:null,todayStocks:{...live.todayStocks,pnl_krw:140000,candidate_count:4,krw_included_count:3,items:[
+      {security_id:'s0',symbol:'ARM',name:'에이알엠 홀딩스(ADR)',currency:'USD',end_quantity:32,pnl_krw:220000},
+      {security_id:'s1',symbol:'RXRX',name:'리커전 파머슈티컬스',currency:'USD',end_quantity:2100,pnl_krw:-80000},
+      {security_id:'s3',symbol:'LLY',name:'일라이 릴리',currency:'USD',end_quantity:3,pnl_krw:0},
+      {security_id:'s2',symbol:'MRNA',name:'모더나',currency:'USD',end_quantity:40,pnl_krw:null,reason:'가격 확인 필요'}]}};
+    await page.evaluate(args=>{window.__uiFixture(...args);window.__uiRender('home')},[todayJourney,decision,analysis,comparison]);
+    assert.match(await page.locator('#homeToday').textContent(),/집계 대기/);
+    await page.locator('.home-today-details>summary').click();
+    await page.locator('[data-home-today-performance]').click();
+    assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-stock-view="total"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('.performance-position').count(),4);
+    assert.match(await page.locator('.performance-hero').first().innerText(),/140,000/);
+    await page.locator('#stockPnlSort').selectOption('loss');
+    assert.match(await page.locator('.performance-position').first().innerText(),/리커전/);
+    await page.locator('#stockPnlSort').selectOption('profit');
+    assert.match(await page.locator('.performance-position').first().innerText(),/에이알엠/);
+    assert.match(await page.locator('.performance-position').last().innerText(),/계산 대기/);
+    await page.locator('.contribution-list').screenshot({path:out+'/today-all-'+width+'.png'});
+    await page.locator('[data-performance-detail="ARM"]').click();await page.locator('.detail-price-chart').waitFor();
+    assert.equal(await page.locator('[data-detail-step="-1"]').isDisabled(),true);
+    assert.match(await page.locator('.detail-browse').innerText(),/1 \/ 4/);
+    await page.locator('[data-chart-period="3"]').click();
+    await page.locator('[data-ma-period="5"]').check();
+    await page.locator('[data-ma-period="20"]').uncheck();
+    await page.locator('[data-ma-period="120"]').check();
+    await page.locator('[data-detail-step="1"]').click();
+    await page.locator('.detail-head b').getByText('일라이 릴리',{exact:true}).waitFor();
+    await page.locator('.performance-review-context').getByText('0원',{exact:true}).waitFor();
+    assert.equal(await page.locator('[data-chart-period="3"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-ma-period="120"]').isDisabled(),true);
+    assert.equal(await page.locator('[data-ma-period="120"]').isChecked(),false);
+    await page.locator('[data-detail-step="1"]').click();
+    await page.locator('.detail-head b').getByText('리커전 파머슈티컬스',{exact:true}).waitFor();
+    await page.locator('.performance-review-context').getByText('-80,000원',{exact:true}).waitFor();
+    assert.equal(await page.locator('[data-chart-period="3"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-ma-period="5"]').isChecked(),true);
+    assert.equal(await page.locator('[data-ma-period="20"]').isChecked(),false);
+    assert.equal(await page.locator('[data-ma-period="120"]').isChecked(),true);
+    assert.match(await page.locator('[data-price-date]').innerText(),new RegExp(today));
+    await page.locator('.detail-price-chart').screenshot({path:out+'/chart-continuity-'+width+'.png'});
+    await page.locator('[data-detail-step="1"]').click();
+    await page.locator('.detail-head b').getByText('모더나',{exact:true}).waitFor();
+    assert.equal(await page.locator('[data-detail-step="1"]').isDisabled(),true);
+    await page.locator('[data-detail-step="-1"]').click();await page.locator('.detail-price-chart').waitFor();
+    await page.locator('.detail-browse').screenshot({path:out+'/detail-browse-'+width+'.png'});
+    await openOptionalTools(page);
+    await page.locator('#detailDecisionAction').click();
+    await page.locator('#detailReason').fill('입력 보존 확인');
+    await page.locator('[data-detail-step="-1"]').click();
+    await page.locator('.detail-head b').getByText('일라이 릴리',{exact:true}).waitFor();
+    await page.locator('[data-detail-step="1"]').click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    assert.match(await page.locator('.detail-head b').innerText(),/리커전/);
+    assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
+    page.once('dialog',dialog=>dialog.dismiss());await page.locator('#detailDraftDiscard').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),'입력 보존 확인');
+    page.once('dialog',dialog=>dialog.accept());await page.locator('#detailDraftDiscard').click();
+    assert.equal(await page.locator('#detailDecisionForm').isVisible(),false);
+    await page.locator('#detailClose').click();
+    assert.equal(await page.locator('[data-stock-period="오늘"]').getAttribute('aria-pressed'),'true');
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    // Complete a decision after a lost write response, then reopen its persisted record.
+    await page.evaluate(args=>window.__uiFixture(...args),[{...live,decisionSaveFixture:true},decision,analysis,comparison]);
+    await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
+    await page.locator('#detailDecisionAction').click();
+    await page.locator('#detailChoice').selectOption('hold');
+    await page.locator('#detailChoice').selectOption(decision.choice);
+    await page.locator('#detailReuseReason').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),decision.reason);
+    await page.locator('#detailReason').fill('수정 중인 이유');await page.locator('#detailReuseReason').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),'수정 중인 이유');
+    await page.locator('#detailChoice').selectOption('hold');
+    await page.locator('[data-review-days="7"]').click();
+    const nextDay=await page.evaluate(()=>{const d=new Date(new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date())+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+7);return d.toISOString().slice(0,10)});
+    assert.equal(await page.locator('#detailReview').inputValue(),nextDay);
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'shortcuts only edit the draft');
+    await page.locator('#detailReason').fill('매출 성장 근거를 다음 실적에서 다시 확인');
+    await page.locator('#detailReview').fill('다음 실적 발표 후 확인');
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').waitFor().catch(async e=>{throw Error(e.message+'; save status: '+await page.locator('#detailDecisionStatus').innerText())});
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),1,'lost response must not replay the write');
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
+    const change=page.locator('#detailDecisionSummary .decision-change');
+    assert.equal(await change.evaluate(el=>el.open),false,'comparison starts collapsed');
+    await change.locator('summary').click();
+    assert.match(await change.innerText(),/이유.*변경/s);
+    assert.ok((await change.innerText()).includes(decision.reason));
+    assert.ok((await change.innerText()).includes('매출 성장 근거를 다음 실적에서 다시 확인'));
+    await page.screenshot({path:out+'/decision-recovered-'+width+'.png'});
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').click();
+    await page.evaluate(()=>window.__uiDetail('s0'));await openOptionalTools(page);
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/매출 성장 근거/);
+    await page.locator('#detailClose').click();
+    // Complete first decision from the actual home entry, with optional tools CLOSED.
+    const firstVisit=JSON.parse(JSON.stringify(live));firstVisit.reviewDecisions=[];firstVisit.decisionSaveFixture=true;firstVisit.deferDecisionSave=true;firstVisit.deferMetrics=true;firstVisit.draftOwner='reload-owner-'+width;
+    firstVisit.testThesis={version:1,rationale:'매출 성장 근거를 다음 실적까지 확인하며 보유'};
+    await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(()=>window.__uiRender('portfolio'));const homeStock=page.locator('.portfolio-list [data-security-id="s0"]');await homeStock.click();
+    await page.locator('#detailStart').waitFor();
+    assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 확인 중/,'detail is ready while optional calculation remains unresolved');
+    assert.equal(await page.locator('#detailBody>:first-child').getAttribute('id'),'detailOverview');
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false);
+    assert.match(await page.locator('#detailSavedReason').innerText(),/매출 성장 근거/);
+    await page.locator('#detailDirectDecision').click();
+    assert.equal(await page.locator('#detailDecisionForm').evaluate(el=>el.parentElement.id),'detailStart');
+    assert.equal(await page.locator('#detailExtras').evaluate(el=>el.open),false,'first judgment does not require opening analysis tools');
+    assert.equal(await page.locator('#detailRuleOptions').evaluate(el=>el.open),false,'advanced conditions are optional');
+    await page.locator('#detailChoice').selectOption('hold');
+    await page.locator('#detailReason').fill('실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    await page.locator('[data-review-days="7"]').click();const checkpoint=await page.locator('#detailReview').inputValue();
+    // Navigate through real controls; drafts are not saved judgments or shared with the next holding.
+    await page.locator('[data-detail-step="1"]').click();await page.locator('#detailStart').waitFor();
+    await page.locator('#detailDirectDecision').click();
+    assert.equal(await page.locator('#detailReason').inputValue(),'');
+    await page.locator('#detailReason').fill('두 번째 종목만의 검토 이유');
+    await page.locator('#detailReview').fill('다음 공시에서 확인');
+    await page.locator('[data-detail-step="-1"]').click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
+    assert.match(await page.locator('#detailDecisionStatus').innerText(),/아직 저장된 판단이 아닙니다/);
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'navigation never saves a judgment');
+    await page.evaluate(()=>history.back());
+    await page.locator('#detailModal').waitFor({state:'hidden'});
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'browser back preserves a draft without saving judgment');
+    await homeStock.click();await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    await page.screenshot({path:out+'/browser-back-draft-'+width+'.png'});
+
+    assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
+    // A new JavaScript runtime retains only localStorage, never the old draft map.
+    await page.reload();
+    await page.evaluate(args=>window.__uiFixture(...args),[firstVisit,null,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));await page.evaluate(()=>window.__uiRender('portfolio'));await page.locator('.portfolio-list [data-security-id="s0"]').click();
+    await page.locator('#detailDecisionForm').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailReason').inputValue(),'실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인');
+    assert.equal(await page.locator('#detailReview').inputValue(),checkpoint);
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+    await page.screenshot({path:out+'/decision-draft-reloaded-'+width+'.png'});
+    await page.screenshot({path:out+'/decision-draft-restored-'+width+'.png'});
+    await page.screenshot({path:out+'/decision-while-weight-pending-'+width+'.png'});
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await page.waitForFunction(()=>typeof window.__releaseDecisionSave==='function');
+    const editedReason='실적 발표 전까지 현재 보유를 유지하고 매출 추이를 다시 확인 · 새로 수정한 초안';
+    await page.locator('#detailReason').fill(editedReason);
+    await page.evaluate(()=>window.__releaseDecisionSave());
+    await page.waitForFunction(()=>document.getElementById('detailDecisionStatus').textContent.includes('수정한 내용은 아직 초안'));
+    assert.equal(await page.locator('#detailDecisionForm').isVisible(),true);
+    assert.equal(await page.locator('#detailReason').inputValue(),editedReason);
+    assert.equal(await page.locator('#detailDecisionDone').count(),0,'newer edits do not receive a completed-and-close action');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),1);
+    assert.ok(!(await page.locator('#detailDecisionSummary').innerText()).includes('새로 수정한 초안'));
+    await page.locator('#detailDecisionStatus').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+    await page.screenshot({path:out+'/save-with-newer-draft-'+width+'.png'});
+    await page.locator('#detailDecisionForm button[type=submit]').click();
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').waitFor();
+    assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(editedReason));
+    await page.evaluate(()=>window.__releaseDetailMetrics());
+    assert.match(await page.locator('#detailCurrentWeight').textContent(),/비중 다시 확인/);
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),2,'one write per explicitly submitted version, no lost-response duplicate');
+    assert.ok((await page.locator('#detailDecisionSummary').innerText()).includes(checkpoint));
+    await page.screenshot({path:out+'/first-decision-complete-'+width+'.png'});
+    await page.locator('#detailNext[data-action="done"]:not([hidden])').click();
+    await page.evaluate(()=>window.__uiRender('portfolio'));
+    const homeReview=page.locator('.home-reviews');if(!await homeReview.evaluate(el=>el.open))await homeReview.locator(':scope>summary').click();
+    await homeReview.locator('[data-decision-detail="s0"]').click();
+    await page.locator('#detailDecisionReview').waitFor();
+    assert.match(await page.locator('#detailDecisionSummary').innerText(),/실적 발표 전까지 현재 보유/);
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    assert.equal(await page.locator('#detailNext').innerText(),'지난 결정과 이후 변화 보기');
+    await page.locator('[data-detail-jump="holding"]').click();
+    const reviewWrites=await page.evaluate(()=>window.__decisionWrites);
+    const reviewAttempts=await page.evaluate(()=>window.__decisionNetworkAttempts);
+    await page.locator('#detailNext').click();
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview','footer returns to the saved judgment from the holding section');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),reviewWrites);
+    assert.deepEqual(await page.evaluate(()=>window.__decisionNetworkAttempts),reviewAttempts,'reopening saved content does not request AI or synchronize accounts');
+    const committed=await page.evaluate(()=>window.__uiSavedDecision());
+    assert.equal(committed.reason,editedReason);
+    assert.equal(committed.review_condition,checkpoint);
+    assert.equal(committed.choice,'hold');
+    assert.deepEqual(committed.scenario_snapshot,{},'this manual decision has no comparison assumptions to inherit');
+    await page.locator('#detailReturn').click();
+
+    // The test driver retains the confirmed server fixture across a full runtime restart.
+    const returnVisit={...firstVisit,reviewDecisions:[committed],deferDecisionSave:false,deferMetrics:false};
+    await page.reload();
+    await page.evaluate(args=>window.__uiFixture(...args),[returnVisit,committed,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(()=>window.__uiRender('portfolio'));
+    const reloadedReview=page.locator('.home-reviews');
+    if(!await reloadedReview.evaluate(el=>el.open))await reloadedReview.locator(':scope>summary').click();
+    await reloadedReview.locator('[data-decision-detail="s0"]').click();
+    await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailDecisionForm').isVisible(),false,'a confirmed judgment is not restored as an unfinished draft');
+    assert.equal(await page.locator('#detailNext').innerText(),'지난 결정과 이후 변화 보기');
+    await page.locator('[data-detail-jump="holding"]').click();
+    await page.locator('#detailNext').click();
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'detailDecisionReview');
+    const reloadedSummary=await page.locator('#detailDecisionSummary .sub').allTextContents();
+    assert.ok(reloadedSummary.includes('이유: '+editedReason),'exact saved reason survives a new runtime');
+    assert.ok(reloadedSummary.includes('다시 볼 조건: '+checkpoint),'exact checkpoint survives a new runtime');
+    assert.ok(reloadedSummary.includes('비교 없이 기록한 판단'));
+    assert.equal(await page.locator('#detailWeightTarget').inputValue(),'');
+    assert.equal(await page.locator('#detailPreviousComparison').count(),0,'unrelated prior AI comparison is not restored as this judgment’s assumption');
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0,'reopening after reload never writes a judgment');
+    assert.deepEqual(await page.evaluate(()=>window.__decisionNetworkAttempts),{model:0,sync:0});
+    await page.screenshot({path:out+'/saved-decision-reloaded-'+width+'.png'});
+    await page.locator('#detailReturn').click();
+
+    // A transient history read failure is not evidence that the user has no decisions.
+    await page.evaluate(args=>window.__uiFixture(...args),[{...returnVisit,failDecisionRead:true},committed,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(()=>window.__uiRender('portfolio'));await page.locator('.portfolio-list [data-security-id="s0"]').click();
+    await page.locator('#detailDecisionRetry').waitFor({state:'attached'});
+    assert.equal(await page.locator('#detailStartAction').innerText(),'저장한 판단 다시 불러오기');
+    assert.equal(await page.locator('#detailNext').innerText(),'저장한 판단 다시 불러오기');
+    assert.equal(await page.locator('#detailDirectDecision').isVisible(),false);
+    assert.match(await page.locator('#detailDecisionSummary').textContent(),/불러오지 못했습니다/);
+    assert.doesNotMatch(await page.locator('#detailDecisionSummary').textContent(),/저장한 판단이 없습니다/);
+    await page.locator('#detailNext').click();
+    await page.waitForFunction(()=>document.getElementById('detailDecisionRetry')?.disabled===false);
+    assert.equal(await page.locator('#detailNext').innerText(),'저장한 판단 다시 불러오기','a failed retry still offers a read-only recovery');
+    await page.evaluate(()=>window.__uiFailDecisionRead(false));
+    await page.locator('#detailNext').click();
+    await page.locator('#detailDecisionReview').waitFor({state:'visible'});
+    assert.equal(await page.locator('#detailNext').innerText(),'지난 결정과 이후 변화 보기');
+    assert.equal(await page.locator('#detailDecisionRetry').count(),0);
+    assert.ok((await page.locator('#detailDecisionSummary .sub').allTextContents()).includes('이유: '+editedReason));
+    assert.equal(await page.evaluate(()=>window.__decisionWrites),0);
+    assert.deepEqual(await page.evaluate(()=>window.__decisionNetworkAttempts),{model:0,sync:0});
+    await page.screenshot({path:out+'/saved-decision-read-recovered-'+width+'.png'});
+    await page.locator('#detailReturn').click();
+
+    await page.evaluate(args=>window.__uiFixture(...args),[live,decision,analysis,comparison]);
+    await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(data=>window.__uiHomePeriodProbe(data),live);
+    await page.evaluate(()=>window.__periodHoldDetails=true);
+    await page.locator('[data-period="1W"]').click();
+    await page.waitForFunction(()=>window.__periodStatus().loaded==='1W');
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).salesLoading,true,'home renders while sales remain pending');
+    assert.ok(await page.locator('.hero .pnl').count());
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).detailsLoading,true,'home is readable while auxiliary analysis remains pending');
+    await page.screenshot({path:out+'/home-period-ready-'+width+'.png'});
+    await page.evaluate(()=>{window.__periodHoldDetails=false;window.__releasePeriodDetails()});
+    await page.waitForFunction(()=>window.__periodStatus().detailsLoading===false);
+    await page.locator('[data-period="3M"]').click();await page.waitForFunction(()=>window.__periodStatus().loaded==='3M');
+    const readsBefore=(await page.evaluate(()=>window.__periodStatus())).reads;
+    await page.locator('[data-period="1W"]').click();await page.waitForFunction(()=>window.__periodStatus().loaded==='1W');
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).reads,readsBefore,'revisited home period uses cache');
+    await page.evaluate(()=>window.__periodFail=true);await page.locator('[data-period="6M"]').click();
+    await page.getByRole('button',{name:'다시 확인',exact:true}).waitFor();
+    await page.screenshot({path:out+'/home-period-retry-'+width+'.png'});
+    await page.evaluate(()=>window.__periodFail=false);await page.getByRole('button',{name:'다시 확인',exact:true}).click();
+    await page.waitForFunction(()=>window.__periodStatus().loaded==='6M');
+    await page.evaluate(()=>window.__releasePeriodSales());
+    await page.evaluate(()=>window.__periodFailDetails=true);await page.locator('[data-period="YTD"]').click();
+    await page.waitForFunction(()=>window.__periodStatus().detailsError===true);
+    assert.equal((await page.evaluate(()=>window.__periodStatus())).loaded,'YTD');
+    assert.ok(await page.locator('.hero .pnl').count(),'auxiliary failure leaves core performance visible');
+    await page.locator('.balance-meta > summary').click();
+    await page.screenshot({path:out+'/home-period-auxiliary-retry-'+width+'.png'});
+    await page.evaluate(()=>window.__periodFailDetails=false);await page.getByRole('button',{name:'분석 다시 확인',exact:true}).click();
+    await page.waitForFunction(()=>window.__periodStatus().detailsError===false&&window.__periodStatus().detailsLoading===false);
+    await page.evaluate(()=>window.__releasePeriodSales());
+
+    const probeData=JSON.parse(JSON.stringify(live));probeData.draftOwner='snapshot-owner-'+width;probeData.reviewDecisions=[{...decision,choice:'hold',review_condition:'종가 100 달러 이하',price_snapshot:{price_date:'2026-09-26',currency:'USD'}}];
+    await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>window.__uiRender('home'));
+    await page.evaluate(()=>window.__holdStartupExtras=true);
+    await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
+    await page.evaluate(()=>window.__uiRender('portfolio'));
+    await page.waitForFunction(()=>document.querySelector('.home-load-status'));
+    await page.waitForFunction(()=>!document.querySelector('.home-load-status'));
+    assert.equal(await page.locator('#homeCheck').count(),0);
+    await page.locator('.home-reviews>summary').click();
+    assert.match(await page.locator('.review-home').innerText(),/저장한 가격 조건에 해당/);
+    assert.ok(await page.locator('.portfolio-list').isVisible(),'holdings remain readable while enrichment is blocked');
+    await page.screenshot({path:out+'/home-before-analysis-'+width+'.png'});
+    await page.evaluate(async()=>{window.__failHomeReview=true;await window.__retryHomeProbe()});
+    await page.locator('[data-home-review-retry]').waitFor();
+    if(!await page.locator('.home-reviews').evaluate(el=>el.open))await page.locator('.home-reviews>summary').click();
+    await page.locator('[data-home-review-retry]').scrollIntoViewIfNeeded();
+    assert.match(await page.locator('.review-home').textContent(),/눌림목/,'failed review fetch retains prior saved reason');
+    await page.screenshot({path:out+'/home-local-retry-'+width+'.png'});
+    const beforeReads=await page.evaluate(()=>window.__homeProbeReads.length);
+    await page.evaluate(()=>window.__failHomeReview=false);await page.locator('[data-home-review-retry]').click();
+    await page.locator('[data-home-review-retry]').waitFor({state:'detached'});
+    assert.equal(await page.evaluate(()=>window.__homeProbeReads.length)-beforeReads,3);
+    await page.evaluate(()=>window.__releaseHomeProbe({ok:true}));
+    await page.waitForFunction(()=>window.__startupStatus().ready);
+    assert.equal((await page.evaluate(()=>window.__startupStatus())).loading,true);
+    await page.evaluate(()=>window.__uiRender('home'));
+    assert.ok(await page.locator('.hero .pnl').count());
+    assert.ok(await page.locator('#homeTrend svg').count(),'startup chart visible while extras pending');
+    await page.evaluate(()=>window.scrollTo(0,0));
+    await page.screenshot({path:out+'/home-startup-ready-'+width+'.png',fullPage:true});
+    await page.evaluate(async()=>{window.__failStartupChart=true;await window.__retryStartup()});
+    await page.locator('[data-home-startup-retry]').waitFor();
+    assert.ok(await page.locator('.hero .pnl').count(),'failed chart does not hide confirmed performance');
+    assert.ok(await page.locator('#homeTrend svg').count(),'failed refresh preserves previously confirmed chart');
+    assert.match(await page.locator('[data-home-startup-retry]').locator('..').innerText(),/자산 추이 갱신 실패.*이전 확인값/);
+    await page.evaluate(()=>window.scrollTo(0,0));
+    await page.screenshot({path:out+'/home-startup-retry-'+width+'.png',fullPage:true});
+    await page.evaluate(()=>window.__failStartupChart=false);await page.locator('[data-home-startup-retry]').click();
+    await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});
+    await page.evaluate(async()=>{window.__holdStartupExtras=false;window.__releaseStartupExtras({ok:true});await window.__homeProbe});
+    await page.evaluate(async()=>{window.__failHomeReview=true;window.__failStartupChart=true;await Promise.all([window.__retryHomeProbe(),window.__retryStartup()])});
+    await page.evaluate(()=>window.__uiRender('portfolio'));await page.locator('[data-home-review-retry]').waitFor();
+    await page.evaluate(()=>window.__uiRender('home'));await page.locator('[data-home-startup-retry]').waitFor();
+    const retryTotal=await page.locator('.hero .asset').innerText(),retryReads=await page.evaluate(()=>window.__homeProbeReads.length);
+    await page.evaluate(async()=>{window.__failHomeReview=false;window.__failStartupChart=false;await window.__quickReturnProbe()});
+    await page.locator('[data-home-review-retry]').waitFor({state:'detached'});await page.locator('[data-home-startup-retry]').waitFor({state:'detached'});
+    assert.equal(await page.locator('.hero .asset').innerText(),retryTotal,'quick retry preserves confirmed account amount');
+    assert.equal(await page.evaluate(()=>window.__homeProbeReads.length)-retryReads,3,'only review sources use REST; no account/history reload');
+    assert.ok(await page.locator('#homeTrend svg').count(),'failed chart recovers on quick return');
+    await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/quick-return-recovered-'+width+'.png'});
+
+
+    const priorPnl=await page.locator('.hero .pnl').first().innerText();
+    await page.evaluate(data=>window.__uiLoadingProbe(data),probeData);
+    await page.locator('.home-performance-refreshing').waitFor();
+    assert.equal(await page.locator('.hero .pnl').first().innerText(),priorPnl,'full refresh retains confirmed period result while reconciliation waits');
+    assert.ok(await page.locator('#homeTrend svg').count(),'full refresh retains chart before new performance arrives');
+    assert.match(await page.locator('.home-performance-refreshing').innerText(),/갱신 중.*이전 확인값/);
+    await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/full-refresh-retained-'+width+'.png',fullPage:true});
+    await page.evaluate(async()=>{window.__releaseHomeProbe({ok:true});await window.__homeProbe});
+    await page.locator('.home-performance-refreshing').waitFor({state:'detached'});
+    assert.ok(await page.locator('#homeTrend svg').count());
+
+    const cachedTotal=await page.evaluate(()=>window.__uiSnapshotTotal());assert.ok(cachedTotal>0);
+    await page.reload();
+    await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);await page.evaluate(()=>{window.__uiRender('home');window.__uiStartCached()});
+    assert.equal(await page.evaluate(()=>window.__previewRefreshRequested),1,'restore still requests fresh data');
+    await page.locator('.home-snapshot').waitFor();assert.match(await page.locator('.home-snapshot').innerText(),/마지막 확인 총자산/);
+    assert.equal(await page.locator('.home-snapshot-holdings [data-security-id]').count(),0,'stale summary cannot start a comparison');
+    await page.screenshot({path:out+'/home-reopened-snapshot-'+width+'.png'});
+    await page.evaluate(()=>window.__uiPreviewFailure());await page.locator('[data-home-load-retry]').waitFor();
+    await page.screenshot({path:out+'/home-offline-snapshot-'+width+'.png'});
+    const updated=JSON.parse(JSON.stringify(probeData));updated.snapshots[updated.snapshots.length-1].total_assets=cachedTotal+100;
+    if(updated.accountScope)updated.accountScope.current_display_total=cachedTotal+100;
+    await page.evaluate(data=>window.__uiLoadingProbe(data,true),updated);await page.locator('[data-home-load-retry]').click();
+    await page.locator('.home-snapshot').waitFor({state:'detached'});
+    assert.equal(await page.evaluate(()=>window.__uiSnapshotTotal()),cachedTotal+100);
+    await page.evaluate(async()=>{window.__releaseHomeProbe({ok:true});await window.__uiWaitPreviewRefresh()});
+    await page.evaluate(()=>window.__uiClearSession());
+    await page.evaluate(args=>window.__uiFixture(...args),[probeData,probeData.reviewDecisions[0],analysis,comparison]);
+    assert.equal(await page.evaluate(()=>window.__uiSnapshotTotal()),null,'explicit logout removes account summary');
+    assert.deepEqual(errors,[],errors.join('\n'));if(!process.env.CHROMIUM_PATH)await page.close();
+  }
+}finally{await browser.close()}
+console.log('Build 67: same fixture, five production screens, 390/402/430, 125%, chart touch and keyboard passed');
