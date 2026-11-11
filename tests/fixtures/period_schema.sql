@@ -1,6 +1,0 @@
-create table public.corporate_unadjusted_prices (symbol text,price_date date,close numeric,currency text,source text,observed_at timestamptz);
-create table public.daily_account_snapshots (id uuid,account_id uuid,snapshot_date date,snapshot_at timestamptz,total_assets numeric,cash numeric,securities_value numeric,invested_capital numeric,unrealized_pnl numeric,realized_pnl numeric,dividends numeric,interest numeric,fees numeric,taxes numeric,total_pnl numeric,external_flow numeric,source_sync_id uuid,created_at timestamptz,updated_at timestamptz);
-create table public.daily_security_prices (id uuid,security_id uuid,price_date date,open numeric,high numeric,low numeric,close numeric,volume numeric,currency text,source text,observed_at timestamptz);
-create table public.daily_security_snapshots (id uuid,account_id uuid,security_id uuid,snapshot_date date,quantity numeric,market_price numeric,market_value numeric,avg_cost numeric,unrealized_pnl numeric,currency text,fx_rate_to_base numeric,created_at timestamptz,updated_at timestamptz);
-create table public.dividends (id uuid,account_id uuid,security_id uuid,ex_date date,paid_at timestamptz,gross_amount numeric,tax numeric,net_amount numeric,currency text,fx_rate_to_base numeric,external_id text,source text,created_at timestamptz,updated_at timestamptz);
-
