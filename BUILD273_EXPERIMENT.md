@@ -189,3 +189,5 @@ CI42939841141 completed successfully for both mobile and decision-regression job
 ## Build275 decimal boundary correction
 
 While final CI42949046609 ran on453a171, an additional independent fractional-position fixture reproduced an adapter-only false negative:0.1+0.2 was not recognized as0.3. Fixed exact decimal-unit identity comparison, preserving genuine0.000001 mismatch rejection. Actual worker/UUID writer, integrated migration and Build270 invalid-field regressions pass locally. This changes the release worker and therefore needs a new exact-commit CI; do not deploy453a171 as the final version. Operating main/worker remain274/86 pending that gate. Latest read-only source reconciliation now matches the November9 and10 domestic settlement quantities/amounts; their valuation-time linkage is still unverified, and November6 remains unexplained. Private amounts stay outside git. No whole-account A/B completion or performance gain claimed.
+
+Build275 final deployment receipt and concrete next source-field investigation are committed in BUILD275.md. Product main is 50e39c2800a1200659154f7938e64e87a8080251; whole-account A/B remains incomplete.
