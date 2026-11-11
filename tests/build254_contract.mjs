@@ -55,7 +55,7 @@ for(const key of ['nt_asts_val_amt','val_amt_sum','dy_tfnd','fcrncy_tfnd_krw_exc
 assert.throws(()=>context.assertCompleteBalance({},overseas));
 assert.throws(()=>context.assertCompleteBalance(domestic,{}));
 assert.throws(()=>context.assertCompleteBalance(domestic,{dataBody:{Record2:[],nxt_key:'next'}}));
-const row={is_cd:'XYZ',mkt_clsf:'NAS',frgn_hld_q_p6:1,krw_val_amt:100,std_exch_r:1300};
+const row={is_cd:'XYZ',mkt_clsf:'NAS',frgn_hld_q_p6:1,krw_val_amt:100,krw_exch_val_pl:0,std_exch_r:1300};
 context.assertCompleteBalance(domestic,{dataBody:{Record2:[row]}});
 assert.throws(()=>context.assertCompleteBalance(domestic,{dataBody:{Record2:[row,row]}}));
 assert.throws(()=>context.assertCompleteBalance(domestic,{dataBody:{Record2:[{...row,std_exch_r:0}]}}));
