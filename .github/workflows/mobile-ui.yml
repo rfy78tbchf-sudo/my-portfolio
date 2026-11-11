@@ -79,6 +79,17 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --no-package-lock playwright@1.55.1 @fontsource/noto-sans-kr@5.3.0 @electric-sql/pglite@0.3.14
       - run: npx playwright install --with-deps chromium webkit
+      - name: Verify source-bound response migration and explicit quantities
+        run: |
+          node tests/build273_snapshot_binding.mjs
+          node tests/build273_response_migration.mjs
+          node tests/build273_batch_report.mjs
+          node tests/build273_resolution_gate.mjs
+          node tests/build273_batch_cycle.mjs
+          node tests/build273_settlement_view.mjs
+          node tests/build273_settlement_display.mjs
+          node tests/build273_settlement_browser.mjs
+          node tests/build273_worker_adapter.mjs --uuid-schema
       - name: Verify manual refresh overlap in both browsers
         run: PERIODS=1M RUNS=1 node experiments/manual-refresh265.mjs && BROWSER=webkit PERIODS=1M RUNS=1 node experiments/manual-refresh265.mjs
       - name: Verify sale quantity formatting preserves full financial evidence
