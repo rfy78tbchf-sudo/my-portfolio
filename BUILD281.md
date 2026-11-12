@@ -19,3 +19,11 @@ An additional isolated synthetic Postgres check executed the existing history wr
 Fresh live version.json/index.html/sw.js after the successful Pages run match repository bytes exactly. Frontend remains Build275; the new release is a collector change. No actual user login or physical iPhone verification is claimed.
 
 Transactions, cash flows, account observations and daily account snapshots retain identical before/after counts and full-row hashes. Same-cutoff TODAY/1W/THIS_MONTH reads preserve recorded arithmetic and unconfirmed-flow/whole-account states. This confirms deployment preservation, not repair of already stored gross fields or completion of whole-account reconciliation. Recheck the next normal collection for corrected source-derived gross on the same IDs; do not force broker collection. The midday HTTP500 and stale balance cutoff remain separate from the normalization fix.
+
+## First normal v92 collection — 2026-11-12 KST
+
+Fresh main/work/CI, operating worker92 and SQL versions, and live version/index/sw were rechecked. Main CI43152010023 has also succeeded. The normal15:10 balance collection succeeded after the earlier HTTP500;15:20 current-month history, evidence processing and subsequent performance recalculation succeeded. No forced broker call or manual financial-source edit was made.
+
+The followed foreign purchase now retains its provider key and original creation time with gross corrected to the explicit source consideration. Net cash and fee are preserved. All current-month foreign buy/sell records match raw consideration and the separate cash/charge arithmetic. The followed internal-FX row is unchanged. This is operating confirmation of the normalization fix, not a claim that all historical months are repaired or a second identical post-fix resync has already been observed.
+
+Observation account/time binding and transaction/official-event duplicate-key checks remain clear. Domestic later settlement is still absent; the latest position response remains incomplete with identity/quantity conflicts. External-flow confirmation remains false, whole-account B is unavailable and the composition gap persists. New cutoff amounts are not a code-improvement comparison. Real login/iPhone remain unverified. Continue normal settlement collection, post-fix repeated-sync verification and independent whole-account evidence work.
