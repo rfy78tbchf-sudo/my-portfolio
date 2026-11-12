@@ -781,10 +781,18 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
       && !String(r?.crncy_clsf_nm||"").trim() && foreignAmount===0;
     const cur=isWonCashFlow||isWonFx?"KRW":isKr?"KRW":String(mm?.currency||currency(r?.crncy_clsf_nm,market));
     const fx=isWonCashFlow||isWonFx?1:(n(r?.exch_r)||1);
-    const grossBase=isWonFx?wonAmount:foreignAmount!==0?foreignAmount:n(r?.dl_amt);
+    const cashBase=isWonFx?wonAmount:foreignAmount!==0?foreignAmount:n(r?.dl_amt);
+    // SWQA foreign trade fcrncy_amt is settled cash including charges.
+    // dl_amt is the independent trade consideration; do not call cash gross
+    // or derive gross by adding/subtracting fees from that same cash value.
+    const foreignTrade=(type==='buy'||type==='sell')&&cur!=='KRW';
+    const rawTradeGross=String(r?.dl_amt??'').replace(/,/g,'').trim();
+    if(foreignTrade&&(!/^[-+]?[0-9]+(?:\.[0-9]+)?$/.test(rawTradeGross)||!Number.isFinite(Number(rawTradeGross))))
+      throw new Error('LEDGER_TRADE_GROSS_MISSING');
+    const grossBase=foreignTrade?Number(rawTradeGross):cashBase;
     const fee=n(r?.fee)+n(r?.abrd_fee);
     const componentTax=n(r?.incm_tx)+n(r?.dl_tx)+n(r?.rsdnt_tx)+n(r?.ffs_tx)+n(r?.trsf_tx);
-    const netRaw=wonAmount!==0?wonAmount:grossBase;
+    const netRaw=wonAmount!==0?wonAmount:cashBase;
     const rawTotalCharge=n(r?.tx);
     // Domestic SWQA2301 `tx` can contain the brokerage fee as well as tax.
     // Only split it when the independent gross and cash fields reconcile.
