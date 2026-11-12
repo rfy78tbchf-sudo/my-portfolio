@@ -25,3 +25,15 @@ Fresh preflight: main0f6a66f and worker90 remain source-identical; live version/
 Transactions, cash flows, account observations and daily account snapshots have identical before/after counts and full-row fingerprints. Same-cutoff TODAY/1W/THIS_MONTH operating reads preserve recorded arithmetic and unverified-flow/whole-account states. Financial values remain private. There is no claimed actual P&L improvement or actual malformed-response incident.
 
 Remaining: first normal collection underv91; later domestic settlement/position matching; complete external-flow coverage; native cash/FX and ISA opening evidence; independent whole-accountB and unexplained differences. Do not force collection, backdate current evidence or fill unknowns. Chromium/WebKit synthetic regression passed; actual user login/iPhone remain unverified. Overall completion criteria are NOT met.
+
+## First normal collection under v91 — 2026-11-12 KST
+
+Fresh main4083724/work4ccf83d, candidate and main CI, Pages, worker91 source bytes and live version/index/sw were rechecked. Normal09:10 snapshot and09:20 current-month history writes succeeded. Evidence-month processing and subsequent performance recalculation also have fresh timestamps after the history write; the verification does not rely on the intermediate history success log alone. No manual broker invocation or financial-source edit was made.
+
+Observation/account/time bindings and duplicate observation, transaction external-ID and official-event keys were checked with zero violations. This verifies the first normal post-release collection, not every possible semantic duplicate or later-settlement outcome. Legacy backfill completion/count metadata is older than this current-month refresh and must not be used as current coverage proof.
+
+The new bound response preserves source-evidence-276. Ordinary/P6 quantity conflicts, domestic identity uncertainty and blank-currency cash/rate placeholders persist. The adapter remains incomplete; no source-field precedence, cash zero or historical ISA basis is invented. The required later domestic settlement ledger is still unavailable. Performance recalculation retains unconfirmed external-flow coverage instead of re-certifying default zero.
+
+Private TODAY/1W/THIS_MONTH comparisons read raw snapshots and their exact-time manual overlays and match recorded primary-account arithmetic. This checks the A calculation only; it is not independentB or proof of external-flow completeness. The cutoff changed from the prior deployment comparison, so changed amounts are not a code improvement. The unexplained composition gap remains.
+
+No additional code, deployment or automated test rerun was needed for this read-only verification. Existing synthetic CI coverage is unchanged, actual login/iPhone remain unverified, and whole-account reconciliation remains incomplete. Continue normal later-settlement collection, explicit field-applicability investigation, native-cash/FX and ISA opening evidence work.
