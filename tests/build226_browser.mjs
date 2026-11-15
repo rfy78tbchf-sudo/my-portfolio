@@ -5,7 +5,7 @@ import {chromium,webkit} from 'playwright';
 const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const hook=`
   kstDate=function(){return '2026-10-28'};
-  window.__wealthTest={fail:false,failRead:false,conflict:false,calls:[],db:{ok:true,today:'2026-10-28',plan:{version:2,base_amount:100000000,base_date:'2026-09-28',std_rate:20,best_rate:30,revision:0},current:{amount:110000000,as_of:'2026-10-28'},records:[{as_of:'2026-10-15',amount:105000000,finalized:true}]}};
+  window.__wealthTest={fail:false,failRead:false,conflict:false,calls:[],db:{ok:true,today:'2026-10-28',plan:{version:2,base_amount:100000000,base_date:'2026-09-28',std_rate:20,best_rate:30,revision:0},current:{amount:110000000,as_of:'2026-10-28'},records:[{as_of:'2026-10-15',amount:105000000,finalized:true,source:{ok:true,primary_at:'2026-10-15T12:00:00Z',isa_at:'2026-10-09T03:00:00Z'}}]}};
   rpc=function(name,payload){var t=window.__wealthTest;t.calls.push({name:name,payload:payload});
     if(name==='get_wealth_dashboard')return t.failRead?Promise.reject(Error('offline')):Promise.resolve(JSON.parse(JSON.stringify(t.db)));
     if(name==='set_wealth_scenarios'){
@@ -34,6 +34,9 @@ for(const [name,engine] of [['chromium',chromium],['webkit',webkit]].filter(([na
   assert.equal(await page.locator('#wealthBaseAmount,#wealthAmount,#wealthRecordForm').count(),0,'no amount entry or manual monthly actions');
   assert.equal(await page.locator('#wealthBase').evaluate(e=>e.open),false);assert.equal(await page.locator('#wealthScenario').evaluate(e=>e.open),false);
   assert.match(await page.locator('.wealth-record').innerText(),/2026-10-15/);assert.match(await page.locator('.wealth-record').innerText(),/2026-11-15/);
+  assert.match(await page.locator('.wealth-record').innerText(),/2026-10-15 21:00 KST/);
+  assert.match(await page.locator('.wealth-record').innerText(),/2026-10-09 12:00 KST/);
+  assert.match(await page.locator('.wealth-record').innerText(),/금융 검증 별도 확인 필요/);
   assert.match(await page.locator('.wealth-future').innerText(),/2030년 말/);assert.ok(await page.locator('.wealth-milestones').isVisible());
   const before=await page.locator('.wealth-target').first().innerText();
   await page.locator('#wealthScenario>summary').click();await page.locator('#wealthStd').fill('15');await page.locator('#wealthBest').fill('25');

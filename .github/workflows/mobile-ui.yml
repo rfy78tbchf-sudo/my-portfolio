@@ -60,7 +60,7 @@ jobs:
       - name: Verify annual actual rebasing and history calculations
         run: node tests/build240_wealth_annual.mjs
       - name: Verify automatic wealth, projections and milestone calculations
-        run: node tests/build226_wealth.mjs
+        run: node tests/build226_wealth.mjs && node tests/build282_monthly_evidence.mjs
       - name: Verify daily five-day moving average crossings
         run: node tests/build224_ma_cross.mjs
       - name: Verify on-demand refresh data and isolation
