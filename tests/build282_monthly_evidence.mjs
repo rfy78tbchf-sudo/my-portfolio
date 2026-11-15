@@ -16,3 +16,5 @@ for(const source of [undefined,{}, {primary_at:'invalid',isa_at:'2025-02-15T12:0
 assert.equal(scope.wealthMonthlySourceTime('2025-02-15T18:00:00Z'),'2025-02-16 03:00 KST');
 assert.match(html,/wealthMonthlyEvidenceHtml\(r\)/);
 console.log('Build282: stored source dates, KST boundary, missing timestamps, finalization versus verification and immutable input passed');
+
+assert.equal((html.match(/wealthMonthlyEvidenceHtml\(r\)/g)||[]).length,2);assert.match(html,/wealthMonthlyEvidenceHtml\(x\)/);
