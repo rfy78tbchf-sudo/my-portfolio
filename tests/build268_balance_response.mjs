@@ -23,6 +23,14 @@ const invalid=[
  ['empty rows with nonzero securities',domestic([])],
  ['null domestic row',domestic([null])],
 ];
+// A zero-valued settled row can only be discarded with explicit sale evidence.
+// Missing cost or available quantity must preserve the prior snapshot.
+for(const field of ['byng_amt','ordr_psbl_q']){
+ for(const value of [undefined,null,'','   ','broken']){
+  const candidate={...row,ec_q:'0',val_amt:'0',byng_amt:'0',ordr_psbl_q:'0',nstmt_s_q:'10',[field]:value};
+  invalid.push(['incomplete sold-row '+field+' '+String(value),domestic([candidate])]);
+ }
+}
 async function run(d,o=overseas){
  const calls=[];let saved=[{symbol:'123456',quantity:10,market_value:1000}];
  const ctx=vm.createContext({Date,Intl,fetchCurrent:async()=>({appKey:'synthetic',token:'synthetic',domesticRaw:d,overseasRaw:o}),

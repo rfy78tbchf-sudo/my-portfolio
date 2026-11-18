@@ -324,6 +324,13 @@ function assertCompleteBalance(domestic:any,overseas:any) {
       const value=keys.map(k=>r[k]).find(v=>v!==null&&v!==undefined&&String(v).trim()!=="");
       if(!finite(value)||n(value)<0)throw new Error("BALANCE_DOMESTIC_EVIDENCE_INCOMPLETE");
     }
+    // The sold-row filter also reads cost and available quantity. Require its
+    // evidence before n() can turn an absent/invalid field into a sale-confirming
+    // zero. Reject before snapshot replacement, preserving the previous state.
+    const normalizedQuantity=quantities.map(n).find(v=>v!==0)||0;
+    if(normalizedQuantity>0&&n(r.val_amt)===0&&n(r.nstmt_s_q)>=normalizedQuantity
+      &&(!finite(r.byng_amt)||!finite(r.ordr_psbl_q)))
+      throw new Error("BALANCE_DOMESTIC_SOLD_ROW_INCOMPLETE");
     const key=String(r.is_cd).trim();
     if(domesticKeys.has(key))throw new Error("BALANCE_DUPLICATE_POSITION");
     domesticKeys.add(key);
