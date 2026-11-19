@@ -48,8 +48,12 @@ assert.equal(r.p_complete,false,'a real 0.000001 mismatch is not rounded away');
 // without promoting source fields to confirmed quantities or cash/FX accounting.
 await run(d([kr,foreign]),o);
 const originalSnapshot=lastSnapshot;
-const rawForeign={...foreign,hld_q:'2',hld_q_p6:'0.500000',ec_q:null,nstmt_b_q:'',nstmt_b_q_p6:'0.000001'};
+const rawForeign={...foreign,hld_q:'2',hld_q_p6:'0.500000',ec_q:null,nstmt_b_q:'',nstmt_b_q_p6:'0.000001',val_amt:'0002600.0000',byng_amt:null,ordr_psbl_q:'',now_prc:'1300.00000001',memo:'DO_NOT_STORE'};
 const rawDomestic={...d([kr,rawForeign]),dataHeader:{processTime:'20261111121007023',account_number:'DO_NOT_STORE',token:'DO_NOT_STORE'}};
+rawDomestic.dataBody.nt_asts_val_amt='00010000.0000';
+rawDomestic.dataBody.dy_tfnd='7,200.0000';
+rawDomestic.dataBody.account_number='DO_NOT_STORE';
+rawDomestic.dataBody.unknown_amount='DO_NOT_STORE';
 const cashInput={...o,dataHeader:{processTime:'20261111121008024'},dataBody:{...o.dataBody,Record1:[{crncy_clsf_nm:'USD',tfnd:'00000000123.45',tfnd_val_amt:'160485',std_exch_r:'1300',cnvr_exch_r_p4:null,memo:'DO_NOT_STORE'}]}};
 const nativeInput={dataHeader:{processTime:'20261111121009025'},dataBody:{Record1:[{crncy_clsf_nm:'USD',tfnd:'123.45',tfnd_val_amt:'123.45',std_exch_r:'1300'}]}};
 r=await run(rawDomestic,cashInput,nativeInput);
@@ -61,6 +65,12 @@ assert.deepEqual(afterSummary,beforeSummary,'source diagnostics cannot change NA
 const evidence=r.p_validation.source_evidence;
 assert.ok(evidence,'source fields must survive actual worker → UUID storage');
 assert.equal(evidence.purpose,'UNVERIFIED_SOURCE_ONLY');
+assert.deepEqual(evidence.positions.summary,{nt_asts_val_amt:'00010000.0000',val_amt_sum:'2800',dy_tfnd:'7,200.0000',fcrncy_tfnd_krw_exch_amt:'0',byng_amt_sum:'180',val_pl_sum:'20'});
+assert.equal(evidence.positions.records.rows[1].val_amt,'0002600.0000');
+assert.equal(evidence.positions.records.rows[1].byng_amt,null);
+assert.equal(evidence.positions.records.rows[1].ordr_psbl_q,'');
+assert.equal(evidence.positions.records.rows[1].now_prc,'1300.00000001');
+assert.equal('val_pl' in evidence.positions.records.rows[1],false);
 assert.equal(evidence.positions.header.processTime,'20261111121007023');
 assert.equal(evidence.positions.records.rows[1].hld_q_p6,'0.500000');
 assert.equal(evidence.positions.records.rows[1].ec_q,null);
@@ -89,6 +99,11 @@ assert.equal(bounded.cash_krw_request.records.rows.length,1000);
 assert.deepEqual(bounded.cash_krw_request.records.rows[0].tfnd,{unavailable_reason:'UNSUPPORTED_VALUE'});
 assert.deepEqual(bounded.cash_krw_request.records.rows[0].std_exch_r,{unavailable_reason:'UNSUPPORTED_VALUE'});
 assert.equal(JSON.stringify(bounded).includes('DO_NOT_STORE'),false);
+assert.deepEqual(bounded.positions.summary,{unavailable_reason:'INVALID_RECORD'});
+const partial=JSON.parse(JSON.stringify(diagnosticsContext.balanceSourceEvidence({dataBody:{nt_asts_val_amt:null,dy_tfnd:'',val_amt_sum:{secret:'DO_NOT_STORE'}}},null,null)));
+assert.deepEqual(partial.positions.summary,{nt_asts_val_amt:null,dy_tfnd:'',val_amt_sum:{unavailable_reason:'UNSUPPORTED_VALUE'}});
+assert.equal('byng_amt_sum' in partial.positions.summary,false);
+assert.equal(JSON.stringify(partial).includes('DO_NOT_STORE'),false);
 console.log('PASS source evidence: exact raw precision, separate response times/request modes, absence/null/blank, immutable private storage, allowlist/bounds, unchanged financial inputs and RPC count');
 r=await run(d([]),{dataBody:{Record2:[]}});assert.equal(r.p_complete,true);assert.deepEqual(r.p_rows,[]);
 if(productionSchema){

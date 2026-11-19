@@ -421,10 +421,17 @@ function balanceSourceEvidence(domestic:any,overseas:any,native:any) {
     records:records(raw?.dataBody?.Record1,fields)
   });
   const cashFields=["crncy_clsf_nm","tfnd","tfnd_val_amt","std_exch_r","cnvr_exch_r_p4"];
-  return {version:"source-evidence-276",purpose:"UNVERIFIED_SOURCE_ONLY",
-    positions:source(domestic,"SSQM2952",{excg_mktpr_ccd:"A"},[
+  return {version:"source-evidence-285",purpose:"UNVERIFIED_SOURCE_ONLY",
+    positions:{...source(domestic,"SSQM2952",{excg_mktpr_ccd:"A"},[
       "is_cd","crncy_cd","hld_q","hld_q_p6","ec_q","ec_q_p6",
-      "nstmt_b_q","nstmt_b_q_p6","nstmt_s_q","nstmt_s_q_p6"]),
+      "nstmt_b_q","nstmt_b_q_p6","nstmt_s_q","nstmt_s_q_p6",
+      "val_amt","byng_amt","val_pl","byng_avr_prc","now_prc","ordr_psbl_q","ordr_psbl_q_p6"]),
+      // Preserve the integrated valuation before numeric normalization. Include
+      // rows later skipped as foreign/sold, so source row totals can be traced
+      // independently of the holdings chosen by the normalizers. Unknown fields
+      // and absent liabilities stay unknown; this is not a NAV identity proof.
+      summary:select(domestic?.dataBody,["nt_asts_val_amt","val_amt_sum","dy_tfnd",
+        "fcrncy_tfnd_krw_exch_amt","byng_amt_sum","val_pl_sum"])},
     cash_krw_request:source(overseas,"SPQM2226",{std_crncy_f:"2",exch_r_aplc_f:"2",fee_clsf:"0"},cashFields),
     cash_native_request:source(native,"SPQM2226",{std_crncy_f:"1",exch_r_aplc_f:"2",fee_clsf:"0"},cashFields)
   };
