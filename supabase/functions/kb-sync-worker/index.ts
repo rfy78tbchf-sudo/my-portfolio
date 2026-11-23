@@ -166,7 +166,10 @@ function normalizeDomestic(data:any) {
   const holdings:any[] = [];
   for (const r of rows) {
     const symbol = String(r?.is_cd || "").trim();
-    const qty = n(r?.hld_q_p6) || n(r?.hld_q) || n(r?.ec_q_p6) || n(r?.ec_q) || n(r?.ordr_psbl_q_p6) || n(r?.ordr_psbl_q);
+    // Holdings valuation describes the effective position, not settled shares.
+    // Keep the existing effective-field alias policy; never fall back to settled
+    // or orderable quantity, including when the effective quantity is zero.
+    const qty = n(r?.ec_q_p6) || n(r?.ec_q);
     const rawCurrency = String(r?.crncy_cd || "").trim().toUpperCase();
     const staleSettledSell = qty > 0
       && n(r?.val_amt) === 0

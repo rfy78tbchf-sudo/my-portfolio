@@ -54,7 +54,7 @@ const zero=domestic([]);zero.dataBody.val_amt_sum='0';zero.dataBody.byng_amt_sum
 const sold=await run(zero);assert.equal(sold.error,null);assert.deepEqual(sold.saved,[],'genuine empty balance may clear sold holdings');
 const pending=domestic([{...row,val_amt:'0',byng_amt:'0',ordr_psbl_q:'0',nstmt_s_q:'10'}]);pending.dataBody.val_amt_sum='0';
 assert.deepEqual((await run(pending)).saved,[],'settled sold row remains excluded');
-const fractional=await run(domestic([{...row,hld_q:undefined,hld_q_p6:'0.5',val_amt:'50'}]));
+const fractional=await run(domestic([{...row,hld_q:undefined,hld_q_p6:'0.5',ec_q:undefined,ec_q_p6:'0.5',ordr_psbl_q:'0.5',val_amt:'50'}]));
 assert.equal(fractional.error,null);assert.equal(fractional.saved[0].quantity,0.5);
 const foreign={dataBody:{Record2:[{is_cd:'XYZ',mkt_clsf:'NAS',frgn_hld_q_p6:'2',krw_val_amt:'2600',krw_exch_val_pl:'130',std_exch_r:'1300',crncy_clsf_nm:'USD'}]}};
 const mixed=await run(domestic([row,{is_cd:'XYZ',crncy_cd:'USD',hld_q:'2',val_amt:'2600'}]),foreign);

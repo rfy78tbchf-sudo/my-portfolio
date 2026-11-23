@@ -35,6 +35,16 @@ async function run(domestic,overseas,native=null){
  assert.ok(!calls.includes('save_kb_positions_for_response_for_service'));assert.equal(calls.length,6,'no extra RPC for source preservation');return envelope;
 }
 let r=await run(d([kr,foreign]),o);assert.equal(r.p_complete,true);assert.equal(r.p_rows[1].effective_quantity,2);
+// Independent literal share counts: settlement and effective ownership differ.
+for(const [settled,buy,sell,effective] of [['2','3','0',5],['5','0','3',2],['2','3','2',3]]){
+ await run(d([{...kr,hld_q:settled,ec_q:String(effective),nstmt_b_q:buy,nstmt_s_q:sell,ordr_psbl_q:String(effective),val_amt:String(effective*100)},foreign]),o);
+ assert.equal(lastSnapshot.p_holdings.find(h=>h.symbol==='123456').quantity,effective,'persist effective shares, not settled or available shares');
+}
+await run(d([{...kr,hld_q:'5',ec_q:'0',nstmt_s_q:'5',val_amt:'0',byng_amt:'0',ordr_psbl_q:'0'},foreign]),o);
+assert.equal(lastSnapshot.p_holdings.some(h=>h.symbol==='123456'),false,'explicit zero effective position is not replaced with settled shares');
+await run(d([{...kr,hld_q:'2',hld_q_p6:'0.000000',ec_q:'5',ec_q_p6:'0.000000',nstmt_b_q:'3',ordr_psbl_q:'1',val_amt:'500'},foreign]),o);
+assert.equal(lastSnapshot.p_holdings.find(h=>h.symbol==='123456').quantity,5,'existing effective alias fallback does not use orderable or settled shares');
+assert.equal((await run(d([{...kr,hld_q:'2',ec_q:'2'},foreign]),o)).p_complete,true,'unchanged settled position remains supported');
 r=await run(d([kr,{...foreign,ec_q:undefined}]),o);assert.equal(r.p_complete,false);assert.equal(r.p_rows[1].effective_quantity,null,'foreign missing stays null through actual worker and SQL');
 r=await run(d([kr,{...foreign,hld_q_p6:'0.5'}]),o);assert.equal(r.p_complete,false);assert.equal(r.p_rows[1].settled_quantity,null,'conflicting aliases do not pick arbitrary first');
 r=await run(d([kr]),o);assert.equal(r.p_complete,false);assert.ok(r.p_validation.reasons.includes('SNAPSHOT_POSITION_UNCOVERED'));
