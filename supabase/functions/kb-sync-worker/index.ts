@@ -811,13 +811,25 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
     const componentTax=n(r?.incm_tx)+n(r?.dl_tx)+n(r?.rsdnt_tx)+n(r?.ffs_tx)+n(r?.trsf_tx);
     const netRaw=wonAmount!==0?wonAmount:cashBase;
     const rawTotalCharge=n(r?.tx);
+    // A sale can also deduct separately reported arrears and loan repayment.
+    // Require explicit, exact KRW components; absent/invalid fields are not zero.
+    // Keep these deductions in raw evidence, never relabel them as tax or fee.
+    const saleComponents=['dl_amt','ec_amt','fee','abrd_fee','tx','arrs_fee','etc_lndng_amt_rpay_amt']
+      .map(key=>{
+        const raw=String(r?.[key]??'').replace(/,/g,'').trim();
+        return /^[+]?[0-9]+(?:\.[0-9]+)?$/.test(raw)&&Number.isSafeInteger(Number(raw))?Number(raw):null;
+      });
+    const [saleGross,saleCash,saleFee,saleForeignFee,saleCharge,arrears,loanRepayment]=saleComponents;
+    const exactSaleDeductions=type==='sell'&&cur==='KRW'&&saleComponents.every(v=>v!==null)&&
+      saleCharge! >= saleFee! + saleForeignFee! && saleCharge! > 0 &&
+      saleGross! - saleCharge! - arrears! - loanRepayment! === saleCash;
     // Domestic SWQA2301 `tx` can contain the brokerage fee as well as tax.
     // Only split it when the independent gross and cash fields reconcile.
     const combinedDomesticCharge=(type==='buy'||type==='sell')&&cur==='KRW'&&
       rawTotalCharge>=fee&&rawTotalCharge>0&&
       Math.abs(Math.abs(netRaw)-Math.abs(n(r?.dl_amt))-
         (type==='buy'?rawTotalCharge:-rawTotalCharge))<=0.02;
-    const tax=combinedDomesticCharge?rawTotalCharge-fee:
+    const tax=combinedDomesticCharge||exactSaleDeductions?rawTotalCharge-fee:
       rawTotalCharge!==0?rawTotalCharge:componentTax;
     const externalId=`KB:SWQA2301:${String(r.dl_dt)}:${seq}`;
     const summaryText=String(r?.smry_nm||"");

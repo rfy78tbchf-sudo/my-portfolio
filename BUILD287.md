@@ -1,0 +1,9 @@
+# Build287 — keep domestic sale fees out of tax with explicit deductions
+
+Domestic settlement `tx` can include brokerage fees. The existing split required gross minus `tx` alone to equal cash. When the same source also reported arrears or loan repayment, the split failed and the fallback stored the combined charge as tax beside the fee.
+
+The worker now also accepts an exact domestic sale identity with explicitly supplied gross, cash, brokerage fee, overseas fee, combined charge, arrears and loan repayment. Every component must be a nonnegative safe integer in KRW. Missing, blank, malformed or inexact components do not authorize this additional split. Existing direct-charge rules remain unchanged. Arrears and repayment remain raw source components; they are not folded into tax, brokerage fees, external flows or an unexplained balancing amount. Stored gross, cash, source payload and resync identity are preserved.
+
+Independent synthetic examples use gross 1000, fee 2, tax 1, arrears 7 and loan repayment 20, with literal expected cash 970. The old worker fails the tax assertion (3 instead of 1). Tests include fee-only charges, missing and malformed fields, negative values, unsafe integers, a one-cent mismatch and purchase isolation. Existing foreign gross/net, current balance, position and P&L regression checks remain required. The expanded test is already in the existing CI workflow; no automation is added.
+
+Only the existing normal collection path applies the new normalization. No manual ledger repair, historical balance change, finalized monthly update, initial-baseline change, schema migration or forced broker collection is part of this change. Pages remains Build282. Subsequent normal collection, exact deployed source equality and CI must be verified separately. Whole-account A/B reconciliation, source account identity, cash/FX coverage and physical iPhone verification remain incomplete.

@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {stripTypeScriptTypes} from 'node:module';
 
-const code=readFileSync(new URL('../supabase/functions/kb-sync-worker/index.ts',import.meta.url),'utf8');
+const code=readFileSync(process.env.WORKER_SOURCE||new URL('../supabase/functions/kb-sync-worker/index.ts',import.meta.url),'utf8');
 const start=code.indexOf('function normalizeLedger('),end=code.indexOf('async function settlementEvidence(',start);
 assert.ok(start>0&&end>start);
 const n=v=>Number(String(v??'').replaceAll(',','').trim())||0;
@@ -32,4 +32,28 @@ assert.equal(netSale.fee,2);
 assert.equal(netSale.tax,1);
 assert.equal(netSale.net_amount,997,'cash is already net of all three units of charges');
 assert.equal(netSale.net_amount-800,197,'moving-average cost uses net sale cash, not 994');
+// Synthetic cash identity: 1000 - total charge 3 - arrears 7 - loan 20 = 970.
+// The total charge includes fee 2 and tax 1; neither repayment is tax.
+const repayment={...base,kind:'sell',dl_sq:'5',dl_amt:'1000',ec_amt:'970',
+  fee:'2',tx:'3',dl_tx:'1',arrs_fee:'7',etc_lndng_amt_rpay_amt:'20'};
+const withRepayment=sandbox.normalizeLedger([repayment]).transactions[0];
+assert.equal(withRepayment.tax,1,'explicit additional deductions must not duplicate fee as tax');
+assert.equal(withRepayment.fee,2);
+assert.equal(withRepayment.gross_amount,1000);
+assert.equal(withRepayment.net_amount,970,'do not add repayments back into stored cash');
+assert.equal(withRepayment.provider_payload.arrs_fee,'7');
+assert.equal(withRepayment.provider_payload.etc_lndng_amt_rpay_amt,'20');
+const feeOnly=sandbox.normalizeLedger([{...repayment,tx:'2',dl_tx:'',ec_amt:'991',etc_lndng_amt_rpay_amt:'0'}]).transactions[0];
+assert.equal(feeOnly.tax,0);
+assert.equal(feeOnly.fee,2);
+assert.equal(feeOnly.net_amount,991);
+for(const patch of [{arrs_fee:undefined},{arrs_fee:''},{arrs_fee:'bad'},
+  {etc_lndng_amt_rpay_amt:null},{etc_lndng_amt_rpay_amt:'bad'},
+  {arrs_fee:'-7',ec_amt:'984'},{ec_amt:'969'},{ec_amt:'970.01'},
+  {fee:'bad'},{tx:'1',ec_amt:'972'},{dl_amt:'9007199254740992'}]){
+  const rejected=sandbox.normalizeLedger([{...repayment,...patch}]).transactions[0];
+  assert.equal(rejected.tax,Number(patch.tx??3),'incomplete, invalid or inexact evidence must not authorize a split');
+}
+const buyRepayment=sandbox.normalizeLedger([{...repayment,kind:'buy',ec_amt:'1030'}]).transactions[0];
+assert.equal(buyRepayment.tax,3,'sale-only evidence must not change purchase rules');
 console.log('Broker total charge split and raw preservation passed');
