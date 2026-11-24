@@ -36,3 +36,5 @@ const after=await row();for(const k of Object.keys(before))assert.deepEqual(afte
 assert.equal((await db.query('select count(*) n from transactions')).rows[0].n,1);
 console.log('PASS: reproduced lost settlement; evidence revalidation restores only missing date; repeated resync, ambiguity, conflicts and financial immutability');
 await db.close();
+
+await import('./build288_atomic_settlement.mjs');
