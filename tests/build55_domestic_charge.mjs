@@ -50,6 +50,7 @@ assert.equal(feeOnly.net_amount,991);
 for(const patch of [{arrs_fee:undefined},{arrs_fee:''},{arrs_fee:'bad'},
   {etc_lndng_amt_rpay_amt:null},{etc_lndng_amt_rpay_amt:'bad'},
   {arrs_fee:'-7',ec_amt:'984'},{ec_amt:'969'},{ec_amt:'970.01'},
+  {ec_amt:'0',arrs_fee:'977'},{fcrncy_amt:'5'},
   {fee:'bad'},{tx:'1',ec_amt:'972'},{dl_amt:'9007199254740992'}]){
   const rejected=sandbox.normalizeLedger([{...repayment,...patch}]).transactions[0];
   assert.equal(rejected.tax,Number(patch.tx??3),'incomplete, invalid or inexact evidence must not authorize a split');

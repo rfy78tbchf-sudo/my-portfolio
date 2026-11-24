@@ -821,6 +821,7 @@ function normalizeLedger(rows:any[],master:Record<string,MasterRow>={}){
       });
     const [saleGross,saleCash,saleFee,saleForeignFee,saleCharge,arrears,loanRepayment]=saleComponents;
     const exactSaleDeductions=type==='sell'&&cur==='KRW'&&saleComponents.every(v=>v!==null)&&
+      grossBase===saleGross&&netRaw===saleCash&&
       saleCharge! >= saleFee! + saleForeignFee! && saleCharge! > 0 &&
       saleGross! - saleCharge! - arrears! - loanRepayment! === saleCash;
     // Domestic SWQA2301 `tx` can contain the brokerage fee as well as tax.
