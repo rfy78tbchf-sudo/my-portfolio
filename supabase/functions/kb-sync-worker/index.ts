@@ -1005,33 +1005,21 @@ async function syncHistoryMonth(userId:string,month:string){
   const norm=normalizeLedger(ledger.rows,master);
   const realizedRows=normalizeRealized(realized.rows,month);
 
-  const applied=await adminRpc("apply_kb_history_month_for_service",{
+  const evidence=await settlementEvidence(settlement.rows,ledger.rows);
+  if(evidence.length>2000) throw new Error("OVERSEAS_EVIDENCE_MONTH_TOO_LARGE");
+  const bundle=await adminRpc("apply_kb_history_bundle_for_service",{
     p_user_id:userId,
     p_month:month,
     p_transactions:norm.transactions,
     p_dividends:norm.dividends,
     p_cash_flows:norm.cashFlows,
-    p_realized:realizedRows
+    p_realized:realizedRows,
+    p_evidence:evidence
   });
-  const evidence=await settlementEvidence(settlement.rows,ledger.rows);
-  if(evidence.length>2000) throw new Error("OVERSEAS_EVIDENCE_MONTH_TOO_LARGE");
-  let evidenceWritten=0;
-  for(let offset=0;offset<evidence.length;offset+=300){
-    evidenceWritten+=Number(await adminRpc("save_kb_position_evidence_for_service",{
-      p_user_id:userId,p_rows:evidence.slice(offset,offset+300)
-    }));
-  }
-  const sourceKeys=evidence.map(x=>x.source_key);
-  await adminRpc("reactivate_kb_evidence_for_service",{
-    p_user_id:userId,p_source_keys:sourceKeys
-  });
-  const retiredRevisions=await adminRpc("finish_kb_evidence_month_for_service",{
-    p_user_id:userId,p_month:month,p_source_keys:sourceKeys
-  });
-  const orderDatesLinked=await adminRpc("link_kb_order_dates_for_service",{p_user_id:userId});
-  await adminRpc("record_kb_evidence_month_for_service",{
-    p_user_id:userId,p_month:month,p_count:evidence.length
-  });
+  const applied=bundle.applied;
+  const evidenceWritten=Number(bundle.evidence_written);
+  const retiredRevisions=Number(bundle.retired_revisions);
+  const orderDatesLinked=Number(bundle.order_dates_linked);
   const reconciliation=await adminRpc("refresh_reconciliation_cases_for_service",{p_user_id:userId});
   const cashAccounting=await adminRpc("refresh_cash_reconciliation_for_service",{
     p_user_id:userId

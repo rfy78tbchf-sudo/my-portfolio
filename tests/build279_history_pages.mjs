@@ -36,7 +36,9 @@ for(const target of targets)for(const bad of malformed){
 if(process.argv.includes('--baseline')){assert.equal(unsafe,12);console.log({unsafePartialResponses:unsafe});process.exit(0);}
 for(const target of targets){
  const valid=await run(target,[{dataBody:{Record1:[{synthetic:1}],nxt_key:'next'}},{dataBody:{Record1:[{synthetic:2}],nxt_key:''}}]);
- assert.equal(valid.error,undefined);assert.ok(valid.calls.some(x=>x.name==='apply_kb_history_month_for_service'));
+ assert.equal(valid.error,undefined);
+ assert.equal(valid.calls.filter(x=>x.name==='apply_kb_history_bundle_for_service').length,1);
+ assert.ok(!valid.calls.some(x=>['apply_kb_history_month_for_service','save_kb_position_evidence_for_service','finish_kb_evidence_month_for_service','link_kb_order_dates_for_service'].includes(x.name)),'ledger, fresh evidence and linking use one atomic RPC');
  assert.equal(valid.requests.filter(x=>x.path===target).length,2);
  const empty=await run(target,[{dataBody:{Record1:[],nxt_key:''}}]);
  assert.equal(empty.error,undefined,'explicit empty array preserves existing behavior, not proof of completeness');
