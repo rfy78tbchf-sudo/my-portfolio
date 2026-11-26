@@ -1,0 +1,9 @@
+# Build289 — reject missing official realized charges and P&L
+
+The domestic official-realized normalizer used the zero-default parser for fees, tax and realized P&L. A complete page containing a row with an absent, blank or malformed value could therefore reach the atomic history writer with invented zero evidence. Page-shape validation alone did not reject this case.
+
+These three fields now require explicit finite decimal values. The worker validates the official-realized rows before security mapping or financial writes. A malformed mixed response fails the monthly sync before the history bundle or evidence retirement; the previous stored financial data remains available. Explicit zeros, signed P&L, decimal precision and original payloads are retained. No residual is adjusted, historical data repaired or schedule added. Other source fields and numeric parsers are unchanged.
+
+The synthetic worker-path regression reproduced 33 unsafe monthly writes on the previous source. The same cases must make zero storage calls after the change. Literal expectations cover zero charges, negative P&L, decimal charges and sale proceeds 1100 minus cost 1000 minus fee 2 minus tax 3 = P&L 95. The test is included in the existing history-page CI entry point. Production data was inspected read-only; this does not assert that malformed official rows have occurred in production.
+
+Pages remains Build282. Whole-account A/B, native-currency cash/FX, ISA opening evidence and unsettled component differences remain incomplete. Worker deployment/source verification and subsequent normal collection must be reported separately from synthetic tests. No physical iPhone verification is claimed. Finalized monthly records and the original baseline remain untouched; monthly source-date display is already implemented by Build282, and an auditable monthly amendment path still requires a separately authorized policy.

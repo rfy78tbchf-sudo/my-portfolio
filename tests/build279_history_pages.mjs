@@ -60,3 +60,5 @@ for(const target of targets)for(const invalidRow of [null,42,'broken',[]]){
 if(process.argv.includes('--baseline-rows')){
  assert.equal(malformedRowsWritten,12);console.log({malformedRowsWritten});
 }else console.log('PASS: 12 malformed mixed-row pages never reach monthly writes');
+
+await import('./build289_realized_fields.mjs');

@@ -929,6 +929,15 @@ async function settlementEvidence(rows:any[],ledger:any[]){
   return [...unique.values()];
 }
 function normalizeRealized(rows:any[],month:string){
+  // These fields are used as financial evidence. Missing/malformed values
+  // must stop the incoming monthly bundle, not become a synthetic zero.
+  const requiredNumber=(r:any,key:string)=>{
+    const raw=r?.[key];
+    const value=typeof raw==="string"?raw.replace(/,/g,"").trim():typeof raw==="number"?String(raw):"";
+    if(!/^[-+]?[0-9]+(?:\.[0-9]+)?$/.test(value)||!Number.isFinite(Number(value)))
+      throw new Error("REALIZED_FIELD_INVALID_"+key);
+    return Number(value);
+  };
   return rows.map((r:any)=>{
     const symbol=normalizeKrSymbol(r?.stnd_is_cd);
     const parts=[
@@ -949,9 +958,9 @@ function normalizeRealized(rows:any[],month:string){
       buy_price:nOrNull(r?.b_uprc),
       sell_amount:nOrNull(r?.s_amt),
       buy_amount:nOrNull(r?.b_amt),
-      fee:n(r?.fee),
-      tax:n(r?.svrl_tx),
-      realized_pnl:n(r?.rlztn_pl),
+      fee:requiredNumber(r,"fee"),
+      tax:requiredNumber(r,"svrl_tx"),
+      realized_pnl:requiredNumber(r,"rlztn_pl"),
       return_rate:nOrNull(r?.yld),
       provider_payload:r
     };
@@ -971,6 +980,7 @@ async function syncHistoryMonth(userId:string,month:string){
     inq_strt_dt:start,inq_end_dt:end,is_cd:""
   },"Record1",100);
   if(realized.truncated) throw new Error("REALIZED_MONTH_TRUNCATED");
+  const realizedRows=normalizeRealized(realized.rows,month);
 
   // Overseas settlement history is the most reliable KB source for ISIN -> traded ticker mapping.
   const settlement=await pagedTr(appKey,token,"/api/v1/spqm2205",{
@@ -1003,8 +1013,6 @@ async function syncHistoryMonth(userId:string,month:string){
     master=await loadSecurityMaster();
   }
   const norm=normalizeLedger(ledger.rows,master);
-  const realizedRows=normalizeRealized(realized.rows,month);
-
   const evidence=await settlementEvidence(settlement.rows,ledger.rows);
   if(evidence.length>2000) throw new Error("OVERSEAS_EVIDENCE_MONTH_TOO_LARGE");
   const bundle=await adminRpc("apply_kb_history_bundle_for_service",{
